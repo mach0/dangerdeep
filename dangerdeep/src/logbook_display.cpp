@@ -35,6 +35,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector2.h"
 #include <iostream>
 #include <map>
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -208,7 +210,7 @@ void logbook_display::process_input(class game& gm, const SDL_Event& event)
 
 void logbook_display::enter(bool /*is_day*/)
 {
-	background.reset(new image(get_image_dir() + "shipslog_main_daylight.jpg"));
+	background = std::make_unique<image>(get_image_dir() + "shipslog_main_daylight.jpg");
 }
 
 

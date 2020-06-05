@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ship.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "model.h"
@@ -225,8 +227,8 @@ ship::ship(game& gm_, const xml_elem& parent)
 	if (parent.has_child("ai")) {
 		xml_elem eai = parent.child("ai");
 		string aitype = eai.attr("type");
-		if (aitype == "dumb") myai.reset(new ai(this, ai::dumb));
-		else if (aitype == "escort") myai.reset(new ai(this, ai::escort));
+		if (aitype == "dumb") myai = std::make_unique<ai>(this, ai::dumb);
+		else if (aitype == "escort") myai = std::make_unique<ai>(this, ai::escort);
 		else if (aitype == "none") myai.reset();
 		else throw error(string("illegal AI type in ") + specfilename);
 	}

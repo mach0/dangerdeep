@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "bv_tree.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "triangle_intersection.h"
@@ -58,7 +60,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	}
 	// if list has one entry, return that
 	if (nodes.size() == 1) {
-		result.reset(new bv_tree(bound_sphere, nodes.front()));
+		result = std::make_unique<bv_tree>(bound_sphere, nodes.front());
 		return std::move(result);
 	}
 	//
@@ -101,7 +103,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 		empty_list.splice(empty_list.end(), full_list, full_list.begin(), it);
 	}
 	PRINT("left " << left_nodes.size() << " right " << right_nodes.size() << "\n");
-	result.reset(new bv_tree(bound_sphere, create(vertices, left_nodes), create(vertices, right_nodes)));
+	result = std::make_unique<bv_tree>(bound_sphere, create(vertices, left_nodes), create(vertices, right_nodes));
 	PRINT("final volume " << result->volume.center << "|" << result->volume.radius << "\n");
 	return std::move(result);
 }

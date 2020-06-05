@@ -21,11 +21,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
 #include "font.h"
-#include "system.h"
 #include "oglext/OglExt.h"
 #include "shader.h"
+#include "system.h"
 #include <SDL.h>
 #include <SDL_image.h>
+#include <memory>
+
 #include <sstream>
 #include <fstream>
 using std::vector;
@@ -157,14 +159,14 @@ font::font(const string& basefilename, unsigned char_spacing)
 		std::string vss(vs);
 		std::string fss(fs);
 		glsl_shader::defines_list dl;
-		shader.reset(new glsl_shader_setup(vss, fss, dl, true));
+		shader = std::make_unique<glsl_shader_setup>(vss, fss, dl, true);
 		shader->use();
 		loc_color = shader->get_uniform_location("color");
 		loc_tex = shader->get_uniform_location("tex");
 	}
 	++init_count;
 
-	character_texture.reset(new texture(basefilename + ".png", texture::LINEAR, texture::CLAMP));
+	character_texture = std::make_unique<texture>(basefilename + ".png", texture::LINEAR, texture::CLAMP);
 
 	ifstream metricfile((basefilename + ".metric").c_str());
 	metricfile >> base_height;

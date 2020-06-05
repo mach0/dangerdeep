@@ -20,6 +20,8 @@
 #include "sub_valves_display.h"
 
 
+#include <memory>
+
 #include <utility>
 
 
@@ -43,8 +45,8 @@
 
 	void sub_valves_display::enter(bool is_day)
 	{
-		background.reset(new image(get_image_dir() + "valves_screen_"
-					   + (is_day ? "daylight" : "redlight") + "_t7cv1.jpg"));
+		background = std::make_unique<image>(get_image_dir() + "valves_screen_"
+					   + (is_day ? "daylight" : "redlight") + "_t7cv1.jpg");
 	}
 
 	void sub_valves_display::leave()

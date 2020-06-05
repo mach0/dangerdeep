@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "water_splash.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "global_data.h"
@@ -70,21 +72,21 @@ water_splash::water_splash(game& gm_, const vector3& pos, double risetime_, doub
 	p[3] = fac * 7.0;
 	p[4] = fac * 8.0;
 	p[5] = fac * 9.0;
-	bradius_top.reset(new bspline(3, p));
+	bradius_top = std::make_unique<bspline>(3, p);
 	p[0] = fac * 5.0;
 	p[1] = fac * 5.0;
 	p[2] = fac * 5.2;
 	p[3] = fac * 5.4;
 	p[4] = fac * 5.6;
 	p[5] = fac * 5.8;
-	bradius_bottom.reset(new bspline(3, p));
+	bradius_bottom = std::make_unique<bspline>(3, p);
 	p[0] = fac * 1.0;
 	p[1] = fac * 1.0;
 	p[2] = fac * 0.75;
 	p[3] = fac * 0.5;
 	p[4] = fac * 0.25;
 	p[5] = fac * 0.0;
-	balpha.reset(new bspline(3, p));
+	balpha = std::make_unique<bspline>(3, p);
 }
 
 

@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "submarine_interface.h"
 #include "system.h"
 #include "texture.h"
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -40,7 +42,7 @@ static const double TK_ANGFAC = 360.0/512.0;
 sub_ghg_display::scheme::scheme(bool day)
 {
 	const string x = day ? "GHG_daylight" : "GHG_redlight";
-	background.reset(new image(get_image_dir() + x + "_background.jpg|png"));
+	background = std::make_unique<image>(get_image_dir() + x + "_background.jpg|png");
 	direction_ptr.set(x + "_pointer.png", 242, 89, 376, 372);
 	direction_knob.set(x + "_knob.png", 306, 516, 373, 583);
 	volume_dial.set(x + "_volume_dial.png", 711, 470, 849, 605);
@@ -143,7 +145,7 @@ void sub_ghg_display::display(class game& gm) const
 
 void sub_ghg_display::enter(bool is_day)
 {
-	myscheme.reset(new scheme(is_day));
+	myscheme = std::make_unique<scheme>(is_day);
 }
 
 

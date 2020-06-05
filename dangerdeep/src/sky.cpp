@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 
 #include <iostream>
+#include <memory>
+
 #include <utility>
 
 using std::vector;
@@ -72,8 +74,8 @@ sky::sky(const double tm, const unsigned int sectors_h, const unsigned int secto
 	build_dome(sectors_h, sectors_v);
 
 	// ********************************** init sun/moon
-	sunglow = texture::ptr(new texture(get_texture_dir() + "sunglow.png", texture::LINEAR));
-	suntex = texture::ptr(new texture(get_texture_dir() + "thesun.png", texture::LINEAR));
+	sunglow = std::make_unique<texture>(get_texture_dir() + "sunglow.png", texture::LINEAR);
+	suntex = std::make_unique<texture>(get_texture_dir() + "thesun.png", texture::LINEAR);
 
 	// ********************************** init clouds
 	// clouds are generated with Perlin noise.
@@ -121,8 +123,8 @@ sky::sky(const double tm, const unsigned int sectors_h, const unsigned int secto
 	}
 	clouds_texcoords.unmap();
 
-	glsl_clouds.reset(new glsl_shader_setup(get_shader_dir() + "clouds.vshader",
-						get_shader_dir() + "clouds.fshader"));
+	glsl_clouds = std::make_unique<glsl_shader_setup>(get_shader_dir() + "clouds.vshader",
+						get_shader_dir() + "clouds.fshader");
 	glsl_clouds->use();
 	loc_cloudstex = glsl_clouds->get_uniform_location("tex_cloud");
 }
@@ -186,7 +188,7 @@ void sky::compute_clouds()
 		}
 	}
 
-	clouds = texture::ptr(new texture(fullmap, res, res, GL_LUMINANCE, texture::LINEAR, texture::REPEAT));
+	clouds = std::make_unique<texture>(fullmap, res, res, GL_LUMINANCE, texture::LINEAR, texture::REPEAT);
 }
 
 

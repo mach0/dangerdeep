@@ -38,13 +38,14 @@ DONE
     modernize-use-equals-default
     modernize-use-equals-delete
     modernize-use-using
-TODO
-    modernize-loop-convert
     modernize-make-unique
-    modernize-pass-by-value
-    modernize-return-braced-init-list
-    modernize-use-auto
+TODO
     modernize-use-default-member-init
+    modernize-return-braced-init-list
+    modernize-loop-convert
+    modernize-pass-by-value
+    modernize-use-auto
     modernize-use-nullptr
+DO NOT USE    
     modernize-use-trailing-return-type
 
