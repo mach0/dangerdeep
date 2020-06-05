@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class game;
 
-
 ///\brief Rendering of sky and atmospheric effects.
 class sky
 {
@@ -78,7 +77,7 @@ protected:
 	mutable float sun_azimuth, sun_elevation;
 	float turbidity;
 
-	std::auto_ptr<glsl_shader_setup> glsl_clouds;
+	std::unique_ptr<glsl_shader_setup> glsl_clouds;
 	unsigned loc_cloudstex;
 
 	void build_dome(const unsigned int sectors_h, const unsigned int sectors_v);

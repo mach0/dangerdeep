@@ -22,10 +22,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "highscorelist.h"
 #include "binstream.h"
-#include "widget.h"
 #include "texts.h"
-#include <sstream>
+#include "widget.h"
 #include <fstream>
+#include <sstream>
+#include <utility>
+
 using std::string;
 using std::ostream;
 using std::ofstream;

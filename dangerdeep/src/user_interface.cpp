@@ -29,9 +29,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <glu.h>
 #include <SDL.h>
 
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
+#include <utility>
+
 #include "user_interface.h"
 #include "system.h"
 #include "game.h"

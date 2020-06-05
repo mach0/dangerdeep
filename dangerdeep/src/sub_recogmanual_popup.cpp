@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "sub_recogmanual_popup.h"
 
+
+#include <utility>
+
+
 using namespace std;
 
 sub_recogmanual_popup::widget_button_next::widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_)
@@ -57,8 +61,8 @@ sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
 	std::list<string> ship_ids = data_file_handler::instance().get_ship_list();
 	for (list<string>::iterator it = ship_ids.begin(); it != ship_ids.end(); it++) {
 		try {
-			auto_ptr<image> img(new image(data_file_handler::instance().get_path(*it) + (*it) + "_silhouette.png"));
-			silhouettes.push_back(auto_ptr<image>(img));
+			unique_ptr<image> img(new image(data_file_handler::instance().get_path(*it) + (*it) + "_silhouette.png"));
+			silhouettes.push_back(unique_ptr<image>(std::move(img)));
 			
 			xml_doc doc(data_file_handler::instance().get_filename(*it));
 			doc.load();

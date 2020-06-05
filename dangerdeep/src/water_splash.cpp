@@ -20,6 +20,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // water splash (C)+(W) 2006 Thorsten Jordan
 
 #include "water_splash.h"
+
+
+#include <utility>
+
 #include "global_data.h"
 #include "texture.h"
 #include "game.h"

@@ -58,7 +58,7 @@ class tree_generator
 {
  public:
 	tree_generator() {}
-	std::auto_ptr<model> generate() const;
+	std::unique_ptr<model> generate() const;
  protected:
 	// bend: evtl. gebe besser axis unten und oben an, dazwischen einfach biegen
 	vector3f generate_log(model::mesh& msh, model::mesh& mshleaves, unsigned lvl,
@@ -70,16 +70,16 @@ class tree_generator
 			   const vector3f& root, const vector3f& axis) const;
 };
 
-std::auto_ptr<model> tree_generator::generate() const
+std::unique_ptr<model> tree_generator::generate() const
 {
-	std::auto_ptr<model::mesh> msh(new model::mesh("tree"));
-	std::auto_ptr<model::mesh> mshleaves(new model::mesh("leaves"));
+	std::unique_ptr<model::mesh> msh(new model::mesh("tree"));
+	std::unique_ptr<model::mesh> mshleaves(new model::mesh("leaves"));
 	for (int y = -2; y <= 2; ++y) {
 		for (int x = -2; x <= 2; ++x) {
 			generate_tree(*msh, *mshleaves, 0, vector3f(3*x,3*y,0), vector3f(0,0,1));
 		}
 	}
-	std::auto_ptr<model> mdl(new model());
+	std::unique_ptr<model> mdl(new model());
 
 	model::material_glsl* mat2 = new model::material_glsl("bark", "reliefmapping.vshader", "reliefmapping.fshader");
 	mat2->nrtex = 2;
@@ -133,7 +133,7 @@ std::auto_ptr<model> tree_generator::generate() const
 	mdl->compile();
 	mdl->set_layout();
 
-	return mdl;
+	return std::move(mdl);
 }
 
 vector3f tree_generator::generate_log(model::mesh& msh, model::mesh& mshleaves, unsigned lvl,

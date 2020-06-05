@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C) + (W). See LICENSE
 
 #include "sonar_operator.h"
+
+
+#include <utility>
+
 #include "submarine.h"
 #include "game.h"
 

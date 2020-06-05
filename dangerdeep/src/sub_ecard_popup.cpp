@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_ecard_popup.h"
+
+
+#include <utility>
+
 #include "system.h"
 #include "global_data.h"
 #include "game.h"

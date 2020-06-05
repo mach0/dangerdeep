@@ -20,18 +20,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's torpedo room
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
-#include "image.h"
-#include "texture.h"
-#include "game.h"
-#include "font.h"
 #include "sub_captainscabin_display.h"
-#include "texts.h"
-#include "torpedo.h"
-#include "submarine_interface.h"
+#include "font.h"
+#include "game.h"
 #include "global_data.h"
-#include <sstream>
+#include "image.h"
+#include "submarine_interface.h"
+#include "system.h"
+#include "texts.h"
+#include "texture.h"
+#include "torpedo.h"
 #include <fstream>
+#include <sstream>
+#include <utility>
+
 using namespace std;
 
 

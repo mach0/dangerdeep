@@ -22,6 +22,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "date.h"
 #include "ai.h"
+
+
+#include <utility>
+
 #include "game.h"
 #include "convoy.h"
 #include "sea_object.h"

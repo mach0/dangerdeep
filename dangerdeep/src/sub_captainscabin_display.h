@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_captainscabin_display : public user_display
 {
-	std::auto_ptr<image> background;
+	std::unique_ptr<image> background;
 
 	class clickable_area
 	{

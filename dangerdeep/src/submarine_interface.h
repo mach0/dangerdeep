@@ -84,7 +84,7 @@ public:
 
  protected:
 	unsigned selected_tube;
-	std::auto_ptr<class torpedo_camera_display> torpedo_cam_view;
+	std::unique_ptr<class torpedo_camera_display> torpedo_cam_view;
 	mutable unsigned torpedo_cam_track_nr;
 
 	/// overloaded from user_interface, for forced screen switching

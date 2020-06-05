@@ -46,7 +46,7 @@ protected:
 	int page;
 	widget_button_next btn_left;
 	widget_button_next btn_right;
-	std::auto_ptr<image> background;
+	std::unique_ptr<image> background;
 	ptrvector<image> silhouettes;
 	ptrvector<std::string> classes;
 	ptrvector<std::string> lengths;

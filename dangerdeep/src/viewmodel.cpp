@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
+
 #include <vector>
 
 #include "system.h"
@@ -102,7 +104,7 @@ private:
                 string dir;
         };
 
-        auto_ptr<widget::theme> theme;
+        unique_ptr<widget::theme> theme;
         vector<model_entry> files;
         
         int selected_model;
@@ -112,8 +114,7 @@ private:
 
 
 
-model_load_dialog::model_load_dialog() : 
-        theme(0)
+model_load_dialog::model_load_dialog()
 {
         theme.reset( new widget::theme("widgetelements_menu.png", "widgeticons_menu.png", font_vtremington12, color(182, 146, 137), color(222, 208, 195), color(92, 72, 68)) );
 }
@@ -138,7 +139,7 @@ void model_load_dialog::load_menu()
         widget_list *models_list;
         
         widget w(0, 0, 1024, 768, "", 0, "threesubs.jpg");
-        w.set_theme(theme);
+        w.set_theme(std::move(theme));
 
         title = new widget_text(10, 10, 800, 80, "Danger from the Deep Viewmodel OpenGL Frontend.\nCopyright (C) 2003-2006 Thorsten Jordan.");
         w.add_child(title);

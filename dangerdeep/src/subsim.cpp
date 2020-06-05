@@ -31,18 +31,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <glu.h>
 #include <SDL.h>
 
-#include "system.h"
-#include "vector3.h"
-#include "model.h"
-#include "texture.h"
+#include "date.h"
 #include "game.h"
 #include "game_editor.h"
-#include "ship.h"
 #include "global_data.h"
+#include "model.h"
+#include "ship.h"
+#include "system.h"
 #include "texts.h"
-#include "date.h"
+#include "texture.h"
+#include "vector3.h"
 #include <iostream>
 #include <sstream>
+#include <utility>
+
 #include "image.h"
 #include "widget.h"
 #include "filehelper.h"
@@ -62,7 +64,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "dftdtester/tests.h"
 #endif
 
-using std::auto_ptr;
+using std::unique_ptr;
 
 
 /* fixme: 2006/12/02
@@ -203,7 +205,7 @@ void loadsavequit_dialogue::load()
 {
 	gamefilename_to_load = get_savegame_name_for(gamename->get_text(), savegames);
 	//fixme: ask: replace this game?
-	auto_ptr<widget> w(create_dialogue_ok(texts::get(185), texts::get(180) + gamename->get_text() + texts::get(181)));
+	unique_ptr<widget> w(create_dialogue_ok(texts::get(185), texts::get(180) + gamename->get_text() + texts::get(181)));
 	w->run();
 	close(2);	// load and close
 }
@@ -214,21 +216,21 @@ void loadsavequit_dialogue::save()
 	FILE* f = fopen(fn.c_str(), "rb");
 	if (f) {
 		fclose(f);
-		auto_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get_replace(183, gamename->get_text())));
+		unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get_replace(183, gamename->get_text())));
 		int ok = w->run();
 		w.reset();
 		if (!ok) return;
 	}
 	gamesaved = true;
 	mygame->save(fn, gamename->get_text());
-	auto_ptr<widget> w(create_dialogue_ok(texts::get(186), texts::get(180) + gamename->get_text() + texts::get(187)));
+	unique_ptr<widget> w(create_dialogue_ok(texts::get(186), texts::get(180) + gamename->get_text() + texts::get(187)));
 	w->run();
 	update_list();
 }
 
 void loadsavequit_dialogue::erase()
 {
-	auto_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(188) + gamename->get_text() + texts::get(189)));
+	unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(188) + gamename->get_text() + texts::get(189)));
 	int ok = w->run();
 	w.reset();
 	if (ok) {
@@ -245,7 +247,7 @@ void loadsavequit_dialogue::erase()
 void loadsavequit_dialogue::quit()
 {
 	if (!gamesaved) {
-		auto_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(190)));
+		unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(190)));
 		int q = w->run();
 		if (q) close(1);
 	} else {
@@ -447,22 +449,22 @@ game::run_state game__exec(game& gm, user_interface& ui)
 //
 // start and run a game, handle load/save (game menu), show results after game's end, delete game
 //
-void run_game(auto_ptr<game> gm)
+void run_game(unique_ptr<game> gm)
 {
 	// clear memory of menu widgets
 	widget::unref_all_backgrounds();
 
-	auto_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
+	unique_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
 								 font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64)));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
-	auto_ptr<widget::theme> tmp = widget::replace_theme(gametheme);
-	auto_ptr<user_interface> ui(user_interface::create(*gm));
-	gametheme = widget::replace_theme(tmp);
+	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
+	unique_ptr<user_interface> ui(user_interface::create(*gm));
+	gametheme = widget::replace_theme(std::move(tmp));
 	while (true) {
-		tmp = widget::replace_theme(gametheme);
+		tmp = widget::replace_theme(std::move(gametheme));
 		game::run_state state = game__exec(*gm, *ui);
-		gametheme = widget::replace_theme(tmp);
+		gametheme = widget::replace_theme(std::move(tmp));
 
 		//if (state == 2) break;
 		//SDL_ShowCursor(SDL_ENABLE);
@@ -501,9 +503,9 @@ void run_game(auto_ptr<game> gm)
 				ui.reset();
 				gm.reset(new game(dlg.get_gamefilename_to_load()));
 				// embrace user interface generation with right theme set!
-				tmp = widget::replace_theme(gametheme);
+				tmp = widget::replace_theme(std::move(gametheme));
 				ui.reset(user_interface::create(*gm));
-				gametheme = widget::replace_theme(tmp);
+				gametheme = widget::replace_theme(std::move(tmp));
 			}
 			//replace ui after loading!!!!
 			if (q == 1){
@@ -528,25 +530,25 @@ void run_game(auto_ptr<game> gm)
 //
 // start and run a game editor, handle load/save (game menu), delete game
 //
-void run_game_editor(auto_ptr<game> gm)
+void run_game_editor(unique_ptr<game> gm)
 {
 	// clear memory of menu widgets
 	widget::unref_all_backgrounds();
 
-	auto_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
+	unique_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
 							    font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64)));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
-	auto_ptr<widget::theme> tmp = widget::replace_theme(gametheme);
-	auto_ptr<user_interface> ui(user_interface::create(*gm));
-	gametheme = widget::replace_theme(tmp);
+	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
+	unique_ptr<user_interface> ui(user_interface::create(*gm));
+	gametheme = widget::replace_theme(std::move(tmp));
 	// game is initially running, so pause it.
 	ui->toggle_pause();
 	while (true) {
-		tmp = widget::replace_theme(gametheme);
+		tmp = widget::replace_theme(std::move(gametheme));
 		// 2006-12-01 doc1972 we should do some checks of the state if game exits
 		/*game::run_state state =*/ game__exec(*gm, *ui);
-		gametheme = widget::replace_theme(tmp);
+		gametheme = widget::replace_theme(std::move(tmp));
 
 		music::instance().play_track(1, 500);
 		loadsavequit_dialogue dlg(gm.get());
@@ -562,9 +564,9 @@ void run_game_editor(auto_ptr<game> gm)
 			ui.reset();
 			gm.reset(new game_editor(dlg.get_gamefilename_to_load()));
 			// embrace user interface generation with right theme set!
-			tmp = widget::replace_theme(gametheme);
+			tmp = widget::replace_theme(std::move(gametheme));
 			ui.reset(user_interface::create(*gm));
-			gametheme = widget::replace_theme(tmp);
+			gametheme = widget::replace_theme(std::move(tmp));
 		}
 		//replace ui after loading!!!!
 		if (q == 1){
@@ -697,7 +699,7 @@ struct flotilla {
 
 void show_flotilla_description(const std::string& infopopupdescr)
 {
-	auto_ptr<widget> w(widget::create_dialogue_ok(0, "", infopopupdescr, 1024*3/4, 768*3/4));
+	unique_ptr<widget> w(widget::create_dialogue_ok(0, "", infopopupdescr, 1024*3/4, 768*3/4));
 	std::vector<Uint8> tmp(3);
 	tmp[0] = 16;
 	tmp[1] = 8;
@@ -992,7 +994,7 @@ void create_convoy_mission()
 			// reset loading screen here to show user we are doing something
 			//fixme: give data to game! player data. maybe combine that to a struct!
 			reset_loading_screen();
-			run_game(auto_ptr<game>(new game(st,
+			run_game(unique_ptr<game>(new game(st,
 							 wcvsize->get_selected(),
 							 wescortsize->get_selected(),
 							 wtimeofday->get_selected(),
@@ -1091,7 +1093,7 @@ void choose_historical_mission()
 	wm->adjust_buttons(944);
 	int result = w.run(0, false);
 	if (result == 2) {	// start game
-		auto_ptr<game> gm;
+		unique_ptr<game> gm;
 		try {
 			gm.reset(new game(get_mission_dir() + missions[wmission->get_selected()]));
 		}
@@ -1102,7 +1104,7 @@ void choose_historical_mission()
 		}
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game(gm);
+		run_game(std::move(gm));
 	}
 }
 
@@ -1118,7 +1120,7 @@ void choose_saved_game()
 	if (q == 2) {
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game(auto_ptr<game>(new game(dlg.get_gamefilename_to_load())));
+		run_game(unique_ptr<game>(new game(dlg.get_gamefilename_to_load())));
 	}
 }
 
@@ -1171,7 +1173,7 @@ void menu_mission_editor()
 */
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game_editor(auto_ptr<game>(new game_editor(date(1939, 9, 1)/*st*/)));
+		run_game_editor(unique_ptr<game>(new game_editor(date(1939, 9, 1)/*st*/)));
 	}
 }
 
@@ -1515,7 +1517,7 @@ class vessel_view
 	widget_text* wdesc;
 	// note! this is not destructed by this class...
 	widget_3dview* w3d;
-	auto_ptr<model> load_model() {
+	unique_ptr<model> load_model() {
 		xml_doc doc(data_file().get_filename(*current));
 		doc.load();
 		string mdlname = doc.first_child().child("classification").attr("modelname");
@@ -1531,14 +1533,14 @@ class vessel_view
 				break;
 			}
 		}
-		auto_ptr<model> mdl(new model(data_file().get_path(*current) + mdlname));
+		unique_ptr<model> mdl(new model(data_file().get_path(*current) + mdlname));
 		// register and set default layout.
 		mdl->register_layout();
 		mdl->set_layout();
 		modellayouts.clear();
 		mdl->get_all_layout_names(modellayouts);
 		currentlayout = modellayouts.begin();
-		return mdl;
+		return std::move(mdl);
 	}
 public:
 	vessel_view(widget_text* wdesc_ = 0)
@@ -2059,13 +2061,13 @@ int mymain(list<string>& args)
 	//music::instance().set_playback_mode(music::PBM_SHUFFLE_TRACK);
 	music::instance().play();
 	
-	widget::set_theme(auto_ptr<widget::theme>(new widget::theme("widgetelements_menu.png", "widgeticons_menu.png",
+	widget::set_theme(unique_ptr<widget::theme>(new widget::theme("widgetelements_menu.png", "widgeticons_menu.png",
 								    font_typenr16,
 								    color(182, 146, 137),
 								    color(240, 217, 127) /*color(222, 208, 195)*/,
 								    color(92, 72 ,68))));
 
-	std::auto_ptr<texture> metalbackground(new texture(get_image_dir() + "metalbackground.jpg"));
+	std::unique_ptr<texture> metalbackground(new texture(get_image_dir() + "metalbackground.jpg"));
 	sys().draw_console_with(font_arial, metalbackground.get());
 
 
@@ -2108,10 +2110,10 @@ int mymain(list<string>& args)
 	if (runeditor) {
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game_editor(auto_ptr<game>(new game_editor(editor_start_date)));
+		run_game_editor(unique_ptr<game>(new game_editor(editor_start_date)));
 	} else if (cmdmissionfilename.length() > 0) {
 		// fixme: check here that the file exists or tinyxml faults with a embarassing error message
-		auto_ptr<game> gm;
+		unique_ptr<game> gm;
 		bool ok = true;
 		try {
 			gm.reset(new game(get_mission_dir() + cmdmissionfilename));
@@ -2124,7 +2126,7 @@ int mymain(list<string>& args)
 		if (ok) {
 			// reset loading screen here to show user we are doing something
 			reset_loading_screen();
-			run_game(gm);
+			run_game(std::move(gm));
 		}
 	} else {
 		int retval = 1;
@@ -2172,7 +2174,7 @@ int mymain(list<string>& args)
 
 	data_file_handler::destroy_instance();
 	cfg::destroy_instance();
-	widget::set_theme(auto_ptr<widget::theme>(0));	// clear allocated theme
+	widget::set_theme(unique_ptr<widget::theme>());	// clear allocated theme
 	music::release_instance()->destruct(); // kill thread
 	global_data::destroy_instance();
 	system::destroy_instance();

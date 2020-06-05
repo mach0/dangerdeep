@@ -35,6 +35,8 @@ double log2( double n )
 
 #include "system.h"
 #include <sstream>
+#include <utility>
+
 #include <float.h>
 
 #include "game.h"

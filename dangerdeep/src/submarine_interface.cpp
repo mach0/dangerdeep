@@ -29,10 +29,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <glu.h>
 #include <SDL.h>
 
-#include <sstream>
+#include <list>
 #include <map>
 #include <set>
-#include <list>
+#include <sstream>
+#include <utility>
+
 #include "date.h"
 #include "submarine_interface.h"
 #include "system.h"

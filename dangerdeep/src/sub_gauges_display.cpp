@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "game.h"
 #include "submarine.h"
 #include "sub_gauges_display.h"
+
+
+#include <utility>
+
 #include "user_interface.h"
 #include "global_data.h"
 

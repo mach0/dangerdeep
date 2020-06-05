@@ -94,7 +94,7 @@ class sdl_image
 class texture
 {
 public:
-	typedef std::auto_ptr<texture> ptr;
+	typedef std::unique_ptr<texture> ptr;
 
 	enum mapping_mode {
 		NEAREST,

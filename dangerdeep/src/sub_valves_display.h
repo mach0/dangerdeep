@@ -30,7 +30,7 @@ class sub_valves_display : public user_display {
 
 protected:
 
-	std::auto_ptr<image> background;
+	std::unique_ptr<image> background;
 	std::vector<image> valves_bl, valves_tr;
 public:
 	sub_valves_display(class user_interface& ui_);

@@ -19,6 +19,10 @@
 
 #include "sub_valves_display.h"
 
+
+#include <utility>
+
+
 	sub_valves_display::sub_valves_display(class user_interface& ui_) 
 		: user_display(ui_)
 	{

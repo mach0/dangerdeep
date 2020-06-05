@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 
 #include <iostream>
+#include <utility>
+
 using std::vector;
 
 
@@ -60,9 +62,6 @@ const double CLOUD_ANIMATION_CYCLE_TIME = 3600.0;
 
 sky::sky(const double tm, const unsigned int sectors_h, const unsigned int sectors_v)
 	: mytime(tm),
-	  sunglow(0),
-	  clouds(0),
-	  suntex(0),
 	  clouds_texcoords(false),
 	  sky_vertices(false),
 	  sky_indices(true),
