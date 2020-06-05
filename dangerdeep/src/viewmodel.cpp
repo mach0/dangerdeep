@@ -144,7 +144,7 @@ void model_load_dialog::load_menu()
         title = new widget_text(10, 10, 800, 80, "Danger from the Deep Viewmodel OpenGL Frontend.\nCopyright (C) 2003-2006 Thorsten Jordan.");
         w.add_child(title);
 
-        models_lbl = new widget_text(300, 100, 424, 30, "Available Models:", 0, 1);
+        models_lbl = new widget_text(300, 100, 424, 30, "Available Models:", 0, true);
         w.add_child(models_lbl);
 
         models_list = new widget_list(300, 150, 424, 438, NULL);
@@ -201,7 +201,7 @@ model_load_dialog::message(const string& msg)
 {
         widget w(0,0,1024,768,"", 0, "threesubs.jpg");
 
-        widget_text *msgtext = new widget_text(0, 0, 0, 0, msg, 0, 1);
+        widget_text *msgtext = new widget_text(0, 0, 0, 0, msg, 0, true);
         w.add_child(msgtext);
 
         widget_menu *wm = new widget_menu(112,120,200,40,"",true);
