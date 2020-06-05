@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // global defined directories for data.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef DIRECTORIES_H
-#define DIRECTORIES_H
+#ifndef DATADIRS_H
+#define DATADIRS_H
 
 #include <string>
 #include <map>

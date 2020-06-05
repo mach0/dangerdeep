@@ -77,10 +77,10 @@ int call_mymain(list<string>& args)
 	// fixme: use global /var/games instead
 	string(getenv("HOME"))+"/.dangerdeep/debug.log";
 #endif
-	log::instance().write(std::cerr, log::LOG_SYSINFO);
+	log::instance().write(std::cerr, log::level::SYSINFO);
 	unlink( log_file.c_str() );
 	std::ofstream f(log_file.c_str());
-	log::instance().write(f, log::LOG_SYSINFO);
+	log::instance().write(f, log::level::SYSINFO);
 	log::destroy_instance();
 	return result;
 }

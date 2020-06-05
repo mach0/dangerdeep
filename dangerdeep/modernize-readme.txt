@@ -9,31 +9,31 @@ After each step check functionality.
 3. Use C++11 thread/mutex/condition_variable
 	DONE
 4. Compare basic classes between branches for differences!
-	Like angle,vector etc., but we need to rerun the automatic code
-	modernization again after copying classes!
 	use meld with directories to compare.
-	Some classes are also obsolete - logbook.cpp
-	xml difficut
-	angle,vector,...?
-	Note that old code constructs like typedef are reintroduced...
-4. Introduce newer system input handling (needs SDL2?)
-	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
+	See below for more details.
+	PARTLY DONE
 5. make use of new C++ features for widgets etc.
 6. use new C++ features for XML reader etc.
 7. add new sensors
-8. update internal game classes
-8a. Copy new classes like gpu interface to master branch so they can be
-	tested and used by standalone apps
-8b. Divide code into separate libraries better
-9a. Migrate to SDL2
-9. Finally adjust rendering
-10. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
-11. Turn on -Wall
+8. update internal game classes (storage of sea_object, reference to them via ID!)
+9. Introduce newer system input handling (needs SDL2?)
+	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
+10. Copy new classes like gpu interface to master branch so they can be
+	tested and used by standalone apps (copy DONE)
+11. Divide code into separate libraries better (partly done)
+12. Migrate to SDL2
+13. Finally adjust rendering
+	maybe we can adjust all the display classes to use the new kind of
+	interface references but uses old rendering code...
+14. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
+15. Turn on -Wall
 
 
 Notes
 ===================================================================================================
 
+2.)
+===
 clang tidy modernizers
 DONE
     modernize-use-override
@@ -74,8 +74,10 @@ TRIED BUT NO EFFECT
 	performance-move-const-arg
 	performance-unnecessary-copy-initialization
 CALL
-	./run-clang-tidy.py -header-filter='.*' -checks='-*,modernize-use-override,modernize-replace-auto-ptr,modernize-avoid-bind,modernize-concat-nested-namespaces,modernize-deprecated-headers,modernize-deprecated-ios-base-aliases,modernize-replace-random-shuffle,modernize-raw-string-literal,modernize-use-transparent-functors,modernize-use-uncaught-exceptions,modernize-make-shared,modernize-redundant-void-arg,modernize-use-bool-literals,modernize-shrink-to-fit,modernize-unary-static-assert,modernize-use-nodiscard,modernize-use-noexcept,modernize-avoid-c-arrays,modernize-use-emplace,modernize-use-equals-default,modernize-use-equals-delete,modernize-use-using,modernize-make-unique,modernize-use-nullptr,modernize-use-default-member-init,modernize-return-braced-init-list,modernize-pass-by-value,modernize-loop-convert,llvm-include-order,modernize-use-auto' -fix
+	./run-clang-tidy.py -header-filter='.*' -checks='-*,FILTERNAME' -fix
 
+4.)
+===
 FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	angle.h
 	angular_table.h
@@ -93,6 +95,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	date.cpp	use std::chrono??
 	date.h
 	dmath.h
+	error.cpp
 	faulthandler.h
 	filehelper.cpp
 	filehelper.h
@@ -112,6 +115,8 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	helper.h
 	highscorelist.cpp
 	highscorelist.h
+	log.cpp
+	log.h
 	logbook.h
 	matrix.h
 	matrix3.h
@@ -149,8 +154,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 
 OPEN TOPICS
 	color.h		ambigious double ctor
-	datadirs	easy transition?
-	error.cpp	c'tor backward compatiblity
+	datadirs	data_file_handler missing
 	error.h		dito
 	fpsmeasure.cpp	needs new system interface
 	frustum.cpp	opengl code removed
@@ -159,7 +163,3 @@ OPEN TOPICS
 	matrix4.h	opengl only in old code
 	xml.cpp		Different syntax...
 	xml.h
-
-next:
-	log.cpp
-	log.h
