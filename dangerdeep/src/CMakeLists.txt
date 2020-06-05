@@ -1,4 +1,4 @@
-# Main dangerdeep 
+# Main dangerdeep
 
 # Definitions for TinyXML and FFTW.
 add_definitions ( -DTIXML_USE_STL -DWITH_FLOAT_FFTW )
@@ -9,33 +9,84 @@ add_subdirectory ( tinyxml )
 # and for oglExt
 add_subdirectory ( oglext )
 
-set ( dftdall_src
+add_library (dftdbasic	SHARED
+	angle.h
 	angular_table.h
 	area.h
+	binstream.h
+	bivector.h
 	box.h
+	bspline.h
+	bv_tree.cpp
+	bv_tree.h
+	circle.h
 	constant.h
+	datadirs.cpp
+	datadirs.h
+	dmath.h
+	error.cpp
+	error.h
+	faulthandler.h
+	filehelper.cpp
+	filehelper.h
 	graph.h
 	helper.h
+	matrix.h
+	matrix3.h
+	matrix4.h
+	#mesh.cpp
+	#mesh.h
+	message_queue.cpp
+	message_queue.h
+	#model_state.cpp
+	#model_state.h
+	object_store.h
+	parser.cpp
+	parser.h
+	plane.h
+	polygon.h
 	polyhedron.h
+	quaternion.h
 	rectangle.h
+	ressource_ptr.h
+	#rigid_body.cpp
+	#rigid_body.h
+	singleton.h
+	sphere.h
+	thread.cpp
+	thread.h
+	triangle_intersection.h
+	triangulate.cpp
+	triangulate.h
 	units.h
+	vector2.h
+	vector3.h
+	vector4.h
 	voxel.cpp
 	voxel.h
+)
+target_link_libraries(dftdbasic ${LIBS} ${CMAKE_DL_LIBS} tinyxml)
+
+
+add_library ( dftdall SHARED
+	#airplane_interface.cpp
+	#airplane_interface.h
+	#modelmeasure.cpp
+	#mymain.cpp
+	#network.cpp
+	#network.h
+	#portal.cpp
+	#ship_interface.cpp
+	#ship_interface.h
+	#viewmodel.cpp
 	ai.cpp
 	ai.h
 	airplane.cpp
 	airplane.h
-	#airplane_interface.cpp
-	#airplane_interface.h
 	align16_allocator.h
-	angle.h
-	binstream.h
 	bitstream.cpp
 	bitstream.h
 	bivector.h
-	bspline.h
-	bv_tree.cpp
-	bv_tree.h
 	bzip.cpp
 	bzip.h
 	caustics.cpp
@@ -51,22 +102,17 @@ set ( dftdall_src
 	countrycodes.h
 	credits.cpp
 	credits.h
-	datadirs.cpp
-	datadirs.h
 	date.cpp
 	date.h
 	daysky.cpp
 	daysky.h
 	depth_charge.cpp
 	depth_charge.h
-	dmath.h
+	dftdtester/tests.cpp
 	error.cpp
 	error.h
 	event.cpp
 	event.h
-	faulthandler.h
-	filehelper.cpp
-	filehelper.h
 	fixed.h
 	font.cpp
 	font.h
@@ -80,9 +126,9 @@ set ( dftdall_src
 	frustum.cpp
 	frustum.h
 	game.cpp
+	game.h
 	game_editor.cpp
 	game_editor.h
-	game.h
 	geoclipmap.cpp
 	geoclipmap.h
 	gldebug.h
@@ -100,49 +146,34 @@ set ( dftdall_src
 	image.h
 	keys.cpp
 	keys.h
-	logbook_display.cpp
-	logbook_display.h
-	logbook.h
 	log.cpp
 	log.h
+	logbook.h
+	logbook_display.cpp
+	logbook_display.h
 	make_mesh.cpp
 	make_mesh.h
 	map_display.cpp
 	map_display.h
-	matrix3.h
-	matrix4.h
-	matrix.h
-	message_queue.cpp
-	message_queue.h
 	model.cpp
 	model.h
-	#modelmeasure.cpp
 	moon.cpp
 	moon.h
 	morton_bivector.h
 	music.cpp
 	music.h
-	#mymain.cpp
-	#network.cpp
-	#network.h
 	objcache.h
 	ocean_wave_generator.h
-	parser.cpp
-	parser.h
 	particle.cpp
 	particle.h
 	perlinnoise.cpp
 	perlinnoise.h
-	plane.h
-	polygon.h
-	#portal.cpp
 	postprocessor.cpp
 	postprocessor.h
 	primitives.cpp
 	primitives.h
 	ptrlist.h
 	ptrvector.h
-	quaternion.h
 	random_generator.h
 	sea_object.cpp
 	sea_object.h
@@ -152,20 +183,16 @@ set ( dftdall_src
 	shader.h
 	ship.cpp
 	ship.h
-	#ship_interface.cpp
-	#ship_interface.h
 	ships_sunk_display.cpp
 	ships_sunk_display.h
 	simplex_noise.cpp
 	simplex_noise.h
-	singleton.h
 	sky.cpp
 	sky.h
 	sonar.cpp
 	sonar.h
 	sonar_operator.cpp
 	sonar_operator.h
-	sphere.h
 	stars.cpp
 	stars.h
 	sub_bg_display.cpp
@@ -186,10 +213,6 @@ set ( dftdall_src
 	sub_ghg_display.h
 	sub_kdb_display.cpp
 	sub_kdb_display.h
-	submarine.cpp
-	submarine.h
-	submarine_interface.cpp
-	submarine_interface.h
 	sub_periscope_display.cpp
 	sub_periscope_display.h
 	sub_recogmanual_display.cpp
@@ -210,6 +233,10 @@ set ( dftdall_src
 	sub_uzo_display.h
 	sub_valves_display.cpp
 	sub_valves_display.h
+	submarine.cpp
+	submarine.h
+	submarine_interface.cpp
+	submarine_interface.h
 	system.cpp
 	system.h
 	tdc.cpp
@@ -219,30 +246,21 @@ set ( dftdall_src
 	texts.h
 	texture.cpp
 	texture.h
-	thread.cpp
-	thread.h
-	tile_cache.h
 	tile.h
+	tile_cache.h
 	tone_reproductor.cpp
 	tone_reproductor.h
-	torpedo_camera_display.cpp
-	torpedo_camera_display.h
 	torpedo.cpp
 	torpedo.h
+	torpedo_camera_display.cpp
+	torpedo_camera_display.h
 	tree_generator.h
-	triangle_intersection.h
-	triangulate.cpp
-	triangulate.h
 	user_display.h
 	user_interface.cpp
 	user_interface.h
 	user_popup.h
-	vector2.h
-	vector3.h
-	vector4.h
 	vertexbufferobject.cpp
 	vertexbufferobject.h
-	#viewmodel.cpp
 	water.cpp
 	water.h
 	water_splash.cpp
@@ -250,54 +268,51 @@ set ( dftdall_src
 	widget.cpp
 	widget.h
 	xml.cpp
-	xml.h	
-	dftdtester/tests.cpp
+	xml.h
 )
+target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
 
-add_library ( dftdall SHARED ${dftdall_src} )
-target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} )
+add_executable ( dangerdeep subsim.cpp )
 
-add_executable ( dangerdeep subsim.cpp ) 
-
-target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdall tinyxml oglext )
+target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdall dftdbasic tinyxml oglext )
 
 if ( DFTD_BUILD_TOOLS )
 	set ( viewmodel_src viewmodel.cpp )
 	add_executable ( viewmodel      ${viewmodel_src} )
-	target_link_libraries ( viewmodel dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	target_link_libraries ( viewmodel dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( modelmeasure_src modelmeasure.cpp )
 	add_executable ( modelmeasure   ${modelmeasure_src} )
-	target_link_libraries ( modelmeasure dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	target_link_libraries ( modelmeasure dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( oceantest_src oceantest.cpp )
 	add_executable ( oceantest      ${oceantest_src} )
-	target_link_libraries ( oceantest dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	target_link_libraries ( oceantest dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( bspline_src bspline_test.cpp )
 	add_executable ( bsplinetest    ${bspline_src} )
-	target_link_libraries ( bsplinetest dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
-	
+	target_link_libraries ( bsplinetest dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+
 	set ( portal_src portal.cpp )
 	add_executable ( portal         ${portal_src} )
-	target_link_libraries ( portal dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )  
+	target_link_libraries ( portal dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( treegen_src treegentest.cpp )
 	add_executable ( treegentest    ${treegen_src} )
-	target_link_libraries ( treegentest dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )   
+	target_link_libraries ( treegentest dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( bvtreetest_src bvtreeintersecttest.cpp )
 	add_executable ( bvtreetest     ${bvtreetest_src} )
-	target_link_libraries ( bvtreetest dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )  
+	target_link_libraries ( bvtreetest dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	set ( mapprecompute_src         tools/map_precompute.cpp )
 	add_executable ( map_precompute ${mapprecompute_src} )
-	target_link_libraries ( map_precompute dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	target_link_libraries ( map_precompute dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	if ( FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST )
 	    set ( videoplay_src videoplaytest.cpp )
 	    add_executable ( videoplay  ${videoplay_src} )
-	    target_link_libraries ( videoplay dftdall tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	    target_link_libraries ( videoplay dftdall dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 	endif ()
 
 endif ()
