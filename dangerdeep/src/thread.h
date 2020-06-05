@@ -30,7 +30,7 @@
 	// win32 lacks stdint.h (thankfully SDL provides...)
 	#include <SDL_config_win32.h>
 #else
-	#include <stdint.h>	
+	#include <cstdint>	
 #endif
 
 /// base class for threads.

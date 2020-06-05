@@ -112,15 +112,15 @@ void install_segfault_handler()
 
 #else	//non-WIN32-MacOSX
 
-#include <execinfo.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <cxxabi.h>      // Needed for __cxa_demangle
-#include <signal.h>
-#include <string>
-#include <sstream>
-#include <unistd.h>
+#include <execinfo.h>
 #include <list>
+#include <sstream>
+#include <string>
+#include <unistd.h>
 
 // Note: use --export-dynamic as linker option or you won't get function names here.
 

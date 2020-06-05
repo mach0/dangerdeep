@@ -19,16 +19,16 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include "bitstream.h"
+#include "bzip.h"
+#include "log.h"
+#include "morton_bivector.h"
+#include "system.h"
+#include "vector2.h"
+#include <SDL.h>
+#include <ctime>
 #include <fstream>
 #include <string>
-#include <SDL.h>
-#include "time.h"
-#include "vector2.h"
-#include "system.h"
-#include "bzip.h"
-#include "bitstream.h"
-#include "morton_bivector.h"
-#include "log.h"
 
 template<class T>
 class tile

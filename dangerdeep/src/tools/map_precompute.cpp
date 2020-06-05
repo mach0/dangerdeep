@@ -20,10 +20,10 @@
 /* Splits the ETOPO1 cell-centered float binary file into tiles */
 
 #include <SDL.h>
+#include <cstdlib>
 #include <fstream>
 #include <list>
 #include <sstream>
-#include <stdlib.h>
 #include <string>
 #include <utility>
 

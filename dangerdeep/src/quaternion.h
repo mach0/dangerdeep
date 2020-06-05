@@ -24,9 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
-#include <math.h>
-#include "vector3.h"
 #include "matrix4.h"
+#include "vector3.h"
+#include <cmath>
 
 /*
   3d rotations with quaternions:

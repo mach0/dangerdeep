@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 
-#include <float.h>
-#include <sstream>
+#include <cfloat>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 

@@ -37,7 +37,7 @@ double log2( double n )
 #include <sstream>
 #include <utility>
 
-#include <float.h>
+#include <cfloat>
 
 #include "game.h"
 #include "ship.h"
