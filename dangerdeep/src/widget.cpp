@@ -286,7 +286,7 @@ widget* widget::get_child(const std::string& child, bool recursive)
 		if((*it)->name == child) return *it;
 		else if(recursive) {
 			retval = (*it)->get_child(child);
-			if(retval>0) return retval;
+			if(retval!=nullptr) return retval;
 		}
 	}
 	
