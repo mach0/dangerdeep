@@ -2254,7 +2254,7 @@ color model::read_color_from_dftd_model_file(const xml_elem& parent, const std::
 	istringstream iss(tmp);
 	float r, g, b;
 	iss >> r >> g >> b;
-	return color(Uint8(r*255), Uint8(g*255), Uint8(b*255));
+	return {Uint8(r*255), Uint8(g*255), Uint8(b*255)};
 }
 
 

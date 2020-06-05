@@ -194,7 +194,7 @@ colorf daysky::get_color( float theta, float phi, float elevation ) const
 		scalefac = 50;
 	}
 
-	return colorf(colors[0] * scalefac, colors[1] * scalefac, colors[2] * scalefac);
+	return {colors[0] * scalefac, colors[1] * scalefac, colors[2] * scalefac};
 }
 
 

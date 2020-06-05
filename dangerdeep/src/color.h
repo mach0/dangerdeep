@@ -39,12 +39,12 @@ struct color
 	color(const class colorf& c);
 
 	color operator* (const color& c) const {
-		return color(
+		return {
 			(Uint8)(unsigned(r)*unsigned(c.r)/255),
 			(Uint8)(unsigned(g)*unsigned(c.g)/255),
 			(Uint8)(unsigned(b)*unsigned(c.b)/255),
 			(Uint8)(unsigned(a)*unsigned(c.a)/255)
-		);
+		};
 	}
 	
 	void store_rgb(Uint8* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; }
@@ -54,7 +54,7 @@ struct color
 
 	// transform color to grey value (model of human vision, 29.9% to 58.7% to 11.4% RGB)
 	float brightness() const { return (r*0.299+g*0.587+b*0.114)/255; }
-	color grey_value() const { Uint8 c = (Uint8)(r*0.299+g*0.587+b*0.114); return color(c, c, c, a); }
+	color grey_value() const { Uint8 c = (Uint8)(r*0.299+g*0.587+b*0.114); return {c, c, c, a}; }
 	
 	//color(istream& in) { r = read_u8(in); g = read_u8(in); b = read_u8(in); a = read_u8(in); }
 	//void save(ostream& out) const { write_u8(out, r); write_u8(out, g); write_u8(out, b); write_u8(out, a); }
@@ -63,24 +63,24 @@ struct color
 		int rr = (int(r)-128)*fac+128;
 		int gg = (int(g)-128)*fac+128;
 		int bb = (int(b)-128)*fac+128;
-		return color(Uint8(rr > 255 ? 255 : rr < 0 ? 0 : rr),
+		return {Uint8(rr > 255 ? 255 : rr < 0 ? 0 : rr),
 			     Uint8(gg > 255 ? 255 : gg < 0 ? 0 : gg),
-			     Uint8(bb > 255 ? 255 : bb < 0 ? 0 : bb));
+			     Uint8(bb > 255 ? 255 : bb < 0 ? 0 : bb)};
 	}
 	
 	// some useful standard colors
-	static color black() { return color(0,0,0); }
-	static color blue() { return color(0,0,255); }
-	static color green() { return color(0,255,0); }
-	static color red() { return color(255,0,0); }
-	static color magenta() { return color(255,0,255); }
-	static color cyan() { return color(0,255,255); }
-	static color yellow() { return color(255,255,0); }
-	static color orange() { return color(255,128,0); }
-	static color lightgrey() { return color(192,192,192); }
-	static color grey() { return color(128,128,128); }
-	static color darkgrey() { return color(64,64,64); }
-	static color white() { return color(255,255,255); }
+	static color black() { return {0,0,0}; }
+	static color blue() { return {0,0,255}; }
+	static color green() { return {0,255,0}; }
+	static color red() { return {255,0,0}; }
+	static color magenta() { return {255,0,255}; }
+	static color cyan() { return {0,255,255}; }
+	static color yellow() { return {255,255,0}; }
+	static color orange() { return {255,128,0}; }
+	static color lightgrey() { return {192,192,192}; }
+	static color grey() { return {128,128,128}; }
+	static color darkgrey() { return {64,64,64}; }
+	static color white() { return {255,255,255}; }
 };
 
 ///\brief Color representation with some basic transformations and OpenGL usage. Float values!
@@ -99,15 +99,15 @@ struct colorf
 	}
 
 	colorf operator* (const colorf& c) const {
-		return colorf(r*c.r, g*c.g, b*c.b, a*c.a);
+		return {r*c.r, g*c.g, b*c.b, a*c.a};
 	}
 	
 	///> component wise linear interpolation
 	colorf lerp(const colorf& c1, const colorf& c2) const {
-		return colorf(c1.r*(1-r) + c2.r*r,
+		return {c1.r*(1-r) + c2.r*r,
 			      c1.g*(1-g) + c2.g*g,
 			      c1.b*(1-b) + c2.b*b,
-			      c1.a*(1-a) + c2.a*a);
+			      c1.a*(1-a) + c2.a*a};
 	}
 	
 	void store_rgb(Uint8* ptr) const { ptr[0] = Uint8(r*255); ptr[1] = Uint8(g*255); ptr[2] = Uint8(b*255); }
@@ -117,7 +117,7 @@ struct colorf
 
 	// transform color to grey value (model of human vision, 29.9% to 58.7% to 11.4% RGB)
 	float brightness() const { return (r*0.299+g*0.587+b*0.114); }
-	colorf grey_value() const { float c = (r*0.299+g*0.587+b*0.114); return colorf(c, c, c, a); }
+	colorf grey_value() const { float c = (r*0.299+g*0.587+b*0.114); return {c, c, c, a}; }
 };
 
 inline color::color(const colorf& c)

@@ -82,7 +82,7 @@ protected:
 	static std::vector<Uint8> make_2d_perlin_noise(unsigned wh, unsigned highestlevel);
 	static std::vector<Uint8> compute_fire_frame(unsigned wh, const std::vector<Uint8>& oldframe);
 
-	virtual vector3 get_acceleration() const { return vector3(); }
+	virtual vector3 get_acceleration() const { return {}; }
 
 	/// must this type of particle be rendered specially?
 	virtual bool has_custom_rendering() const { return false; }
