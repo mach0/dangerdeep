@@ -255,7 +255,7 @@ public:
 		std::vector<Uint32> triangle_adjacency;
 		std::vector<Uint32> vertex_triangle_adjacency;
 
-		static const unsigned no_adjacency = unsigned(-1);
+		static const unsigned no_adjacency;// = unsigned(-1);
 		bool has_adjacency_info() const;
 		void compute_adjacency();
 		bool check_adjacency() const;

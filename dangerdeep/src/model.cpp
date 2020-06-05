@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 #include <map>
 
+const unsigned model::mesh::no_adjacency = unsigned(-1);
+
 using namespace std;
 
 /* bounding sphere for a triangle: diameter is longest edge, chose center accordingly */
