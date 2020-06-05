@@ -17,6 +17,7 @@ After each step check functionality.
 	angle,vector,...?
 	Note that old code constructs like typedef are reintroduced...
 4. Introduce newer system input handling (needs SDL2?)
+	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
 5. make use of new C++ features for widgets etc.
 6. use new C++ features for XML reader etc.
 7. add new sensors
