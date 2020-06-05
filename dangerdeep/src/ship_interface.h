@@ -58,7 +58,7 @@ protected:
 	
 public:	
 	ship_interface(ship* player_ship, class game& gm);
-	virtual ~ship_interface();
+	~ship_interface() override;
 
 	virtual void display(class game& gm);
 };

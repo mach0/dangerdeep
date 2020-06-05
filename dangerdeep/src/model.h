@@ -125,17 +125,17 @@ public:
 		glsl_shader_setup shadersetup;
 	public:
 		material_glsl(const std::string& nm, const std::string& vsfn, const std::string& fsfn);
-		void set_gl_values(const texture *caustic_map = 0) const;
-		void set_gl_values_mirror_clip() const;
-		void register_layout(const std::string& name, const std::string& basepath);
-		void unregister_layout(const std::string& name);
-		void set_layout(const std::string& layout);
-		void get_all_layout_names(std::set<std::string>& result) const;
+		void set_gl_values(const texture *caustic_map = 0) const override;
+		void set_gl_values_mirror_clip() const override;
+		void register_layout(const std::string& name, const std::string& basepath) override;
+		void unregister_layout(const std::string& name) override;
+		void set_layout(const std::string& layout) override;
+		void get_all_layout_names(std::set<std::string>& result) const override;
 		void compute_texloc();
 		const std::string& get_vertexshaderfn() const { return vertexshaderfn; }
 		const std::string& get_fragmentshaderfn() const { return fragmentshaderfn; }
-		bool needs_texcoords() const { return nrtex > 0; }
-		bool use_default_shader() const { return false; }
+		bool needs_texcoords() const override { return nrtex > 0; }
+		bool use_default_shader() const override { return false; }
 		glsl_shader_setup& get_shadersetup() { return shadersetup; }
 
 		std::auto_ptr<map> texmaps[DFTD_MAX_TEXTURE_UNITS]; // up to DFTD_MAX_TEXTURE_UNITS texture units
@@ -177,7 +177,7 @@ public:
 		{
 		public:
 			triangle_strip_iterator(const std::vector<Uint32>& indices);
-			virtual bool next();
+			bool next() override;
 		};
 
 		std::auto_ptr<triangle_iterator> get_tri_iterator() const;

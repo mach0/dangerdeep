@@ -122,15 +122,15 @@ public:
 
 class smoke_particle : public particle
 {
-	bool is_z_up() const { return false; }
+	bool is_z_up() const override { return false; }
 	unsigned texnr;
-	vector3 get_acceleration() const;
+	vector3 get_acceleration() const override;
 public:
 	smoke_particle(const vector3& pos);//set velocity by wind, fixme
-	double get_width() const;
-	double get_height() const;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	double get_width() const override;
+	double get_height() const override;
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 	static double get_produce_time();
 };
 
@@ -140,8 +140,8 @@ class smoke_particle_escort : public smoke_particle
 {
 public:
 	smoke_particle_escort(const vector3& pos);//set velocity by wind, fixme
-	double get_width() const;
-	double get_life_time() const;
+	double get_width() const override;
+	double get_life_time() const override;
 	static double get_produce_time();
 };
 
@@ -153,10 +153,10 @@ class explosion_particle : public particle
 public:
 	// is_z_up could be false for this kind of particle
 	explosion_particle(const vector3& pos);
-	double get_width() const;
-	double get_height() const;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	double get_width() const override;
+	double get_height() const override;
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 };
 
 
@@ -167,11 +167,11 @@ class fire_particle : public particle
 public:
 	// only particle where is_z_up should be true.
 	fire_particle(const vector3& pos);
-	void simulate(game& gm, double delta_t);
-	double get_width() const;
-	double get_height() const;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	void simulate(game& gm, double delta_t) override;
+	double get_width() const override;
+	double get_height() const override;
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 };
 
 
@@ -181,20 +181,20 @@ class spray_particle : public particle
 public:
 	// is_z_up could be false for this kind of particle
 	spray_particle(const vector3& pos, const vector3& velo);
-	double get_width() const;
-	double get_height() const;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	double get_width() const override;
+	double get_height() const override;
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 };
 
 
 
 class fireworks_particle : public particle
 {
-	bool is_z_up() const { return false; }
+	bool is_z_up() const override { return false; }
 
-	bool has_custom_rendering() const { return true; }
-	void custom_display(const vector3& viewpos, const vector3& dx, const vector3& dy) const;
+	bool has_custom_rendering() const override { return true; }
+	void custom_display(const vector3& viewpos, const vector3& dx, const vector3& dy) const override;
 
 	struct flare
 	{
@@ -203,28 +203,28 @@ class fireworks_particle : public particle
 
 	std::vector<flare> flares;
 
-	void simulate(game& gm, double delta_t);
+	void simulate(game& gm, double delta_t) override;
 	double get_z(double life_fac) const;
 
 public:
 	fireworks_particle(const vector3& pos);
-	double get_width() const { return 0; } // not needed
-	double get_height() const { return 0; } // not needed
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	double get_width() const override { return 0; } // not needed
+	double get_height() const override { return 0; } // not needed
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 };
 
 
 
 class marker_particle : public particle
 {
-	bool is_z_up() const { return false; }
+	bool is_z_up() const override { return false; }
 public:
 	marker_particle(const vector3& pos);
-	double get_width() const;
-	double get_height() const;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const;
-	double get_life_time() const;
+	double get_width() const override;
+	double get_height() const override;
+	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
+	double get_life_time() const override;
 };
 
 #endif

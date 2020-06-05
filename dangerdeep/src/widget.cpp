@@ -172,9 +172,9 @@ widget_list::widget_list(xml_elem& elem, widget* _parent) : widget(elem, _parent
 	struct wls : public widget_scrollbar
 	{
 		unsigned& p;
-		void on_scroll() { p = get_current_position(); }
+		void on_scroll() override { p = get_current_position(); }
 		wls(unsigned& p_, int x, int y, int w, int h, widget* parent) : widget_scrollbar(x,y,w,h,parent), p(p_) {}
-		~wls() {};
+		~wls() override {};
 	};
 	int fw = globaltheme->frame_size();
 	myscrollbar = new wls(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this);
@@ -1172,9 +1172,9 @@ widget_list::widget_list(int x, int y, int w, int h, widget* parent_)
 	struct wls : public widget_scrollbar
 	{
 		unsigned& p;
-		void on_scroll() { p = get_current_position(); }
+		void on_scroll() override { p = get_current_position(); }
 		wls(unsigned& p_, int x, int y, int w, int h, widget* parent) : widget_scrollbar(x,y,w,h,parent), p(p_) {}
-		~wls() {};
+		~wls() override {};
 	};
 	int fw = globaltheme->frame_size();
 	myscrollbar = new wls(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this);

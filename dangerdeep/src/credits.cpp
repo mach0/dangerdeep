@@ -235,7 +235,7 @@ class canyon
 	{
 		canyon& cyn;
 		canyon_material(canyon& c) : cyn(c) {}
-		void set_gl_values(const texture* /* unused */) const;
+		void set_gl_values(const texture* /* unused */) const override;
 	};
 public:
 	canyon(unsigned w = 256, unsigned h = 256);

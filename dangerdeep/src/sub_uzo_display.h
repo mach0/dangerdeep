@@ -27,10 +27,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_uzo_display : public freeview_display
 {
-	void pre_display(class game& gm) const;
-	projection_data get_projection_data(class game& gm) const;
-	void set_modelview_matrix(class game& gm, const vector3& viewpos) const;
-	void post_display(class game& gm) const;
+	void pre_display(class game& gm) const override;
+	projection_data get_projection_data(class game& gm) const override;
+	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
+	void post_display(class game& gm) const override;
 
 	texture::ptr uzotex;
 	texture::ptr compass;
@@ -46,12 +46,12 @@ public:
 	sub_uzo_display(class user_interface& ui_);
 
 	//overload for zoom key handling ('y')
-	virtual void process_input(class game& gm, const SDL_Event& event);
+	void process_input(class game& gm, const SDL_Event& event) override;
 
-	virtual unsigned get_popup_allow_mask() const;
+	unsigned get_popup_allow_mask() const override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 };
 
 #endif

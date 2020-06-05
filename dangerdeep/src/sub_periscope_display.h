@@ -30,10 +30,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_periscope_display : public freeview_display
 {
-	void pre_display(class game& gm) const;
-	projection_data get_projection_data(class game& gm) const;
-	void set_modelview_matrix(class game& gm, const vector3& viewpos) const;
-	void post_display(class game& gm) const;
+	void pre_display(class game& gm) const override;
+	projection_data get_projection_data(class game& gm) const override;
+	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
+	void post_display(class game& gm) const override;
 
 	std::auto_ptr<image> background;
 	texture::ptr compassbar_tex;
@@ -50,20 +50,20 @@ class sub_periscope_display : public freeview_display
 	unsigned loc_tex_view;
 	unsigned loc_tex_blur;
 
-	vector3 get_viewpos(class game& gm) const;
+	vector3 get_viewpos(class game& gm) const override;
 
 public:
 	sub_periscope_display(class user_interface& ui_);
-	virtual ~sub_periscope_display();
+	~sub_periscope_display() override;
 
 	//overload for zoom key handling ('y') and TDC input
-	virtual void process_input(class game& gm, const SDL_Event& event);
-	virtual void display(class game& gm) const;
+	void process_input(class game& gm, const SDL_Event& event) override;
+	void display(class game& gm) const override;
 
-	virtual unsigned get_popup_allow_mask() const;
+	unsigned get_popup_allow_mask() const override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 };
 
 #endif

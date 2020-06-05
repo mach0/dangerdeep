@@ -38,56 +38,56 @@ class event
 class event_torpedo_dud_shortrange : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// torpedo dud because of torpedo failure
 class event_torpedo_dud : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// ship was sunk
 class event_ship_sunk : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// dive preparations
 class event_preparing_to_dive : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// diving
 class event_diving : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// unmanning deck gun
 class event_unmanning_gun : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// deck gun manned and ready
 class event_gun_manned : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// deck gun unmanned and secured
 class event_gun_unmanned : public event
 {
  public:
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// depth charge hitting water surface
@@ -96,7 +96,7 @@ class event_depth_charge_in_water : public event
 	vector3 source;
  public:
 	event_depth_charge_in_water(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// depth charge exploding
@@ -105,7 +105,7 @@ class event_depth_charge_exploding : public event
 	vector3 source;
  public:
 	event_depth_charge_exploding(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// light gun fires
@@ -114,7 +114,7 @@ class event_gunfire_light : public event
 	vector3 source;
  public:
 	event_gunfire_light(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// medium gun fires
@@ -123,7 +123,7 @@ class event_gunfire_medium : public event
 	vector3 source;
  public:
 	event_gunfire_medium(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// heavy gun fires
@@ -132,7 +132,7 @@ class event_gunfire_heavy : public event
 	vector3 source;
  public:
 	event_gunfire_heavy(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// shell exploding
@@ -141,7 +141,7 @@ class event_shell_explosion : public event
 	vector3 source;
  public:
 	event_shell_explosion(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// shell splashes water
@@ -150,7 +150,7 @@ class event_shell_splash : public event
 	vector3 source;
  public:
 	event_shell_splash(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// Ship-ship collision
@@ -159,7 +159,7 @@ class event_ship_collision : public event
 	vector3 position;
  public:
 	event_ship_collision(const vector3& p) : position(p) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// torpedo explodes
@@ -168,7 +168,7 @@ class event_torpedo_explosion : public event
 	vector3 source;
  public:
 	event_torpedo_explosion(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// ping is sent in water
@@ -177,7 +177,7 @@ class event_ping : public event
 	vector3 source;
  public:
 	event_ping(const vector3& src) : source(src) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 /// torpedo transfer done / tube reloaded
@@ -186,7 +186,7 @@ class event_tube_reloaded : public event
 	unsigned tube_nr;
  public:
 	event_tube_reloaded(unsigned nr) : tube_nr(nr) {}
-	void evaluate(user_interface& ui);
+	void evaluate(user_interface& ui) override;
 };
 
 #endif

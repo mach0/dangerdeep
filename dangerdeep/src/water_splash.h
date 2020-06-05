@@ -50,10 +50,10 @@ class water_splash : public sea_object
 
  public:
 	water_splash(game& gm, const vector3& pos, double risetime = 0.4, double riseheight = 25.0);
-	void simulate(double delta_time);
+	void simulate(double delta_time) override;
 	void display() const;
-	void display_mirror_clip() const;
-	void compute_force_and_torque(vector3& F, vector3& T) const {} // static object, no acceleration
+	void display_mirror_clip() const override;
+	void compute_force_and_torque(vector3& F, vector3& T) const override {} // static object, no acceleration
 };
 
 

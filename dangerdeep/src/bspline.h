@@ -113,7 +113,7 @@ template <class T>
 class bsplinet : public non_uniform_bsplinet<T>
 {
 protected:
-	unsigned find_l(double t) const
+	unsigned find_l(double t) const override
 	{
 		// note: for non-uniform bsplines we have to compute l so that
 		// tvec[l] <= t <= tvec[l+1]

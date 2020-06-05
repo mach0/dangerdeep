@@ -163,17 +163,17 @@ class torpedo : public ship
 	// specific damage here:
 //	virtual void create_sensor_array ( types t );
 	
-	void compute_force_and_torque(vector3& F, vector3& T) const;
+	void compute_force_and_torque(vector3& F, vector3& T) const override;
 	void depth_steering_logic();
-	double get_turn_accel_factor() const { return 50.0; } // rudder area etc.
-	double get_turn_drag_area() const;
-	double get_turn_drag_coeff() const { return 10.0; }
-	double get_throttle_speed() const;
+	double get_turn_accel_factor() const override { return 50.0; } // rudder area etc.
+	double get_turn_drag_area() const override;
+	double get_turn_drag_coeff() const override { return 10.0; }
+	double get_throttle_speed() const override;
 	double get_secondary_run_lenth() const;
 
-	virtual bool causes_spray() const { return false; }//causes wake, only true for steam torpedoes and maybe for Walter engine
+	bool causes_spray() const override { return false; }//causes wake, only true for steam torpedoes and maybe for Walter engine
 
-	bool detect_other_sea_objects() const { return false; }
+	bool detect_other_sea_objects() const override { return false; }
 
 public:
 	// create empty object from specification xml file
@@ -182,10 +182,10 @@ public:
 	// from date y instead of x for loading! use a special game::get_equipment_date() function for that...
 	torpedo(game& gm_, const xml_elem& parent, const setup& torpsetup);
 
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 
-	virtual void simulate(double delta_time);
+	void simulate(double delta_time) override;
 
 	// sets speed to initial speed, sets position
 	virtual void launch(const vector3& launchpos, angle parenthdg);

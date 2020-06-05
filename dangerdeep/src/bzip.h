@@ -34,7 +34,7 @@ private:
     int error_code;
 public:
     bzip_failure(int _error_code) : failure(""), error_code(_error_code) {};
-    const char* what() const throw() {
+    const char* what() const throw() override {
         switch (error_code) {
             case BZ_SEQUENCE_ERROR:
                 return ("BZ_SEQUENCE_ERROR");
@@ -81,9 +81,9 @@ protected:
     const std::size_t put_back;
     enum { COMPRESS, DECOMPRESS, CLOSED } mode;
 
-    int_type overflow(int_type ch);
-    int_type underflow();
-    int sync();
+    int_type overflow(int_type ch) override;
+    int_type underflow() override;
+    int sync() override;
     
 private:
 
@@ -117,7 +117,7 @@ public:
     bzip_ostream(std::ostream* os, int blocksize = 9, int workbuffer = 30, int buffsize = 256)
             : std::ostream(new bzip_streambuf(os, blocksize, workbuffer, buffsize)) {
     }
-    ~bzip_ostream() {
+    ~bzip_ostream() override {
         close();
     }
     void close() {
@@ -132,7 +132,7 @@ public:
     bzip_istream(std::istream* is, int buffsize = 256, int small = 0)
             : std::istream(new bzip_streambuf(is, buffsize, 8, small)) {
     }
-    ~bzip_istream() {
+    ~bzip_istream() override {
         close();
     }
     void close() {

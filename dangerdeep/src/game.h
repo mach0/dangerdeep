@@ -224,8 +224,8 @@ protected:
 		bool done;
 	public:
 		simulate_worker(game& gm_);
-		void loop();
-		void request_abort();
+		void loop() override;
+		void request_abort() override;
 		void work(double dt, unsigned io, unsigned im, bool record);
 		double sync();
 	};

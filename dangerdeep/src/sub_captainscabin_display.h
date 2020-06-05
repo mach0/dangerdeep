@@ -66,11 +66,11 @@ class sub_captainscabin_display : public user_display
 public:
 	sub_captainscabin_display(class user_interface& ui_);
 
-	virtual void display(class game& gm) const;
-	virtual void process_input(class game& gm, const SDL_Event& event);
+	void display(class game& gm) const override;
+	void process_input(class game& gm, const SDL_Event& event) override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 };
 
 #endif

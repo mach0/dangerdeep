@@ -173,7 +173,7 @@ public:
 	       int& ctr, mutex& cm, unsigned samplespervoxel)
 		: thread("modelmsr"), mdl(m), is_inside(ii), resolution(res), slice(s), nr_slices(nrs),
 		  counter(ctr), counter_mtx(cm), samples_per_voxel(samplespervoxel) {}
-	void loop()
+	void loop() override
 	{
 		int zmin = resolution.z * slice / nr_slices;
 		int zmax = (slice + 1 == nr_slices) ? resolution.z : (resolution.z * (slice+1) / nr_slices);

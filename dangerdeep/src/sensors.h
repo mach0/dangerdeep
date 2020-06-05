@@ -152,7 +152,7 @@ public:
 
 public:
 	lookout_sensor ( lookout_type type = lookout_type_default );
-	virtual ~lookout_sensor () {};
+	~lookout_sensor () override {};
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -160,7 +160,7 @@ public:
 		@param d detecting unit
 		@param t target unit
 	*/
-	virtual bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const;
+	bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const override;
 	virtual bool is_detected ( const game* gm, const sea_object* d, const particle* p ) const;
 };
 
@@ -180,7 +180,7 @@ private:
 
 public:
 	passive_sonar_sensor ( passive_sonar_type type = passive_sonar_type_default );
-	virtual ~passive_sonar_sensor () {};
+	~passive_sonar_sensor () override {};
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -188,7 +188,7 @@ public:
 		@param d detecting unit
 		@param t target unit
 	*/
-	virtual bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const;
+	bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const override;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -211,11 +211,11 @@ protected:
 		@parm d distance value in meters
 		@return factor of declined signal
 	*/
-	virtual double get_distance_factor ( double d ) const;
+	double get_distance_factor ( double d ) const override;
 
 public:
 	active_sensor ( double range = 0.0f );
-	virtual ~active_sensor () {};
+	~active_sensor () override {};
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -223,7 +223,7 @@ public:
 		@param d detecting unit
 		@param t target unit
 	*/
-	virtual bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const = 0;
+	bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const override = 0;
 };
 
 ///\brief Class for radar based sensors.
@@ -240,7 +240,7 @@ private:
 
 public:
 	radar_sensor ( radar_type type = radar_type_default );
-	virtual ~radar_sensor () {};
+	~radar_sensor () override {};
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -248,7 +248,7 @@ public:
 		@param d detecting unit
 		@param t target unit
 	*/
-	virtual bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const;
+	bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const override;
 };
 
 ///\brief Class for active sonar based sensors.
@@ -262,7 +262,7 @@ private:
 
 public:
 	active_sonar_sensor ( active_sonar_type type = active_sonar_type_default );
-	virtual ~active_sonar_sensor () {};
+	~active_sonar_sensor () override {};
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -270,7 +270,7 @@ public:
 		@param d detecting unit
 		@param t target unit
 	*/
-	virtual bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const;
+	bool is_detected ( const game* gm, const sea_object* d, const sea_object* t ) const override;
 };
 
 #endif /* _SENSORS_H_ */

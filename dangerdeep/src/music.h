@@ -70,7 +70,7 @@ class music : public singleton<class music>, public thread
 	music(bool use_music = true, unsigned sample_rate = 44100);
 
 	/// destroy music handler
-	~music();
+	~music() override;
 
 	// ----------- command interface --------------------
 
@@ -168,11 +168,11 @@ class music : public singleton<class music>, public thread
 	void start_play_track(unsigned nr, unsigned fadeintime = 0);
 	static void callback_track_finished();
 
-	void init();
-	void loop();
-	void deinit();
+	void init() override;
+	void loop() override;
+	void deinit() override;
 
-	void request_abort();
+	void request_abort() override;
 
 	// internal command(s)
 	bool track_finished();
@@ -197,7 +197,7 @@ class music : public singleton<class music>, public thread
 	{
 		music& my_music;
 		std::string filename;
-		void eval() const { my_music.exec_append_track(filename); }
+		void eval() const override { my_music.exec_append_track(filename); }
 	 public:
 		command_append_track(music& my_music_, const std::string& filename_) : my_music(my_music_), filename(filename_) {}
 	};
@@ -206,7 +206,7 @@ class music : public singleton<class music>, public thread
 	{
 		music& my_music;
 		playback_mode pbm;
-		void eval() const { my_music.exec_set_playback_mode(pbm); }
+		void eval() const override { my_music.exec_set_playback_mode(pbm); }
 	 public:
 		command_set_playback_mode(music& my_music_, playback_mode pbm_) : my_music(my_music_), pbm(pbm_) {}
 	};
@@ -215,7 +215,7 @@ class music : public singleton<class music>, public thread
 	{
 		music& my_music;
 		unsigned fadein;
-		void eval() const { my_music.exec_play(fadein); }
+		void eval() const override { my_music.exec_play(fadein); }
 	 public:
 		command_play(music& my_music_, unsigned fadein_) : my_music(my_music_), fadein(fadein_) {}
 	};
@@ -224,7 +224,7 @@ class music : public singleton<class music>, public thread
 	{
 		music& my_music;
 		unsigned fadeout;
-		void eval() const { my_music.exec_stop(fadeout); }
+		void eval() const override { my_music.exec_stop(fadeout); }
 	 public:
 		command_stop(music& my_music_, unsigned fadeout_) : my_music(my_music_), fadeout(fadeout_) {}
 	};
@@ -232,7 +232,7 @@ class music : public singleton<class music>, public thread
 	class command_pause : public message
 	{
 		music& my_music;
-		void eval() const { my_music.exec_pause(); }
+		void eval() const override { my_music.exec_pause(); }
 	 public:
 		command_pause(music& my_music_) : my_music(my_music_) {}
 	};
@@ -240,7 +240,7 @@ class music : public singleton<class music>, public thread
 	class command_resume : public message
 	{
 		music& my_music;
-		void eval() const { my_music.exec_resume(); }
+		void eval() const override { my_music.exec_resume(); }
 	 public:
 		command_resume(music& my_music_) : my_music(my_music_) {}
 	};
@@ -249,7 +249,7 @@ class music : public singleton<class music>, public thread
 	{
 		music& my_music;
 		float pos;
-		void eval() const { my_music.exec_set_music_position(pos); }
+		void eval() const override { my_music.exec_set_music_position(pos); }
 	 public:
 		command_set_music_position(music& my_music_, float pos_) : my_music(my_music_), pos(pos_) {}
 	};
@@ -260,7 +260,7 @@ class music : public singleton<class music>, public thread
 		unsigned nr;
 		unsigned fadeouttime;
 		unsigned fadeintime;
-		void eval() const { my_music.exec_play_track(nr, fadeouttime, fadeintime); }
+		void eval() const override { my_music.exec_play_track(nr, fadeouttime, fadeintime); }
 	 public:
 		command_play_track(music& my_music_, unsigned nr_, unsigned fadeouttime_, unsigned fadeintime_) : my_music(my_music_), nr(nr_), fadeouttime(fadeouttime_), fadeintime(fadeintime_) {}
 	};
@@ -268,7 +268,7 @@ class music : public singleton<class music>, public thread
 	class command_track_finished : public message
         {
                 music& my_music;
-                void eval() const { my_music.exec_track_finished(); }
+                void eval() const override { my_music.exec_track_finished(); }
 	 public:
                 command_track_finished(music& my_music_) : my_music(my_music_) {}
         };
@@ -277,7 +277,7 @@ class music : public singleton<class music>, public thread
         {
                 music& my_music;
                 std::vector<std::string>& playlist;
-                void eval() const { my_music.exec_get_playlist(playlist); }
+                void eval() const override { my_music.exec_get_playlist(playlist); }
          public:
                 command_get_playlist(music& my_music_, std::vector<std::string>& playlist_) : my_music(my_music_), playlist(playlist_) {}
         };
@@ -286,7 +286,7 @@ class music : public singleton<class music>, public thread
         {
                 music& my_music;
                 unsigned& track;
-                void eval() const { my_music.exec_get_current_track(track); }
+                void eval() const override { my_music.exec_get_current_track(track); }
          public:
                 command_get_current_track(music& my_music_, unsigned& track_) : my_music(my_music_), track(track_) {}
         };
@@ -295,7 +295,7 @@ class music : public singleton<class music>, public thread
         {
                 music& my_music;
                 bool& isply;
-                void eval() const { my_music.exec_is_playing(isply); }
+                void eval() const override { my_music.exec_is_playing(isply); }
          public:
                 command_is_playing(music& my_music_, bool& isply_) : my_music(my_music_), isply(isply_) {}
         };
@@ -307,7 +307,7 @@ class music : public singleton<class music>, public thread
                 vector3 listener;
                 angle listener_dir;
                 vector3 noise_pos;
-                void eval() const { my_music.exec_play_sfx(category, listener, listener_dir, noise_pos); }
+                void eval() const override { my_music.exec_play_sfx(category, listener, listener_dir, noise_pos); }
          public:
                 command_play_sfx(music& my_music_, const std::string& category_, const vector3& listener_, angle listener_dir_, const vector3& noise_pos_) : my_music(my_music_), category(category_), listener(listener_), listener_dir(listener_dir_), noise_pos(noise_pos_) {}
         };
@@ -317,7 +317,7 @@ class music : public singleton<class music>, public thread
                 music& my_music;
                 std::string name;
                 unsigned throttle;
-                void eval() const { my_music.exec_play_sfx_machine(name, throttle); }
+                void eval() const override { my_music.exec_play_sfx_machine(name, throttle); }
          public:
                 command_play_sfx_machine(music& my_music_, const std::string& name_, unsigned throttle_) : my_music(my_music_), name(name_), throttle(throttle_) {}
         };
@@ -326,7 +326,7 @@ class music : public singleton<class music>, public thread
         {
                 music& my_music;
                 bool on;
-                void eval() const { my_music.exec_pause_sfx(on); }
+                void eval() const override { my_music.exec_pause_sfx(on); }
          public:
                 command_pause_sfx(music& my_music_, bool on_) : my_music(my_music_), on(on_) {}
         };

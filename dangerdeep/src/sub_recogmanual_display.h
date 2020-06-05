@@ -39,8 +39,8 @@ protected:
 		int& page;
 	public:
 		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =0);
-		void draw() const;
-		void on_release ();		
+		void draw() const override;
+		void on_release () override;		
 	};
 	
 	int page;
@@ -57,11 +57,11 @@ protected:
 public:
 	sub_recogmanual_display(class user_interface& ui_);
 
-	virtual void display(class game& gm) const;
-	virtual void process_input(class game& gm, const SDL_Event& event);
+	void display(class game& gm) const override;
+	void process_input(class game& gm, const SDL_Event& event) override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 
 };
 #endif

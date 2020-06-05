@@ -149,12 +149,12 @@ protected:
 	{ return ( 1.0f - ( battery_recharge_value_a *
     	exp ( - get_throttle_speed () / battery_recharge_value_t ) ) ); }
 
-	virtual void calculate_fuel_factor ( double delta_time );
+	void calculate_fuel_factor ( double delta_time ) override;
 	
-	virtual void gun_manning_changed(bool is_gun_manned);
+	void gun_manning_changed(bool is_gun_manned) override;
 
 	/// used to simulate diving
-	void compute_force_and_torque(vector3& F, vector3& T) const;
+	void compute_force_and_torque(vector3& F, vector3& T) const override;
 
 	/// open ballast tank valves
 	void flood_ballast_tanks();
@@ -235,12 +235,12 @@ public:
 	// create empty object from specification xml file
 	submarine(game& gm_, const xml_elem& parent);
 
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 	
-	virtual void simulate(double delta_time);
+	void simulate(double delta_time) override;
 
-	void set_target(sea_object* s);
+	void set_target(sea_object* s) override;
 
 	// get bridge data
 	std::string get_bridge_filename() { return bridge_model_name; }
@@ -277,13 +277,13 @@ public:
 	// engines is done via engine simulation. So the boat "brakes" until
 	// it reaches its submerged speed. This is not correct, because speed decreases
 	// too fast, but it should be satisfying for now. fixme
-	virtual double get_max_speed() const;
+	double get_max_speed() const override;
 
 	// compute probabilty that sub can be seen (determined by depth, speed,
 	// state: periscope state, snorkeling etc., shape)
-	virtual float surface_visibility(const vector2& watcher) const;
+	float surface_visibility(const vector2& watcher) const override;
 	virtual float sonar_visibility ( const vector2& watcher ) const;
-	virtual double get_noise_factor () const;
+	double get_noise_factor () const override;
 	// return pointer to torpedo in tube or NULL if tube is empty
 	virtual stored_torpedo& get_torp_in_tube(unsigned tubenr);
 	virtual const stored_torpedo& get_torp_in_tube(unsigned tubenr) const;

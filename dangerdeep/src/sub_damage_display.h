@@ -40,11 +40,11 @@ public:
 
 	virtual void display_popup (int x, int y, const std::string& text, bool atleft, bool atbottom) const;
 
-	virtual void display(class game& gm) const;
-	virtual void process_input(class game& gm, const SDL_Event& event);
+	void display(class game& gm) const override;
+	void process_input(class game& gm, const SDL_Event& event) override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 };
 
 #endif /* SUB_DAMAGE_DISPLAY_H */
