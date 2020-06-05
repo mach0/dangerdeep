@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "system.h"
 #include "oglext/OglExt.h"
 #include "log.h"
-#include <stdexcept>
+#include "error.h"
 
 
 vertexbufferobject::vertexbufferobject(bool indexbuffer)
@@ -32,7 +32,7 @@ vertexbufferobject::vertexbufferobject(bool indexbuffer)
 	  target(indexbuffer ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER)
 {
 	if (!sys().extension_supported("GL_ARB_vertex_buffer_object"))
-		throw std::runtime_error("vertex buffer objects are not supported!");
+		THROW(error, "vertex buffer objects are not supported!");
 	glGenBuffers(1, &id);
 }
 
@@ -83,11 +83,11 @@ void vertexbufferobject::unbind() const
 void* vertexbufferobject::map(int access)
 {
 	if (mapped)
-		throw std::runtime_error("vertex buffer object mapped twice");
+		THROW(error, "vertex buffer object mapped twice");
 	bind();
 	void* addr = glMapBuffer(target, access);
 	if (addr == nullptr)
-		throw std::runtime_error("vertex buffer object mapping failed");
+		THROW(error, "vertex buffer object mapping failed");
 	mapped = true;
 	return addr;
 }
@@ -97,7 +97,7 @@ void* vertexbufferobject::map(int access)
 void vertexbufferobject::unmap()
 {
 	if (!mapped)
-		throw std::runtime_error("vertex buffer object not mapped before unmap()");
+		THROW(error, "vertex buffer object not mapped before unmap()");
 	mapped = false;
 	bind();// FIXME: do we really need this?
 	if (glUnmapBuffer(target) != GL_TRUE) {

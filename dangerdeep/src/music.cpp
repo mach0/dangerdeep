@@ -88,7 +88,7 @@ void music::start_play_track(unsigned nr, unsigned fadeintime)
 			err = Mix_PlayMusic(musiclist[current_track], 1);
 		}
 		if (err < 0)
-			throw sdl_error("music playing failed.");
+			THROW(sdl_error, "music playing failed.");
 		stopped = false;
 	}
 }
@@ -132,11 +132,11 @@ void music::init()
 
 	// allocate channels
 	if (Mix_AllocateChannels(SFX_CHANNELS_TOTAL) < int(SFX_CHANNELS_TOTAL))
-		throw error("could not allocate enough channels");
+		THROW(error, "could not allocate enough channels");
 
 	// reserve sfx channels for environmental noises (engine, sonar)
 	if (Mix_ReserveChannels(nr_reserved_channels) < int(nr_reserved_channels))
-		throw error("could not reserve enough channels");
+		THROW(error, "could not reserve enough channels");
 
 #if 0
 	// load sfx files
@@ -154,13 +154,13 @@ void music::init()
 			for (xml_elem::iterator ik = m.iterate(); !ik.end(); ik.next()) {
 				xml_elem e = ik.elem();
 				if (e.get_name() != "throttle")
-					throw xml_error("illegal child of \"machine\"", e.doc_name());
+					THROW(xml_error, "illegal child of \"machine\"", e.doc_name());
 				string fn = e.attr("file");
 				v.push_back(0);
 				Mix_Chunk* chk = Mix_LoadWAV((get_sound_dir() + fn).c_str());
 				if (!chk) {
 					v.pop_back();
-					throw file_read_error(get_sound_dir() + fn);
+					THROW(file_read_error, get_sound_dir() + fn);
 				}
 				v.back() = chk;
 			}
@@ -175,7 +175,7 @@ void music::init()
 			Mix_Chunk* chk = Mix_LoadWAV((get_sound_dir() + fn).c_str());
 			if (!chk) {
 				v.pop_back();
-				throw file_read_error(get_sound_dir() + fn);
+				THROW(file_read_error, get_sound_dir() + fn);
 			}
 			v.back() = chk;
 		}
@@ -327,13 +327,13 @@ bool music::pause_sfx(bool on)
 
 void music::exec_append_track(const std::string& filename)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 
 	Mix_Music *tmp = Mix_LoadMUS(( get_sound_dir() +  filename).c_str());
 
 	if (nullptr == tmp) {
 		log_warning("Failed to load track: " << filename << ", " << Mix_GetError() );
-		throw file_read_error(filename);
+		THROW(file_read_error, filename);
 	}
 	playlist.push_back(filename);
 	musiclist.push_back(tmp);
@@ -343,7 +343,7 @@ void music::exec_append_track(const std::string& filename)
 
 void music::exec_set_playback_mode(playback_mode pbm_)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	pbm = pbm_;
 }
 
@@ -351,11 +351,11 @@ void music::exec_set_playback_mode(playback_mode pbm_)
 
 void music::exec_play(unsigned fadein)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	if (!Mix_PlayingMusic()) {
 		start_play_track(current_track, fadein);
 	} else {
-		throw std::runtime_error("music still playing, can't execute play()");
+		THROW(error, "music still playing, can't execute play()");
 	}
 }
 
@@ -363,7 +363,7 @@ void music::exec_play(unsigned fadein)
 
 void music::exec_stop(unsigned fadeout)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	if (Mix_PausedMusic())
 		Mix_ResumeMusic();
 	if (Mix_PlayingMusic()) {
@@ -373,7 +373,7 @@ void music::exec_stop(unsigned fadeout)
 		else
 			Mix_HaltMusic();
 	} else {
-		throw std::runtime_error("music not playing, can't execute stop()");
+		THROW(error, "music not playing, can't execute stop()");
 	}
 }
 
@@ -381,7 +381,7 @@ void music::exec_stop(unsigned fadeout)
 
 void music::exec_pause()
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	if (Mix_PlayingMusic() && !Mix_PausedMusic())
 		Mix_PauseMusic();
 }
@@ -390,7 +390,7 @@ void music::exec_pause()
 
 void music::exec_resume()
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	Mix_ResumeMusic();
 }
 
@@ -400,7 +400,7 @@ void music::exec_set_music_position(float pos)
 {
 	Mix_RewindMusic();
 	if (Mix_SetMusicPosition(pos) == -1) {
-		throw std::runtime_error("music set position failed");
+		THROW(error, "music set position failed");
 	}
 }
 
@@ -408,7 +408,7 @@ void music::exec_set_music_position(float pos)
 
 void music::exec_play_track(unsigned nr, unsigned fadeouttime, unsigned fadeintime)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	try {
 		exec_stop(fadeouttime);
 	}
@@ -469,7 +469,7 @@ void music::exec_get_current_track(unsigned& track)
 void music::exec_is_playing(bool& isply)
 {
 	if (!Mix_PlayingMusic() || Mix_PausedMusic())
-		throw std::runtime_error("music not playing");
+		THROW(error, "music not playing");
 
 }
 
@@ -477,7 +477,7 @@ void music::exec_is_playing(bool& isply)
 
 void music::exec_play_sfx(const std::string& category, const vector3& listener, angle listener_dir, const vector3& noise_pos)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	auto it = sfx_events.find(category);
 	if (it == sfx_events.end())
 		throw invalid_argument(string("unknown category for sfx: ") + category);
@@ -526,9 +526,9 @@ void music::exec_play_sfx(const std::string& category, const vector3& listener, 
 			
 		int channel_num = Mix_PlayChannel(-1, chk, 0);
 		if (channel_num < 0)
-			throw sdl_error("unable to play sfx"); // Mix_GetError() here...
+			THROW(sdl_error, "unable to play sfx"); // Mix_GetError() here...
 		if (!Mix_SetPosition(channel_num, (short)bearingFromPlayer.value(), dist))
-			throw sdl_error("Mix_SetPosition() failed");
+			THROW(sdl_error, "Mix_SetPosition() failed");
 	}
 }
 
@@ -536,7 +536,7 @@ void music::exec_play_sfx(const std::string& category, const vector3& listener, 
 
 void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 {
-	if (!use_music) throw std::invalid_argument("no music support");
+	if (!use_music) THROW(error, "no music support");
 	auto it = sfx_machines.find(name);
 	if (it == sfx_machines.end())
 		throw invalid_argument(string("unknown machine name: ") + name);
@@ -561,7 +561,7 @@ void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 		Mix_HaltChannel(SFX_CHANNEL_MACHINE);
 	current_machine_sfx = nullptr;
 	if (Mix_PlayChannel(SFX_CHANNEL_MACHINE, chk, -1) < 0)
-		throw sdl_error("can't play channel");
+		THROW(sdl_error, "can't play channel");
 	current_machine_sfx = chk;
 }
 

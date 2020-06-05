@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cmath>
 #include <fstream>
 #include <sstream>
-#include <stdexcept>
+#include "error.h"
 using std::vector;
 
 perlinnoise::noise_func::noise_func(unsigned s, unsigned f, float px, float py)
@@ -124,11 +124,11 @@ bool is_power2(unsigned x)
 perlinnoise::perlinnoise(unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq)
 	: resultsize(size)
 {
-	if (!is_power2(size)) throw std::invalid_argument("size is not power of two");
-	if (!is_power2(sizeminfreq)) throw std::invalid_argument("sizeminfreq is not power of two");
-	if (!is_power2(sizemaxfreq)) throw std::invalid_argument("sizemaxfreq is not power of two");
-	if (!(sizeminfreq >= 1 && sizeminfreq <= size && sizeminfreq <= sizemaxfreq)) throw std::invalid_argument("sizeminfreq out of range");
-	if (!(sizemaxfreq >= 2 && sizemaxfreq <= size)) throw std::invalid_argument("sizemaxfreq out of range");
+	if (!is_power2(size)) THROW(error, "size is not power of two");
+	if (!is_power2(sizeminfreq)) THROW(error, "sizeminfreq is not power of two");
+	if (!is_power2(sizemaxfreq)) THROW(error, "sizemaxfreq is not power of two");
+	if (!(sizeminfreq >= 1 && sizeminfreq <= size && sizeminfreq <= sizemaxfreq)) THROW(error, "sizeminfreq out of range");
+	if (!(sizemaxfreq >= 2 && sizemaxfreq <= size)) THROW(error, "sizemaxfreq out of range");
 	unsigned nrfunc = 0;
 	for (unsigned j = sizemaxfreq/sizeminfreq; j > 0; j >>= 1)
 		++nrfunc;
@@ -235,9 +235,9 @@ vector<Uint8> perlinnoise::generate_sqr() const
 
 perlinnoise::perlinnoise(unsigned levelsize, unsigned sizeminfreq, unsigned levels, bool /*dummy*/)
 {
-	if (!is_power2(levelsize)) throw std::invalid_argument("levelsize is not power of two");
-	if (!is_power2(sizeminfreq)) throw std::invalid_argument("sizeminfreq is not power of two");
-	if (levels < 1) throw std::invalid_argument("levels must be >= 1");
+	if (!is_power2(levelsize)) THROW(error, "levelsize is not power of two");
+	if (!is_power2(sizeminfreq)) THROW(error, "sizeminfreq is not power of two");
+	if (levels < 1) THROW(error, "levels must be >= 1");
 
 	resultsize = levelsize * sizeminfreq * (1 << (levels - 1));
 
@@ -441,11 +441,11 @@ float perlinnoise3d::noise_func::interpolate(const vector<float>& interpolation_
 perlinnoise3d::perlinnoise3d(unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq)
 	: resultsize(size)
 {
-	if (!is_power2(size)) throw std::invalid_argument("size is not power of two");
-	if (!is_power2(sizeminfreq)) throw std::invalid_argument("sizeminfreq is not power of two");
-	if (!is_power2(sizemaxfreq)) throw std::invalid_argument("sizemaxfreq is not power of two");
-	if (!(sizeminfreq >= 1 && sizeminfreq <= size && sizeminfreq <= sizemaxfreq)) throw std::invalid_argument("sizeminfreq out of range");
-	if (!(sizemaxfreq >= 2 && sizemaxfreq <= size)) throw std::invalid_argument("sizemaxfreq out of range");
+	if (!is_power2(size)) THROW(error, "size is not power of two");
+	if (!is_power2(sizeminfreq)) THROW(error, "sizeminfreq is not power of two");
+	if (!is_power2(sizemaxfreq)) THROW(error, "sizemaxfreq is not power of two");
+	if (!(sizeminfreq >= 1 && sizeminfreq <= size && sizeminfreq <= sizemaxfreq)) THROW(error, "sizeminfreq out of range");
+	if (!(sizemaxfreq >= 2 && sizemaxfreq <= size)) THROW(error, "sizemaxfreq out of range");
 	unsigned nrfunc = 0;
 	for (unsigned j = sizemaxfreq/sizeminfreq; j > 0; j >>= 1)
 		++nrfunc;

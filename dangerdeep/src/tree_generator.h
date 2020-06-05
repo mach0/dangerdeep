@@ -142,7 +142,7 @@ vector3f tree_generator::generate_log(model::mesh& msh, model::mesh& mshleaves, 
 				      float bend_factor, unsigned bend_segs,
 				      bool generate_leaves) const
 {
-	if (segs < 3 || bend_segs < 1) throw std::invalid_argument("treegenerator::generate_log");
+	if (segs < 3 || bend_segs < 1) THROW(error, "treegenerator::generate_log");
 	const unsigned nr_verts = (segs+1) * (bend_segs+1) + 1;
 	const unsigned nr_indis = (2*(segs+1) + 2) * (bend_segs + 1) - (msh.indices.empty() ? 1 : 0);
 	unsigned old_v = msh.vertices.size();

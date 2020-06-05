@@ -28,10 +28,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "random_generator.h"
 #include "bivector.h"
 #include <vector>
-#include <stdexcept>
 #include <cstdlib>
 #include <algorithm>
 #include <sstream>
+#include "error.h"
 
 //#include <iostream>
 
@@ -52,7 +52,7 @@ class bivector
 		if (p.x>=datasize.x || p.y>=datasize.y) {
 			std::stringstream ss;
 			ss << "bivector::at " << p;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}
 		return data[p.x + p.y*datasize.x]; 
 	}
@@ -60,7 +60,7 @@ class bivector
 		if (p.x>=datasize.x || p.y>=datasize.y) {
 			std::stringstream ss;
 			ss << "bivector::at " << p;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}		
 		return data[p.x + p.y*datasize.x]; 
 	}
@@ -68,7 +68,7 @@ class bivector
 		if (x>=datasize.x || y>=datasize.y) {
 			std::stringstream ss;
 			ss << "bivector::at x=" << x << " y="<<x;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}		
 		return data[x + y*datasize.x]; 
 	}
@@ -76,7 +76,7 @@ class bivector
 		if (x>=datasize.x || y>=datasize.y) {
 			std::stringstream ss;
 			ss << "bivector::at x=" << x << " y="<<x;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}
 		return data[x + y*datasize.x]; 
 	}
@@ -153,7 +153,7 @@ void bivector<T>::resize(const vector2i& newsz, const T& v)
 template <class T>
 T bivector<T>::get_min() const
 {
-	if (data.empty()) throw std::invalid_argument("bivector::get_min data empty");
+	if (data.empty()) THROW(error, "bivector::get_min data empty");
 	T m = data[0];
 	bivector_FOREACH(m = std::min(m, data[z]))
 	return m;
@@ -162,7 +162,7 @@ T bivector<T>::get_min() const
 template <class T>
 T bivector<T>::get_max() const
 {
-	if (data.empty()) throw std::invalid_argument("bivector::get_max data empty");
+	if (data.empty()) THROW(error, "bivector::get_max data empty");
 	T m = data[0];
 	bivector_FOREACH(m = std::max(m, data[z]))
 	return m;
@@ -172,7 +172,7 @@ T bivector<T>::get_max() const
 template <class T>
 T bivector<T>::get_min_abs() const
 {
-	if (data.empty()) throw std::invalid_argument("bivector::get_min_abs data empty");
+	if (data.empty()) THROW(error, "bivector::get_min_abs data empty");
 	T m = bivector_abs(data[0]);
 	bivector_FOREACH(m = std::min(m, abs(data[z])))
 	return m;
@@ -181,7 +181,7 @@ T bivector<T>::get_min_abs() const
 template <class T>
 T bivector<T>::get_max_abs() const
 {
-	if (data.empty()) throw std::invalid_argument("bivector::get_max_abs data empty");
+	if (data.empty()) THROW(error, "bivector::get_max_abs data empty");
 	T m = bivector_abs(data[0]);
 	bivector_FOREACH(m = std::max(m, (T)abs(data[z])))
 	return m;
@@ -211,8 +211,8 @@ bivector<T>& bivector<T>::operator+= (const bivector<T>& v)
 template <class T>
 bivector<T> bivector<T>::sub_area(const vector2i& offset, const vector2i& sz) const
 {
-	if (offset.y + sz.y > datasize.y) throw std::invalid_argument("bivector::sub_area, offset.y invalid");
-	if (offset.x + sz.x > datasize.x) throw std::invalid_argument("bivector::sub_area, offset.x invalid");
+	if (offset.y + sz.y > datasize.y) THROW(error, "bivector::sub_area, offset.y invalid");
+	if (offset.x + sz.x > datasize.x) THROW(error, "bivector::sub_area, offset.x invalid");
 	bivector<T> result(sz);
 	for (int y=0; y < result.datasize.y; ++y)
 		for (int x=0; x < result.datasize.x; ++x)
@@ -270,7 +270,7 @@ bivector<T> bivector<T>::upsampled(bool wrap) const
 	   n+1 -> 2n+1
 	   n   -> 2n    with wrapping
 	*/
-	if (datasize.x < 1 || datasize.y < 1) throw std::invalid_argument("bivector::upsampled base size invalid");
+	if (datasize.x < 1 || datasize.y < 1) THROW(error, "bivector::upsampled base size invalid");
 	vector2i resultsize = wrap ? datasize*2 : datasize*2 - vector2i(1,1);
 	bivector<T> result(resultsize);
 	// copy values that are kept and interpolate missing values on even rows
@@ -377,7 +377,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
 	   n+3  -> 2n+1
 	   n    -> 2n    with wrapping
 	*/
-	if (datasize.x < 3 || datasize.y < 3) throw std::invalid_argument("bivector::smooth_upsampled base size invalid");
+	if (datasize.x < 3 || datasize.y < 3) THROW(error, "bivector::smooth_upsampled base size invalid");
 	vector2i resultsize = wrap ? datasize*2 : datasize*2 - vector2i(1,1);
 	bivector<T> result(resultsize);
 	// copy values that are kept and interpolate missing values on even rows

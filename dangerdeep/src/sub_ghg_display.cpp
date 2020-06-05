@@ -64,7 +64,7 @@ void sub_ghg_display::process_input(class game& gm, const SDL_Event& event)
 
 	// fixme: errors like this are rather bug indicators. they should throw a special
 	// exception or rather use an assert like thing etc. same for many other screens.
-	if (!myscheme.get()) throw error("sub_ghg_display::process_input without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_ghg_display::process_input without scheme!");
 	const scheme& s = *myscheme;
 
 	switch (event.type) {
@@ -121,7 +121,7 @@ void sub_ghg_display::display(class game& gm) const
 
 	// get hearing device angle from submarine, if it has one
 
-	if (!myscheme.get()) throw error("sub_ghg_display::display without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_ghg_display::display without scheme!");
 	const scheme& s = *myscheme;
 
 	s.volume_dial.draw(-turnknobang[TK_VOLUME]-18.0f);

@@ -779,7 +779,7 @@ void fireworks_particle::custom_display(const vector3& viewpos, const vector3& d
 
 const texture& fireworks_particle::get_tex_and_col(game& /*gm*/, const colorf& /*light_color*/, colorf& /*col*/) const
 {
-	throw error("invalid call");
+	THROW(error, "invalid call");
 }
 
 

@@ -32,7 +32,6 @@ class error : public std::runtime_error
  public:
 	static std::string throw_location(const char* file, unsigned line);
 	error(const std::string& location, const std::string& message);
-	error(const std::string& message) : error(std::string{}, message) {}	// only for backwards compatiblity of old code!
 };
 
 /// error with a file context
@@ -47,8 +46,6 @@ class file_read_error : public error
 {
  public:
 	file_read_error(const std::string& location, const std::string& filename);
-	// only for backwards compatibility of old code!
-	file_read_error(const std::string& filename) : error(std::string{}, filename) {}
 };
 
 // only for backwards compatibility of old code!
@@ -56,7 +53,6 @@ class sdl_error : public error
 {
  public:
  	sdl_error(const std::string& location, const std::string& filename) : error(location, filename) {}
- 	sdl_error(const std::string& filename) : error(std::string{}, filename) {}
 };
 
 // Throw with description where exactly the error was thrown

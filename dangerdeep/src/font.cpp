@@ -175,7 +175,7 @@ font::font(const string& basefilename, unsigned char_spacing)
 	characters.resize(last_char-first_char+1);
 	for (unsigned i = first_char; i <= last_char; ++i) {
 		if (!metricfile.good())
-			throw error(string("error reading font metricfile for ")+basefilename);
+			THROW(error, string("error reading font metricfile for ")+basefilename);
 		character& c = characters[i - first_char];
 		unsigned x, y;
 		metricfile >> x;

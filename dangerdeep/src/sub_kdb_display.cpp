@@ -67,7 +67,7 @@ void sub_kdb_display::process_input(class game& gm, const SDL_Event& event)
 {
 	int mx, my, mb;
 
-	if (!myscheme.get()) throw error("sub_kdb_display::process_input without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_kdb_display::process_input without scheme!");
 	const scheme& s = *myscheme;
 
 	switch (event.type) {
@@ -196,7 +196,7 @@ void sub_kdb_display::display(game& gm) const
 
 	// get hearing device angle from submarine, if it has one
 
-	if (!myscheme.get()) throw error("sub_kdb_display::display without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_kdb_display::display without scheme!");
 	const scheme& s = *myscheme;
 
 	s.background->draw(0, 0);

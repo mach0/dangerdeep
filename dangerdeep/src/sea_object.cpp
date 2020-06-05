@@ -443,7 +443,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 			else if ("German FuMO 391" == radar_model)
 				type  = radar_sensor::radar_german_fumo_391;
 			else
-				throw error("invalid radar type name");
+				THROW(error, "invalid radar type name");
 					
 			set_sensor(radar_system, new radar_sensor(type));
 		}
@@ -470,7 +470,7 @@ void sea_object::load(const xml_elem& parent)
 	string specfilename2 = parent.attr("type");	// checks
 	// this checks if the filename of the specfile matches the internal id string...
 	if (specfilename != specfilename2)
-		throw error(string("stored specfilename does not match, type=") + specfilename2
+		THROW(error, string("stored specfilename does not match, type=") + specfilename2
 			    + string(", but read ") + specfilename + string(" from spec file"));
 	xml_elem st = parent.child("state");
 	position = st.child("position").attrv3();
@@ -729,9 +729,9 @@ unsigned sea_object::calc_damage() const
 void sea_object::set_inactive()
 {
 	if (alive_stat == defunct)
-		throw error("illegal alive_stat switch (defunct to inactive)");
+		THROW(error, "illegal alive_stat switch (defunct to inactive)");
 	if (alive_stat == dead)
-		throw error("illegal alive_stat switch (dead to inactive)");
+		THROW(error, "illegal alive_stat switch (dead to inactive)");
 	alive_stat = inactive;
 }
 
@@ -747,7 +747,7 @@ void sea_object::reanimate()
 void sea_object::kill()
 {
 	if (alive_stat == defunct)
-		throw error("illegal alive_stat switch (defunct to inactive)");
+		THROW(error, "illegal alive_stat switch (defunct to inactive)");
 	alive_stat = dead;
 }
 
@@ -819,7 +819,7 @@ void sea_object::display_mirror_clip() const
 sensor* sea_object::get_sensor ( sensor_system ss )
 {
 	if ( ss >= 0 && ss < last_sensor_system )
-		return sensors[ss];
+		return &sensors[ss];
 
 	return nullptr;
 }
@@ -829,7 +829,7 @@ sensor* sea_object::get_sensor ( sensor_system ss )
 const sensor* sea_object::get_sensor ( sensor_system ss ) const
 {
 	if ( ss >= 0 && ss < last_sensor_system )
-		return sensors[ss];
+		return &sensors[ss];
 
 	return nullptr;
 }
@@ -870,7 +870,7 @@ model& sea_object::get_model() const
 {
 	if (mymodel)
 		return *mymodel;
-	throw error("sea_object::get_model(), no model set");
+	THROW(error, "sea_object::get_model(), no model set");
 }
 
 

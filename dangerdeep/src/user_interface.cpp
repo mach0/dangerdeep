@@ -372,11 +372,11 @@ void user_interface::display() const
 	// fixme: brightness needs sun_pos, so compute_sun_pos() is called multiple times per frame
 	// but is very costly. we could cache it.
 	mygame->get_water().set_refraction_color(mygame->compute_light_color(mygame->get_player()->get_pos()));
-	displays[current_display]->display(*mygame);
+	displays[current_display].display(*mygame);
 
 	// popups
 	if (current_popup > 0)
-		popups[current_popup-1]->display(*mygame);
+		popups[current_popup-1].display(*mygame);
 
 	// draw screen selector if visible
 	if (screen_selector_visible) {
@@ -409,8 +409,8 @@ void user_interface::set_time(double tm)
 		bool newdaymode = mygame->is_day_mode();
 		if (newdaymode != daymode) {
 			mygame->freeze_time();
-			displays[current_display]->leave();
-			displays[current_display]->enter(newdaymode);
+			displays[current_display].leave();
+			displays[current_display].enter(newdaymode);
 			mygame->unfreeze_time();
 		}
 		daymode = newdaymode;
@@ -505,7 +505,7 @@ void user_interface::process_input(const SDL_Event& event)
 		}
 	}
 
-	displays[current_display]->process_input(*mygame, event);
+	displays[current_display].process_input(*mygame, event);
 }
 
 
@@ -516,7 +516,7 @@ void user_interface::process_input(list<SDL_Event>& events)
 	
 
 	if (current_popup > 0)
-		popups[current_popup-1]->process_input(*mygame, events);
+		popups[current_popup-1].process_input(*mygame, events);
 
 	for (list<SDL_Event>::const_iterator it = events.begin();
 	     it != events.end(); ++it)
@@ -719,7 +719,7 @@ void user_interface::set_allowed_popup()
 	// 0 is always valid (no popup)
 	if (current_popup == 0) return;
 
-	unsigned mask = displays[current_display]->get_popup_allow_mask();
+	unsigned mask = displays[current_display].get_popup_allow_mask();
 	mask >>= (current_popup-1);
 	while (mask != 0) {
 		// is popup number valid?
@@ -742,7 +742,7 @@ void user_interface::set_current_display(unsigned curdis)
 	}
 	if (mygame)
 		mygame->freeze_time();
-	displays[current_display]->leave();
+	displays[current_display].leave();
 	current_display = curdis;
 
 	// clear both screen buffers
@@ -752,13 +752,13 @@ void user_interface::set_current_display(unsigned curdis)
 	glClear(GL_COLOR_BUFFER_BIT);
 	sys().swap_buffers();
 
-	displays[current_display]->enter(daymode);
+	displays[current_display].enter(daymode);
 	if (mygame)
 		mygame->unfreeze_time();
 
 	// check if current popup is still allowed. if not, clear popup
 	if (current_popup > 0) {
-		unsigned mask = displays[current_display]->get_popup_allow_mask();
+		unsigned mask = displays[current_display].get_popup_allow_mask();
 		mask >>= (current_popup-1);
 		if ((mask & 1) == 0)
 			current_popup = 0;

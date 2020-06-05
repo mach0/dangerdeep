@@ -193,7 +193,7 @@ ship::ship(game& gm_, const xml_elem& parent)
 	else if (typestr == "merchant") myclass = MERCHANT;
 	else if (typestr == "submarine") myclass = SUBMARINE;
 	else if (typestr == "torpedo") myclass = TORPEDO;
-	else throw error(string("illegal ship type in ") + specfilename);
+	else THROW(error, string("illegal ship type in ") + specfilename);
 
 	if (myclass == TORPEDO) {
 		tonnage = 0;
@@ -230,7 +230,7 @@ ship::ship(game& gm_, const xml_elem& parent)
 		if (aitype == "dumb") myai = std::make_unique<ai>(this, ai::dumb);
 		else if (aitype == "escort") myai = std::make_unique<ai>(this, ai::escort);
 		else if (aitype == "none") myai.reset();
-		else throw error(string("illegal AI type in ") + specfilename);
+		else THROW(error, string("illegal AI type in ") + specfilename);
 	}
 	if (parent.has_child("fuel")) {
 		xml_elem efuel = parent.child("fuel");

@@ -25,10 +25,10 @@
 #include "random_generator.h"
 #include "bivector.h"
 #include <vector>
-#include <stdexcept>
 #include <cstdlib>
 #include <algorithm>
 #include <sstream>
+#include "error.h"
 
 #ifdef WIN32
 #ifndef log2
@@ -89,7 +89,7 @@ public:
 		if (p.x>=datasize || p.y>=datasize) {
 			std::stringstream ss;
 			ss << "morton_bivector::at " << p;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}
 		return data[coord_to_morton(p)]; 
 	}
@@ -97,7 +97,7 @@ public:
 		if (p.x>=datasize || p.y>=datasize) {
 			std::stringstream ss;
 			ss << "morton_bivector::at " << p;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}		
 		return data[coord_to_morton(p)]; 
 	}
@@ -105,7 +105,7 @@ public:
 		if (x>=datasize || y>=datasize) {
 			std::stringstream ss;
 			ss << "morton_bivector::at x=" << x << " y="<<x;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}		
 		return data[coord_to_morton(vector2i(x,y))]; 
 	}
@@ -113,7 +113,7 @@ public:
 		if (x>=datasize || y>=datasize) {
 			std::stringstream ss;
 			ss << "morton_bivector::at x=" << x << " y="<<x;
-			throw std::out_of_range(ss.str());
+			THROW(error, ss.str());
 		}
 		return data[coord_to_morton(vector2i(x,y))]; 
 	}
@@ -225,7 +225,7 @@ inline unsigned long morton_bivector<T>::coord_to_morton(const vector2i& coord)
 template <class T>
 T morton_bivector<T>::get_min() const
 {
-	if (data.empty()) throw std::invalid_argument("morton_bivector::get_min data empty");
+	if (data.empty()) THROW(error, "morton_bivector::get_min data empty");
 	T m = data[0];
 	bivector_FOREACH(m = std::min(m, data[z]))
 	return m;
@@ -234,7 +234,7 @@ T morton_bivector<T>::get_min() const
 template <class T>
 T morton_bivector<T>::get_max() const
 {
-	if (data.empty()) throw std::invalid_argument("morton_bivector::get_max data empty");
+	if (data.empty()) THROW(error, "morton_bivector::get_max data empty");
 	T m = data[0];
 	bivector_FOREACH(m = std::max(m, data[z]))
 	return m;
@@ -244,7 +244,7 @@ T morton_bivector<T>::get_max() const
 template <class T>
 T morton_bivector<T>::get_min_abs() const
 {
-	if (data.empty()) throw std::invalid_argument("morton_bivector::get_min_abs data empty");
+	if (data.empty()) THROW(error, "morton_bivector::get_min_abs data empty");
 	T m = bivector_abs(data[0]);
 	bivector_FOREACH(m = std::min(m, abs(data[z])))
 	return m;
@@ -253,7 +253,7 @@ T morton_bivector<T>::get_min_abs() const
 template <class T>
 T morton_bivector<T>::get_max_abs() const
 {
-	if (data.empty()) throw std::invalid_argument("morton_bivector::get_max_abs data empty");
+	if (data.empty()) THROW(error, "morton_bivector::get_max_abs data empty");
 	T m = bivector_abs(data[0]);
 	bivector_FOREACH(m = std::max(m, (T)abs(data[z])))
 	return m;
@@ -284,8 +284,8 @@ morton_bivector<T>& morton_bivector<T>::operator+= (const bivector<T>& v)
 template <class T>
 morton_bivector<T> morton_bivector<T>::sub_area(const vector2i& offset, const long& sz) const
 {
-	if (offset.y + sz > datasize) throw std::invalid_argument("morton_bivector::sub_area, offset.y invalid");
-	if (offset.x + sz > datasize) throw std::invalid_argument("morton_bivector::sub_area, offset.x invalid");
+	if (offset.y + sz > datasize) THROW(error, "morton_bivector::sub_area, offset.y invalid");
+	if (offset.x + sz > datasize) THROW(error, "morton_bivector::sub_area, offset.x invalid");
 	morton_bivector<T> result(sz);
 	for (int y=0; y < result.datasize; ++y)
 		for (int x=0; x < result.datasize; ++x)
@@ -344,7 +344,7 @@ morton_bivector<T> morton_bivector<T>::upsampled(bool wrap) const
 	   n+1 -> 2n+1
 	   n   -> 2n    with wrapping
 	*/
-	if (datasize) throw std::invalid_argument("bivector::upsampled base size invalid");
+	if (datasize) THROW(error, "bivector::upsampled base size invalid");
 	long resultsize = wrap ? datasize*2 : datasize*2 - 1;
 	morton_bivector<T> result(resultsize);
 	// copy values that are kept and interpolate missing values on even rows
@@ -448,7 +448,7 @@ morton_bivector<T> morton_bivector<T>::smooth_upsampled(bool wrap) const
 	   n+3  -> 2n+1
 	   n    -> 2n    with wrapping
 	*/
-	if (datasize < 3) throw std::invalid_argument("morton_bivector::smooth_upsampled base size invalid");
+	if (datasize < 3) THROW(error, "morton_bivector::smooth_upsampled base size invalid");
 	long resultsize = wrap ? datasize*2 : datasize*2 - 1;
 	morton_bivector<T> result(resultsize);
 	// copy values that are kept and interpolate missing values on even rows

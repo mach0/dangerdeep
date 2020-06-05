@@ -299,7 +299,7 @@ int mymain(list<string>& args)
 	// prepare output data file
 	string::size_type st = modelfilename.rfind(".");
 	if (st == string::npos)
-		throw error("invalid module filename");
+		THROW(error, "invalid module filename");
 	string datafilename = modelfilename.substr(0, st) + ".phys";
 	bool torpedomode = modelfilename.find("torpedo") != string::npos;
 	xml_doc physdat(datafilename);

@@ -170,7 +170,7 @@ submarine::tank::tank(xml_elem e)
 		type = trim;
 	else if (e.attr("type") == "ballast")
 		type = ballast;
-	else throw error(std::string("invalid tank type in file ") + e.doc_name());
+	else THROW(error, std::string("invalid tank type in file ") + e.doc_name());
 }
 
 
@@ -349,7 +349,7 @@ void submarine::load(const xml_elem& parent)
 	for (xml_elem::iterator it = tp.iterate("tank"); !it.end(); it.next()) {
 		xml_elem e = it.elem();
 		unsigned id = e.attru("nr");
-		if (id >= tanks.size()) throw error(std::string("invalid tank nr in ") + e.doc_name());
+		if (id >= tanks.size()) THROW(error, std::string("invalid tank nr in ") + e.doc_name());
 		tanks[id].load(e);
 	}
 
@@ -413,11 +413,11 @@ void submarine::transfer_torpedo(unsigned from, unsigned to)
 	// not a fix, only ugly workaround!!!
 	if (from >= torpedoes.size()) {
 		log_warning("from="<<from<<" max="<<torpedoes.size());
-		throw error("BUG! transfer_torpedo, from invalid");
+		THROW(error, "BUG! transfer_torpedo, from invalid");
 	}
 	if (to >= torpedoes.size()) {
 		log_warning("to="<<from<<" max="<<torpedoes.size());
-		throw error("BUG! transfer_torpedo, to invalid");
+		THROW(error, "BUG! transfer_torpedo, to invalid");
 	}
 	if (torpedoes[from].status == stored_torpedo::st_loaded &&
 			torpedoes[to].status == stored_torpedo::st_empty) {
@@ -1129,7 +1129,7 @@ submarine::stored_torpedo& submarine::get_torp_in_tube(unsigned tubenr)
 	if (tubenr < number_of_tubes_at[0] + number_of_tubes_at[1]) {
 		return torpedoes[tubenr];
 	}
-	throw error("illegal tube nr for get_torp_in_tube");
+	THROW(error, "illegal tube nr for get_torp_in_tube");
 }
 
 
@@ -1139,7 +1139,7 @@ const submarine::stored_torpedo& submarine::get_torp_in_tube(unsigned tubenr) co
 	if (tubenr < number_of_tubes_at[0] + number_of_tubes_at[1]) {
 		return torpedoes[tubenr];
 	}
-	throw error("illegal tube nr for get_torp_in_tube");
+	THROW(error, "illegal tube nr for get_torp_in_tube");
 }
 
 

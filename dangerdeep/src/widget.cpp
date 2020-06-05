@@ -151,7 +151,7 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent
 		xml_elem e = it.elem();
 		
 		if(e.attr("type") != "button") 
-			throw error("widget_menu only accepts widget_button as entry");
+			THROW(error, "widget_menu only accepts widget_button as entry");
 		else {
 			add_entry(texts::get(e.attri("text")), new widget_button(e));
 		}
@@ -327,15 +327,15 @@ objcachet<class image>& widget::imagecache()
 {
 	if (myimagecache)
 		return *myimagecache;
-	throw error("image cache not set for widgets!");
+	THROW(error, "image cache not set for widgets!");
 }
 
 void widget::set_image_cache(objcachet<class image>* imagecache)
 {
 	if (imagecache == nullptr)
-		throw error("trying to set empty image cache!");
+		THROW(error, "trying to set empty image cache!");
 	if (myimagecache != nullptr)
-		throw error("image cache already set!");
+		THROW(error, "image cache already set!");
 	myimagecache = imagecache;
 }
 

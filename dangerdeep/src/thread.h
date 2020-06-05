@@ -26,8 +26,8 @@
 #include <condition_variable>
 #include <functional>
 #include <mutex>
-#include <stdexcept>
 #include <thread>
+#include "error.h"
 
 /// base class for threads.
 ///@note Each thread should be an instance of a class that inherits
@@ -112,7 +112,7 @@ class thread
 		void reset(T* t = nullptr) {
 			// extra paranoia test to ensure we handly only thread objects here
 			if (t && (dynamic_cast<thread*>(t) == nullptr))
-				throw std::invalid_argument("invalid pointer given to thread::ptr!");
+				THROW(error, "invalid pointer given to thread::ptr!");
 			if (p) p->destruct();
 			p = t;
 		}

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define XML_H
 
 #include <string>
+#include <memory>
 #include "error.h"
 #include "vector3.h"
 #include "quaternion.h"
@@ -37,8 +38,8 @@ class TiXmlDocument;
 class xml_error : public error
 {
  public:
-	xml_error(const std::string& name, const std::string& fn)
-		: error(std::string("xml error: ") + name + std::string(", file: ") + fn) {}
+	xml_error(const std::string& location, const std::string& name, const std::string& fn)
+		: error(location, std::string("xml error: ") + name + std::string(", file: ") + fn) {}
 };
 
 
@@ -47,8 +48,8 @@ class xml_error : public error
 class xml_elem_error : public xml_error
 {
  public:
-	xml_elem_error(const std::string& name, const std::string& fn)
-		: xml_error(std::string("failed to get element ") + name, fn) {}
+	xml_elem_error(const std::string& location, const std::string& name, const std::string& fn)
+		: xml_error(location, std::string("failed to get element ") + name, fn) {}
 };
 
 
@@ -86,13 +87,14 @@ class xml_elem
 	void set_attr(const quaternion& q);
 	void set_attr(angle a);
 	void set_attr(bool b, const std::string& name = "value");
-	std::string get_name() const;
+	const std::string& get_name() const;
 	void add_child_text(const std::string& txt); // add text child
-	std::string child_text() const;	// returns value of text child, throws error if there is none
+	const std::string& child_text() const;	// returns value of text child, throws error if there is none
 
 	// get name of document
-	std::string doc_name() const;
+	const std::string& doc_name() const;
 
+	/// An iterator to iterate over children of a XML node. Chose children with defined and same name or any child.
 	class iterator {
 	private:
 		iterator() = delete;
@@ -127,8 +129,7 @@ class xml_doc
 	xml_doc(const xml_doc& ) = delete;
 	xml_doc& operator= (const xml_doc& ) = delete;
  protected:
-	// can't use auto_ptr here because TiXmlDocument is not yet defined.
-	class TiXmlDocument* doc;
+	std::unique_ptr<TiXmlDocument> doc;
  public:
 	xml_doc(std::string fn);
 	~xml_doc();
@@ -137,7 +138,7 @@ class xml_doc
 	xml_elem first_child();
 	xml_elem child(const std::string& name);
 	xml_elem add_child(const std::string& name);
-	std::string get_filename() const;
+	const std::string& get_filename() const;
 };
 
 #endif // XML_H

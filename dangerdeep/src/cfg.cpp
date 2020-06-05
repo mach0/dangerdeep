@@ -197,7 +197,7 @@ void cfg::register_key(const string& name, SDLKey keysym, bool ctrl, bool alt, b
 		}
 	}
 	if (nr == NR_OF_KEY_IDS)
-		throw error(string("register_key with invalid name ")+ name);
+		THROW(error, string("register_key with invalid name ")+ name);
 	valk[nr] = key(name, keysym, ctrl, alt, shift);
 }
 
@@ -209,7 +209,7 @@ void cfg::set(const string& name, bool value)
 	if (it != valb.end())
 		it->second = value;
 	else
-		throw error(string("cfg: set(), name not registered: ") + name);
+		THROW(error, string("cfg: set(), name not registered: ") + name);
 }
 
 
@@ -220,7 +220,7 @@ void cfg::set(const string& name, int value)
 	if (it != vali.end())
 		it->second = value;
 	else
-		throw error(string("cfg: set(), name not registered: ") + name);
+		THROW(error, string("cfg: set(), name not registered: ") + name);
 }
 
 
@@ -231,7 +231,7 @@ void cfg::set(const string& name, float value)
 	if (it != valf.end())
 		it->second = value;
 	else
-		throw error(string("cfg: set(), name not registered: ") + name);
+		THROW(error, string("cfg: set(), name not registered: ") + name);
 }
 
 
@@ -242,7 +242,7 @@ void cfg::set(const string& name, const string& value)
 	if (it != vals.end())
 		it->second = value;
 	else
-		throw error(string("cfg: set(), name not registered: ") + name);
+		THROW(error, string("cfg: set(), name not registered: ") + name);
 }
 
 
@@ -253,7 +253,7 @@ void cfg::set_key(unsigned nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
 	if (it != valk.end())
 		it->second = key(it->second.action, keysym, ctrl, alt, shift);
 	else
-		throw error(string("cfg: set_key(), key number not registered: "));
+		THROW(error, string("cfg: set_key(), key number not registered: "));
 }
 
 
@@ -264,7 +264,7 @@ bool cfg::getb(const string& name) const
 	if (it != valb.end())
 		return it->second;
 	else
-		throw error(string("cfg: get(), name not registered: ") + name);
+		THROW(error, string("cfg: get(), name not registered: ") + name);
 	return false;
 }
 
@@ -276,7 +276,7 @@ int cfg::geti(const string& name) const
 	if (it != vali.end())
 		return it->second;
 	else
-		throw error(string("cfg: get(), name not registered: ") + name);
+		THROW(error, string("cfg: get(), name not registered: ") + name);
 	return 0;
 }
 
@@ -288,7 +288,7 @@ float cfg::getf(const string& name) const
 	if (it != valf.end())
 		return it->second;
 	else
-		throw error(string("cfg: get(), name not registered: ") + name);
+		THROW(error, string("cfg: get(), name not registered: ") + name);
 	return 0;
 }
 
@@ -300,7 +300,7 @@ string cfg::gets(const string& name) const
 	if (it != vals.end())
 		return it->second;
 	else
-		throw error(string("cfg: get(), name not registered: ") + name);
+		THROW(error, string("cfg: get(), name not registered: ") + name);
 	return nullptr;
 }
 
@@ -312,7 +312,7 @@ cfg::key cfg::getkey(unsigned nr) const
 	if (it != valk.end())
 		return it->second;
 	else
-		throw error(string("cfg: getkey(), key number not registered: "));
+		THROW(error, string("cfg: getkey(), key number not registered: "));
 	return key();
 }
 

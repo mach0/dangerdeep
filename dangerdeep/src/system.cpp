@@ -101,7 +101,7 @@ system::system(parameters  params_) :
 {
 	int err = SDL_Init(SDL_INIT_VIDEO);
 	if (err < 0)
-		throw sdl_error("video init failed");
+		THROW(sdl_error, "video init failed");
 
 	if (params.window_caption.length() > 0) {
 		SDL_WM_SetCaption(params.window_caption.c_str(), nullptr);
@@ -176,7 +176,7 @@ system::system(parameters  params_) :
 		/* sys().extension_supported("GL_ARB_shading_language_100") && */
 		extension_supported("GL_ARB_vertex_shader");
 	if (!glsl_supported) {
-		throw std::runtime_error("GLSL shaders are not supported!");
+		THROW(error, "GLSL shaders are not supported!");
 	}
 	if (vendor.find("NVIDIA") != std::string::npos) {
 		// we have an Nvidia card (most probably)
@@ -188,7 +188,7 @@ system::system(parameters  params_) :
 
 system::system()
 {
-	throw std::runtime_error("default constructor of system class forbidden!");
+	THROW(error, "default constructor of system class forbidden!");
 }
 
 
@@ -229,7 +229,7 @@ void system::set_video_mode(unsigned& res_x_, unsigned& res_y_, bool fullscreen)
 	}
 	const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo();
 	if (!videoInfo)
-		throw sdl_error("Video info query failed");
+		THROW(sdl_error, "Video info query failed");
 	// Note: the SDL_GL_DOUBLEBUFFER flag is ignored with OpenGL modes.
 	// the flags SDL_HWPALETTE, SDL_HWSURFACE and SDL_HWACCEL
 	// are not needed for OpenGL mode.
@@ -237,27 +237,27 @@ void system::set_video_mode(unsigned& res_x_, unsigned& res_y_, bool fullscreen)
 	if (fullscreen)
 		videoFlags |= SDL_FULLSCREEN;
 	if (SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1) < 0)
-		throw sdl_error("setting double buffer mode failed");
+		THROW(sdl_error, "setting double buffer mode failed");
 
 	/* Sometimes when setting SDL_GL_ACCELERATED_VISUAL (0 or 1 !?) multisampling is borked
 	 * if (SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 0) < 0)
-	 *	throw sdl_error("setting accelerated visual failed");
+	 *	THROW(sdl_error, "setting accelerated visual failed");
 	 */
 	
 	if (SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, params.use_multisampling) < 0)
-		throw sdl_error("setting multisampling failed");
+		THROW(sdl_error, "setting multisampling failed");
 	if (SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, params.multisample_level) < 0)
-		throw sdl_error("setting multisamplelevel failed");
+		THROW(sdl_error, "setting multisamplelevel failed");
 	
 	// enable VSync, but doesn't work on Linux/Nvidia/SDL 1.2.11 (?!)
 	// works with Linux/Nvidia/SDL 1.2.12
 	if (SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, params.vertical_sync) < 0)
-		throw sdl_error("setting VSync failed");
+		THROW(sdl_error, "setting VSync failed");
 	int bpp = videoInfo->vfmt->BitsPerPixel;
 	
 	SDL_Surface* screen = SDL_SetVideoMode(res_x_, res_y_, bpp, videoFlags);
 	if (!screen)
-		throw sdl_error("Video mode set failed");
+		THROW(sdl_error, "Video mode set failed");
 	params.resolution_x = res_x_;
 	params.resolution_y = res_y_;
 	params.fullscreen = fullscreen;
@@ -423,7 +423,7 @@ int system::transform_2d_y(int y)
 
 void system::prepare_2d_drawing()
 {
-	if (draw_2d) throw runtime_error("2d drawing already turned on");
+	if (draw_2d) THROW(error, "2d drawing already turned on");
 	glFlush();
 	glViewport(res_area_2d_x, res_area_2d_y, res_area_2d_w, res_area_2d_h);
 	glMatrixMode(GL_PROJECTION);
@@ -445,7 +445,7 @@ void system::prepare_2d_drawing()
 
 void system::unprepare_2d_drawing()
 {
-	if (!draw_2d) throw runtime_error("2d drawing already turned off");
+	if (!draw_2d) THROW(error, "2d drawing already turned off");
 	glFlush();
 	glPixelZoom(1.0f, 1.0f);
 	glMatrixMode(GL_PROJECTION);
@@ -667,7 +667,7 @@ font& system::register_font(const std::string& basedir, const std::string& basef
 {
 	std::pair<std::map<std::string, font*>::iterator, bool> ir = fonts.insert(std::make_pair(basefilename, (font*)nullptr));
 	if (!ir.second)
-		throw std::runtime_error("tried to register font twice!");
+		THROW(error, "tried to register font twice!");
 	ir.first->second = new font(basedir + basefilename, char_spacing);
 	return *(ir.first->second);
 }
@@ -678,7 +678,7 @@ font& system::get_font(const std::string& basefilename) const
 {
 	auto it = fonts.find(basefilename);
 	if (it == fonts.end())
-		throw std::runtime_error("font unknown");
+		THROW(error, "font unknown");
 	return *it->second;
 }
 

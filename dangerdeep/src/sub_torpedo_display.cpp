@@ -49,7 +49,7 @@ sub_torpedo_display::desc_text::desc_text(const std::string& filename)
 {
 	ifstream ifs(filename.c_str(), ios::in);
 	if (ifs.fail())
-		throw error(string("couldn't open ") + filename);
+		THROW(error, string("couldn't open ") + filename);
 
 	// read lines.
 	while (!ifs.eof()) {
@@ -122,7 +122,7 @@ const texture& sub_torpedo_display::torptex(const string& torpname) const
 	if (torpname == "TVb") return *torp5b;
 	if (torpname == "TVI_LuTI") return *torp6lut1;
 	if (torpname == "TXI") return *torp1practice;
-	throw error(string("illegal torpedo type ") + torpname);
+	THROW(error, string("illegal torpedo type ") + torpname);
 }
 
 

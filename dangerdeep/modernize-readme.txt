@@ -138,6 +138,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	plane.h
 	polygon.h
 	polyhedron.h
+	ptrvector.h
 	quaternion.h
 	rectangle.h
 	ressource_ptr.h
@@ -163,7 +164,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 OPEN TOPICS
 	color.h		ambigious double ctor
 	datadirs	data_file_handler missing
-	error.h		dito
+	error.h		sdl_error for backwards compatibility
 	fpsmeasure.cpp	needs new system interface
 	frustum.cpp	opengl code removed
 	frustum.h	opengl code removed

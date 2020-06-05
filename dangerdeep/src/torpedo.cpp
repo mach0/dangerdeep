@@ -44,7 +44,7 @@ torpedo::fuse::fuse(const xml_elem& parent, date equipdate)
 	doc.load();
 	xml_elem fs = doc.child("dftd-torpedo-fuses");
 	if (!fs.has_child(modelstr))
-		throw xml_error("unknown fuse type!", parent.doc_name());
+		THROW(xml_error, "unknown fuse type!", parent.doc_name());
 	xml_elem f = fs.child(modelstr);
 	string ts = f.attr("type");
 	if (ts == "impact")
@@ -54,7 +54,7 @@ torpedo::fuse::fuse(const xml_elem& parent, date equipdate)
 	else if (ts == "influence")
 		type = INFLUENCE;
 	else
-		throw xml_error("illegal fuse tyoe!", f.doc_name());
+		THROW(xml_error, "illegal fuse tyoe!", f.doc_name());
 	failure_probability = f.attrf("failure_probability");
 }
 
@@ -123,7 +123,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	// ------------ availability, check this first
 	xml_elem eavailability = parent.child("availability");
 	date availdt = date(eavailability.attr("date"));
-	if (dt < availdt) throw xml_error("torpedo type not available at this date!", parent.doc_name());
+	if (dt < availdt) THROW(xml_error, "torpedo type not available at this date!", parent.doc_name());
 
 	set_skin_layout(model::default_layout);
 
@@ -148,7 +148,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	} else {
 		// fixme: charges are atm numbers, should be replaced later...
 		warhead_type = Ka;
-		//throw xml_error(string("unknown charge type ")+charge, parent.doc_name());
+		//THROW(xml_error, string("unknown charge type ")+charge, parent.doc_name());
 	}
 	// ------------- arming
 	xml_elem earming = parent.child("arming");
@@ -171,7 +171,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 		if (dt >= latest)
 			arming_distance = latest_arming_distance;
 		else
-			throw xml_error("no period subtags of arming that match current equipment date!", parent.doc_name());
+			THROW(xml_error, "no period subtags of arming that match current equipment date!", parent.doc_name());
 	}
 	// ---------- fuse(s)
 	xml_elem efuse = parent.child("fuse");
@@ -198,14 +198,14 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 		else if (latest_fuse.type == fuse::INFLUENCE)
 			magnetic_fuse = latest_fuse;
 		else
-			throw xml_error("no period subtags of fuse that match current equipment date!", parent.doc_name());
+			THROW(xml_error, "no period subtags of fuse that match current equipment date!", parent.doc_name());
 	}
 	// ----------- motion / steering device
 	xml_elem emotion = parent.child("motion");
 	unsigned hasfat = emotion.attru("FAT");
 	unsigned haslut = emotion.attru("LUT");
 	if (hasfat > 0) {
-		if (haslut > 0) throw xml_error("steering device must be EITHER LuT OR FaT!", parent.doc_name());
+		if (haslut > 0) THROW(xml_error, "steering device must be EITHER LuT OR FaT!", parent.doc_name());
 		steering_device = (hasfat == 1) ? FATI : FATII;
 	} else if (haslut > 0) {
 		// only difference between LUTI/II is maximum turn angle, LUT I 210 degrees, LUT II more (240?)
@@ -228,7 +228,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 		propulsion_type = INGOLIN;
 		mysetup.torpspeed = NORMAL;
 	} else {
-		throw xml_error("unknown power type!", parent.doc_name());
+		THROW(xml_error, "unknown power type!", parent.doc_name());
 	}
 
 	// ------------ sensors, fixme
@@ -253,10 +253,10 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 			} else if (it.elem().attr("throttle") == "fast") {
 				srt = FAST;
 			} else {
-				throw xml_error("illegal throttle attribute!", parent.doc_name());
+				THROW(xml_error, "illegal throttle attribute!", parent.doc_name());
 			}
 		} else {
-			throw xml_error("illegal speed/range type attributes!", parent.doc_name());
+			THROW(xml_error, "illegal speed/range type attributes!", parent.doc_name());
 		}
 		range[srt] = it.elem().attrf("distance");
 		speed[srt] = kts2ms(it.elem().attrf("speed"));

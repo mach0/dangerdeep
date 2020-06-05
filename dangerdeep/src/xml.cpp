@@ -35,8 +35,8 @@ using std::string;
 xml_elem xml_elem::child(const std::string& name) const
 {
 	TiXmlElement* e = elem->FirstChildElement(name);
-	if (!e) throw xml_elem_error(name, doc_name());
-	return {e};
+	if (!e) THROW(xml_elem_error, name, doc_name());
+	return xml_elem(e);
 }
 
 
@@ -58,12 +58,12 @@ xml_elem xml_elem::add_child(const std::string& name)
 
 
 
-std::string xml_elem::doc_name() const
+const std::string& xml_elem::doc_name() const
 {
 	TiXmlDocument* doc = elem->GetDocument();
 	// extra-Paranoia... should never happen
-	if (!doc) throw xml_error(std::string("can't get document name for node ") + elem->Value(), "???");
-	return doc->Value();
+	if (!doc) THROW(xml_error, std::string("can't get document name for node ") + elem->ValueStr(), "???");
+	return doc->ValueStr();
 }
 
 
@@ -139,7 +139,7 @@ angle xml_elem::attra() const
 
 bool xml_elem::attrb(const std::string& name) const
 {
-	return attru(name);
+	return attru(name) != 0;
 }
 
 
@@ -184,7 +184,7 @@ void xml_elem::set_attr(double f, const std::string& name)
 			break;
 		}
 	}
-	set_attr(string(tmp), name);
+	set_attr(std::string(tmp), name);
 }
 
 
@@ -228,9 +228,9 @@ void xml_elem::set_attr(bool b, const std::string& name)
 
 
 
-std::string xml_elem::get_name() const
+const std::string& xml_elem::get_name() const
 {
-	return elem->Value();
+	return elem->ValueStr();
 }
 
 
@@ -242,12 +242,12 @@ void xml_elem::add_child_text(const std::string& txt)
 
 
 
-std::string xml_elem::child_text() const
+const std::string& xml_elem::child_text() const
 {
 	TiXmlNode* ntext = elem->FirstChild();
 	if (!ntext)
-		throw xml_error(std::string("child of ") + get_name() + std::string(" is no text node"), doc_name());
-	return ntext->Value();
+		THROW(xml_error, std::string("child of ") + get_name() + std::string(" is no text node"), doc_name());
+	return ntext->ValueStr();
 }
 
 
@@ -268,7 +268,7 @@ xml_elem::iterator xml_elem::iterate() const
 
 xml_elem xml_elem::iterator::elem() const
 {
-	if (!e) throw xml_error("elem() on empty iterator", parent.doc_name());
+	if (!e) THROW(xml_error, "elem() on empty iterator", parent.doc_name());
 	return {e};
 }
 
@@ -276,7 +276,7 @@ xml_elem xml_elem::iterator::elem() const
 
 void xml_elem::iterator::next()
 {
-	if (!e) throw xml_error("next() on empty iterator", parent.doc_name());
+	if (!e) THROW(xml_error, "next() on empty iterator", parent.doc_name());
 	if (samename)
 		e = e->NextSiblingElement(e->Value());
 	else
@@ -294,7 +294,7 @@ xml_doc::xml_doc(std::string fn)
 
 xml_doc::~xml_doc()
 {
-	delete doc;
+	// needed to make unique_ptr compile
 }
 
 
@@ -302,7 +302,7 @@ xml_doc::~xml_doc()
 void xml_doc::load()
 {
 	if (!doc->LoadFile()) {
-		throw xml_error(string("can't load: ") + doc->ErrorDesc(), doc->Value());
+		THROW(xml_error, std::string("can't load: ") + doc->ErrorDesc(), doc->ValueStr());
 	}
 }
 
@@ -311,7 +311,7 @@ void xml_doc::load()
 void xml_doc::save()
 {
 	if (!doc->SaveFile()) {
-		throw xml_error(string("can't save: ") + doc->ErrorDesc(), doc->Value());
+		THROW(xml_error, std::string("can't save: ") + doc->ErrorDesc(), doc->ValueStr());
 	}
 }
 
@@ -320,7 +320,7 @@ void xml_doc::save()
 xml_elem xml_doc::first_child()
 {
 	TiXmlElement* e = doc->FirstChildElement();
-	if (!e) throw xml_elem_error("<first-child>", doc->Value());
+	if (!e) THROW(xml_elem_error, "<first-child>", doc->ValueStr());
 	return {e};
 }
 
@@ -329,7 +329,7 @@ xml_elem xml_doc::first_child()
 xml_elem xml_doc::child(const std::string& name)
 {
 	TiXmlElement* e = doc->FirstChildElement(name);
-	if (!e) throw xml_elem_error(name, doc->Value());
+	if (!e) THROW(xml_elem_error, name, doc->ValueStr());
 	return {e};
 }
 
@@ -344,7 +344,7 @@ xml_elem xml_doc::add_child(const std::string& name)
 
 
 
-std::string xml_doc::get_filename() const
+const std::string& xml_doc::get_filename() const
 {
-	return doc->Value();
+	return doc->ValueStr();
 }

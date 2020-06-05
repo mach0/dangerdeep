@@ -109,7 +109,7 @@ void sub_tdc_display::process_input(class game& gm, const SDL_Event& event)
 	tdc& TDC = sub->get_tdc();
 
 	if (show_screen1) {
-		if (!myscheme1.get()) throw error("sub_tdc_display::process_input without scheme!");
+		if (!myscheme1.get()) THROW(error, "sub_tdc_display::process_input without scheme!");
 		const scheme_screen1& s = *myscheme1;
 
 		switch (event.type) {
@@ -155,7 +155,7 @@ void sub_tdc_display::process_input(class game& gm, const SDL_Event& event)
 		}
 
 	} else {
-		if (!myscheme2.get()) throw error("sub_tdc_display::process_input without scheme!");
+		if (!myscheme2.get()) THROW(error, "sub_tdc_display::process_input without scheme!");
 		const scheme_screen2& s = *myscheme2;
 
 		switch (event.type) {
@@ -217,7 +217,7 @@ void sub_tdc_display::display(class game& gm) const
 	const tdc& TDC = player->get_tdc();
 
 	if (show_screen1) {
-		if (!myscheme1.get()) throw error("sub_tdc_display::display without scheme!");
+		if (!myscheme1.get()) THROW(error, "sub_tdc_display::display without scheme!");
 		const scheme_screen1& s = *myscheme1;
 
 		// draw torpedo speed dial (15deg = 0, 5knots = 30deg)
@@ -266,7 +266,7 @@ void sub_tdc_display::display(class game& gm) const
 		s.target_speed.draw(15 + sea_object::ms2kts(TDC.get_target_speed()) * 330.0/55);
 
 	} else {
-		if (!myscheme2.get()) throw error("sub_tdc_display::display without scheme!");
+		if (!myscheme2.get()) THROW(error, "sub_tdc_display::display without scheme!");
 		const scheme_screen2& s = *myscheme2;
 
 		// background

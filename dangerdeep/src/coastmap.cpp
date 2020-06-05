@@ -46,7 +46,7 @@ using namespace std;
 
 // fixme: replace this
 #ifdef DEBUG
-//#define ASSERT(a,fmt,...) do{if(!(a)){char __tmp[256];vsprintf(__tmp, fmt, __VA_ARGS__);throw error(__tmp);}}while(0)
+//#define ASSERT(a,fmt,...) do{if(!(a)){char __tmp[256];vsprintf(__tmp, fmt, __VA_ARGS__);THROW(error, __tmp);}}while(0)
 #define ASSERT(a,fmt,...)
 #else
 #define ASSERT(a,fmt,...)
@@ -1001,13 +1001,13 @@ coastmap::coastmap(const string& filename)
 		segsy = maph/pixels_per_seg;
 		segw_real = pixelw_real * pixels_per_seg;
 		if (segsx*pixels_per_seg != mapw || segsy*pixels_per_seg != maph)
-			throw error(string("coastmap: map size must be integer multiple of segment size, in") + filename);
+			THROW(error, string("coastmap: map size must be integer multiple of segment size, in") + filename);
 
 		themap.resize(mapw*maph);
 
 		surf.lock();
 		if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 2)
-			throw error(string("coastmap: image is no black/white 1bpp paletted image, in ") + filename);
+			THROW(error, string("coastmap: image is no black/white 1bpp paletted image, in ") + filename);
 
 		auto* offset = (Uint8*)(surf->pixels);
 		int mapoffy = maph*mapw;
