@@ -37,8 +37,7 @@ const double sonar_operator::simulation_step = 0.1;	// in seconds
 sonar_operator::sonar_operator()
 	
 	  
-{
-}
+= default;
 
 
 
@@ -177,8 +176,8 @@ bool sonar_operator::keeps_in_find_peak_limit(angle add)
 	// check if current_angle + add is also within limit, if not return false,
 	// if it is, add it
 	angle new_ang = current_angle + add;
-	if (find_peak_lower_limit.is_cw_nearer(new_ang) &&
-	    new_ang.is_cw_nearer(find_peak_upper_limit)) {
+	if (find_peak_lower_limit.is_clockwise_nearer(new_ang) &&
+	    new_ang.is_clockwise_nearer(find_peak_upper_limit)) {
 		current_angle = new_ang;
 		return true;
 	}

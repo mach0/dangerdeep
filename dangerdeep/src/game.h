@@ -36,9 +36,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 #include "thread.h"
-#include "mutex.h"
-#include "condvar.h"
 #include "random_generator.h"
+#include <mutex>
+#include <condition_variable>
 
 // use forward declarations to avoid unneccessary compile dependencies
 class ship;
@@ -212,11 +212,11 @@ protected:
 	void simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod, bool record,
 				 double& nearest_contact);
 
-	class simulate_worker : public thread
+	class simulate_worker : public ::thread
 	{
-		::mutex mtx;
-		condvar cond;
-		condvar condfini;
+		std::mutex mtx;
+		std::condition_variable cond;
+		std::condition_variable condfini;
 		game& gm;
 		double delta_t;
 		unsigned idxoff;
@@ -232,7 +232,7 @@ protected:
 		double sync();
 	};
 
-	thread::auto_ptr<simulate_worker> myworker;
+	::thread::ptr<simulate_worker> myworker;
 
 	player_info playerinfo;
 

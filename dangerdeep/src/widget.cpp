@@ -376,7 +376,7 @@ std::unique_ptr<widget::theme> widget::replace_theme(std::unique_ptr<widget::the
 {
 	std::unique_ptr<theme> r = std::move(globaltheme);
 	globaltheme = std::move(t);
-	return std::move(r);
+	return r;
 }
 
 widget::widget(int x, int y, int w, int h, string  text_, widget* parent_, const std::string& backgrimg)
@@ -746,7 +746,7 @@ std::unique_ptr<widget> widget::create_dialogue_ok(widget* parent_, const string
 	int fh = int(globaltheme->myfont->get_height());
 	int butw = 4*fh+2*fw;
 	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 1, w/2-butw/2, h-64, butw, fh+4*fw, text_ok));
-	return std::move(wi);
+	return wi;
 }
 
 std::unique_ptr<widget> widget::create_dialogue_ok_cancel(widget* parent_, const string& title, const string& text,
@@ -765,7 +765,7 @@ std::unique_ptr<widget> widget::create_dialogue_ok_cancel(widget* parent_, const
 	int butw = 4*fh+2*fw;
 	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 1, w/4-butw/2, h-64, butw, fh+4*fw, text_ok));
 	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 0, 3*w/4-butw/2, h-64, butw, fh+4*fw, text_cancel));
-	return std::move(wi);
+	return wi;
 }
 
 int widget::run(unsigned timeout, bool do_stacking, widget* focussed_at_begin)

@@ -828,7 +828,7 @@ bool model::mesh::intersects(const mesh& other, const matrix4f& transformation_t
 				const vector3f& v4 = other.vertices[otit->i1()];
 				const vector3f& v5 = other.vertices[otit->i2()];
 				if (!is_degenerated(v3, v4, v5)) {
-					if (triangle_intersectionf::compute(v0, v1, v2, v3, v4, v5)) {
+					if (triangle_intersection::compute<float>(v0, v1, v2, v3, v4, v5)) {
 						/*std::cout << "v0: " << v0 << "v1: " << v1 << "v2: " << v2 << "\n";
 						std::cout << "v3: " << v3 << "v4: " << v4 << "v5: " << v5 << "\n";
 						std::cout << "sqd " << v0.distance(v1) << "," << v0.distance(v2) << "," << v1.distance(v2) << "\n";
@@ -1359,8 +1359,7 @@ const bv_tree& model::mesh::get_bv_tree() const
 
 model::material::map::map()
 	 
-{
-}
+= default;
 
 
 
@@ -2606,7 +2605,7 @@ vector2f model::get_object_angle_constraints(unsigned objid)
 {
 	object* obj = scene.find(objid);
 	if (!obj) return vector2f();
-	return vector2f(obj->rotat_angle_min, obj->rotat_angle_max);
+	return {obj->rotat_angle_min, obj->rotat_angle_max};
 }
 
 
@@ -2615,7 +2614,7 @@ vector2f model::get_object_angle_constraints(const std::string& objname)
 {
 	object* obj = scene.find(objname);
 	if (!obj) return vector2f();
-	return vector2f(obj->rotat_angle_min, obj->rotat_angle_max);
+	return {obj->rotat_angle_min, obj->rotat_angle_max};
 }
 
 
@@ -2642,7 +2641,7 @@ vector2f model::get_object_translation_constraints(unsigned objid)
 {
 	object* obj = scene.find(objid);
 	if (!obj) return vector2f();
-	return vector2f(obj->trans_val_min, obj->trans_val_max);
+	return {obj->trans_val_min, obj->trans_val_max};
 }
 
 
@@ -2651,7 +2650,7 @@ vector2f model::get_object_translation_constraints(const std::string& objname)
 {
 	object* obj = scene.find(objname);
 	if (!obj) return vector2f();
-	return vector2f(obj->trans_val_min, obj->trans_val_max);
+	return {obj->trans_val_min, obj->trans_val_max};
 }
 
 

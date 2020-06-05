@@ -51,7 +51,7 @@ protected:
 	// commonly used helper classes
 	class rotat_tex {
 	public:
-		rotat_tex()  {}
+		rotat_tex()  = default;
 		std::unique_ptr<texture> tex;
 		int left{0}, top{0}, centerx{0}, centery{0};
 		void draw(double angle) const {
@@ -80,7 +80,7 @@ protected:
 
 	class fix_tex {
 	public:
-		fix_tex()  {}
+		fix_tex()  = default;
 		std::unique_ptr<texture> tex;
 		int left{0}, top{0};
 		void draw() const {

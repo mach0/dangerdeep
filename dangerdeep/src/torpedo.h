@@ -83,7 +83,7 @@ class torpedo : public ship
 		types type{NONE};
 		float failure_probability{1.0f};	// in [0...1]
 
-		fuse()  {}
+		fuse()  = default;
 		fuse(const xml_elem& parent, date equipdate);
 
 		// this function computes if the fuse ignites or fails, call it once

@@ -106,7 +106,7 @@ protected:
 		std::vector<mipmap_level> mipmaps;
 		float minh{0}, maxh{0};
 
-		wavetile_phase()  {}
+		wavetile_phase()  = default;
 	};
 
 	// wave tile data
@@ -197,7 +197,7 @@ protected:
 	ptrvector<geoclipmap_patch> patches;
 	mutable vertexbufferobject vertices;
 
-	class worker : public thread
+	class worker : public ::thread
 	{
 		water& wa;
 		ocean_wave_generator<float> owg;

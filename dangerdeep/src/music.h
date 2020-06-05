@@ -58,7 +58,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 ///\brief Handles music and background songs.
-class music : public singleton<class music>, public thread
+class music : public singleton<class music>, public ::thread
 {
  public:
 	/// which mode to use when playing tracks from a play list

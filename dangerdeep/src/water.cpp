@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "matrix4.h"
 #include "polygon.h"
+#include "primitives.h"
 #include "system.h"
 #include "texture.h"
 #include "water.h"
@@ -343,7 +344,7 @@ water::water(double tm) :
 
 	// multithreaded construction of water data (faster).
 	// spawn 1 more thread (or 3 on 4-core cpus, but two threads are already fast enough)
-	thread::auto_ptr<worker> myworker;
+	thread::ptr<worker> myworker;
 	if (true /* construction multithreaded */) {
 		myworker.reset(new worker(*this, 1, 2));
 		myworker->start();

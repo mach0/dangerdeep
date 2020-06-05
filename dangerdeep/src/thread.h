@@ -1,6 +1,6 @@
 /*
   Danger from the Deep - Open source submarine simulation
-  Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+  Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,50 +23,40 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include "condvar.h"
+#include <condition_variable>
+#include <functional>
+#include <mutex>
 #include <stdexcept>
-
-#if defined  WIN32 && defined _MSC_VER
-	// win32 lacks stdint.h (thankfully SDL provides...)
-	#include <SDL_config_win32.h>
-#else
-	#include <cstdint>	
-#endif
+#include <thread>
 
 /// base class for threads.
-///@note Each thread should be an instance of a class that heirs
+///@note Each thread should be an instance of a class that inherits
 ///	from class thread. Overload some member functions to fill in code for the thread,
 ///	like init(), deinit(), loop()
 ///	threads must be allocated with new.\n
-///	heir from this class and implement init() / loop() / deinit()
+///	Inherit from this class and implement init() / loop() / deinit()
 class thread
 {
  private:
-	enum thread_state_t {
-		THRSTAT_NONE,		// before start
-		THRSTAT_RUNNING,	// normal operation
-		THRSTAT_FINISHED,	// after thread has exited (can't be restarted)
-		THRSTAT_INIT_FAILED,	// when init has failed
-		THRSTAT_ABORTED		// when run/deinit has failed (internal error!)
+    /// The state a thread is in
+	enum class state {
+		none,		// before start
+		running,	// normal operation
+		finished,	// after thread has exited (can't be restarted)
+		init_failed,	// when init has failed
+		aborted		// when run/deinit has failed (internal error!)
 	};
 
-	struct SDL_Thread* thread_id;
-	bool thread_abort_request;
-	thread_state_t thread_state;
-	::mutex thread_state_mutex;
-	condvar thread_start_cond;
-	std::string thread_error_message; // to pass exception texts via thread boundaries
+	std::thread thread_id;
+	bool abort_request;
+	state mystate;
+	std::mutex state_mutex;
+	std::condition_variable start_cond;
+	std::string error_message; // to pass exception texts via thread boundaries
 	const char* myname;
 
 	void run();
 
-	// can't copy thread objects
-	thread(const thread& ) = delete;
-	thread& operator=(const thread& ) = delete;
-	thread() = delete;
-
- public:
-	static int thread_entry(void* arg);
  protected:
 	virtual ~thread();
 
@@ -74,7 +64,7 @@ class thread
 	virtual void loop() {}	///< will be called periodically in main thread loop
 	virtual void deinit() {} ///< will be called once after main thread loop ends
 
-	bool abort_requested() const { return thread_abort_request; }
+	bool abort_requested() const { return abort_request; }
  public:
 	/// create a thread
 	thread(const char* name);
@@ -99,39 +89,30 @@ class thread
 	///@param ms - sleep time in milliseconds
 	static void sleep(unsigned ms);
 
-	/// define SDL conform thread id type
-	using id = uint32_t;
-
-	/// get ID of current (caller) thread
-	static id get_my_id();
-
-	/// get ID of this thread
-	id get_id() const;
-
 	/// request if thread runs
 	bool is_running();
 
-	/// an auto_ptr similar class for threads
+	/// an unique_ptr similar class for threads
 	template<class T>
-	class auto_ptr
+	class ptr
 	{
-		auto_ptr(const auto_ptr& ) = delete;
-		auto_ptr& operator=(const auto_ptr& ) = delete;
+		ptr(const ptr& ) = delete;
+		ptr& operator=(const ptr& ) = delete;
 
 		T* p;
 	public:
 		/// construct thread auto pointer with thread pointer
 		///@note will throw error when t is not a thread
-		auto_ptr(T* t = nullptr) : p(nullptr) { reset(t); }
+		ptr(T* t = nullptr) : p(nullptr) { reset(t); }
 		/// destruct thread auto pointer (will destruct thread)
-		~auto_ptr() { reset(nullptr); }
+		~ptr() { reset(nullptr); }
 		/// reset pointer (destructs current thread)
 		///@note will throw error when t is not a thread
 		///@note seems bizarre, use with care!
 		void reset(T* t = nullptr) {
 			// extra paranoia test to ensure we handly only thread objects here
 			if (t && (dynamic_cast<thread*>(t) == nullptr))
-				throw std::invalid_argument("invalid pointer given to thread::auto_ptr!");
+				throw std::invalid_argument("invalid pointer given to thread::ptr!");
 			if (p) p->destruct();
 			p = t;
 		}
@@ -140,6 +121,17 @@ class thread
 		/// get pointer
 		const T* get() const { return p; }
 	};
+};
+
+/// Thread object that runs one function.
+class thread_function : public ::thread
+{
+public:
+    thread_function(std::function<void()> func);
+    void loop() override;
+
+protected:
+    std::function<void()> myfunction;
 };
 
 #endif

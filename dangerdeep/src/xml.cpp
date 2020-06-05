@@ -111,14 +111,14 @@ double xml_elem::attrf(const std::string& name) const
 
 vector3 xml_elem::attrv3() const
 {
-	return vector3(attrf("x"), attrf("y"), attrf("z"));
+	return {attrf("x"), attrf("y"), attrf("z")};
 }
 
 
 
 vector2 xml_elem::attrv2() const
 {
-	return vector2(attrf("x"), attrf("y"));
+	return {attrf("x"), attrf("y")};
 }
 
 

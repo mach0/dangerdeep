@@ -22,14 +22,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
 #include "log.h"
-#include "mutex.h"
 #include <iostream>
 #include <list>
 #include <map>
 #include <stdexcept>
 #include <string>
 #include <utility>
-
+#include <mutex>
 #include <SDL.h>
 
 
@@ -98,7 +97,7 @@ struct log_msg
 class log_internal
 {
 public:
-	mutex mtx;
+	std::mutex mtx;
 	std::list<log_msg> loglines;
 	std::map<Uint32, const char* > threadnames;
 	log_internal() = default;
@@ -116,7 +115,7 @@ bool log::copy_output_to_console = false;
 
 void log::append(log::level l, const std::string& msg)
 {
-	mutex_locker ml(mylogint->mtx);
+	std::unique_lock<std::mutex> ml(mylogint->mtx);
 	mylogint->loglines.emplace_back(l, msg);
 	if (copy_output_to_console) {
 		std::cout << mylogint->loglines.back().pretty_print() << std::endl;
@@ -126,7 +125,7 @@ void log::append(log::level l, const std::string& msg)
 void log::write(std::ostream& out, log::level limit_level) const
 {
 	// process log_msg and make ANSI colored text lines of it
-	mutex_locker ml(mylogint->mtx);
+	std::unique_lock<std::mutex> ml(mylogint->mtx);
 	for (std::list<log_msg>::const_iterator it = mylogint->loglines.begin();
 	     it != mylogint->loglines.end(); ++it) {
 		if (it->lvl <= limit_level)
@@ -137,7 +136,7 @@ void log::write(std::ostream& out, log::level limit_level) const
 std::string log::get_last_n_lines(unsigned n) const
 {
 	std::string result;
-	mutex_locker ml(mylogint->mtx);
+	std::unique_lock<std::mutex> ml(mylogint->mtx);
 	unsigned l = mylogint->loglines.size();
 	if (n > l) {
 		for (unsigned k = 0; k < n - l; ++k)
@@ -156,7 +155,7 @@ std::string log::get_last_n_lines(unsigned n) const
 void log::new_thread(const char* name)
 {
 	{
-		mutex_locker ml(mylogint->mtx);
+		std::unique_lock<std::mutex> ml(mylogint->mtx);
 		mylogint->threadnames[SDL_ThreadID()] = name;
 	}
 	log_sysinfo("---------- < NEW > THREAD ----------");
@@ -165,7 +164,7 @@ void log::new_thread(const char* name)
 void log::end_thread()
 {
 	log_sysinfo("---------- > END < THREAD ----------");
-	mutex_locker ml(mylogint->mtx);
+	std::unique_lock<std::mutex> ml(mylogint->mtx);
 /* Do not remove entry so it can be written to log file after the thread has 
  * died (and message is still in buffer). It should never get very big... */
 //	mylogint->threadnames.erase(SDL_ThreadID());

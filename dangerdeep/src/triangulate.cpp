@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,6 +23,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "triangulate.h"
 
 using namespace std;
+
+/*
+ * Much better algorithm:
+ * Start from vertex with largest angle and find nearest vertices that is within beam
+ * limited by part of angle and maximum total angle. That way we have one edge
+ * connecting two vertices and we partition the polygon in two parts.
+ * Repeat for both parts until only triangles result.
+ * Gives a stable, fast and good looking result.
+ * We can also fill the space inside the polygon by creating a regular grid raster,
+ * that can be done by rasterizing the polygon edges and filling in remaining spaces.
+ */
 
 /*
 how it works:
@@ -63,13 +74,13 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
 	// times...
 	vector<unsigned> vl;
 	vl.reserve(vertices.size());
-	unsigned vl_size = vertices.size();
+	auto vl_size = vertices.size();
 	for (unsigned l = 0; l < vertices.size(); ++l)
 		vl.push_back(l);
 	unsigned i0 = 0;
 	unsigned i1 = 1;
 	unsigned i2 = 2;
-// fixme: 2004/02/14, with the new map the lockups reoccour. why?!	
+// fixme: 2004/02/14, with the new map the lockups reoccour. why?!
 int iscorrecttests=0;
 int notriangpossible=0;
 int polyscreated=0;
@@ -88,7 +99,7 @@ if(haengt>8000){
 	cout<<"TRIANGULATE: LOCKUP DETECTED! ("<<polyscreated<<","<<iscorrecttests<<","<<notriangpossible<<")\n";
 	ostringstream oss; oss << "failed_triang_" << failcount++ << ".off";
 	ofstream out(oss.str().c_str());
-	unsigned vs = vertices.size();
+	auto vs = unsigned(vertices.size());
 	out << "OFF\n" << vs+1 << " " << vs << " 0\n";
 	vector2 median;
 	double dist2median = 0;
@@ -118,7 +129,7 @@ if(haengt>8000){
 				break;
 		}
 		if (i3 == i0) {
-++polyscreated;		
+++polyscreated;
 			indices.push_back(i0);
 			indices.push_back(i1);
 			indices.push_back(i2);
@@ -135,7 +146,7 @@ if(haengt>8000){
 		}
 	}
 	// add remaining triangle
-	//fixme: wird letztes dreieck eingefügt, aber es ist nicht ccw????
+	//fixme: wird letztes dreieck eingefuegt, aber es ist nicht ccw????
 	indices.push_back(i0);
 	indices.push_back(i1);
 	indices.push_back(i2);
@@ -157,8 +168,8 @@ void triangulate::debug_test(const vector<vector2>& vertices, const string& outp
 		idx.push_back(j);
 		idx.push_back((j+1)%nverts);
 	}
-#endif	
-	
+#endif
+
 	int nfaces = int(idx.size())/3;
 	ofstream out(outputfile.c_str());
 	out << "OFF\n" << nverts << " " << nfaces << " 0\n";
@@ -183,7 +194,7 @@ int main(int argc, char** argv)
 		double l = 50.0f+30.0f*rand()/RAND_MAX;
 		verts.push_back(d*l);
 	}
-	
+
 	vector<unsigned> idx = triangulate::debug_test(verts, "test.off");
 }
 */

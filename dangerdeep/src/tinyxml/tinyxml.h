@@ -198,7 +198,7 @@ class TiXmlBase
 	friend class TiXmlDocument;
 
 public:
-	TiXmlBase()				{}
+	TiXmlBase()				= default;
 	virtual ~TiXmlBase()			= default;
 
 	/**	All TinyXml classes can print themselves to a filestream

@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -25,16 +25,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SPHERE_H
 
 #include "vector3.h"
+#include <utility>
 
+/// a 3d sphere with template coordinate types
 template<class D>
 class sphere_t
 {
 public:
-	vector3t<D> center;
-	D radius;
+	vector3t<D> center; ///< center of sphere
+	D radius; ///< radius of sphere
 
 	sphere_t() : radius(0) {}
-	sphere_t(const vector3t<D>& c, const D& r) : center(c), radius(r) {}
+	sphere_t(vector3t<D>  c, const D& r) : center(std::move(c)), radius(r) {}
 	/// construct from three points (triangle).
 	//sphere_t(const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>& c) { }
 	/// determine if point is inside sphere
@@ -51,10 +53,10 @@ public:
 		// new center is on axis between the two spheres
 		vector3t<D> delta = other.center - center;
 		D distance = delta.length();
-		if (distance < 1e-5)
+		if (distance < epsilon<D>())
 			return sphere_t<D>(center, std::max(radius, other.radius + distance));
 		D new_diameter = std::max(radius + distance + other.radius, radius * D(2));
-		D new_radius = new_diameter * D(0.5);
+		D new_radius = new_diameter / D(2);
 		vector3t<D> new_center = center + delta * ((new_radius - radius) / distance);
 		return sphere_t<D>(new_center, new_radius);
 	}

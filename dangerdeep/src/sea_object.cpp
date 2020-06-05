@@ -201,9 +201,8 @@ string sea_object::compute_skin_name() const
 		if (it.regions.size() > 0) {
 			// if any regions are given (otherwise all match)
 			bool match = false;
-			for (auto it2 = it.regions.begin();
-			     it2 != it.regions.end(); ++it2) {
-				if (skin_regioncode == *it2) {
+			for (const auto & region : it.regions) {
+				if (skin_regioncode == region) {
 					match = true;
 					break;
 				}
@@ -216,9 +215,8 @@ string sea_object::compute_skin_name() const
 		if (it.countries.size() > 0) {
 			// if any countries are given (otherwise all match)
 			bool match = false;
-			for (auto it2 = it.countries.begin();
-			     it2 != it.countries.end(); ++it2) {
-				if (*it2 == string(countrycodes[skin_country])) {
+			for (const auto & countrie : it.countries) {
+				if (countrie == string(countrycodes[skin_country])) {
 					match = true;
 					break;
 				}

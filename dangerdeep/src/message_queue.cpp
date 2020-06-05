@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,11 +20,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // multithreading primitives: messaging, message queue
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "message_queue.h"
 #include "error.h"
-#include "system.h"
-#include "thread.h"
 #include "log.h"
+#include "message_queue.h"
+#include "system.h"
 
 
 void message::evaluate() const
@@ -34,7 +33,7 @@ void message::evaluate() const
 		eval();
 		result = true;
 	}
-	catch (std::exception& e) {
+	catch (std::exception& /*e*/) {
 		// avoid to spam the log. define when needed.
 		// log_debug("msg eval failed: " << e.what());
 	}
@@ -55,20 +54,18 @@ message_queue::~message_queue()
 	// until ackqueue is empty... it should not happen though...
 	bool ackqueueempty = true;
 	{
-		mutex_locker ml(mymutex);
-		for (auto & it : myqueue) {
-			if (it->needsanswer) {
-				ackqueue.push_back(it);
-			} else {
-				delete it;
+		std::unique_lock<std::mutex> ml(mymutex);
+		for (auto& elem : myqueue) {
+			if (elem->needsanswer) {
+				ackqueue.push_back(std::move(elem));
 			}
 		}
-		ackcondvar.signal();
+		ackcondvar.notify_all();
 		ackqueueempty = ackqueue.empty();
 	}
 	while (!ackqueueempty) {
-		thread::sleep(10);
-		mutex_locker ml(mymutex);
+		//fixme// thread::sleep(10);//fixme use sys! uses SDL_Delay...is there a c++ solution?!
+		std::unique_lock<std::mutex> ml(mymutex);
 		ackqueueempty = ackqueue.empty();
 	}
 }
@@ -79,23 +76,22 @@ bool message_queue::send(message::ptr msg, bool waitforanswer)
 {
 	msg->needsanswer = waitforanswer;
 	msg->result = false;
-	message* msg_addr = msg.get();
-	mutex_locker oml(mymutex);
+	message* msg_addr = msg.get(); // address only for comparison
+	std::unique_lock<std::mutex> oml(mymutex);
 	bool e = myqueue.empty();
-	myqueue.push_back(msg.release());
+	myqueue.push_back(std::move(msg));
 	msginqueue = true;
 	if (e) {
-		emptycondvar.signal();
+		emptycondvar.notify_all();
 	}
 	if (waitforanswer) {
 		while (true) {
-			ackcondvar.wait(mymutex);
+			ackcondvar.wait(oml);
 			// check if this message has been acknowledged
 			for (auto it = ackqueue.begin(); it != ackqueue.end(); ) {
-				if (*it == msg_addr) {
+				if (it->get() == msg_addr) {
 					// found it, return result, delete and unqueue message
 					bool result = (*it)->result;
-					delete *it;
 					ackqueue.erase(it);
 					return result;
 				}
@@ -111,20 +107,20 @@ void message_queue::wakeup_receiver()
 {
 	// set a special flag to avoid another thread to enter the wait() command
 	// if this signal comes while the other thread tests wether to enter wait state
-	mutex_locker oml(mymutex);
+	std::unique_lock<std::mutex> oml(mymutex);
 	abortwait = true;
-	emptycondvar.signal();
+	emptycondvar.notify_all();
 }
 
 
 
-std::list<message*> message_queue::receive(bool wait)
+std::vector<message::ptr> message_queue::receive(bool wait)
 {
-	std::list<message*> result;
-	mutex_locker oml(mymutex);
+	std::vector<message::ptr> result;
+	std::unique_lock<std::mutex> oml(mymutex);
 	if (myqueue.empty()) {
 		if (wait && !abortwait) {
-			emptycondvar.wait(mymutex);
+			emptycondvar.wait(oml);
 		} else {
 			// no need to wait, so clear abort signal
 			abortwait = false;
@@ -146,17 +142,15 @@ std::list<message*> message_queue::receive(bool wait)
 
 
 
-void message_queue::acknowledge(message* msg)
+void message_queue::acknowledge(message::ptr msg)
 {
-	if (!msg)
-		throw error("acknowledge without message called");
+	if (msg.get() == nullptr)
+		THROW(error, "acknowledge without message called");
 	bool needsanswer = msg->needsanswer;
-	mutex_locker oml(mymutex);
 	if (needsanswer) {
-		ackqueue.push_back(msg);
-		ackcondvar.signal();
-	} else {
-		delete msg;
+		std::unique_lock<std::mutex> oml(mymutex);
+		ackqueue.push_back(std::move(msg));
+		ackcondvar.notify_all();
 	}
 }
 
@@ -164,10 +158,9 @@ void message_queue::acknowledge(message* msg)
 
 void message_queue::process_messages(bool wait)
 {
-	std::list<message*> msgs = receive(wait);
-	while (!msgs.empty()) {
-		msgs.front()->evaluate();
-		acknowledge(msgs.front());
-		msgs.pop_front();
+	auto msgs = receive(wait);
+	for (auto& msg : msgs) {
+		msg->evaluate();
+		acknowledge(std::move(msg));
 	}
 }

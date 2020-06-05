@@ -25,8 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 tdc::tdc()
 	
 	  
-{
-}
+= default;
 
 
 
@@ -89,7 +88,7 @@ void tdc::simulate(double delta_t)
 	if (bearing_dial.diff(bearing) <= bearingturn) {
 		bearing_dial = bearing;
 	} else {
-		if (!bearing_dial.is_cw_nearer(bearing))
+		if (!bearing_dial.is_clockwise_nearer(bearing))
 			bearingturn = -bearingturn;
 		bearing_dial += angle(bearingturn);
 	}
@@ -204,7 +203,7 @@ void tdc::set_bearing(angle br)
 void tdc::compute_aob(angle br)
 {
 	angle reverse_bearing = angle(180) + br;
-	if (target_course.is_cw_nearer(reverse_bearing)) {
+	if (target_course.is_clockwise_nearer(reverse_bearing)) {
 		angleonthebow = reverse_bearing - target_course;
 		target_bow_is_left = false;
 	} else {

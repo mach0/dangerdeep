@@ -234,7 +234,7 @@ public:
 	std::vector<portal> portals;
 	mutable bool displayed{false};
 	mutable bool visited{false};	// needed during rendering.
-	sector()  {}
+	sector()  = default;
 	void display(const frustum& f) const;
 	bool check_movement(const vector3& currpos, const vector3& nextpos, sector*& nextseg) const;
 };

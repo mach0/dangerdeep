@@ -33,7 +33,7 @@ class fixed32
 	static const unsigned SHIFT = 16;
 	Sint32 x{0};
  public:
-	fixed32()  {}
+	fixed32()  = default;
 	fixed32(const fixed32& f)  = default;
 	fixed32& operator= (const fixed32& f) = default;
 	fixed32(Sint32 n) : x(n) {}

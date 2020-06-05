@@ -57,7 +57,7 @@ private:
 	template<class U> friend class bivector;
 	
 public:
-	morton_bivector() {}
+	morton_bivector() = default;
 	
 	morton_bivector(const bivector<T>& bv) {
 		resize(std::max(pow(2, ceil(log2(bv.datasize.x))), pow(2, ceil(log2(bv.datasize.y)))));

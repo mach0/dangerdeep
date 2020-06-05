@@ -1542,7 +1542,7 @@ class vessel_view
 		modellayouts.clear();
 		mdl->get_all_layout_names(modellayouts);
 		currentlayout = modellayouts.begin();
-		return std::move(mdl);
+		return mdl;
 	}
 public:
 	vessel_view(widget_text* wdesc_ = nullptr)

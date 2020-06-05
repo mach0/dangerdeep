@@ -946,7 +946,7 @@ vector2 coastmap::segcoord_to_real(int segx, int segy, const coastsegment::segpo
 vector2f coastmap::segcoord_to_texc(int segx, int segy) const
 {
 	// float get to its limit when segsx,segsy > 256, bot that doesn't really matter.
-	return vector2f(float(segx)/segsx, 1.0f - float(segy)/segsy);
+	return {float(segx)/segsx, 1.0f - float(segy)/segsy};
 }
 
 

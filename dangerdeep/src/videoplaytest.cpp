@@ -236,7 +236,7 @@ void videoplay::loop()
 	// wait for free buffer
 	int bufnr = -1;
 	{
-		mutex_locker ml(queue_mtx);
+		std::unique_lock<std::mutex> ml(queue_mtx);
 		while (free_buffers.empty()) {
 			if (abort_requested())
 				return;
@@ -274,7 +274,7 @@ void videoplay::loop()
 
 	// report as ready
 	{
-		mutex_locker ml(queue_mtx);
+		std::unique_lock<std::mutex> ml(queue_mtx);
 		decoded_pictures.push_back(bufnr);
 	}
 }
@@ -287,7 +287,7 @@ void videoplay::display_loop(double delta_time)
 	int bufnr = -1;
 	unsigned nr_full_buffers = 0;
 	{
-		mutex_locker ml(queue_mtx);
+		std::unique_lock<std::mutex> ml(queue_mtx);
 		if (!decoded_pictures.empty()) {
 			nr_full_buffers = decoded_pictures.size();
 			bufnr = decoded_pictures.front();
@@ -311,7 +311,7 @@ void videoplay::display_loop(double delta_time)
 
 	// report as ready/free
 	{
-		mutex_locker ml(queue_mtx);
+		std::unique_lock<std::mutex> ml(queue_mtx);
 		free_buffers.push_back(bufnr);
 		buffer_available.signal();
 	}
@@ -320,7 +320,7 @@ void videoplay::display_loop(double delta_time)
 void videoplay::request_abort()
 {
 	thread::request_abort();
-	mutex_locker ml(queue_mtx);
+	std::unique_lock<std::mutex> ml(queue_mtx);
 	buffer_available.signal();
 }
 
@@ -328,7 +328,7 @@ bool videoplay::video_finished()
 {
 	bool result = eof;
 	if (!result) {
-		mutex_locker ml(queue_mtx);
+		std::unique_lock<std::mutex> ml(queue_mtx);
 		result = decoded_pictures.empty();
 	}
 	return result;
@@ -456,7 +456,7 @@ int mymain(list<string>& args)
     fpsmeasure fpsm(1.0f);
     bool paused = false;
     bool quit = false;
-    thread::auto_ptr<videoplay> vpl(new videoplay(filename));
+    thread::ptr<videoplay> vpl(new videoplay(filename));
     vpl->start();
     unsigned tm = sys().millisec();
     while (!quit) {

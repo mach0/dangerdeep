@@ -205,7 +205,7 @@ public:
 	{
 	public:
 		texerror(const std::string& name, const std::string& s)
-			: error(std::string("texture \"") + name +
+			: error(std::string{}/*empty location to make it compile*/, std::string("texture \"") + name +
 				std::string("\" error: ") + s) {}
 		~texerror() noexcept override = default;
 	};

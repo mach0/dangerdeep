@@ -359,7 +359,7 @@ vector2i font::get_size(const string& text) const
 		if (x > xmax) xmax = x;
 	}
 	if (x == 0) y -= height;
-	return vector2i(xmax, y);
+	return {static_cast<int>(xmax), static_cast<int>(y)};
 }
 
 
