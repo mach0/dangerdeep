@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Parts taken and adapted from Martin Butterwecks's OOML SDL code (wws.sourceforget.net/projects/ooml/)
 
 #include "system_interface.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>	// fixme later just include SDL.h
 #include "gpu_interface.h"
 #include "log.h"
 #include <fstream>

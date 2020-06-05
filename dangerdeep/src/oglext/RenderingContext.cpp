@@ -22,7 +22,7 @@
 #include	"Macros.h"
 #include	"OglExt.h"
 
-#include	<cstdio>
+#include	<stdio.h>
 
 
 // =============================================================================================================
@@ -258,7 +258,7 @@ void * CRenderingContext::GetProcAddress(char const * szFunction)
 			char * szNewFunction = new char [strlen(szFunction) + 3];
 			if(!szNewFunction) {
 
-				return nullptr;
+				return NULL;
 			}
 
 			// U.2: create the new function name...

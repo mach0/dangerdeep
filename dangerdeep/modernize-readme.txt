@@ -25,6 +25,7 @@ After each step check functionality.
 13. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
+	problem is a name conflict! model/mesh/texture are already used
 14. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 15. Turn on -Wall
 
@@ -90,8 +91,12 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	bspline_test.cpp
 	bv_tree.cpp
 	bv_tree.h
+	bzip.cpp
+	bzip.h
 	circle.h
 	constant.h
+	countrycodes.cpp
+	countrycodes.h
 	date.cpp	use std::chrono??
 	date.h
 	dmath.h
@@ -127,6 +132,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	model_state.cpp
 	model_state.h
 	object_store.h
+	oceantest.cpp
 	parser.cpp
 	parser.h
 	plane.h
@@ -138,6 +144,8 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	rigid_body.cpp
 	rigid_body.h
 	sphere.h
+	system_interface.cpp
+	system_interface.h
 	texts.cpp
 	texts.h
 	thread.cpp
@@ -161,5 +169,7 @@ OPEN TOPICS
 	frustum.h	opengl code removed
 	height_generator.h	opengl issues
 	matrix4.h	opengl only in old code
+	random_generator.cpp	old code kept additionally yet
+	random_generator.h	old code kept additionally yet
 	xml.cpp		Different syntax...
 	xml.h
