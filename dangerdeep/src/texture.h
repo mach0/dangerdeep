@@ -68,7 +68,7 @@ class sdl_image
 	SDL_Surface* get_SDL_Surface() const { return img; }
 
 	/// access elements of surface
-	SDL_Surface* operator->() const throw() { return img; }
+	SDL_Surface* operator->() const noexcept { return img; }
 
 	/// transform values to plain vector
 	std::vector<uint8_t> get_plain_data(unsigned& w, unsigned& h, unsigned& byte_per_pixel);
@@ -207,7 +207,7 @@ public:
 		texerror(const std::string& name, const std::string& s)
 			: error(std::string("texture \"") + name +
 				std::string("\" error: ") + s) {}
-		~texerror() throw() override {}
+		~texerror() noexcept override {}
 	};
 
 	// if "makenormalmap" is true and format is GL_LUMINANCE,

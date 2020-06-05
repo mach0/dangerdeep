@@ -12,6 +12,7 @@ After each step check functionality.
 8. update internal game classes
 9. Finally adjust rendering
 10. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
+11. Turn on -Wall
 
 clang tidy modernizers
 DONE
@@ -27,22 +28,22 @@ DONE
     modernize-use-uncaught-exceptions
     modernize-make-shared
     modernize-redundant-void-arg
+    modernize-use-bool-literals
+    modernize-shrink-to-fit
+    modernize-unary-static-assert
+    modernize-use-nodiscard
+    modernize-use-noexcept
 TODO
     modernize-avoid-c-arrays
     modernize-loop-convert
     modernize-make-unique
     modernize-pass-by-value
     modernize-return-braced-init-list
-    modernize-shrink-to-fit
-    modernize-unary-static-assert
     modernize-use-auto
-    modernize-use-bool-literals
     modernize-use-default-member-init
     modernize-use-emplace
     modernize-use-equals-default
     modernize-use-equals-delete
-    modernize-use-nodiscard
-    modernize-use-noexcept
     modernize-use-nullptr
     modernize-use-trailing-return-type
     modernize-use-using

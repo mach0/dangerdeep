@@ -178,7 +178,7 @@ glsl_shader::glsl_shader(const string& filename, type stype, const glsl_shader::
 		// add special optimizations for Nvidia cards
 		if (is_nvidia_card) {
 			// add some more performance boost stuff if requested
-			if (1) { // fixme: later add cfg-switch for it
+			if (true) { // fixme: later add cfg-switch for it
 				prg += "#pragma optionNV(fastmath on)\n"
 					"#pragma optionNV(fastprecision on)\n"
 					/*"#pragma optionNV(ifcvt all)\n"*/

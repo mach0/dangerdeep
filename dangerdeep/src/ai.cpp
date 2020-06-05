@@ -282,11 +282,11 @@ void ai::act_escort(game& gm, double delta_time)
 				if (myconvoy) myconvoy->add_contact(contacts.front());
 				attack_contact(contacts.front());
 			}
-			set_zigzag((cd > 500 && cd < 2500) ? 1 : 0); // zig-zag near the sub - fixme test hack, doesn't work
+			set_zigzag((cd > 500 && cd < 2500) ? true : false); // zig-zag near the sub - fixme test hack, doesn't work
 		} else {
 			parent->set_throttle(ship::aheadflank);
 			attackrun = true;
-			set_zigzag(0); // run straight - fixme test hack, doesn't work
+			set_zigzag(false); // run straight - fixme test hack, doesn't work
 		}
 
 		if (cd < DC_ATTACK_RADIUS) {

@@ -64,7 +64,7 @@ const int coastmap::dmy[4] = { -1, -1, 0,  0 };
 const int coastmap::dx[4] = {  0, 1, 0,-1 };
 const int coastmap::dy[4] = { -1, 0, 1, 0 };
 
-bool coastmap::patternprocessok[16] = { 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0 };
+bool coastmap::patternprocessok[16] = { false, true, true, true, true, false, true, true, true, true, false, true, true, true, true, false };
 
 
 /*

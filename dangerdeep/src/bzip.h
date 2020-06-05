@@ -34,7 +34,7 @@ private:
     int error_code;
 public:
     bzip_failure(int _error_code) : failure(""), error_code(_error_code) {};
-    const char* what() const throw() override {
+    const char* what() const noexcept override {
         switch (error_code) {
             case BZ_SEQUENCE_ERROR:
                 return ("BZ_SEQUENCE_ERROR");
