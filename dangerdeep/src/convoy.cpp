@@ -137,7 +137,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 	// merchant convoy?
 	if (type_ == small || type_ == medium || type_ == large) {
 		name = "Custom"; // fixme...
-		unsigned cvsize = unsigned(type_);
+		auto cvsize = unsigned(type_);
 		
 		// speed? could be a slow or fast convoy (~4 or ~8 kts).
 		int throttle = 4 + rnd(2)*4;
@@ -145,7 +145,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 	
 		// compute size and structure of convoy
 		unsigned nrships = (2<<cvsize)*10+rnd(10)-5;
-		unsigned sqrtnrships = unsigned(floor(sqrt(float(nrships))));
+		auto sqrtnrships = unsigned(floor(sqrt(float(nrships))));
 		unsigned shps = 0;
 		for (unsigned j = 0; j <= sqrtnrships; ++j) {
 			if (shps >= nrships) break;
@@ -364,18 +364,18 @@ void convoy::simulate(double delta_time)
 	position += global_velocity * delta_time;
 
 	// check for ships to be erased
-	for (list<pair<ship*, vector2> >::iterator it = merchants.begin(); it != merchants.end(); ) {
-		list<pair<ship*, vector2> >::iterator it2 = it; ++it;
+	for (auto it = merchants.begin(); it != merchants.end(); ) {
+		auto it2 = it; ++it;
 		if (it2->first->is_defunct())
 			merchants.erase(it2);
 	}
-	for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it != warships.end(); ) {
-		list<pair<ship*, vector2> >::iterator it2 = it; ++it;
+	for (auto it = warships.begin(); it != warships.end(); ) {
+		auto it2 = it; ++it;
 		if (it2->first->is_defunct())
 			warships.erase(it2);
 	}
-	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it != escorts.end(); ) {
-		list<pair<ship*, vector2> >::iterator it2 = it; ++it;
+	for (auto it = escorts.begin(); it != escorts.end(); ) {
+		auto it2 = it; ++it;
 		if (it2->first->is_defunct())
 			escorts.erase(it2);
 	}

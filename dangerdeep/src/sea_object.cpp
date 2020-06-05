@@ -201,7 +201,7 @@ string sea_object::compute_skin_name() const
 		if (it.regions.size() > 0) {
 			// if any regions are given (otherwise all match)
 			bool match = false;
-			for (list<string>::const_iterator it2 = it.regions.begin();
+			for (auto it2 = it.regions.begin();
 			     it2 != it.regions.end(); ++it2) {
 				if (skin_regioncode == *it2) {
 					match = true;
@@ -216,7 +216,7 @@ string sea_object::compute_skin_name() const
 		if (it.countries.size() > 0) {
 			// if any countries are given (otherwise all match)
 			bool match = false;
-			for (list<string>::const_iterator it2 = it.countries.begin();
+			for (auto it2 = it.countries.begin();
 			     it2 != it.countries.end(); ++it2) {
 				if (*it2 == string(countrycodes[skin_country])) {
 					match = true;
@@ -857,7 +857,7 @@ void sea_object::compress(std::vector<sea_object*>& vec)
 
 void sea_object::compress(std::list<sea_object*>& lst)
 {
-	for (std::list<sea_object*>::iterator it = lst.begin(); it != lst.end(); ) {
+	for (auto it = lst.begin(); it != lst.end(); ) {
 		if ((*it)->is_reference_ok()) {
 			++it;
 		} else {

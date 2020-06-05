@@ -238,7 +238,7 @@ void coastsegment::draw_as_map(const class coastmap& cm, int x, int y, int detai
 		primitives tris(GL_TRIANGLES, nrv, color::white(), *atlanticmap);
 		nrv = 0;
 		for (const auto & cit : pointcache) {
-			for (vector<unsigned>::const_iterator tit = cit.indices.begin(); tit != cit.indices.end(); ++tit) {
+			for (auto tit = cit.indices.begin(); tit != cit.indices.end(); ++tit) {
 				const vector2& v = cit.points[*tit];
 				float ex = v.x/cm.segw_real;
 				float ey = v.y/cm.segw_real;
@@ -805,7 +805,7 @@ void coastmap::process_coastline(int x, int y)
 	bsplinet<vector2> curve(n, tmp);	// points in map pixel coordinates
 
 	// smooth points will be scaled so that each segment is (2^16)-1 units long.
-	unsigned nrpts = unsigned(tmp.size() * BSPLINE_DETAIL);
+	auto nrpts = unsigned(tmp.size() * BSPLINE_DETAIL);
 	ASSERT(nrpts >= 2, " nrpts < 2?");
 	tmp.clear();
 	vector<vector2i> spoints;
@@ -993,7 +993,7 @@ coastmap::coastmap(const string& filename)
 		pixelw_real = realwidth/mapw;
 		realheight = maph*realwidth/mapw;
 		// compute integer number of pixels per segment
-		unsigned pixperseqnonpower2 = unsigned(ceil(60000/pixelw_real));
+		auto pixperseqnonpower2 = unsigned(ceil(60000/pixelw_real));
 		// find next power of 2 that is larger or equal than computed nonpower2 pixel width
 		for (pixels_per_seg = 1; pixels_per_seg < pixperseqnonpower2; pixels_per_seg <<= 1);
 	
@@ -1009,7 +1009,7 @@ coastmap::coastmap(const string& filename)
 		if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 2)
 			throw error(string("coastmap: image is no black/white 1bpp paletted image, in ") + filename);
 
-		Uint8* offset = (Uint8*)(surf->pixels);
+		auto* offset = (Uint8*)(surf->pixels);
 		int mapoffy = maph*mapw;
 		for (int yy = 0; yy < int(maph); yy++) {
 			mapoffy -= mapw;

@@ -683,7 +683,7 @@ void ship::simulate(double delta_time)
 	rudder.simulate(delta_time);
 	
 	// gun turrets
-	gun_turret_itr gun_turret = gun_turrets.begin();	
+	auto gun_turret = gun_turrets.begin();	
 	while (gun_turret != gun_turrets.end()) {
 		// Note! condition must be greater than zero, so that nothing happens when manning time is zero,
 		// like at begin of mission.
@@ -697,7 +697,7 @@ void ship::simulate(double delta_time)
 		}
 		
 		if (gun_turret->manning_time <= 0.0) {
-			gun_barrel_itr gun_barrel = gun_turret->gun_barrels.begin();
+			auto gun_barrel = gun_turret->gun_barrels.begin();
 			while (gun_barrel != gun_turret->gun_barrels.end()) {		
 				if (gun_barrel->load_time_remaining > 0.0)
 					gun_barrel->load_time_remaining -= delta_time;
@@ -831,7 +831,7 @@ unsigned ship::calc_damage() const
 {
 	if (bow_damage == wrecked || midship_damage == wrecked || stern_damage == wrecked)
 		return 100;
-	unsigned dmg = unsigned(round(15*(bow_damage + midship_damage + stern_damage)));
+	auto dmg = unsigned(round(15*(bow_damage + midship_damage + stern_damage)));
 	return dmg > 100 ? 100 : dmg;
 }
 
@@ -1083,7 +1083,7 @@ ship::gun_status ship::fire_shell_at(const vector2& pos)
     return NO_GUNS;
 
 	gun_status res = GUN_FIRED;
-	gun_turret_itr gun_turret = gun_turrets.begin();
+	auto gun_turret = gun_turrets.begin();
 	gun_barrel_itr gun_barrel;
 	//fixme! move dist_angle relation also,
 	//maybe approximate that relation with splines.		
@@ -1224,7 +1224,7 @@ bool ship::is_target_in_blindspot(const struct gun_turret *gun, angle bearingToT
 long ship::num_shells_remaining()
 {
 	long numShells = 0;
-	gun_turret_itr gunTurret = gun_turrets.begin();
+	auto gunTurret = gun_turrets.begin();
 	
 	while (gunTurret != gun_turrets.end())
 	{
@@ -1244,7 +1244,7 @@ bool ship::calculate_gun_angle(const double distance, angle &elevation, const do
 {
 	bool withinRange = false;
 
-	map<double, double>::iterator it = dist_angle_relation[initial_velocity].lower_bound(distance);
+	auto it = dist_angle_relation[initial_velocity].lower_bound(distance);
 	if (it != dist_angle_relation[initial_velocity].end()) 
 	{
 		elevation = angle(it->second);

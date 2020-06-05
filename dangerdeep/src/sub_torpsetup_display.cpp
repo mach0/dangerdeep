@@ -104,7 +104,7 @@ sub_torpsetup_display::sub_torpsetup_display(user_interface& ui_)
 
 void sub_torpsetup_display::process_input(class game& gm, const SDL_Event& event)
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
 	if (!myscheme.get()) throw error("sub_torpsetup_display::process_input without scheme!");
 	const scheme& s = *myscheme;
@@ -260,7 +260,7 @@ void sub_torpsetup_display::process_input(class game& gm, const SDL_Event& event
 
 void sub_torpsetup_display::display(class game& gm) const
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();
 

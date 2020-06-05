@@ -126,7 +126,7 @@ void sub_uzo_display::post_display(game& gm) const
 
 sub_uzo_display::sub_uzo_display(user_interface& ui_) : freeview_display(ui_), zoomed(false)
 {
-	submarine* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
+	auto* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
 	add_pos = sub->get_uzo_position();
 	aboard = true;
 	withunderwaterweapons = false;
@@ -137,7 +137,7 @@ sub_uzo_display::sub_uzo_display(user_interface& ui_) : freeview_display(ui_), z
 
 void sub_uzo_display::process_input(class game& gm, const SDL_Event& event)
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	if (sub->is_submerged()) {
 	}
 	switch (event.type) {

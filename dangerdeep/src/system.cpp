@@ -664,7 +664,7 @@ void system::gl_perspective_fovx(double fovx, double aspect, double znear, doubl
 
 bool system::extension_supported(const string& s) const
 {
-	set<string>::const_iterator it = supported_extensions.find(s);
+	auto it = supported_extensions.find(s);
 	return (it != supported_extensions.end());
 }
 
@@ -683,7 +683,7 @@ font& system::register_font(const std::string& basedir, const std::string& basef
 
 font& system::get_font(const std::string& basefilename) const
 {
-	std::map<std::string, font*>::const_iterator it = fonts.find(basefilename);
+	auto it = fonts.find(basefilename);
 	if (it == fonts.end())
 		throw std::runtime_error("font unknown");
 	return *it->second;
@@ -693,7 +693,7 @@ font& system::get_font(const std::string& basefilename) const
 
 bool system::unregister_font(const std::string& basefilename)
 {
-	std::map<std::string, font*>::iterator it = fonts.find(basefilename);
+	auto it = fonts.find(basefilename);
 	if (it == fonts.end())
 		return false;
 	delete it->second;

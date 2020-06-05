@@ -115,7 +115,7 @@ void sub_damage_display::display ( class game& gm ) const
 	damage_screen_background->draw(0, 0);
 	sub_damage_scheme_all->draw(0, ydrawdiff);
 
-	submarine* mysub = dynamic_cast<submarine*>(gm.get_player());
+	auto* mysub = dynamic_cast<submarine*>(gm.get_player());
 
 	const vector<submarine::part>& parts = mysub->get_damage_status();
 	for (unsigned i = 0; i < parts.size(); ++i) {
@@ -166,7 +166,7 @@ void sub_damage_display::display ( class game& gm ) const
 					if (mysub->damage_schemes[i].surfaced) {
 						dmgstr << texts::get(168);
 					} else {
-						unsigned minutes = unsigned(round(parts[i].repairtime / 60.0));
+						auto minutes = unsigned(round(parts[i].repairtime / 60.0));
 						dmgstr << texts::get(167) << "\n"
 						<< texts::get(170) << minutes << texts::get(minutes == 1 ? 171 : 172);
 					}

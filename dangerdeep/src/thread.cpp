@@ -33,7 +33,7 @@
 
 int thread::thread_entry(void* arg)
 {
-	thread* t = (thread*)arg;
+	auto* t = (thread*)arg;
 	try {
 		t->run();
 	}

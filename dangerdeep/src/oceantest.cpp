@@ -161,7 +161,7 @@ int main(int argc, char** argv)
 	osg1 << "P5\n";
 	osg1 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights1) {
-		Uint8 h = Uint8((it - minh)*255/(maxh - minh));
+		auto h = Uint8((it - minh)*255/(maxh - minh));
 		osg1.write((const char*)&h, 1);
 	}
 
@@ -176,7 +176,7 @@ int main(int argc, char** argv)
 	osg2 << "P5\n";
 	osg2 << ressml <<" "<< ressml <<"\n255\n";
 	for (float it : heights2) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg2.write((const char*)&h, 1);
 	}
 
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
 	osg3 << "P5\n";
 	osg3 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights3) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg3.write((const char*)&h, 1);
 	}
 
@@ -206,7 +206,7 @@ int main(int argc, char** argv)
 	osg4 << "P5\n";
 	osg4 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights4) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg4.write((const char*)&h, 1);
 	}
 
@@ -221,7 +221,7 @@ int main(int argc, char** argv)
 	osg5 << "P5\n";
 	osg5 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights5) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg5.write((const char*)&h, 1);
 	}
 
@@ -236,7 +236,7 @@ int main(int argc, char** argv)
 	osg6 << "P5\n";
 	osg6 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights6) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg6.write((const char*)&h, 1);
 	}
 
@@ -251,7 +251,7 @@ int main(int argc, char** argv)
 	osg7 << "P5\n";
 	osg7 << resbig <<" "<< resbig <<"\n255\n";
 	for (float it : heights7) {
-		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
+		auto h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg7.write((const char*)&h, 1);
 	}
 

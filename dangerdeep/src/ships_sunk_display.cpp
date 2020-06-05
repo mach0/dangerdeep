@@ -74,7 +74,7 @@ void ships_sunk_display::display ( class game& gm ) const
 
 	unsigned j = first_displayed_object;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
-	list<game::sink_record>::const_iterator it = sunken_ships.begin();
+	auto it = sunken_ships.begin();
 	while (j > 0 && it != sunken_ships.end()) {
 		--j;
 		++it;

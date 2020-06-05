@@ -373,7 +373,7 @@ void torpedo::simulate(double delta_time)
 				}
 			}
 		} else if (steering_device_phase == 1) {
-			unsigned phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
+			auto phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
 			if (phase & 1) {
 				// phase change - FATII with short secondary turn changes nothing,
 				// other setups turn and change phase
@@ -390,7 +390,7 @@ void torpedo::simulate(double delta_time)
 			}
 		} else {
 			// steering_device_phase = 2 here
-			unsigned phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
+			auto phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
 			if ((phase & 1) == 0) {
 				// first LUT turn is on phase 1->2, so invert turn direction, invert general because of phase
 				bool is_lut = steering_device == LUTI || steering_device == LUTII;

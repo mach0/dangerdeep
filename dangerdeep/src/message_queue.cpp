@@ -91,7 +91,7 @@ bool message_queue::send(message::ptr msg, bool waitforanswer)
 		while (true) {
 			ackcondvar.wait(mymutex);
 			// check if this message has been acknowledged
-			for (std::list<message*>::iterator it = ackqueue.begin(); it != ackqueue.end(); ) {
+			for (auto it = ackqueue.begin(); it != ackqueue.end(); ) {
 				if (*it == msg_addr) {
 					// found it, return result, delete and unqueue message
 					bool result = (*it)->result;

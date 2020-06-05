@@ -65,7 +65,7 @@ freeview_display::projection_data sub_periscope_display::get_projection_data(cla
 
 vector3 sub_periscope_display::get_viewpos(class game& gm) const
 {
-	const submarine* sub = dynamic_cast<const submarine*>(gm.get_player());
+	const auto* sub = dynamic_cast<const submarine*>(gm.get_player());
 	return sub->get_pos() + add_pos + vector3(0, 0, 6) * sub->get_scope_raise_level();
 }
 
@@ -229,7 +229,7 @@ void sub_periscope_display::process_input(class game& gm, const SDL_Event& event
 		if (event.motion.state & SDL_BUTTON_LMASK) {
 			if (event.motion.yrel != 0) {
 				// remove y motion, replace by scope raise/lower code
-				submarine* s = dynamic_cast<submarine*>(gm.get_player());
+				auto* s = dynamic_cast<submarine*>(gm.get_player());
 				s->scope_to_level(s->get_scope_raise_level() - event.motion.yrel / 100.0f);
 				SDL_Event e = event;
 				e.motion.yrel = 0;

@@ -52,7 +52,7 @@ public:
 	virtual bool process_input(class game& gm, const SDL_Event& event) = 0;
 	virtual void process_input(class game& gm, std::list<SDL_Event>& events)
 	{
-		std::list<SDL_Event>::iterator it = events.begin();
+		auto it = events.begin();
 		while (it != events.end()) {
 			if (process_input(gm, *it))
 				it = events.erase(it);

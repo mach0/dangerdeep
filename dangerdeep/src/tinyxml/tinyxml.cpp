@@ -55,7 +55,7 @@ void TiXmlBase::EncodeString( const TIXML_STRING& str, TIXML_STRING* outString )
 
 	while( i<(int)str.length() )
 	{
-		unsigned char c = (unsigned char) str[i];
+		auto c = (unsigned char) str[i];
 
 		if (    c == '&' 
 		     && i < ( (int)str.length() - 2 )
@@ -888,7 +888,7 @@ bool TiXmlElement::Accept( TiXmlVisitor* visitor ) const
 
 TiXmlNode* TiXmlElement::Clone() const
 {
-	TiXmlElement* clone = new TiXmlElement( Value() );
+	auto* clone = new TiXmlElement( Value() );
 	if ( !clone )
 		return nullptr;
 
@@ -1133,7 +1133,7 @@ void TiXmlDocument::CopyTo( TiXmlDocument* target ) const
 
 TiXmlNode* TiXmlDocument::Clone() const
 {
-	TiXmlDocument* clone = new TiXmlDocument();
+	auto* clone = new TiXmlDocument();
 	if ( !clone )
 		return nullptr;
 
@@ -1319,7 +1319,7 @@ bool TiXmlComment::Accept( TiXmlVisitor* visitor ) const
 
 TiXmlNode* TiXmlComment::Clone() const
 {
-	TiXmlComment* clone = new TiXmlComment();
+	auto* clone = new TiXmlComment();
 
 	if ( !clone )
 		return nullptr;
@@ -1455,7 +1455,7 @@ bool TiXmlDeclaration::Accept( TiXmlVisitor* visitor ) const
 
 TiXmlNode* TiXmlDeclaration::Clone() const
 {	
-	TiXmlDeclaration* clone = new TiXmlDeclaration();
+	auto* clone = new TiXmlDeclaration();
 
 	if ( !clone )
 		return nullptr;
@@ -1487,7 +1487,7 @@ bool TiXmlUnknown::Accept( TiXmlVisitor* visitor ) const
 
 TiXmlNode* TiXmlUnknown::Clone() const
 {
-	TiXmlUnknown* clone = new TiXmlUnknown();
+	auto* clone = new TiXmlUnknown();
 
 	if ( !clone )
 		return nullptr;

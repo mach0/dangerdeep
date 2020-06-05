@@ -188,7 +188,7 @@ sub_torpedo_display::sub_torpedo_display(user_interface& ui_) :
 
 void sub_torpedo_display::display(class game& gm) const
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 
 	double hours = 0.0, minutes = 0.0, seconds = 0.0;
 
@@ -293,7 +293,7 @@ void sub_torpedo_display::display(class game& gm) const
 
 void sub_torpedo_display::process_input(class game& gm, const SDL_Event& event)
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
 
 	//fixme:
@@ -368,7 +368,7 @@ void sub_torpedo_display::enter(bool is_day)
 		background = std::make_unique<image>(get_image_dir() + "tmanage_cleanbase_daylight.jpg");
 	else
 		background = std::make_unique<image>(get_image_dir() + "tmanage_cleanbase_redlight.jpg");
-	const submarine* pl = dynamic_cast<const submarine*>(ui.get_game().get_player());
+	const auto* pl = dynamic_cast<const submarine*>(ui.get_game().get_player());
 	// fixme: catch errors for load, later do not accept missing images
 	try {
 	log_debug("loading '" << get_data_dir() + data_file().get_rel_path(pl->get_specfilename()) + pl->get_torpedomanage_img_name());

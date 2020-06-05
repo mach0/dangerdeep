@@ -73,7 +73,7 @@ sub_gauges_display::sub_gauges_display(user_interface& ui_) : user_display(ui_),
 
 void sub_gauges_display::display(class game& gm) const
 {
-	submarine* player = dynamic_cast<submarine*> ( gm.get_player () );
+	auto* player = dynamic_cast<submarine*> ( gm.get_player () );
 	system::sys().prepare_2d_drawing();
 
 	controlscreen->draw(0, 0);
@@ -112,7 +112,7 @@ void sub_gauges_display::display(class game& gm) const
 void sub_gauges_display::process_input(class game& gm, const SDL_Event& event)
 {
 	// fixme: actions are executed, but no messages are sent...
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	int mx, my;
 	switch (event.type) {
 	case SDL_MOUSEBUTTONDOWN:

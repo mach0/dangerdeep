@@ -476,7 +476,7 @@ void widget::clip_to_children_area()
 
 void widget::remove_child(widget* w)
 {
-	for (list<widget*>::iterator it = children.begin(); it != children.end(); ++it) {
+	for (auto it = children.begin(); it != children.end(); ++it) {
 		if (*it == w) {
 			children.erase(it);
 			break;
@@ -877,7 +877,7 @@ widget_button* widget_menu::add_entry(const string& s, widget_button* wb)
 int widget_menu::get_selected() const
 {
 	int sel = 0;
-	for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it, ++sel)
+	for (auto it = children.begin(); it != children.end(); ++it, ++sel)
 		if ((dynamic_cast<widget_button*>(*it))->is_pressed())
 			return sel;
 	return -1;
@@ -1186,7 +1186,7 @@ widget_list::widget_list(int x, int y, int w, int h, widget* parent_)
 
 list<string>::iterator widget_list::ith(unsigned i)
 {
-	list<string>::iterator it = entries.begin();
+	auto it = entries.begin();
 	while (it != entries.end() && i > 0) {
 		--i;
 		++it;
@@ -1196,7 +1196,7 @@ list<string>::iterator widget_list::ith(unsigned i)
 
 list<string>::const_iterator widget_list::ith(unsigned i) const
 {
-	list<string>::const_iterator it = entries.begin();
+	auto it = entries.begin();
 	while (it != entries.end() && i > 0) {
 		--i;
 		++it;
@@ -1206,7 +1206,7 @@ list<string>::const_iterator widget_list::ith(unsigned i) const
 
 void widget_list::delete_entry(unsigned n)
 {
-	list<string>::iterator it = ith(n);
+	auto it = ith(n);
 	if (it != entries.end())
 		entries.erase(it);
 	unsigned es = entries.size();
@@ -1220,7 +1220,7 @@ void widget_list::delete_entry(unsigned n)
 
 void widget_list::insert_entry(unsigned n, const string& s)
 {
-	list<string>::iterator it = ith(n);
+	auto it = ith(n);
 	if (it != entries.end())
 		entries.insert(it, s);
 	else
@@ -1246,7 +1246,7 @@ void widget_list::append_entry(const string& s)
 
 void widget_list::set_entry(unsigned n, const string& s)
 {
-	for (list<string>::iterator i = entries.begin(); i != entries.end(); ++i, --n)
+	for (auto i = entries.begin(); i != entries.end(); ++i, --n)
 		if (n == 0) *i = s;
 }
 
@@ -1269,7 +1269,7 @@ void widget_list::make_entries_unique()
 
 string widget_list::get_entry(unsigned n) const
 {
-	for (list<string>::const_iterator i = entries.begin(); i != entries.end(); ++i, --n)
+	for (auto i = entries.begin(); i != entries.end(); ++i, --n)
 		if (n == 0) return *i;
 	return "";
 }
@@ -1321,7 +1321,7 @@ void widget_list::draw() const
 {
 	vector2i p = get_pos();
 	draw_area(p.x, p.y, size.x, size.y, false);
-	list<string>::const_iterator it = ith(listpos);
+	auto it = ith(listpos);
 	int fw = globaltheme->frame_size();
 	unsigned maxp = get_nr_of_visible_entries();
 	bool scrollbarvisible = (entries.size() > maxp);

@@ -39,7 +39,7 @@ void logbook::add_entry(const string& entry)
 
 list<string>::const_iterator logbook::get_entry(unsigned i) const
 {
-	list<string>::const_iterator it = entries.begin();
+	auto it = entries.begin();
 	while (i > 0 && it != entries.end()) {
 		--i;
 		++it;

@@ -1274,7 +1274,7 @@ bool submarine::launch_torpedo(int tubenr, sea_object* target)
 		}
 		if (tubenr < 0) return false;	// no torpedo found
 	} else {	// check if tube nr is bow or stern
-		unsigned tn = unsigned(tubenr);
+		auto tn = unsigned(tubenr);
 		pair<unsigned, unsigned> idx = get_bow_tube_indices();
 		if (tn >= idx.first && tn < idx.second) {
 			usebowtubes = true;

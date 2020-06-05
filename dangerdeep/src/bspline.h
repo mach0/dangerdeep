@@ -188,7 +188,7 @@ public:
 	// give square vector of control points, in C++ order, line after line
 	bspline2dt(unsigned n_, const std::vector<T>& d) : n(n_), cp(d)
 	{
-		unsigned ds = unsigned(sqrt(double(d.size())));
+		auto ds = unsigned(sqrt(double(d.size())));
 		if (ds*ds != d.size()) throw std::runtime_error("bspline2d: d not quadratic");
 		if (n >= ds) throw std::runtime_error("bspline2d: n too large");
 		if (ds < 2) throw std::runtime_error("bspline2d: d has too few elements");

@@ -97,7 +97,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 		// special case: force division
 		std::list<leaf_data>& empty_list = left_nodes.empty() ? left_nodes : right_nodes;
 		std::list<leaf_data>& full_list = left_nodes.empty() ? right_nodes : left_nodes;
-		std::list<leaf_data>::iterator it = full_list.begin();
+		auto it = full_list.begin();
 		for (unsigned i = 0; i < full_list.size() / 2; ++i)
 			++it;
 		empty_list.splice(empty_list.end(), full_list, full_list.begin(), it);

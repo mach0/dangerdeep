@@ -74,7 +74,7 @@ height_generator_map::height_generator_map(const std::string& filename)
 	surf.lock();
 	if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 256)
 		throw error(string("coastmap: image is no greyscale 8bpp paletted image, in ") + filename);
-	Uint8* offset = (Uint8*)(surf->pixels);
+	auto* offset = (Uint8*)(surf->pixels);
 	int mapoffy = maph*mapw;
 	for (int yy = 0; yy < int(maph); yy++) {
 		mapoffy -= mapw;
@@ -190,7 +190,7 @@ void height_generator_map::compute_colors(int detail, const vector2i& coord_bl,
 			float zif = (h + 512) * 7 / 1024;
 			if (zif < 0.0) zif = 0.0;
 			if (zif >= 7.0) zif = 6.999;
-			unsigned zi = unsigned(zif);
+			auto zi = unsigned(zif);
 			zif = myfrac(zif);
 			unsigned i = ((yc&(ch-1))*cw+(xc&(cw-1)));
 			float zif2 = 1.0-zif;

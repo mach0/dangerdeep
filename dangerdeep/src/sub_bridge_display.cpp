@@ -74,7 +74,7 @@ void sub_bridge_display::post_display(game& gm) const
 
 sub_bridge_display::sub_bridge_display(user_interface& ui_) : freeview_display(ui_), glasses_in_use(false)
 {
-	submarine* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
+	auto* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
 	add_pos = sub->get_camera_position();
 
 	aboard = true;

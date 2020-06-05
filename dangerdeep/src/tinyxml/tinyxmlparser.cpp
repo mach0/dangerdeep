@@ -212,7 +212,7 @@ void TiXmlParsingData::Stamp( const char* now, TiXmlEncoding encoding )
 	while ( p < now )
 	{
 		// Treat p as unsigned, so we have a happy compiler.
-		const unsigned char* pU = (const unsigned char*)p;
+		const auto* pU = (const unsigned char*)p;
 
 		// Code contributed by Fletcher Dunn: (modified by lee)
 		switch (*pU) {
@@ -321,7 +321,7 @@ const char* TiXmlBase::SkipWhiteSpace( const char* p, TiXmlEncoding encoding )
 	{
 		while ( *p )
 		{
-			const unsigned char* pU = (const unsigned char*)p;
+			const auto* pU = (const unsigned char*)p;
 			
 			// Skip the stupid Microsoft UTF-8 Byte order marks
 			if (	*(pU+0)==TIXML_UTF_LEAD_0
@@ -734,7 +734,7 @@ const char* TiXmlDocument::Parse( const char* p, TiXmlParsingData* prevData, TiX
 	if ( encoding == TIXML_ENCODING_UNKNOWN )
 	{
 		// Check for the Microsoft UTF-8 lead bytes.
-		const unsigned char* pU = (const unsigned char*)p;
+		const auto* pU = (const unsigned char*)p;
 		if (	*(pU+0) && *(pU+0) == TIXML_UTF_LEAD_0
 			 && *(pU+1) && *(pU+1) == TIXML_UTF_LEAD_1
 			 && *(pU+2) && *(pU+2) == TIXML_UTF_LEAD_2 )
@@ -863,7 +863,7 @@ TiXmlNode* TiXmlNode::Identify( const char* p, TiXmlEncoding encoding )
 		#ifdef DEBUG_PARSER
 			TIXML_LOG( "XML parsing CDATA\n" );
 		#endif
-		TiXmlText* text = new TiXmlText( "" );
+		auto* text = new TiXmlText( "" );
 		text->SetCDATA( true );
 		returnNode = text;
 	}
@@ -1139,7 +1139,7 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		else
 		{
 			// Try to read an attribute:
-			TiXmlAttribute* attrib = new TiXmlAttribute();
+			auto* attrib = new TiXmlAttribute();
 			if ( !attrib )
 			{
 				return nullptr;
@@ -1189,7 +1189,7 @@ const char* TiXmlElement::ReadValue( const char* p, TiXmlParsingData* data, TiXm
 		if ( *p != '<' )
 		{
 			// Take what we have, make a text element.
-			TiXmlText* textNode = new TiXmlText( "" );
+			auto* textNode = new TiXmlText( "" );
 
 			if ( !textNode )
 			{

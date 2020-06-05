@@ -140,7 +140,7 @@ void stars::display(const float max_view_dist) const
 	star_positions.bind();
 	glVertexPointer(3, GL_FLOAT, 0, nullptr);
 	// update alpha values for twinkle stars
-	colorf *color = (colorf *) &star_colors[star_count_static];
+	auto *color = (colorf *) &star_colors[star_count_static];
 	for(unsigned int i = star_count_static; i < star_count; i++)	
 	{
 		color->a = 0.5f + ( 0.3f*rand()/RAND_MAX );  //	alpha in range [0.5, 0.8]

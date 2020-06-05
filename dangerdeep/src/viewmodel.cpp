@@ -151,7 +151,7 @@ void model_load_dialog::load_menu()
 
         models_list = new widget_list(300, 150, 424, 438, nullptr);
         
-        vector<model_entry>::iterator it = files.begin();
+        auto it = files.begin();
         for (; it != files.end(); ++it) {
                 models_list->append_entry(it->name);
         }
@@ -203,10 +203,10 @@ model_load_dialog::message(const string& msg)
 {
         widget w(0,0,1024,768,"", nullptr, "threesubs.jpg");
 
-        widget_text *msgtext = new widget_text(0, 0, 0, 0, msg, nullptr, true);
+        auto *msgtext = new widget_text(0, 0, 0, 0, msg, nullptr, true);
         w.add_child(msgtext);
 
-        widget_menu *wm = new widget_menu(112,120,200,40,"",true);
+        auto *wm = new widget_menu(112,120,200,40,"",true);
         wm->add_entry("OK",new widget_caller_arg_button<widget, void(widget::*)(int),int>(&w, &widget::close, 0, 0, 0, 0, 0));
         w.add_child(wm);
         
@@ -223,7 +223,7 @@ int scalelength(int i)
 
 void view_model(const string& modelfilename, const string& datafilename)
 {
-	model* mdl = new model(/*get_model_dir() + */ modelfilename);
+	auto* mdl = new model(/*get_model_dir() + */ modelfilename);
 	mdl->register_layout(model_layout);
 	mdl->set_layout(model_layout);
 
@@ -330,11 +330,11 @@ void view_model(const string& modelfilename, const string& datafilename)
 	for (unsigned i = 0; i < 32*32; ++i) { pixels[3*i+2] = (((i/32) + (i % 32)) & 1) * 127 + 128; }
 	vector<Uint8> bumps(32*32);
 	for (unsigned i = 0; i < 32*32; ++i) { bumps[i] = 0; } //(((i/32)%8)<7 && ((i%32)%8)<7)?255:0; }
-	model::material::map* dmap = new model::material::map();
-	model::material::map* bmap = new model::material::map();
+	auto* dmap = new model::material::map();
+	auto* bmap = new model::material::map();
 	dmap->set_texture(new texture(pixels, 32, 32, GL_RGB, texture::NEAREST, texture::CLAMP));
 	bmap->set_texture(new texture(bumps, 32, 32, GL_LUMINANCE, texture::LINEAR, texture::CLAMP, true));
-	model::material* mat = new model::material();
+	auto* mat = new model::material();
 	mat->specular = color::white();
 	mat->colormap.reset(dmap);
 	mat->normalmap.reset(bmap);
@@ -741,7 +741,7 @@ int mymain(list<string>& args)
 	/* default fps */
 	unsigned maxfps = 60;
 
-	for (list<string>::iterator it = args.begin(); it != args.end(); ++it) {
+	for (auto it = args.begin(); it != args.end(); ++it) {
 		if (*it == "--help") {
 			cout << "DftD viewmodel, usage:\n--help\t\tshow this\n"
 			     << "--res n\t\tuse resolution n horizontal,\n\t\tn is 512,640,800,1024 (recommended) or 1280\n"
@@ -754,7 +754,7 @@ int mymain(list<string>& args)
 		} else if (*it == "--nofullscreen") {
 			fullscreen = false;
 		} else if (*it == "--res") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				int r = atoi(it2->c_str());
 				if (r==512||r==640||r==800||r==1024||r==1280)
@@ -772,7 +772,7 @@ int mymain(list<string>& args)
                 } else if (*it == "--gui") {
                         use_gui = true;
 		} else if (*it == "--maxfps") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				int mf = atoi(it2->c_str());
 				if (mf >= 0) maxfps = unsigned(mf);
