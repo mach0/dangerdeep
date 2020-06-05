@@ -13,11 +13,14 @@ After each step check functionality.
 	See below for more details.
 	PARTLY DONE
 5. make use of new C++ features for widgets etc.
-6. use new C++ features for XML reader etc.
-7. add new sensors
-8. update internal game classes (storage of sea_object, reference to them via ID!)
-9. Introduce newer system input handling (needs SDL2?)
+	no more templates with object and method etc., just use lambda!
+6. Introduce newer system input handling (needs SDL2?)
 	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
+	This means no more SDL includes in headers!!!
+7. use new C++ features for XML reader etc.
+8. add new sensors (test if they work!!!)
+9. update internal game classes (storage of sea_object, reference to them via ID!)
+	later usage of rigid_body etc.
 10. Copy new classes like gpu interface to master branch so they can be
 	tested and used by standalone apps (copy DONE)
 11. Divide code into separate libraries better (partly done)
@@ -26,6 +29,8 @@ After each step check functionality.
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
 	problem is a name conflict! model/mesh/texture are already used
+	THIS IS THE TOUGHEST CHANGE, A CHANGE ALL OR NOTHING WILL WORK
+	PROJECT!
 14. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 15. Turn on -Wall
 
