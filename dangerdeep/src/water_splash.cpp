@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "game.h"
 #include "global_constants.h"
+#include "primitives.h"
 
 void water_splash::render_cylinder(double radius_bottom, double radius_top, double height,
 				   double alpha, const texture& tex,

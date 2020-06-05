@@ -344,7 +344,7 @@ void torpedo::simulate(double delta_time)
 		ship* target = gm.sonar_acoustical_torpedo_target ( this );
 		if (target) {
 			angle targetang(target->get_engine_noise_source() - get_pos().xy());
-			bool turnright = get_heading().is_cw_nearer(targetang);
+			bool turnright = get_heading().is_clockwise_nearer(targetang);
 			head_to_course(targetang, !turnright);
 		}
 	}

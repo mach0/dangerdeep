@@ -41,7 +41,7 @@ protected:
 	vector3 position;
 	vector3 velocity;
 	double life{1.0};	// 0...1, 0 = faded out
-	particle()  {}
+	particle()  = default;
 	particle(const particle& other);
 	particle& operator= (const particle& other);
 
@@ -90,7 +90,7 @@ protected:
 	virtual void custom_display(const vector3& viewpos, const vector3& dx, const vector3& dy) const {}
 
 public:
-	particle(const vector3& pos, const vector3& velo = vector3()) : position(pos), velocity(velo), life(1.0) {}
+	particle(const vector3& pos, const vector3& velo = vector3()) : position(pos), velocity(velo) {}
 	virtual ~particle() = default;
 
 	static void init();

@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,18 +22,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef ANGLE_H
 #define ANGLE_H
 
-#include "vector2.h"
+#include "constant.h"
+#include "helper.h"
+#include "vector3.h"
 
 #include <cmath>
 #include <iostream>
-
-#ifndef M_PI
-#define M_PI 3.1415926535897932
-#endif
-#ifndef round
-inline double round(double d) { return floor(d + 0.5); }
-#endif
-
 
 ///\brief This class represents clockwise angles. It is used for rotations or nautical angles
 /** note that mathematical angles go counter clockwise and nautical angles
@@ -44,36 +38,47 @@ inline double round(double d) { return floor(d + 0.5); }
 class angle
 {
 	protected:
-	double val{0};
-	static double clamped(double d) { return d - 360.0*floor(d/360.0); };
-	
+	double val{0.0};
+	static double clamped(double d) { return helper::mod(d, 360.0); }
+
 	public:
-	angle()  {};
-	angle(double d) : val(d) {};
-	angle(const vector2& v) { val = (v == vector2(0,0)) ? 0 : 90-atan2(v.y, v.x)*180.0/M_PI; };
-	double value() const { return clamped(val); };
-	unsigned ui_value() const { return unsigned(clamped(round(val))); };
-	unsigned ui_abs_value180() const { return unsigned(fabs(round(value_pm180()))); };
-	double rad() const { return value()*M_PI/180.0; };
-	double value_pm180() const { double d = clamped(val); return d <= 180.0 ? d : d-360.0; };
-	angle operator+(const angle& other) const { return {val + other.val}; };
-	angle operator-(const angle& other) const { return {val - other.val}; };
-	angle operator-() const { return {-val}; };
-	angle operator*(double t) const { return {val * t}; };
+	angle()  {}
+	angle(double d) : val(d) {}
+	/// Compute angle from direction in horizontal 2d plane
+	angle(const vector2& v) { val = (v == vector2(0.0,0.0)) ? 0.0 : 90.0-atan2(v.y, v.x)*180.0/constant::PI; }
+	/// Compute azimuth (angle in horizontal plane) from 3d direction
+	static angle azimuth(const vector3& direction) { return angle(direction.xy()); }
+	/// Compute elevation angle from direction
+	static angle elevation(const vector3& direction) { return {::asin(direction.z) * 180 / constant::PI}; }
+	/// Compute direction from azimuth and elevation
+	static vector3 direction_from_azimuth_and_elevation(angle azimuth, angle elevation) { return vector3(azimuth.direction() * elevation.cos(), elevation.sin()).normal(); }
+	double value() const { return clamped(val); }
+	unsigned ui_value() const { return unsigned(clamped(helper::round(val))); }
+	unsigned ui_abs_value180() const { return unsigned(fabs(helper::round(value_pm180()))); }
+	double rad() const { return value()*constant::PI/180.0; }
+	double value_pm180() const { double d = clamped(val); return d <= 180.0 ? d : d-360.0; }
+	angle operator+(const angle& other) const { return {val + other.val}; }
+	angle operator-(const angle& other) const { return {val - other.val}; }
+	angle operator-() const { return {-val}; }
+	angle operator*(double t) const { return {val * t}; }
 	/// returns true if the turn from "this" to "a" is shorter when done clockwise
-	bool is_cw_nearer(const angle& a) const { return clamped(a.val - val) <= 180.0; };
-	static angle from_rad(double d) { return {d*180.0/M_PI}; };
-	static angle from_math(double d) { return {(M_PI/2-d)*180.0/M_PI}; };
-	angle& operator+=(const angle& other) { val += other.val; return *this; };
-	angle& operator-=(const angle& other) { val -= other.val; return *this; };
-	double diff(const angle& other) const { double d = clamped(other.val - val); if (d > 180.0) d = 360.0 - d; return d; };
+	bool is_clockwise_nearer(const angle& a) const { return clamped(a.val - val) <= 180.0; }
+	static angle from_rad(double d) { return {d*180.0/constant::PI}; }
+	static angle from_math(double d) { return {(constant::PI/2-d)*180.0/constant::PI}; }
+	angle& operator+=(const angle& other) { val += other.val; return *this; }
+	angle& operator-=(const angle& other) { val -= other.val; return *this; }
+	double diff(const angle& other) const { double d = clamped(other.val - val); if (d > 180.0) d = 360.0 - d; return d; }
 	double diff_in_direction(bool ccw, const angle& other) const { return ccw ? clamped(val - other.val) : clamped(other.val - val); }
-	double sin() const { return ::sin(rad()); };
-	double cos() const { return ::cos(rad()); };
-	double tan() const { return ::tan(rad()); };
-	vector2 direction() const { double r = rad(); return vector2(::sin(r), ::cos(r)); };
+	double sin() const { return ::sin(rad()); }
+	double cos() const { return ::cos(rad()); }
+	double tan() const { return ::tan(rad()); }
+	vector2 direction() const { double r = rad(); return {::sin(r), ::cos(r)}; }
 	bool operator == ( const angle& b ) const { return value() == b.value(); }
 	bool operator != ( const angle& b ) const { return value() != b.value(); }
+
+	/// Compute azimuth (angle in horizontal plane) of direction
+
+	/// Compute elevation angle of direction
 };
 
 inline std::ostream& operator<< (std::ostream& os, const angle& a) { os << a.value(); return os; }

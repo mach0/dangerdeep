@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "vector2.h"
 #include <vector>
+
+// Note! implement much better divide and conquer algorithm (with raster! but not needed yet)
 
 ///\brief Triangulation algorithm for planar meshes.
 struct triangulate

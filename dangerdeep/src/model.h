@@ -73,7 +73,7 @@ public:
 				texture* mytexture{nullptr};
 				unsigned ref_count{0};
 				std::string filename;
-				skin()  {}
+				skin()  = default;
 			};
 
 			// layout-name to skin mapping

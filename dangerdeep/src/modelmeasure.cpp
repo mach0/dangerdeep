@@ -158,7 +158,7 @@ void measure_mass_distribution(const std::string& massmapfn, const vector3i& res
 
 
 
-class worker : public thread
+class worker : public ::thread
 {
 	model& mdl;
 	vector<float>& is_inside;
@@ -214,7 +214,7 @@ public:
 					xc += csx;
 				}
 				yc += csy;
-				mutex_locker ml(counter_mtx);
+				std::unique_lock<std::mutex> ml(counter_mtx);
 				--counter;
 			}
 			zc += csz;
@@ -373,8 +373,8 @@ int mymain(list<string>& args)
 		mutex ctrmtx;
 		int ctr = resolution.z * resolution.y;
 		unsigned samples_per_voxel = torpedomode ? 20 : 4;
-		thread::auto_ptr<worker> w0(new worker(*mdl, is_inside, resolution, 0, 2, ctr, ctrmtx, samples_per_voxel));
-		thread::auto_ptr<worker> w1(new worker(*mdl, is_inside, resolution, 1, 2, ctr, ctrmtx, samples_per_voxel));
+		::thread::ptr<worker> w0(new worker(*mdl, is_inside, resolution, 0, 2, ctr, ctrmtx, samples_per_voxel));
+		::thread::ptr<worker> w1(new worker(*mdl, is_inside, resolution, 1, 2, ctr, ctrmtx, samples_per_voxel));
 		w0->start();
 		w1->start();
 		sys().prepare_2d_drawing();
@@ -391,7 +391,7 @@ int mymain(list<string>& args)
 			qd.colors[0] = colorf(0, 0, 1);
 			qd.render();
 			sys().swap_buffers();
-			thread::sleep(100);
+			::thread::sleep(100);
 		}
 		sys().unprepare_2d_drawing();
 	}
@@ -456,7 +456,7 @@ int mymain(list<string>& args)
 		mdl->get_base_mesh().display();
 		sys().swap_buffers();
 		sys().screenshot(modelfilename.substr(0, st) + ".mass_map_draft");
-		thread::sleep(3000);
+		::thread::sleep(3000);
 	}
 
 	double vol_inside = (inside_vol * vol) / is_inside.size();

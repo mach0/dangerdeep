@@ -70,8 +70,7 @@ bad_typeid
 
 system::parameters::parameters() 
 	
-{
-}
+= default;
 	
 
 
@@ -80,14 +79,8 @@ system::parameters::parameters(double near_z_, double far_z_, unsigned res_x, un
 	far_z(far_z_),
 	resolution_x(res_x),
 	resolution_y(res_y),
-	fullscreen(fullscreen_),
-	use_multisampling(false),
-	hint_multisampling(0),
-	multisample_level(0),
-	hint_fog(0),
-	hint_mipmap(0),
-	hint_texture_compression(0),
-	vertical_sync(true)
+	fullscreen(fullscreen_)
+	
 {
 }
 
@@ -580,7 +573,7 @@ double system::translate_motion_y(const SDL_Event& event)
 
 vector2 system::translate_motion(const SDL_Event& event)
 {
-	return vector2(translate_motion_x(event), translate_motion_y(event));
+	return {translate_motion_x(event), translate_motion_y(event)};
 }
 
 
@@ -607,7 +600,7 @@ int system::translate_position_y(const SDL_Event& event)
 
 vector2i system::translate_position(const SDL_Event& event)
 {
-	return vector2i(translate_position_x(event), translate_position_y(event));
+	return {translate_position_x(event), translate_position_y(event)};
 }
 
 

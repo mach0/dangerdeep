@@ -41,7 +41,7 @@ public:
 		std::string action;
 		SDLKey keysym{SDLK_UNKNOWN};
 		bool ctrl{false}, alt{false}, shift{false};
-		key()  {}
+		key()  = default;
 		~key() = default;
 		key(std::string ac, SDLKey ks, bool c, bool a, bool s) :
 			action(std::move(std::move(ac))), keysym(ks), ctrl(c), alt(a), shift(s) {}

@@ -679,7 +679,7 @@ unique_ptr<model::mesh> generate_trees(vector<float>& heightdata, unsigned nr = 
 //	m->mymaterial->colormap->set_texture(new texture(get_texture_dir() + "tree1.png", texture::LINEAR_MIPMAP_LINEAR, texture::CLAMP));
 	m->mymaterial->specular = color(0, 0, 0);
 	m->compile();
-	return std::move(m);
+	return m;
 }
 
 

@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,22 +22,32 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "error.h"
 #include <sstream>
-#include <SDL.h>
+//fixme what for #include <SDL.h>
 
-#if defined(DEBUG) && defined(__GNUC__)
-
-std::string error::str(const char* file, unsigned line)
+std::string error::throw_location(const char* file, unsigned line)
 {
 	std::ostringstream oss;
 	oss << ", in file: " << file << ", in line: " << line;
 	return oss.str();
 }
-#endif
 
 
 
-sdl_error::sdl_error(const std::string& msg)
-	: error(std::string("SDL error: ") + msg + std::string(", SDL: ")
-		+ SDL_GetError())
+error::error(const std::string& location, const std::string& message)
+	: std::runtime_error(std::string("DftD error at ") + location + ", Type: " + message)
+{
+}
+
+
+
+file_context_error::file_context_error(const std::string& location, const std::string& message, const std::string& filename)
+	: error(location, message + ", regarding file: " + filename)
+{
+}
+
+
+
+file_read_error::file_read_error(const std::string& location, const std::string& filename)
+	: error(location, std::string("failed to load: ") + filename)
 {
 }

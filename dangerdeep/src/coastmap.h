@@ -81,7 +81,7 @@ public:
 
 	void push_back_segcl(const segcl& scl);	// avoids segcls with < 2 points.
 
-	coastsegment(/*unsigned topon, const std::vector<float>& topod*/)  {}
+	coastsegment(/*unsigned topon, const std::vector<float>& topod*/)  = default;
 	
 	void draw_as_map(const class coastmap& cm, int x, int y, int detail = 0) const;
 };
@@ -150,7 +150,7 @@ class coastmap
 	void process_coastline(int x, int y);
 	void process_segment(int x, int y);
 
-	class worker : public thread
+	class worker : public ::thread
 	{
 		coastmap& cm;
 	public:
@@ -162,7 +162,7 @@ class coastmap
 		}
 	};
 
-	thread::auto_ptr<worker> myworker;
+	::thread::ptr<worker> myworker;
 	void construction_threaded();
 
 public:	

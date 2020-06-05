@@ -169,7 +169,7 @@ class matrix3t
 	}
 
 	/// determinate
-	D determinant() const {
+	D determinate() const {
 		return    values[0]*values[4]*values[8]
 			+ values[1]*values[5]*values[6]
 			+ values[2]*values[3]*values[7]

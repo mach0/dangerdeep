@@ -1,6 +1,6 @@
 /*
   Danger from the Deep - Open source submarine simulation
-  Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+  Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 #ifndef MESSAGE_QUEUE_H
 #define MESSAGE_QUEUE_H
 
-#include "condvar.h"
-#include <list>
-#include <memory>
+#include <condition_variable>
+#include <mutex>
+#include <vector>
 
 /// a generic message, base class
 class message
@@ -37,9 +37,11 @@ class message
 	bool needsanswer;
 	mutable bool result;
 
-	// no copy
+	// no copy, no move
 	message(const message& ) = delete;
 	message& operator= (const message& ) = delete;
+	message(message&& ) = delete;
+	message& operator= (message&& ) = delete;
 
  protected:
 	/// evaluate the message. overload with your functionality.
@@ -72,13 +74,13 @@ class message_queue
 	message_queue& operator= (const message_queue& ) = delete;
 
  protected:
-	std::list<message*> myqueue;//fixme use ptrlist
-	mutex mymutex;
-	condvar emptycondvar;
-	condvar ackcondvar;
+	std::vector<message::ptr> myqueue;
+	std::mutex mymutex;
+	std::condition_variable emptycondvar;
+	std::condition_variable ackcondvar;
 	bool msginqueue{false};
 	bool abortwait{false};	// set to true by wakeup_receiver()
-	std::list<message*> ackqueue; // queue with acknowledged messages
+	std::vector<message::ptr> ackqueue; // queue with acknowledged messages
 
  public:
 	/// create message queue
@@ -99,11 +101,11 @@ class message_queue
 	/// wait for a messages
 	///@param wait - if true block while queue is empty, if false only test and do not block
 	///@return list of messages
-	std::list<message*> receive(bool wait = true);
+	std::vector<message::ptr> receive(bool wait = true);
 
 	/// acknowledge received message.
 	///@note Must be called for every message passed from the receive function!
-	void acknowledge(message* msg);
+	void acknowledge(message::ptr msg);
 
 	/// process all messages, that is wait for messages, run eval() for every message and ack them
 	///@param wait - true: block if queue is empty

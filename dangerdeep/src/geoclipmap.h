@@ -90,7 +90,7 @@ class geoclipmap
 		area intersection(const area& other) const {
 			return area(bl.max(other.bl), tr.min(other.tr));
 		}
-		vector2i size() const { return vector2i(tr.x - bl.x + 1, tr.y - bl.y + 1); }
+		vector2i size() const { return {tr.x - bl.x + 1, tr.y - bl.y + 1}; }
 		bool empty() const { vector2i sz = size(); return sz.x <= 0 || sz.y <= 0; }
 	};
 
@@ -155,7 +155,7 @@ class geoclipmap
 	}
 
 	vector2i clamp(const vector2i& v) const {
-		return vector2i(mod(v.x), mod(v.y));
+		return {mod(v.x), mod(v.y)};
 	}
 
         

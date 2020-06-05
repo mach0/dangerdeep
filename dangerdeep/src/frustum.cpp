@@ -40,7 +40,7 @@ polygon frustum::clip(polygon p) const
 {
 	polygon result = p;
 	for (const auto & plane : planes)
-		result = result.clip(plane);
+		result = result.clip(plane).first;
 	return result;
 }
 

@@ -59,6 +59,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "music.h"
 #include "log.h"
+#include "primitives.h"
 using namespace std;
 
 const double message_vanish_time = 10;

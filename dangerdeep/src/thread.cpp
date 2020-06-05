@@ -1,6 +1,6 @@
 /*
   Danger from the Deep - Open source submarine simulation
-  Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+  Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -20,46 +20,26 @@
 // multithreading primitives: thread
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include <string>
-
-#include "thread.h"
 #include "error.h"
-#include "system.h"
 #include "log.h"
-#include <SDL.h>
-#include <SDL_thread.h>
-
-/* fixme: SDL does not allow to set stack size of thread... */
-
-int thread::thread_entry(void* arg)
-{
-	auto* t = (thread*)arg;
-	try {
-		t->run();
-	}
-	catch (std::exception& e) {
-		t->thread_error_message = e.what();
-		return -1;
-	}
-	catch (...) {
-		t->thread_error_message = "UNKNOWN";
-		return -2;
-	}
-	return 0;
-}
+#include "system.h"
+#include "thread.h"
 
 
+#include <utility>
 
+
+/// Constructor
 thread::thread(const char* name)
-	: thread_id(nullptr),
-	  thread_abort_request(false),
-	  thread_state(THRSTAT_NONE),
-	  myname(name)
+	: abort_request(false)
+	, mystate(state::none)
+	, myname(name)
 {
 }
 
 
 
+/// main thread run method, catches all exceptions
 void thread::run()
 {
 	try {
@@ -68,25 +48,25 @@ void thread::run()
 	}
 	catch (std::exception& e) {
 		// failed to initialize, report that
-		mutex_locker ml(thread_state_mutex);
-		thread_error_message = e.what();
-		thread_state = THRSTAT_INIT_FAILED;
-		thread_start_cond.signal();
-		throw;
+		std::unique_lock<std::mutex> ml(state_mutex);
+		error_message = e.what();
+		mystate = state::init_failed;
+		start_cond.notify_all();
+		return;
 	}
 	catch (...) {
 		// failed to initialize, report that
-		mutex_locker ml(thread_state_mutex);
-		thread_error_message = "UNKNOWN";
-		thread_state = THRSTAT_INIT_FAILED;
-		thread_start_cond.signal();
-		throw;
+		std::unique_lock<std::mutex> ml(state_mutex);
+		error_message = "UNKNOWN";
+		mystate = state::init_failed;
+		start_cond.notify_all();
+		return;
 	}
 	// initialization was successfully, report that
 	{
-		mutex_locker ml(thread_state_mutex);
-		thread_state = THRSTAT_RUNNING;
-		thread_start_cond.signal();
+		std::unique_lock<std::mutex> ml(state_mutex);
+		mystate = state::running;
+		start_cond.notify_all();
 	}
 	try {
 		while (!abort_requested()) {
@@ -97,83 +77,87 @@ void thread::run()
 	}
 	catch (std::exception& e) {
 		// thread execution failed
-		mutex_locker ml(thread_state_mutex);
-		thread_error_message = e.what();
-		thread_state = THRSTAT_ABORTED;
-		throw;
+		std::unique_lock<std::mutex> ml(state_mutex);
+		error_message = e.what();
+		mystate = state::aborted;
+		return;
 	}
 	catch (...) {
 		// thread execution failed
-		mutex_locker ml(thread_state_mutex);
-		thread_error_message = "UNKNOWN";
-		thread_state = THRSTAT_ABORTED;
-		throw;
+		std::unique_lock<std::mutex> ml(state_mutex);
+		error_message = "UNKNOWN";
+		mystate = state::aborted;
+		return;
 	}
 	// normal execution finished
-	mutex_locker ml(thread_state_mutex);
-	thread_state = THRSTAT_FINISHED;
+	std::unique_lock<std::mutex> ml(state_mutex);
+	mystate = state::finished;
 }
 
 
 
+/// Destructor, needed because of virtual
 thread::~thread()
 = default;
 
 
 
+/// Request abort of thread
 void thread::request_abort()
 {
-	thread_abort_request = true;
+	abort_request = true;
 }
 
 
 
+/// Start execution of thread
 void thread::start()
 {
-	if (thread_abort_request)
-		throw error("thread abort requested, but start() called");
-	mutex_locker ml(thread_state_mutex);
-	if (thread_state != THRSTAT_NONE)
-		throw error("thread already started, but start() called again");
-	thread_id = SDL_CreateThread(thread_entry, this);
-	if (!thread_id)
-		throw sdl_error("thread start failed");
+	if (abort_request)
+		THROW(error, "thread abort requested, but start() called");
+	std::unique_lock<std::mutex> ml(state_mutex);
+	if (mystate != state::none)
+		THROW(error, "thread already started, but start() called again");
+	thread_id = std::thread(&thread::run, this);
 	// we could wait with timeout, but how long? init could take any time...
-	thread_start_cond.wait(thread_state_mutex);
+	start_cond.wait(ml);
 	// now check if thread has started
-	if (thread_state == THRSTAT_INIT_FAILED)
-		throw std::runtime_error(("thread start failed: ") + thread_error_message);
+	if (mystate == state::init_failed)
+		THROW(error, ("thread start failed: ") + error_message);
 	// very rare, but possible
-	else if (thread_state == THRSTAT_ABORTED)
-		throw std::runtime_error(("thread run failed: ") + thread_error_message);
+	else if (mystate == state::aborted)
+		THROW(error, ("thread run failed: ") + error_message);
 }
 
 
 
+/// Wait for thread to finish
 void thread::join()
 {
-	int result = 0;
-	SDL_WaitThread(thread_id, &result);
+	thread_id.join();
+	auto mystate_copy = std::move(mystate);
+	auto error_message_copy = std::move(error_message);
 	delete this;
-	if (result < 0)
-		throw error(std::string("thread aborted with error: ") + thread_error_message);
+	if (mystate_copy != thread::state::finished)
+		THROW(error, std::string("thread aborted with error: ") + error_message_copy);
 
 }
 
 
 
+/// destroy thread, try to abort and join it or delete the object if it hasn't started yet.
 void thread::destruct()
 {
-	thread_state_t ts = THRSTAT_NONE;
+	state ts = state::none;
 	{
-		mutex_locker ml(thread_state_mutex);
-		ts = thread_state;
+		std::unique_lock<std::mutex> ml(state_mutex);
+		ts = mystate;
 	}
 	// request if thread runs, in that case send abort request
-	if (ts == THRSTAT_RUNNING)
+	if (ts == state::running)
 		request_abort();
 	// request if thread has ever run, in that case we need to join
-	if (thread_state != THRSTAT_NONE)
+	if (mystate != state::none)
 		join();
 	else
 		delete this;
@@ -181,30 +165,34 @@ void thread::destruct()
 
 
 
+/// let caller sleep
 void thread::sleep(unsigned ms)
 {
-	SDL_Delay(ms);
+	std::this_thread::sleep_for(std::chrono::microseconds(ms));
 }
 
 
 
-thread::id thread::get_my_id()
-{
-	return SDL_ThreadID();
-}
-
-
-
-thread::id thread::get_id() const
-{
-	return SDL_GetThreadID(thread_id);
-}
-
-
-
+/// request if thread runs
 bool thread::is_running()
 {
 	// only reading is normally safe, but not for multi-core architectures.
-	mutex_locker ml(thread_state_mutex);
-	return thread_state == THRSTAT_RUNNING;
+	std::unique_lock<std::mutex> ml(state_mutex);
+	return mystate == state::running;
+}
+
+
+
+thread_function::thread_function(std::function<void()> func)
+	: thread("function-caller")
+	, myfunction(std::move(func))
+{
+}
+
+
+
+void thread_function::loop()
+{
+	myfunction();
+	request_abort();
 }

@@ -40,7 +40,7 @@ double log2( double n )
 #include <utility>
 
 #include <cfloat>
-
+#include <mutex>
 #include "game.h"
 #include "ship.h"
 #include "submarine.h"
@@ -2318,9 +2318,9 @@ game::simulate_worker::simulate_worker(game& gm_)
 
 void game::simulate_worker::request_abort()
 {
-	mutex_locker ml(mtx);
+	std::unique_lock<std::mutex> ml(mtx);
 	thread::request_abort();
-	cond.signal();
+	cond.notify_all();
 }
 
 
@@ -2328,17 +2328,17 @@ void game::simulate_worker::request_abort()
 void game::simulate_worker::loop()
 {
 	{
-		mutex_locker ml(mtx);
+		std::unique_lock<std::mutex> ml(mtx);
 		if (done)
-			cond.wait(mtx);
+			cond.wait(ml);
 		if (abort_requested())
 			return;
 	}
 	gm.simulate_objects_mt(delta_t, idxoff, idxmod, record, nearest_contact);
 	{
-		mutex_locker ml(mtx);
+		std::unique_lock<std::mutex> ml(mtx);
 		done = true;
-		condfini.signal();
+		condfini.notify_all();
 	}
 }
 
@@ -2346,7 +2346,7 @@ void game::simulate_worker::loop()
 
 void game::simulate_worker::work(double dt, unsigned io, unsigned im, bool r)
 {
-	mutex_locker ml(mtx);
+	std::unique_lock<std::mutex> ml(mtx);
 	if (!done)
 		throw error("work() called without sync before");
 	done = false;
@@ -2355,16 +2355,16 @@ void game::simulate_worker::work(double dt, unsigned io, unsigned im, bool r)
 	idxmod = im;
 	record = r;
 	nearest_contact = 1e30;
-	cond.signal();
+	cond.notify_all();
 }
 
 
 
 double game::simulate_worker::sync()
 {
-	mutex_locker ml(mtx);
+	std::unique_lock<std::mutex> ml(mtx);
 	if (!done) {
-		condfini.wait(mtx);
+		condfini.wait(ml);
 	}
 	return nearest_contact;
 }

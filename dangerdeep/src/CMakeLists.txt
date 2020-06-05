@@ -10,6 +10,17 @@ add_subdirectory ( tinyxml )
 add_subdirectory ( oglext )
 
 set ( dftdall_src
+	angular_table.h
+	area.h
+	box.h
+	constant.h
+	graph.h
+	helper.h
+	polyhedron.h
+	rectangle.h
+	units.h
+	voxel.cpp
+	voxel.h
 	ai.cpp
 	ai.h
 	airplane.cpp
@@ -34,8 +45,6 @@ set ( dftdall_src
 	coastmap.cpp
 	coastmap.h
 	color.h
-	condvar.cpp
-	condvar.h
 	convoy.cpp
 	convoy.h
 	countrycodes.cpp
@@ -114,8 +123,6 @@ set ( dftdall_src
 	morton_bivector.h
 	music.cpp
 	music.h
-	mutex.cpp
-	mutex.h
 	#mymain.cpp
 	#network.cpp
 	#network.h

@@ -778,7 +778,7 @@ void ship::head_to_course(const angle& a, int direction, bool hard_rudder)
 		head_to_fixed = head_to_param((direction < 0 ? HEAD_TO_LEFT : HEAD_TO_RIGHT) | HEAD_TO_FORCE_DIRECTION);
 	} else {
 		// automatically determine best turn direction
-		turn_left = !get_heading().is_cw_nearer(a);
+		turn_left = !get_heading().is_clockwise_nearer(a);
 		head_to_fixed = turn_left ? HEAD_TO_LEFT : HEAD_TO_RIGHT;
 	}
 	if (hard_rudder) {

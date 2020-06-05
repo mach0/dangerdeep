@@ -114,13 +114,12 @@ the waterline although the ship would swim in total.
 
 submarine::stored_torpedo::stored_torpedo()
 	 
-{
-}
+= default;
 
 
 
 submarine::stored_torpedo::stored_torpedo(game& gm, std::string  type)
-	: specfilename(std::move(type)), temperature(15.0), status(st_loaded), associated(0), remaining_time(0)
+	: specfilename(std::move(type)),  status(st_loaded), associated(0), remaining_time(0)
 {
 }
 
@@ -1290,11 +1289,11 @@ bool submarine::launch_torpedo(int tubenr, sea_object* target)
 	if (TDC.solution_valid()) {
 		angle fired_at_angle = usebowtubes ? heading : heading + angle(180);
 		angle torp_head_to = TDC.get_lead_angle() + TDC.get_parallax_angle();
-		//cout << "fired at " << fired_at_angle.value() << ", head to " << torp_head_to.value() << ", is cw nearer " << torp_head_to.is_cw_nearer(fired_at_angle) << "\n";
+		//cout << "fired at " << fired_at_angle.value() << ", head to " << torp_head_to.value() << ", is cw nearer " << torp_head_to.is_clockwise_nearer(fired_at_angle) << "\n";
 		xml_doc doc(data_file().get_filename(torpedoes[tubenr].specfilename));
 		doc.load();
 		std::unique_ptr<torpedo> torp(new torpedo(gm, doc.first_child(), torpedoes[tubenr].setup));
-		torp->head_to_course(torp_head_to, fired_at_angle.is_cw_nearer(torp_head_to) ? 1 : -1);
+		torp->head_to_course(torp_head_to, fired_at_angle.is_clockwise_nearer(torp_head_to) ? 1 : -1);
 		// just hand the torpedo object over to class game. tube is empty after that...
 		vector3 torppos = position + (fired_at_angle.direction() * (get_length()/2 + 5 /*5m extra*/)).xy0();
 		torp->launch(torppos, fired_at_angle);

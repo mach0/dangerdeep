@@ -133,7 +133,7 @@ std::unique_ptr<model> tree_generator::generate() const
 	mdl->compile();
 	mdl->set_layout();
 
-	return std::move(mdl);
+	return mdl;
 }
 
 vector3f tree_generator::generate_log(model::mesh& msh, model::mesh& mshleaves, unsigned lvl,

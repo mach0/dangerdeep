@@ -131,8 +131,8 @@ public:
 	unsigned get_res_y() const { return params.resolution_y; }
 	unsigned get_res_x_2d() const { return res_x_2d; }
 	unsigned get_res_y_2d() const { return res_y_2d; }
-	vector2i get_res() const { return vector2i(params.resolution_x, params.resolution_y); }
-	vector2i get_res_2d() const { return vector2i(res_x_2d, res_y_2d); }
+	vector2i get_res() const { return {static_cast<int>(static_cast<int>(params.resolution_x)), static_cast<int>(static_cast<int>(params.resolution_y))}; }
+	vector2i get_res_2d() const { return {static_cast<int>(static_cast<int>(res_x_2d)), static_cast<int>(static_cast<int>(res_y_2d))}; }
 	unsigned get_res_area_2d_x() const { return res_area_2d_x; }
 	unsigned get_res_area_2d_y() const { return res_area_2d_y; }
 	unsigned get_res_area_2d_w() const { return res_area_2d_w; }

@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,16 +26,51 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "vector3.h"
 
+template<typename D, axis a> struct vector_coord
+{
+	static D& get(vector3t<D>& v) { return v.x; }
+	static const D& get(const vector3t<D>& v) { return v.x; }
+};
+template<typename D> struct vector_coord<D, axis::y>
+{
+	static D& get(vector3t<D>& v) { return v.y; }
+	static const D& get(const vector3t<D>& v) { return v.y; }
+};
+template<typename D> struct vector_coord<D, axis::z>
+{
+	static D& get(vector3t<D>& v) { return v.z; }
+	static const D& get(const vector3t<D>& v) { return v.z; }
+};
+template<typename D> struct vector_coord<D, axis::neg_x>
+{
+	static D& get(vector3t<D>& v) { return -v.x; }
+	static const D& get(const vector3t<D>& v) { return -v.x; }
+};
+template<typename D> struct vector_coord<D, axis::neg_y>
+{
+	static D& get(vector3t<D>& v) { return -v.y; }
+	static const D& get(const vector3t<D>& v) { return -v.y; }
+};
+template<typename D> struct vector_coord<D, axis::neg_z>
+{
+	static D& get(vector3t<D>& v) { return -v.z; }
+	static const D& get(const vector3t<D>& v) { return -v.z; }
+};
+template<typename D, axis a> inline D plane_distance(const vector3t<D>& v, D c) { return vector_coord<D, a>::get(v) - c; }
+template<typename D, axis a> inline vector3t<D> plane_intersection(const vector3t<D>& p, const vector3t<D>& q, D c)
+{
+	D divi = vector_coord<D, a>::get(q) - vector_coord<D, a>::get(p);
+	D t = (c - vector_coord<D, a>::get(p)) / divi;
+	return p + (q - p) * t;
+}
+
+/// a plane in 3-space
 template<class D>
 class plane_t
 {
 public:
-	// static const variables must not be double/float, some compilers are picky.
-	// so use a const member returning value
-	D epsilon() const { return D(0.001); }
-
-	vector3t<D> N;
-	D d;
+	vector3t<D> N;	///< normal of plane
+	D d;				///< negative distance from zero, a vector (x,y,z)*N+w*d = 0 in plane
 
 	plane_t() : d(0) {}
 	plane_t(const vector3t<D>& N_, const D& d_) : N(N_), d(d_) {}
@@ -54,7 +89,7 @@ public:
 	/// determine if point is left of/right of/in plane (>0,<0,==0)
 	int test_side(const vector3t<D>& a) const {
 		D r = N * a + d;
-		return (r > epsilon()) ? 1 : ((r < -epsilon()) ? -1 : 0);
+		return (r > epsilon<D>()) ? 1 : ((r < -epsilon<D>()) ? -1 : 0);
 	}
 	/// determine distance of point to plane
 	D distance(const vector3t<D>& a) const {
@@ -106,7 +141,7 @@ public:
 		// result is undefined in some cases
 		D x = plane_b.N.cross(plane_c.N) * N;
 		if (x < 0) x = -x;
-		if (x <= D(1e-3))
+		if (x <= epsilon<D>())
 			return false;
 		intersection.x = -(N.x * d + plane_b.N.x * plane_b.d + plane_c.N.x * plane_c.d);
 		intersection.y = -(N.y * d + plane_b.N.y * plane_b.d + plane_c.N.y * plane_c.d);

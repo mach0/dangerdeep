@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <memory>
 
-#include <utility>
-
 #include "triangle_intersection.h"
 
 //#define PRINT(x) std::cout << x
@@ -38,11 +36,11 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	std::unique_ptr<bv_tree> result;
 	// if list has zero entries, return empty pointer
 	if (nodes.empty())
-		return std::move(result);
+		return result;
 	// compute bounding box for leaves
 	vector3f bbox_min = nodes.front().get_pos(vertices, 0);
 	vector3f bbox_max = bbox_min;
-	for (auto & node : nodes) {
+	for (auto& node : nodes) {
 		for (unsigned i = 0; i < 3; ++i) {
 			bbox_min = bbox_min.min(node.get_pos(vertices, i));
 			bbox_max = bbox_max.max(node.get_pos(vertices, i));
@@ -52,7 +50,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	spheref bound_sphere((bbox_min + bbox_max) * 0.5f, 0.0f);
 	// compute sphere radius by vertex distances to center (more accurate than
 	// approximating by bbox size)
-	for (auto & node : nodes) {
+	for (auto& node : nodes) {
 		for (unsigned i = 0; i < 3; ++i) {
 			float r = node.get_pos(vertices, i).distance(bound_sphere.center);
 			bound_sphere.radius = std::max(r, bound_sphere.radius);
@@ -61,7 +59,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	// if list has one entry, return that
 	if (nodes.size() == 1) {
 		result = std::make_unique<bv_tree>(bound_sphere, nodes.front());
-		return std::move(result);
+		return result;
 	}
 	//
 	// split leaf node list in two parts
@@ -95,8 +93,8 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	if (left_nodes.empty() || right_nodes.empty()) {
 		PRINT("special case\n");
 		// special case: force division
-		std::list<leaf_data>& empty_list = left_nodes.empty() ? left_nodes : right_nodes;
-		std::list<leaf_data>& full_list = left_nodes.empty() ? right_nodes : left_nodes;
+		auto& empty_list = left_nodes.empty() ? left_nodes : right_nodes;
+		auto& full_list = left_nodes.empty() ? right_nodes : left_nodes;
 		auto it = full_list.begin();
 		for (unsigned i = 0; i < full_list.size() / 2; ++i)
 			++it;
@@ -105,7 +103,7 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	PRINT("left " << left_nodes.size() << " right " << right_nodes.size() << "\n");
 	result = std::make_unique<bv_tree>(bound_sphere, create(vertices, left_nodes), create(vertices, right_nodes));
 	PRINT("final volume " << result->volume.center << "|" << result->volume.radius << "\n");
-	return std::move(result);
+	return result;
 }
 
 
@@ -123,9 +121,9 @@ bool bv_tree::is_inside(const vector3f& v) const
 {
 	if (!volume.is_inside(v))
 		return false;
-	for (const auto & i : children)
-		if (i.get())
-			if (i->is_inside(v))
+	for (auto & elem : children)
+		if (elem.get())
+			if (elem->is_inside(v))
 				return true;
 	return false;
 }
@@ -162,7 +160,7 @@ bool bv_tree::collides(const param& p0, const param& p1, std::list<vector3f>& co
 			// never would compare with them, so we don't need to check for them
 			// here.
 			//printf("leaf collision\n");
-			bool c = triangle_intersection_t<float>::compute(v0t, v1t, v2t, v3t, v4t, v5t);
+			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
 			//if (c) printf("tri-tri coll\n");
 			if (c) {
 				// fixme: compute more accurate position here, maybe
@@ -227,7 +225,7 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 			// never would compare with them, so we don't need to check for them
 			// here.
 			//printf("leaf collision\n");
-			bool c = triangle_intersection_t<float>::compute(v0t, v1t, v2t, v3t, v4t, v5t);
+			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
 			//if (c) printf("tri-tri coll\n");
 			if (c) {
 				// fixme: compute more accurate position here, maybe
@@ -292,9 +290,9 @@ bool bv_tree::collides(const param& p, const spheref& sp)
 void bv_tree::transform(const matrix4f& mat)
 {
 	volume.center = mat.mul4vec3xlat(volume.center);
-	for (auto & i : children)
-		if (i.get())
-			i->transform(mat);
+	for (auto & elem : children)
+		if (elem.get())
+			elem->transform(mat);
 }
 
 
@@ -302,9 +300,9 @@ void bv_tree::transform(const matrix4f& mat)
 void bv_tree::compute_min_max(vector3f& minv, vector3f& maxv) const
 {
 	volume.compute_min_max(minv, maxv);
-	for (const auto & i : children)
-		if (i.get())
-			i->compute_min_max(minv, maxv);
+	for (auto & elem : children)
+		if (elem.get())
+			elem->compute_min_max(minv, maxv);
 }
 
 
@@ -314,9 +312,9 @@ void bv_tree::debug_dump(unsigned level) const
 	for (unsigned i = 0; i < level; ++i)
 		std::cout << "\t";
 	std::cout << "Level " << level << " Sphere " << volume.center << " | " << volume.radius << "\n";
-	for (const auto & i : children)
-		if (i.get())
-			i->debug_dump(level + 1);
+	for (auto & elem : children)
+		if (elem.get())
+			elem->debug_dump(level + 1);
 }
 
 

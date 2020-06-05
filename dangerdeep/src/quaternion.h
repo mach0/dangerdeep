@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,9 +24,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
+#include <cmath>
+#include <utility>
+#include "constant.h"
 #include "matrix4.h"
 #include "vector3.h"
-#include <cmath>
 
 /*
   3d rotations with quaternions:
@@ -47,7 +49,7 @@ class quaterniont
 
 	quaterniont() : s(1), v() {}	// note: not fully zero, but neutral rotation instead
 	quaterniont(const D &r_, const D &i_, const D &j_, const D &k_) : s(r_), v(i_, j_, k_) {}
-	quaterniont(const D &s_, const vector3t<D>& v_) : s(s_), v(v_) {}
+	quaterniont(const D &s_, vector3t<D>  v_) : s(s_), v(std::move(v_)) {}
 	quaterniont<D> normal() const { D len = D(1.0)/length(); return quaterniont(s * len, v * len); }
 	void normalize() { D len = D(1.0)/length(); s *= len; v *= len; }
 	quaterniont<D> operator* (const D &scalar) const { return quaterniont(s * scalar, v * scalar); }
@@ -68,15 +70,16 @@ class quaterniont
 	static quaterniont<D> vec(const vector3t<D>& p) { return quaterniont(D(0), p); }
 	static quaterniont<D> zero() { return quaterniont(D(0), vector3t<D>()); }
 	// angle is divided by 2 for a rotation quaternion, so divide by 360, not 180.
-	static quaterniont<D> rot(const D& angle, const D& x, const D& y, const D& z) { D rad = D(angle*M_PI/360.0); return quaterniont(cos(rad), vector3t<D>(x, y, z) * sin(rad)); }
-	static quaterniont<D> rot(const D& angle, const vector3t<D>& axis) { D rad = D(angle*M_PI/360.0); return quaterniont(cos(rad), axis * sin(rad)); }
+	static quaterniont<D> rot(const D& angle, const D& x, const D& y, const D& z) { D rad = D(angle*constant::PI/360.0); return quaterniont(cos(rad), vector3t<D>(x, y, z) * sin(rad)); }
+	static quaterniont<D> rot(const D& angle, const vector3t<D>& axis) { D rad = D(angle*constant::PI/360.0); return quaterniont(cos(rad), axis * sin(rad)); }
 	static quaterniont<D> rot_rad(const D& angle_rad, const vector3t<D>& axis) { return quaterniont(cos(angle_rad), axis * sin(angle_rad)); }
 	// reverse operation: angle * 2 * 180
-	void angleaxis(D& angle, D& x, D& y, D& z) const { D a = acos(s); angle = D(a*360.0/M_PI); D sa = sin(a); x = v.x/sa; y = v.y/sa; z = v.z/sa; }
-	void angleaxis(D& angle, vector3t<D>& axis) const { D a = acos(s); angle = D(a*360.0/M_PI); axis = v * (D(1.0)/sin(a)); }
+	void angleaxis(D& angle, D& x, D& y, D& z) const { D a = acos(s); angle = D(a*360.0/constant::PI); D sa = sin(a); x = v.x/sa; y = v.y/sa; z = v.z/sa; }
+	void angleaxis(D& angle, vector3t<D>& axis) const { D a = acos(s); angle = D(a*360.0/constant::PI); axis = v * (D(1.0)/sin(a)); }
 	vector3t<D> rotate(const D& x, const D& y, const D& z) const { quaterniont<D> p2 = *this * vec(x, y, z) * this->conj(); return p2.v; }
 	vector3t<D> rotate(const vector3t<D>& p) const { quaterniont<D> p2 = *this * vec(p) * this->conj(); return p2.v; }
 	
+	/// scale the rotation angle by factor
 	quaterniont<D> scale_rot_angle(const D& scal)
 	{
 		D ang = acos(s);
@@ -86,6 +89,7 @@ class quaterniont
 		return quaterniont(cos(ang*scal), v * sa);
 	}
 	
+	/// generate a 3x3 rotation matrix from quaternion
 	matrix3t<D> rotmat() const {
 		D x2 = v.x*v.x, y2 = v.y*v.y, z2 = v.z*v.z;
 		D xy = v.x*v.y, wz = s*v.z, xz = v.x*v.z, wy = s*v.y, yz = v.y*v.z, wx = s*v.x;
@@ -96,6 +100,7 @@ class quaterniont
 		);
 	}
 
+	/// generate a 4x4 homogenous matrix for rotation from quaternion
 	matrix4t<D> rotmat4() const {
 		D x2 = v.x*v.x, y2 = v.y*v.y, z2 = v.z*v.z;
 		D xy = v.x*v.y, wz = s*v.z, xz = v.x*v.z, wy = s*v.y, yz = v.y*v.z, wx = s*v.x;
@@ -107,7 +112,8 @@ class quaterniont
 		);
 	}
 
-	// m must be a rotation matrix
+	/// create rotation quaternion from rotation matrix
+	/// @param m must be a rotation matrix
 	static quaterniont<D> from_rotmat(const matrix4t<D>& m) {
 		D tr = m.elem(0,0) + m.elem(1,1) + m.elem(2,2);
 		quaterniont result;

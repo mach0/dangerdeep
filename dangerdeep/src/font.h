@@ -39,7 +39,7 @@ private:
 		float u0, v0, u1, v1;	// texture coordinates
 		int left{0};	// offset
 		int top{0};	// offset
-		character()  {}
+		character()  = default;
 	};
 	font() = delete;
 	font& operator=(const font& other) = delete;

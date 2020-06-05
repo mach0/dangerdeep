@@ -465,7 +465,7 @@ smoke_particle::smoke_particle(const vector3& pos) : particle(pos), texnr(rand()
 
 vector3 smoke_particle::get_acceleration() const
 {
-	return vector3(0, 0, -3.0/get_life_time());
+	return {0, 0, -3.0/get_life_time()};
 }
 
 

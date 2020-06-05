@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,18 +24,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef BV_TREE_H
 #define BV_TREE_H
 
-#include <list>
+#include <array>
+#include <list>		// note! vector could be faster nowadays.
 #include <memory>
 #include <vector>
 #include "sphere.h"
 #include "matrix4.h"
-
-#if defined WIN32 && defined _MSC_VER
-// one day MS might start supporting standards
-	#include <SDL_config_win32.h>
-#else
-	#include <cstdint>
-#endif
 
 /// a binary tree representing a bounding volume hierarchy
 class bv_tree
@@ -44,7 +38,7 @@ class bv_tree
 	/// data representing a triangle for tree construction
 	struct leaf_data
 	{
-		uint32_t tri_idx[3];
+		std::array<uint32_t, 3> tri_idx;
 		leaf_data() { tri_idx[0] = tri_idx[1] = tri_idx[2] = uint32_t(-1); }
 		const vector3f& get_pos(const std::vector<vector3f>& vertices, unsigned corner) const {
 			return vertices[tri_idx[corner]];
@@ -59,7 +53,7 @@ class bv_tree
 		const std::vector<vector3f>& vertices;
 		matrix4f transform;
 		param(const bv_tree& t, const std::vector<vector3f>& v, const matrix4f& m)
-			: tree(t), vertices(v), transform(m) {}
+			: tree(t), vertices(v), transform(std::move(m)) {}
 		param children(unsigned i) const {
 			return param(*tree.children[i], vertices, transform);
 		}
@@ -102,7 +96,9 @@ class bv_tree
  private:
 	bv_tree() = delete;
 	bv_tree(const bv_tree& ) = delete;
+	bv_tree(bv_tree&& ) = delete;
 	bv_tree& operator= (const bv_tree& ) = delete;
+	bv_tree& operator= (bv_tree&& ) = delete;
 };
 
 #endif

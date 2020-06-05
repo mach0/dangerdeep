@@ -34,7 +34,7 @@ namespace make_mesh {
 vector3f vec(int vi)
 {
 	switch (vi) {
-	case -1: return vector3f(-1, 0, 0);
+	case -1: return {-1, 0, 0};
 	case  1: return vector3f( 1, 0, 0);
 	case -2: return vector3f( 0,-1, 0);
 	case  2: return vector3f( 0, 1, 0);
