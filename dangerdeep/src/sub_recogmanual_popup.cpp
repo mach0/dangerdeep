@@ -107,7 +107,7 @@ void sub_recogmanual_popup::display(class game& gm) const
 
 	for (int i=page*3; (i<page*3+3)&&(i<(int)silhouettes.size()); i++) {
 
-		silhouettes[i]->draw(off_x,off_y+step_y*(i%3), colorf(1,1,1,0.75));
+		silhouettes[i].draw(off_x,off_y+step_y*(i%3), colorf(1,1,1,0.75));
 		
 		//fixme: change this after the authentic overlay is implemented
 		font_vtremington12->print(off_text_x, off_text_y+step_y*(i%3), classes[i], color(0, 0, 0));

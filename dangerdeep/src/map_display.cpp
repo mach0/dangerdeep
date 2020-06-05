@@ -496,7 +496,7 @@ void map_display::edit_convoy_menu(game_editor& gm)
 	edit_cvlist->clear();
 	const ptrvector<convoy>& convoys = gm.get_convoy_list();
 	for (unsigned i = 0; i < convoys.size(); ++i) {
-		string nm = convoys[i]->get_name();
+		string nm = convoys[i].get_name();
 		if (nm.length() == 0)
 			nm = "???";
 		edit_cvlist->append_entry(nm);

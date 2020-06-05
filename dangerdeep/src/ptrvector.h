@@ -24,15 +24,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define PTRVECTOR_H
 
 #include <vector>
-#include <stdexcept>
 #include <memory>
+#include "helper.h"
 
 /// same as std::vector regarding the interface, but handles pointers like std::unique_ptr.
-template <class T>
+template <typename T, class pointer = std::unique_ptr<T>>
 class ptrvector
 {
  protected:
-	std::vector<T*> data;
+	std::vector<pointer> data;
 
  private:
 	ptrvector(const ptrvector& ) = delete;
@@ -40,69 +40,72 @@ class ptrvector
 
  public:
 	ptrvector(size_t capacity = 0) : data(capacity) {}
-	~ptrvector() { clear(); }
 
-	void resize(size_t newsize) {
-		if (newsize < size()) {
-			for (size_t i = newsize; i < size(); ++i) {
-				delete data[i];
-				// set to zero, because if resize throws an exception,
-				// objects could get destructed twice
-				data[i] = nullptr;
-			}
-		}
-		data.resize(newsize);
-	}
+	void resize(size_t newsize) { data.resize(newsize); }
 	size_t size() const { return data.size(); }
 	size_t capacity() const { return data.capacity(); }
-	void clear() {
-		for (size_t i = 0; i < size(); ++i) {
-			delete data[i];
-			// set to zero, because if clear throws an exception,
-			// objects could get destructed twice
-			data[i] = nullptr;
-		}
-		data.clear();
-	}
+	void clear() { data.clear(); }
+	void swap(ptrvector& other) { data.swap(other.data); }
 
-	/// push_back element. exception safe, so first create space, then store
-	void push_back(std::unique_ptr<T> ptr) {
-		data.push_back(nullptr);
-		data.back() = ptr.release();
-	}
+	/// push_back element.
+	void push_back(pointer&& ptr) { data.push_back(std::move(ptr)); }
 
 	/// push_back a pointer exception safe.
-	void push_back(T* ptr) {
-		std::unique_ptr<T> p(ptr);
-		data.push_back(nullptr);
-		data.back() = p.release();
-	}
+	void push_back(T* ptr) { data.push_back(pointer(ptr)); }
 
-	T* const& operator[](size_t n) const { return data[n]; }
-	T* const& at(size_t n) const { return data.at(n); }
+	T& operator[](size_t n) const { return *data[n]; }
+	T& front() { return *data.front(); }
+	T& back() { return *data.back(); }
+	void set(size_t n, T* p) { data[n] = std::unique_ptr<T>(p); }
+	void set(size_t n, pointer p) { data[n] = std::move(p); }
+	bool is_valid(size_t n) const { return data[n].get() != nullptr; }
 
-	void reset(size_t n, T* ptr = nullptr) { delete data[n]; data[n] = ptr; }
+	void reset(size_t n, T* ptr = nullptr) { data[n] = pointer(ptr); }
 	bool empty() const { return data.empty(); }
 
-	T* release(unsigned n) {
-		T* res = data[n];
-		data[n] = NULL;
-		return res;
-	}
+	T* release(unsigned n) { return data[n].release(); }
 
-	void compact() {
-		unsigned j = 0;
-		for (unsigned i = 0; i < data.size(); ++i) {
-			if (data[i]) {
-				T* tmp = data[i];
-				data[i] = nullptr;
-				data[j] = tmp;
-				++j;
-			}
-		}
-		data.resize(j);
+	void compact()
+	{
+		helper::erase_remove_if(data, [](const pointer& p) { return p == nullptr; });
 	}
+	
+	class iterator
+	{
+	public:
+		iterator(ptrvector<T, pointer>& myvec, size_t pos) : myvector(myvec), position(pos - 1) { ++(*this); }
+		T& operator*() { return myvector[position]; }
+		iterator& operator++() {
+			for (++position; position < myvector.size() && !myvector.is_valid(position); ++position);
+			return *this;
+		}
+		bool operator!= (const iterator& it) const { return position != it.position; }
+	protected:
+		ptrvector<T, pointer>& myvector;
+		size_t position;
+	};
+	
+	class const_iterator
+	{
+	public:
+		const_iterator(const ptrvector<T, pointer>& myvec, size_t pos) : myvector(myvec), position(pos - 1) { ++(*this); }
+		T& operator*() { return myvector[position]; } // note - Pointer is const, but not element itself!
+		const_iterator& operator++() {
+			for (++position; position < myvector.size() && !myvector.is_valid(position); ++position);
+			return *this;
+		}
+		bool operator!= (const const_iterator& it) const { return position != it.position; }
+	protected:
+		const ptrvector<T, pointer>& myvector;
+		size_t position;
+	};
+	
+	iterator begin() { return iterator(*this, 0); }
+	iterator end() { return iterator(*this, size()); }
+	const_iterator begin() const { return const_iterator(*this, 0); }
+	const_iterator end() const { return const_iterator(*this, size()); }
 };
 
+template<typename T> using sharedptrvector = ptrvector<T, std::shared_ptr<T>>;
 
 #endif

@@ -113,7 +113,7 @@ sdl_image::sdl_image(const std::string& filename)
 		// standard texture, just one file
 		img = IMG_Load(filename.c_str());
 		if (!img)
-			throw file_read_error(filename);
+			THROW(file_read_error, filename);
 	} else {
 		// special texture, using jpg for RGB and png/grey for A.
 		string fnrgb = filename.substr(0, st) + ".jpg";
@@ -124,17 +124,17 @@ sdl_image::sdl_image(const std::string& filename)
 
 		// combine surfaces to one
 		if (teximagergb->w != teximagea->w || teximagergb->h != teximagea->h)
-			throw texture::texerror(filename, "jpg/png load: widths/heights don't match");
+			THROW(texture::texerror, filename, "jpg/png load: widths/heights don't match");
 
 		if (teximagergb->format->BytesPerPixel != 3
 		    || (teximagergb->format->Amask != 0))
-			throw texture::texerror(fnrgb, ".jpg: no 3 byte/pixel RGB image!");
+			THROW(texture::texerror, fnrgb, ".jpg: no 3 byte/pixel RGB image!");
 
 		if (teximagea->format->BytesPerPixel != 1
 		    || teximagea->format->palette == nullptr
 		    || teximagea->format->palette->ncolors != 256
 		    || ((teximagea->flags & SDL_SRCCOLORKEY) != 0))
-			throw texture::texerror(fna, ".png: no 8bit greyscale non-alpha-channel image!");
+			THROW(texture::texerror, fna, ".png: no 8bit greyscale non-alpha-channel image!");
 
 		Uint32 rmask, gmask, bmask, amask;
 
@@ -157,7 +157,7 @@ sdl_image::sdl_image(const std::string& filename)
 							   teximagergb->h,
 							   32, rmask, gmask, bmask, amask);
 		if (!result)
-			throw file_read_error(filename);
+			THROW(file_read_error, filename);
 
 		try {
 			// copy pixel data
@@ -274,10 +274,10 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 		//old color table code, does not work
 		//glEnable(GL_COLOR_TABLE);
 		if (bpp != 1)
-			throw texerror(get_name(), "only 8bit palette files supported");
+			THROW(texerror, get_name(), "only 8bit palette files supported");
 		int ncol = fmt.palette->ncolors;
 		if (ncol > 256)
-			throw texerror(get_name(), "max. 256 colors in palette supported");
+			THROW(texerror, get_name(), "max. 256 colors in palette supported");
 		bool usealpha = (teximage->flags & SDL_SRCCOLORKEY);
 
 		// check for greyscale images (GL_LUMINANCE), fixme: add also LUMINANCE_ALPHA!
@@ -425,13 +425,13 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 {
 	// error checks.
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
-		throw texerror(get_name(), "illegal mapping mode!");
+		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
-		throw texerror(get_name(), "illegal clamping mode!");
+		THROW(texerror, get_name(), "illegal clamping mode!");
 
 	unsigned ms = get_max_size();
 	if (width > ms || height > ms)
-		throw texerror(texfilename, "texture values too large, not supported by card");
+		THROW(texerror, texfilename, "texture values too large, not supported by card");
 
 	glGenTextures(1, &opengl_name);
 	glBindTexture(dimension, opengl_name);
@@ -441,7 +441,7 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 #endif
 
 	if (makenormalmap && format == GL_LUMINANCE) {
-		if(dimension != GL_TEXTURE_2D) throw texerror(get_name(), "normals only supported for 2D textures");
+		if(dimension != GL_TEXTURE_2D) THROW(texerror, get_name(), "normals only supported for 2D textures");
 		// make own mipmap building for normal maps here...
 		// give increasing levels with decreasing w/h down to 1x1
 		// e.g. 64x16 -> 32x8, 16x4, 8x2, 4x1, 2x1, 1x1
@@ -459,7 +459,7 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 #endif
 
 		if (do_mipmapping[mapping]) {
-			if(dimension != GL_TEXTURE_2D) throw texerror(get_name(), "mip mapping only supported for 2D textures");
+			if(dimension != GL_TEXTURE_2D) THROW(texerror, get_name(), "mip mapping only supported for 2D textures");
 #if 1
 			// fixme: doesn't work with textures that don't have power of two size...
 			gluBuild2DMipmaps(GL_TEXTURE_2D, format, gl_width, gl_height,
@@ -585,12 +585,12 @@ void texture::load_dds(const std::string& filename, dds_data& target)
     file.open(filename.c_str());
 
     if(!file.good())
-		throw error("couldn't find, or failed to load " + filename);
+		THROW(error, "couldn't find, or failed to load " + filename);
 
     file.read((char*)&header, sizeof(header));
 
     if(std::string((char*)header.Signature, 4) != "DDS ")
-		throw error("not a valid .dds file: " + filename);
+		THROW(error, "not a valid .dds file: " + filename);
 
     //
     // This .dds loader supports the loading of compressed formats DXT1, DXT3 
@@ -620,14 +620,14 @@ void texture::load_dds(const std::string& filename, dds_data& target)
             break;
 
         default:
-			throw error("no supported compression type on file: " + filename);
+			THROW(error, "no supported compression type on file: " + filename);
     }
 
     // How big will the buffer need to be to load all of the pixel data 
     // including mip-maps?
 
     if( SDL_SwapLE32(header.LinearSize) == 0 )
-		throw error("linear size in dds file is 0: " + filename);
+		THROW(error, "linear size in dds file is 0: " + filename);
 
     if( header.MipMapCount > 1 )
         bufferSize = SDL_SwapLE32(header.LinearSize) * factor;
@@ -651,9 +651,9 @@ vector<Uint8> texture::scale_half(const vector<Uint8>& src, unsigned w, unsigned
 {
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
-			throw texerror("[scale_half]", "texture width is no power of two!");
+			THROW(texerror, "[scale_half]", "texture width is no power of two!");
 		if (h < 1 || (h & (h-1)) != 0)
-			throw texerror("[scale_half]", "texture height is no power of two!");
+			THROW(texerror, "[scale_half]", "texture height is no power of two!");
 	}
 
 	vector<Uint8> dst(w*h*bpp/4);
@@ -790,9 +790,9 @@ texture::texture(const vector<Uint8>& pixels, unsigned w, unsigned h, int format
 	
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
-			throw texerror(get_name(), "texture width is no power of two!");
+			THROW(texerror, get_name(), "texture width is no power of two!");
 		if (h < 1 || (h & (h-1)) != 0)
-			throw texerror(get_name(), "texture height is no power of two!");
+			THROW(texerror, get_name(), "texture height is no power of two!");
 	}
 
 	width = gl_width = w;
@@ -813,9 +813,9 @@ texture::texture(unsigned w, unsigned h, int format_,
 	
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
-			throw texerror(get_name(), "texture width is no power of two!");
+			THROW(texerror, get_name(), "texture width is no power of two!");
 		if (h < 1 || (h & (h-1)) != 0)
-			throw texerror(get_name(), "texture height is no power of two!");
+			THROW(texerror, get_name(), "texture height is no power of two!");
 	}
 
 	width = gl_width = w;
@@ -824,9 +824,9 @@ texture::texture(unsigned w, unsigned h, int format_,
 
 	// error checks.
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
-		throw texerror(get_name(), "illegal mapping mode!");
+		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
-		throw texerror(get_name(), "illegal clamping mode!");
+		THROW(texerror, get_name(), "illegal clamping mode!");
 
 	glGenTextures(1, &opengl_name);
 	glBindTexture(GL_TEXTURE_2D, opengl_name);
@@ -871,9 +871,9 @@ texture::texture(const std::string& filename, bool dummy, mapping_mode mapping_,
 	
 	// error checks.
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
-		throw texerror(get_name(), "illegal mapping mode!");
+		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
-		throw texerror(get_name(), "illegal clamping mode!");
+		THROW(texerror, get_name(), "illegal clamping mode!");
 	
 	dds_data image_data;
 	load_dds(filename, image_data);
@@ -995,7 +995,7 @@ unsigned texture::get_bpp() const
 		case GL_LUMINANCE_ALPHA: return 2;
 		default:
 			ostringstream oss; oss << "unknown texture format " << format << "\n";
-			throw texerror(get_name(), oss.str());
+			THROW(texerror, get_name(), oss.str());
 	}
 	return 4;
 }
@@ -1110,11 +1110,11 @@ texture3d::texture3d(const std::vector<Uint8>& pixels, unsigned w, unsigned h, u
 	
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
-			throw texerror(get_name(), "texture width is no power of two!");
+			THROW(texerror, get_name(), "texture width is no power of two!");
 		if (h < 1 || (h & (h-1)) != 0)
-			throw texerror(get_name(), "texture height is no power of two!");
+			THROW(texerror, get_name(), "texture height is no power of two!");
 		if (d < 1 || (d & (d-1)) != 0)
-			throw texerror(get_name(), "texture depth is no power of two!");
+			THROW(texerror, get_name(), "texture depth is no power of two!");
 	}
 
 	width = gl_width = w;
@@ -1123,13 +1123,13 @@ texture3d::texture3d(const std::vector<Uint8>& pixels, unsigned w, unsigned h, u
 	format = format_;
 
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
-		throw texerror(get_name(), "illegal mapping mode!");
+		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
-		throw texerror(get_name(), "illegal clamping mode!");
+		THROW(texerror, get_name(), "illegal clamping mode!");
 
 	unsigned ms = get_max_size();
 	if (width > ms || height > ms || depth > ms)
-		throw texerror("3d tex", "texture values too large, not supported by card");
+		THROW(texerror, "3d tex", "texture values too large, not supported by card");
 
 	glGenTextures(1, &opengl_name);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -1197,11 +1197,11 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 	
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
-			throw texerror(get_name(), "texture width is no power of two!");
+			THROW(texerror, get_name(), "texture width is no power of two!");
 		if (h < 1 || (h & (h-1)) != 0)
-			throw texerror(get_name(), "texture height is no power of two!");
+			THROW(texerror, get_name(), "texture height is no power of two!");
 		if (d < 1 || (d & (d-1)) != 0)
-			throw texerror(get_name(), "texture depth is no power of two!");
+			THROW(texerror, get_name(), "texture depth is no power of two!");
 	}
 
 	width = gl_width = w;
@@ -1210,9 +1210,9 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 	format = format_;
 
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
-		throw texerror(get_name(), "illegal mapping mode!");
+		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
-		throw texerror(get_name(), "illegal clamping mode!");
+		THROW(texerror, get_name(), "illegal clamping mode!");
 
 	glGenTextures(1, &opengl_name);
 	glBindTexture(GL_TEXTURE_2D, 0);

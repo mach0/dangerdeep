@@ -406,7 +406,7 @@ game::run_state game__exec(game& gm, user_interface& ui)
 		// scaling is too high. fixme
 		unsigned thistime = sys().millisec();
 		if (gm.get_freezetime_start() > 0)
-			throw error("freeze_time() called without unfreeze_time() call");
+			THROW(error, "freeze_time() called without unfreeze_time() call");
 		lasttime += gm.process_freezetime();
 		unsigned time_scale = ui.time_scaling();
 		double delta_time = (thistime - lasttime)/1000.0; // * time_scale;
@@ -601,7 +601,7 @@ public:
 		: widget(x, y, w, h, "", parent_), imagenames(std::move(imagenames_)),
 		  extension(std::move(ext_)), current(imagenames.begin())
 	{
-		if (imagenames.empty()) throw error("can't use widget_image_select with empty list");
+		if (imagenames.empty()) THROW(error, "can't use widget_image_select with empty list");
 		background = imagecache().ref(*current + extension);
 		add_child(new widget_text(20, 20, 0, 0, texts::get(117)));
 	}
@@ -2079,7 +2079,7 @@ int mymain(list<string>& args)
 	}
 	catch (exception& e) {
 		if (!make_dir(savegamedirectory))
-			throw error("could not create save game directory.");
+			THROW(error, "could not create save game directory.");
 	}
 
 	try {
@@ -2087,7 +2087,7 @@ int mymain(list<string>& args)
 	}
 	catch (exception& e) {
 		if (!make_dir(configdirectory))
-			throw error("could not create config directory.");
+			THROW(error, "could not create config directory.");
 	}
 
 	try {
@@ -2095,7 +2095,7 @@ int mymain(list<string>& args)
 	}
 	catch (exception& e) {
 		if (!make_dir(highscoredirectory))
-			throw error("could not create save game directory.");
+			THROW(error, "could not create save game directory.");
 	}
 
 	// read highscores

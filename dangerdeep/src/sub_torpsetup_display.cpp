@@ -106,7 +106,7 @@ void sub_torpsetup_display::process_input(class game& gm, const SDL_Event& event
 {
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
-	if (!myscheme.get()) throw error("sub_torpsetup_display::process_input without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_torpsetup_display::process_input without scheme!");
 	const scheme& s = *myscheme;
 	int mx, my, mb;
 	switch (event.type) {
@@ -270,7 +270,7 @@ void sub_torpsetup_display::display(class game& gm) const
 	int* tubelighty = (is_day) ? tubelightdy : tubelightny;
 #endif
 
-	if (!myscheme.get()) throw error("sub_torpsetup_display::display without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_torpsetup_display::display without scheme!");
 	const scheme& s = *myscheme;
 
 	// testing:

@@ -90,10 +90,10 @@ void image::draw(int x, int y, const colorf& col) const
 	int yp = y;
 	for (unsigned yy = 0; yy < glty; ++yy) {
 		int xp = x;
-		unsigned h = textures[texptr]->get_height();
+		unsigned h = textures[texptr].get_height();
 		for (unsigned xx = 0; xx < gltx; ++xx) {
-			textures[texptr]->draw(xp, yp, col);
-			xp += textures[texptr]->get_width();
+			textures[texptr].draw(xp, yp, col);
+			xp += textures[texptr].get_width();
 			++texptr;
 		}
 		yp += h;

@@ -59,10 +59,10 @@ class sea_object
 {
 public:
 	/// special class to make handling of dead/defunct objects easier.
-	class is_dead_exception : public std::runtime_error
+	class is_dead_exception : public error
 	{
 	public:
-		is_dead_exception() : std::runtime_error("dead!") {}
+		is_dead_exception() : error("", "dead!") {}
 	};
 
 	// inactive means burning, sinking etc. it just means AI does nothing sensible.

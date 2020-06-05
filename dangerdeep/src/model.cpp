@@ -325,7 +325,7 @@ model::model(string  filename_, bool use_material)
 		filename2 = get_model_dir() + filename.substr(basepath.length());
 		ftest = fopen(filename2.c_str(), "rb");
 		if (!ftest) {
-			throw error(string("could not open model file ") + filename2);
+			THROW(error, string("could not open model file ") + filename2);
 		}
 	}
 	fclose(ftest);
@@ -336,7 +336,7 @@ model::model(string  filename_, bool use_material)
 	} else if (extension == ".xml" || extension == ".ddxml") {
 		read_dftd_model_file(filename2);
 	} else {
-		throw error(string("model: unknown extension or file format: ") + filename2);
+		THROW(error, string("model: unknown extension or file format: ") + filename2);
 	}
 
 	// clear material info if requested
@@ -411,7 +411,7 @@ int model::mesh::gl_primitive_type() const
 	case pt_triangle_strip:
 		return GL_TRIANGLE_STRIP;
 	default:
-		throw std::runtime_error("invalid primitive type for mesh!");
+		THROW(error, "invalid primitive type for mesh!");
 	}
 }
 
@@ -425,7 +425,7 @@ const char* model::mesh::name_primitive_type() const
 	case pt_triangle_strip:
 		return "triangle_strip";
 	default:
-		throw std::runtime_error("invalid primitive type for mesh!");
+		THROW(error, "invalid primitive type for mesh!");
 	}
 }
 
@@ -439,7 +439,7 @@ std::unique_ptr<model::mesh::triangle_iterator> model::mesh::get_tri_iterator() 
 	case pt_triangle_strip:
 		return std::unique_ptr<triangle_iterator>(new triangle_strip_iterator(indices));
 	default:
-		throw std::runtime_error("invalid primitive type for mesh!");
+		THROW(error, "invalid primitive type for mesh!");
 	}
 }
 
@@ -449,7 +449,7 @@ model::mesh::triangle_iterator::triangle_iterator(const std::vector<Uint32>& ind
 	: _i0(0), _i1(0), _i2(0), idx(indices), ptr(0)
 {
 	if (idx.size() < 3)
-		throw std::invalid_argument("triangle_iterator: must have at least one triangle");
+		THROW(error, "triangle_iterator: must have at least one triangle");
 	_i0 = idx[0];
 	_i1 = idx[1];
 	_i2 = idx[2];
@@ -474,7 +474,7 @@ model::mesh::triangle_strip_iterator::triangle_strip_iterator(const std::vector<
 	: triangle_iterator(indices)
 {
 	if (idx.size() < 3)
-		throw std::invalid_argument("triangle_iterator: must have at least one triangle");
+		THROW(error, "triangle_iterator: must have at least one triangle");
 	_i0 = idx[0];
 	_i1 = idx[1];
 	_i2 = idx[2];
@@ -685,7 +685,7 @@ model::mesh::mesh(unsigned w, unsigned h, const std::vector<float>& heights, con
 {
 	set_indices_type(pt_triangle_strip);
 	if (w < 2 || h < 2 || heights.size() != w * h)
-		throw std::invalid_argument("height field size invalid");
+		THROW(error, "height field size invalid");
 
 	// fill in vertices, texcoords
 	vertices.reserve(heights.size());
@@ -946,7 +946,7 @@ void model::mesh::write_off_file(const string& fn) const
 
 pair<model::mesh*, model::mesh*> model::mesh::split(const vector3f& abc, float d) const
 {
-	if (indices_type != pt_triangles) throw std::runtime_error("split: can't handle primitives other than triangles!");
+	if (indices_type != pt_triangles) THROW(error, "split: can't handle primitives other than triangles!");
 
 	auto* part0 = new model::mesh("split0");
 	auto* part1 = new model::mesh("split1");
@@ -1055,7 +1055,7 @@ pair<model::mesh*, model::mesh*> model::mesh::split(const vector3f& abc, float d
 			}
 			++splitptr;
 		}
-		if (splitptr != 2) throw error("splitptr != 2 ?!");
+		if (splitptr != 2) THROW(error, "splitptr != 2 ?!");
 		// add indices to parts.
 		part0->indices.push_back(newindi0[0]);
 		part0->indices.push_back(newindi0[1]);
@@ -1074,7 +1074,7 @@ pair<model::mesh*, model::mesh*> model::mesh::split(const vector3f& abc, float d
 			part1->indices.push_back(newindi1[3]);
 		}
 		if (!((newindi0ptr == 3 || newindi1ptr == 3) && (newindi0ptr + newindi1ptr == 7)))
-			throw error("newindi ptr corrupt!");
+			THROW(error, "newindi ptr corrupt!");
 	}
 
 	return make_pair(part0, part1);
@@ -1241,9 +1241,9 @@ void model::mesh::compute_adjacency()
 				// edge already existing
 				const adjacency_edge_aux_data& a2 = *pib.first;
 				if (triangle_adjacency[a2.triangle*3 + a2.edge] != no_adjacency)
-					throw std::runtime_error("inconsistent mesh");
+					THROW(error, "inconsistent mesh");
 				if (triangle_adjacency[aa.triangle*3 + aa.edge] != no_adjacency)
-					throw std::runtime_error("inconsistent mesh");
+					THROW(error, "inconsistent mesh");
 				triangle_adjacency[a2.triangle*3 + a2.edge] = aa.triangle;
 				triangle_adjacency[aa.triangle*3 + aa.edge] = a2.triangle;
 			}
@@ -1351,7 +1351,7 @@ void model::mesh::compute_bv_tree()
 const bv_tree& model::mesh::get_bv_tree() const
 {
 	if (!has_bv_tree())
-		throw std::runtime_error("bv_tree not existing");
+		THROW(error, "bv_tree not existing");
 	return *bounding_volume_tree.get();
 }
 
@@ -1411,7 +1411,7 @@ void model::material::map::unregister_layout(const std::string& name)
 	auto it = skins.find(name);
 	if (it != skins.end()) {
 		if (it->second.ref_count == 0)
-			throw error("unregistered texture, but skin ref_count already zero");
+			THROW(error, "unregistered texture, but skin ref_count already zero");
 		--(it->second.ref_count);
 		if (it->second.ref_count == 0) {
 			delete it->second.mytexture;
@@ -1419,7 +1419,7 @@ void model::material::map::unregister_layout(const std::string& name)
 		}
 	} else {
 		if (ref_count == 0)
-			throw error("unregistered texture, but ref_count already zero");
+			THROW(error, "unregistered texture, but ref_count already zero");
 		--ref_count;
 		if (ref_count == 0) {
 			mytexture.reset();
@@ -1476,7 +1476,7 @@ void model::material::map::set_gl_texture() const
 	if (tex)
 		tex->set_gl_texture();
 	else
-		throw error("set_gl_texture with empty texture");
+		THROW(error, "set_gl_texture with empty texture");
 }
 
 
@@ -1484,7 +1484,7 @@ void model::material::map::set_gl_texture() const
 void model::material::map::set_gl_texture(const glsl_program& prog, unsigned loc, unsigned texunitnr) const
 {
 	if (!tex)
-		throw error("set_gl_texture(shader) with empty texture");
+		THROW(error, "set_gl_texture(shader) with empty texture");
 	prog.set_gl_texture(*tex, loc, texunitnr);
 }
 
@@ -1493,7 +1493,7 @@ void model::material::map::set_gl_texture(const glsl_program& prog, unsigned loc
 void model::material::map::set_gl_texture(const glsl_shader_setup& gss, unsigned loc, unsigned texunitnr) const
 {
 	if (!tex)
-		throw error("set_gl_texture(shader) with empty texture");
+		THROW(error, "set_gl_texture(shader) with empty texture");
 	gss.set_gl_texture(*tex, loc, texunitnr);
 }
 
@@ -1646,7 +1646,7 @@ void model::material_glsl::compute_texloc()
 	for (unsigned i = 0; i < nrtex; ++i) {
 		loc_texunit[i] = shadersetup.get_uniform_location(texnames[i]);
 		if (loc_texunit[i] == unsigned(-1))
-			throw error(std::string("unable to lookup uniform location of shader for material_glsl, texname=") + texnames[i] + ", NOTE: shader needs to _USE_ the uniform (defining the symbol is not enough, use means it has to contribute to the output) to be linked into the shader program!");
+			THROW(error, std::string("unable to lookup uniform location of shader for material_glsl, texname=") + texnames[i] + ", NOTE: shader needs to _USE_ the uniform (defining the symbol is not enough, use means it has to contribute to the output) to be linked into the shader program!");
 	}
 }
 
@@ -1854,7 +1854,7 @@ void model::set_layout(const std::string& layout)
 void model::display(const texture *caustic_map) const
 {
 	if (current_layout.length() == 0) {
-		throw error(filename + ": trying to render model, but no layout was set yet");
+		THROW(error, filename + ": trying to render model, but no layout was set yet");
 	}
 
 	// default scene: no objects, just draw all meshes.
@@ -1900,7 +1900,7 @@ model::mesh& model::get_base_mesh()
 		return get_mesh(0);
 	mesh* m = scene.children.front().mymesh;
 	if (!m)
-		throw error("can't compute base mesh, mymesh=0");
+		THROW(error, "can't compute base mesh, mymesh=0");
 	return *m;
 }
 
@@ -1910,7 +1910,7 @@ const model::mesh& model::get_base_mesh() const
 		return get_mesh(0);
 	mesh* m = scene.children.front().mymesh;
 	if (!m)
-		throw error("can't compute base mesh, mymesh=0");
+		THROW(error, "can't compute base mesh, mymesh=0");
 	return *m;
 }
 
@@ -1980,7 +1980,7 @@ void model::read_phys_file(const string& filename)
 		iss3 >> insidevol[k];
 	}
 	if (iss3.fail())
-		throw error(filename + ", error reading inside volume data");
+		THROW(error, filename + ", error reading inside volume data");
 
 	vector<float> massdistri;
 	if (ve.has_child("mass-distribution")) {
@@ -1990,7 +1990,7 @@ void model::read_phys_file(const string& filename)
 			iss4 >> massdistri[k];
 		}
 		if (iss4.fail())
-			throw error("error reading mass distribution data");
+			THROW(error, "error reading mass distribution data");
 	}
 
 	const vector3f& bmax = m.max;
@@ -2249,7 +2249,7 @@ color model::read_color_from_dftd_model_file(const xml_elem& parent, const std::
 {
 	xml_elem ecol = parent.child(type);
 	if (!ecol.has_attr("color"))
-		throw xml_error("no color information given", parent.doc_name());
+		THROW(xml_error, "no color information given", parent.doc_name());
 	string tmp = ecol.attr("color");
 	istringstream iss(tmp);
 	float r, g, b;
@@ -2279,7 +2279,7 @@ model::material::map::map(const xml_elem& parent)
 	: tex(nullptr), ref_count(0)
 {
 	if (!parent.has_attr("filename"))
-		throw xml_error("no filename given for materialmap!", parent.doc_name());
+		THROW(xml_error, "no filename given for materialmap!", parent.doc_name());
 	filename = parent.attr("filename");
 
 	// skins
@@ -2288,7 +2288,7 @@ model::material::map::map(const xml_elem& parent)
 		pair<std::map<string, skin>::iterator, bool> insok =
 			skins.insert(make_pair(layoutname, skin()));
 		if (!insok.second)
-			throw xml_error("layout names not unique", it.elem().doc_name());
+			THROW(xml_error, "layout names not unique", it.elem().doc_name());
 		skin& s = insok.first->second;
 		s.filename = it.elem().attr("filename");
 		// load textures in init() function.
@@ -2309,7 +2309,7 @@ void model::read_off_file(const string& fn)
 	unsigned i;
 	unsigned nr_vertices, nr_faces;
 	if ( 3 != fscanf(f, "OFF\n%u %u %u\n", &nr_vertices, &nr_faces, &i) )
-		throw error("Failed to read OFF header");
+		THROW(error, "Failed to read OFF header");
 	mesh* m = new mesh("offread");
 	m->name = basename;
 	m->vertices.resize(nr_vertices);
@@ -2318,7 +2318,7 @@ void model::read_off_file(const string& fn)
 	for (i = 0; i < nr_vertices; i++) {
 		float a, b, c;
 		if (3 != fscanf(f, "%f %f %f\n", &a, &b, &c))
-			throw error("Short read on OFF vertices");
+			THROW(error, "Short read on OFF vertices");
 		m->vertices[i].x = a;
 		m->vertices[i].y = b;
 		m->vertices[i].z = c;
@@ -2326,7 +2326,7 @@ void model::read_off_file(const string& fn)
 	for (i = 0; i < nr_faces; i++) {
 		unsigned j, v0, v1, v2;
 		if (4 != fscanf(f, "%u %u %u %u\n", &j, &v0, &v1, &v2))
-			throw error("Short read on OFF faces");
+			THROW(error, "Short read on OFF faces");
 		if (j != 3) return;
 		m->indices[i*3] = v0;
 		m->indices[i*3+1] = v1;
@@ -2367,7 +2367,7 @@ void model::read_dftd_model_file(const std::string& filename)
 	float version = root.attrf("version");
 	//fixme: float is a bad idea for a version string, because of accuracy
 	if (version > 1.21)//fixme with relations 1.2
-		throw xml_error("model file format version unknown ", root.doc_name());
+		THROW(xml_error, "model file format version unknown ", root.doc_name());
 
 	// read elements.
 	map<unsigned, material* > mat_id_mapping;
@@ -2402,7 +2402,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				string type = emap.attr("type");
 				if (is_shader_material) {
 					if (matglsl->nrtex >= DFTD_MAX_TEXTURE_UNITS)
-						throw xml_error(string("too many material maps for glsl material ") + type, emap.doc_name());
+						THROW(xml_error, string("too many material maps for glsl material ") + type, emap.doc_name());
 					matglsl->texmaps[matglsl->nrtex] = std::make_unique<material::map>(emap);
 					matglsl->texnames[matglsl->nrtex] = type;
 					matglsl->nrtex++;
@@ -2413,14 +2413,14 @@ void model::read_dftd_model_file(const std::string& filename)
 				} else if (type == "specular") {
 					mat->specularmap = std::make_unique<material::map>(emap);
 				} else {
-					throw xml_error(string("unknown material map type ") + type, emap.doc_name());
+					THROW(xml_error, string("unknown material map type ") + type, emap.doc_name());
 				}
 			}
 
 			if (!is_shader_material && e.has_child("shininess")) {
 				xml_elem eshin = e.child("shininess");
 				if (!eshin.has_attr("exponent"))
-					throw xml_error("shininess defined but no exponent given!", e.doc_name());
+					THROW(xml_error, "shininess defined but no exponent given!", e.doc_name());
 				mat->shininess = eshin.attrf("exponent");
 			}
 
@@ -2441,7 +2441,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				if (it != mat_id_mapping.end()) {
 					msh->mymaterial = it->second;
 				} else {
-					throw xml_error(string("referenced unknown material id, mesh ") + msh->name, e.doc_name());
+					THROW(xml_error, string("referenced unknown material id, mesh ") + msh->name, e.doc_name());
 				}
 			}
 			// vertices
@@ -2471,7 +2471,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				else if (idxtype == "triangle_strip")
 					msh->set_indices_type(mesh::pt_triangle_strip);
 				else
-					throw xml_error(string("invalid indices type, mesh ") + msh->name, filename);
+					THROW(xml_error, string("invalid indices type, mesh ") + msh->name, filename);
 			}
 			values = indis.child_text();
 			msh->indices.reserve(nrindis);
@@ -2480,7 +2480,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				unsigned idx;
 				issi >> idx;
 				if (idx >= nrverts)
-					throw xml_error(string("vertex index out of range, mesh ") + msh->name, filename);
+					THROW(xml_error, string("vertex index out of range, mesh ") + msh->name, filename);
 				msh->indices.push_back(idx);
 			}
 			// tex coords
@@ -2520,9 +2520,9 @@ void model::read_dftd_model_file(const std::string& filename)
 		} else if (etype == "objecttree") {
 			++nr_of_objecttrees;
 			if (nr_of_objecttrees > 1)
-				throw xml_error("more than one object tree defined!", e.doc_name());
+				THROW(xml_error, "more than one object tree defined!", e.doc_name());
 		} else {
-			throw xml_error(string("unknown tag type ") + etype, e.doc_name());
+			THROW(xml_error, string("unknown tag type ") + etype, e.doc_name());
 		}
 	}
 
@@ -2545,7 +2545,7 @@ void model::read_objects(const xml_elem& parent, object& parentobj)
 		if (e.has_attr("mesh")) {
 			unsigned meshid = e.attru("mesh");
 			if (meshid >= meshes.size())
-				throw xml_error("illegal mesh id in object node", e.doc_name());
+				THROW(xml_error, "illegal mesh id in object node", e.doc_name());
 			msh = meshes[meshid];
 		}
 		object obj(e.attru("id"), e.attr("name"), msh);
@@ -2659,7 +2659,7 @@ void model::register_layout(const std::string& name)
 {
 //	cout << "register layout '" << name << "' for model '" << filename << "'\n";
 	if (name.length() == 0) {
-		throw error(filename + ": trying to register empty layout!");
+		THROW(error, filename + ": trying to register empty layout!");
 	}
 	for (auto & it : materials)
 		it->register_layout(name, basepath);
@@ -2670,7 +2670,7 @@ void model::register_layout(const std::string& name)
 void model::unregister_layout(const std::string& name)
 {
 	if (name.length() == 0) {
-		throw error(filename + ": trying to unregister empty layout!");
+		THROW(error, filename + ": trying to unregister empty layout!");
 	}
 	for (auto & it : materials)
 		it->unregister_layout(name);
@@ -2724,7 +2724,7 @@ unsigned model::get_voxel_closest_to(const vector3f& pos)
 		}
 	}
 	if (!closestvoxel)
-		throw error("no voxel data available");
+		THROW(error, "no voxel data available");
 	return closestvoxel-1;
 }
 

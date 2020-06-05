@@ -43,7 +43,7 @@ framebufferobject::framebufferobject(class texture& attachedtex, bool withdepthb
 	: id(0), depthbuf_id(0), mytex(attachedtex), bound(false)
 {
 	if (!supported())
-		throw std::runtime_error("frame buffer objects are not supported!");
+		THROW(error, "frame buffer objects are not supported!");
 
 	// create and bind depth buffer if requested
 	if (withdepthbuffer) {
@@ -69,7 +69,7 @@ framebufferobject::framebufferobject(class texture& attachedtex, bool withdepthb
 	if(status != GL_FRAMEBUFFER_COMPLETE_EXT) {
 		destroy();
 		log_warning( "FBO initialization check failed: " << init_failure_reason( status ) );
-		throw std::runtime_error("FBO initialization check failed");
+		THROW(error, "FBO initialization check failed");
 	}
 	// unbind for now
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -127,7 +127,7 @@ void framebufferobject::destroy()
 void framebufferobject::bind() const
 {
 	if (bound)
-		throw std::runtime_error("FBO bind(): already bound!");
+		THROW(error, "FBO bind(): already bound!");
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id);
 	glPushAttrib(GL_VIEWPORT_BIT);
 	glViewport(0, 0, mytex.get_gl_width(), mytex.get_gl_height());
@@ -139,7 +139,7 @@ void framebufferobject::bind() const
 void framebufferobject::unbind() const
 {
 	if (!bound)
-		throw std::runtime_error("FBO unbind(): not bound yet!");
+		THROW(error, "FBO unbind(): not bound yet!");
 	glPopAttrib();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	bound = false;

@@ -260,24 +260,24 @@ int mymain(list<string>& args)
 			unsigned k = 0;
 			for (auto & it : volumesA) {
 				spheresA.reset(k, make_mesh::sphere(it.radius, 2*it.radius));
-				spheresA[k]->transform(matrix4f::trans(it.center));
-				spheresA[k]->compile();
+				spheresA[k].transform(matrix4f::trans(it.center));
+				spheresA[k].compile();
 				glPushMatrix();
 				(transformA * modelA->get_base_mesh_transformation()).multiply_gl();
-				spheresA[k]->mymaterial = mat0.get();
-				spheresA[k]->display();
+				spheresA[k].mymaterial = mat0.get();
+				spheresA[k].display();
 				glPopMatrix();
 				++k;
 			}
 			k = 0;
 			for (auto & it : volumesB) {
 				spheresB.reset(k, make_mesh::sphere(it.radius, 2*it.radius));
-				spheresB[k]->transform(matrix4f::trans(it.center));
-				spheresB[k]->compile();
+				spheresB[k].transform(matrix4f::trans(it.center));
+				spheresB[k].compile();
 				glPushMatrix();
 				(transformB * modelB->get_base_mesh_transformation()).multiply_gl();
-				spheresB[k]->mymaterial = mat1.get();
-				spheresB[k]->display();
+				spheresB[k].mymaterial = mat1.get();
+				spheresB[k].display();
 				glPopMatrix();
 				++k;
 			}

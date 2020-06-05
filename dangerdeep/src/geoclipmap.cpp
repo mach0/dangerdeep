@@ -135,7 +135,7 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
 	// check for a total reset of base_viewpos
 	if (new_viewpos.xy().distance(base_viewpos) > 10000.0) {
 		for (unsigned i = 0; i < levels.size(); ++i) {
-			levels[i]->clear_area();
+			levels[i].clear_area();
 		}
 		base_viewpos = new_viewpos.xy();
 	}
@@ -160,7 +160,7 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
 	//log_debug("min_level=" << min_level);
 
 	for (unsigned lvl = min_level; lvl < levels.size(); ++lvl) {
-		levelborder = levels[lvl]->set_viewerpos(new_viewpos, levelborder);
+		levelborder = levels[lvl].set_viewerpos(new_viewpos, levelborder);
 		// next level has coordinates with half resolution
 		// let outer area of current level be inner area of next level
 		levelborder.bl.x /= 2;
@@ -207,13 +207,13 @@ void geoclipmap::display(const frustum& f, const vector3& view_delta, bool is_mi
 
 	for (unsigned lvl = 0; lvl < levels.size(); ++lvl) {
 		myshader[si]->set_uniform(loc_tex_stretch_factor[si], height_gen.get_tex_stretch_factor()/pow(2.0,int(lvl)));
-		myshader[si]->set_gl_texture(levels[lvl]->normals_tex(), loc_texnormal[si], 0);
+		myshader[si]->set_gl_texture(levels[lvl].normals_tex(), loc_texnormal[si], 0);
 		if (lvl + 1 < levels.size()) {
-			myshader[si]->set_gl_texture(levels[lvl+1]->normals_tex(), loc_texnormal_c[si], 1);
+			myshader[si]->set_gl_texture(levels[lvl+1].normals_tex(), loc_texnormal_c[si], 1);
 		} else {
 			myshader[si]->set_gl_texture(*horizon_normal, loc_texnormal_c[si], 1);
 		}
-		levels[lvl]->display(f2, is_mirror);
+		levels[lvl].display(f2, is_mirror);
 	}
 	glPopMatrix();
 	if (wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -319,7 +319,7 @@ geoclipmap::area geoclipmap::level::set_viewerpos(const vector3& new_viewpos, co
 			++nr_updates;
 		}
 		if (nr_updates > 2)
-			throw error("got more than 2 update regions?! BUG!");
+			THROW(error, "got more than 2 update regions?! BUG!");
 	}
 	// we updated the vertices, so update area/offset
 	dataoffset = gcm.clamp(outer.bl - vboarea.bl + dataoffset);
@@ -347,7 +347,7 @@ geoclipmap::area geoclipmap::level::set_viewerpos(const vector3& new_viewpos, co
 
 void geoclipmap::level::update_region(const geoclipmap::area& upar)
 {
-	if (upar.empty()) throw error("update area empty?! BUG!");//continue; // can happen on initial update
+	if (upar.empty()) THROW(error, "update area empty?! BUG!");//continue; // can happen on initial update
 	vector2i sz = upar.size();
 	// height data coordinates upar.bl ... upar.tr need to be updated, but what VBO offset?
 	// since data is stored toroidically in VBO, a rectangle can be split into up to

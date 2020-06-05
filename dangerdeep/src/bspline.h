@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define BSPLINE_H
 
 #include <cmath>
-#include <stdexcept>
 #include <vector>
 #include "dmath.h"
+#include "error.h"
 
 ///\brief Represents a uniform/non-uniform-B-spline interpolation object
 template <class T, bool is_uniform = true>
@@ -75,9 +75,9 @@ class bsplinet
 		: n(n_), m(unsigned(d.size())-1), cp(d), tvec(tvec_)
 	{
 		static_assert(!is_uniform, "bspline type and constructor use mismatch");
-		if (n >= d.size()) throw std::runtime_error("bspline: n too large");
-		if (d.size() < 2) throw std::runtime_error("bspline: d has too few elements");
-		if (tvec_.size() != m+n+2) throw std::runtime_error("bspline: tvec has illegal size");
+		if (n >= d.size()) THROW(error, "bspline: n too large");
+		if (d.size() < 2) THROW(error, "bspline: d has too few elements");
+		if (tvec_.size() != m+n+2) THROW(error, "bspline: tvec has illegal size");
 		deBoor_pts.resize((n+1)*(n+2)/2);
 	}
 	/// construct uniform bspline
@@ -105,7 +105,7 @@ class bsplinet
 		// better to limit t than to fail loudly.
 		if (t < 0.0) t = 0.0;
 		if (t > 1.0) t = 1.0;
-		//if (t < 0.0 || t > 1.0) throw std::runtime_error("bspline: invalid t");
+		//if (t < 0.0 || t > 1.0) THROW(error, "bspline: invalid t");
 
 		unsigned l = find_l(t);
 	
@@ -117,7 +117,7 @@ class bsplinet
 		for (unsigned r = 1; r <= n; ++r) {
 			for (unsigned i = l-n; i <= l-r; ++i) {
 				double tv = (t - tvec[i+r])/(tvec[i+n+1] - tvec[i+r]);
-				if (!isfinite(tv)) throw std::runtime_error("bspline: invalid number generated");
+				if (!isfinite(tv)) THROW(error, "bspline: invalid number generated");
 				deBoor_at(r, i+n-l) = T(deBoor_at(r-1, i+n-l) * (1 - tv)
 					+ deBoor_at(r-1, i+1+n-l) * tv);
 			}
@@ -176,9 +176,9 @@ public:
 	bspline2dt(unsigned n_, const std::vector<T>& d) : n(n_), cp(d)
 	{
 		auto ds = unsigned(sqrt(double(d.size())));
-		if (ds*ds != d.size()) throw std::runtime_error("bspline2d: d not quadratic");
-		if (n >= ds) throw std::runtime_error("bspline2d: n too large");
-		if (ds < 2) throw std::runtime_error("bspline2d: d has too few elements");
+		if (ds*ds != d.size()) THROW(error, "bspline2d: d not quadratic");
+		if (n >= ds) THROW(error, "bspline2d: n too large");
+		if (ds < 2) THROW(error, "bspline2d: d has too few elements");
 		m = ds-1;
 
 		deBoor_pts.resize((n+1) * (n+1)*(n+2)/2);
@@ -197,8 +197,8 @@ public:
 	
 	T value(double s, double t) const
 	{
-		if (s < 0.0 || s > 1.0) throw std::runtime_error("bspline2d: invalid s");
-		if (t < 0.0 || t > 1.0) throw std::runtime_error("bspline2d: invalid t");
+		if (s < 0.0 || s > 1.0) THROW(error, "bspline2d: invalid s");
+		if (t < 0.0 || t > 1.0) THROW(error, "bspline2d: invalid t");
 
 		unsigned l = find_l(s);
 		unsigned l2 = find_l(t);
@@ -212,7 +212,7 @@ public:
 		for (unsigned r = 1; r <= n; ++r) {
 			for (unsigned i = l-n; i <= l-r; ++i) {
 				double tv = (s - tvec[i+r])/(tvec[i+n+1] - tvec[i+r]);
-				if (!isfinite(tv)) throw std::runtime_error("bspline2d: invalid number generated");
+				if (!isfinite(tv)) THROW(error, "bspline2d: invalid number generated");
 				for (unsigned j = 0; j <= n; ++j) {
 					deBoor_at(j, r, i+n-l) = deBoor_at(j, r-1, i+n-l) * (1 - tv)
 						+ deBoor_at(j, r-1, i+1+n-l) * tv;
@@ -225,7 +225,7 @@ public:
 		for (unsigned r = 1; r <= n; ++r) {
 			for (unsigned i = l2-n; i <= l2-r; ++i) {
 				double tv = (t - tvec[i+r])/(tvec[i+n+1] - tvec[i+r]);
-				if (!isfinite(tv)) throw std::runtime_error("bspline2d: invalid number generated");
+				if (!isfinite(tv)) THROW(error, "bspline2d: invalid number generated");
 				deBoor_at(0, r, i+n-l2) = deBoor_at(0, r-1, i+n-l2) * (1 - tv)
 					+ deBoor_at(0, r-1, i+1+n-l2) * tv;
 			}

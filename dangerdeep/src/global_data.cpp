@@ -195,22 +195,22 @@ vector2f transform_real_to_geo(vector2f& pos)
 static double transform_nautic_coord_to_real(const string& s, char minus, char plus, int degmax)
 {
 	if (s.length() < 2)
-		throw error(string("nautic coordinate invalid ") + s);
+		THROW(error, string("nautic coordinate invalid ") + s);
 	char sign = s[s.length() - 1];
 	if (sign != minus && sign != plus)
-		throw error(string("nautic coordinate (direction sign) invalid ") + s);
+		THROW(error, string("nautic coordinate (direction sign) invalid ") + s);
 	// find separator
 	string::size_type st = s.find("/");
 	if (st == string::npos)
-		throw error(string("no separator in position string ") + s);
+		THROW(error, string("no separator in position string ") + s);
 	string degrees = s.substr(0, st);
 	string minutes = s.substr(st + 1, s.length() - st - 2);
 	int deg = atoi(degrees.c_str());
 	if (deg < 0 || deg > degmax)
-		throw error(string("degrees are not in range [0...180/360] in position string ") + s);
+		THROW(error, string("degrees are not in range [0...180/360] in position string ") + s);
 	int mts = atoi(minutes.c_str());
 	if (mts < 0 || mts > 59)
-		throw error(string("minutes are not in [0...59] in position string ") + s);
+		THROW(error, string("minutes are not in [0...59] in position string ") + s);
 	return (sign == minus ? -1 : 1) * ((DEGREE_IN_METERS * deg) + (MINUTE_IN_METERS * mts));
 }
 
@@ -245,7 +245,7 @@ std::list<std::string> string_split(const std::string& src, char splitter)
 void save_pgm(const char* fn, unsigned w, unsigned h, const Uint8* d, unsigned stride)
 {
 	std::ofstream osg(fn);
-	if (!osg.good()) throw error(std::string("Can't open output file ") + fn);
+	if (!osg.good()) THROW(error, std::string("Can't open output file ") + fn);
 	osg << "P5\n";
 	osg << w << " " << h << "\n255\n";
 	if (!stride) stride = w;

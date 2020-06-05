@@ -84,7 +84,7 @@ const std::string& data_file_handler::get_rel_path(const std::string& objectid) 
 	static std::string emptystr;
 	auto it = data_files.find(objectid);
 	if (it == data_files.end()) {
-		throw error(std::string("can't find path for object '") + objectid + std::string("'"));
+		THROW(error, std::string("can't find path for object '") + objectid + std::string("'"));
 	}
 	return it->second;
 }

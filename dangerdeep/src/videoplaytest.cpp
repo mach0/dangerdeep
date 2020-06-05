@@ -134,11 +134,11 @@ videoplay::videoplay(const std::string& filename, unsigned queue_len)
 	av_log_set_level(AV_LOG_ERROR);
 	memset(&ipkt, 0, sizeof(AVPacket));
 	if (av_open_input_file(&ictx, filename.c_str(), ifmt, 0, 0) < 0)
-		throw error(std::string("error opening ") + filename);
+		THROW(error, std::string("error opening ") + filename);
 	try {
 		int res = av_find_stream_info(ictx);
 		if (res < 0)
-			throw error(std::string("error finding stream info in ") + filename);
+			THROW(error, std::string("error finding stream info in ") + filename);
 
 		AVCodecContext* context = 0;
 		for (unsigned i = 0; i < unsigned(ictx->nb_streams); i++) {
@@ -154,7 +154,7 @@ videoplay::videoplay(const std::string& filename, unsigned queue_len)
 		}
 
 		if (vstr_idx < 0)
-			throw error("no video streams");
+			THROW(error, "no video streams");
 
 		picture = avcodec_alloc_frame();
 		codec = avcodec_find_decoder(context->codec_id);
@@ -162,13 +162,13 @@ videoplay::videoplay(const std::string& filename, unsigned queue_len)
 		const unsigned thread_count = 1; // fixme
 		if (thread_count > 1) {
 			if (avcodec_thread_init(context, thread_count) < 0)
-				throw error("avcodec_thread_init() failed");
+				THROW(error, "avcodec_thread_init() failed");
 		}
 
 		if (avcodec_open(context, codec) < 0) {
 			// cleanup threads (avcodec_close does it else)
 			if (context->thread_opaque) avcodec_thread_free(context);
-			throw error("avcodec_open() failed");
+			THROW(error, "avcodec_open() failed");
 		}
 
 		context->opaque = this;

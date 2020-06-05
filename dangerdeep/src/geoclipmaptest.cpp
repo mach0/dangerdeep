@@ -389,7 +389,7 @@ public:
             sdl_image tmp(get_texture_dir() + texnames[i]);
             unsigned bpp = 0;
             ct[i] = tmp.get_plain_data(cw, ch, bpp);
-            if (bpp != 3) throw error("color bpp != 3");
+            if (bpp != 3) THROW(error, "color bpp != 3");
         }
     }
 

@@ -45,7 +45,7 @@ parser::parser(string  filename_, char separator_)
 	if (!next_line())
 		THROW(error, string("Can't read in file ") + filename);
 	if ((separator <= ' ' && separator != '\t') || separator == '"')
-		throw std::invalid_argument("invalid separator!");
+		THROW(error, "invalid separator!");
 }
 
 

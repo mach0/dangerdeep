@@ -883,7 +883,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	vertices.unbind();
 
 	// innermost level is rendered always
-	patches[0]->render();
+	patches[0].render();
 	// render outer levels with view frustum culling
 	for (unsigned level = 1; level < geoclipmap_levels; ++level) {
 		// scalar depending on level
@@ -937,7 +937,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 					  vector3(offset.x, offset.y + y_size[k]*L_l, -viewpos.z));
 			if (!viewfrustum.clip(patchpoly).empty()) {
 				// render patch
-				patches[1 + (level-1)*9*8 + patchidx*8 + i]->render();
+				patches[1 + (level-1)*9*8 + patchidx*8 + i].render();
 			} else {
 				//printf("culled away patch, level=%i xyoff=%f,%f\n",level,offset.x,offset.y);
 			}
@@ -946,7 +946,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	// render horizon polys
 	for (unsigned k = 0; k < 4; ++k) {
 		// fixme: view frustum clipping, but gives only small performance gain
-		patches[patches.size() - 4 + k]->render();
+		patches[patches.size() - 4 + k].render();
 	}
 
 	// unmap, cleanup
@@ -1559,7 +1559,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 // 	       level, border, xoff, yoff, columns, rows);
 	// border = 0 (none), 1 (top), 2 (right), 4 (bottom), 8 (left)
 	if (border != 0 && level == 0)
-		throw error("can't use border on innermost level");
+		THROW(error, "can't use border on innermost level");
 	// number of indices: per row we have 2 per quad plus 2 for the start and 2 for the
 	// change to the next row (but not for last row).
 	nr_indices = rows * (columns * 2 + 2 + 2) - 2;
@@ -1766,7 +1766,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 #if 0 // paranoia checks for debug
 	if (index_ptr != nr_indices) {
 		printf("ERROR: idxptr %u nri %u\n",index_ptr,nr_indices);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 	unsigned jmin = 99999999, jmax = 0;
 	for (unsigned j = 0; j < nr_indices; ++j) {
@@ -1775,11 +1775,11 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 	}
 	if (jmin != min_vertex_index) {
 		printf("ERROR: border %02x jmin %u min_vertex_index %u xyoff=%u,%u rowcol=%u,%u\n", border, jmin, min_vertex_index, xoff,yoff,columns,rows);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 	if (jmax != max_vertex_index) {
 		printf("ERROR: border %02x jmax %u max_vertex_index %u xyoff=%u,%u rowcol=%u,%u\n", border, jmax, max_vertex_index, xoff,yoff,columns,rows);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 #endif
 }
@@ -1863,7 +1863,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 #if 0 // paranoia checks for debug
 	if (index_ptr != nr_indices) {
 		printf("ERROR: idxptr %u nri %u border %u\n",index_ptr,nr_indices,border);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 	unsigned jmin = 99999999, jmax = 0;
 	for (unsigned j = 0; j < nr_indices; ++j) {
@@ -1872,11 +1872,11 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 	}
 	if (jmin != min_vertex_index) {
 		printf("ERROR: jmin %u min_vertex_index %u border %u\n", jmin, min_vertex_index,border);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 	if (jmax != max_vertex_index) {
 		printf("ERROR: jmax %u max_vertex_index %u border %u\n", jmax, max_vertex_index,border);
-		throw error("BUG");
+		THROW(error, "BUG");
 	}
 #endif
 }
