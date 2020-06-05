@@ -28,12 +28,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define WIN32_LEAN_AND_MEAN
 #endif /* WIN32_LEAN_AND_MEAN */
 #include <windows.h>
-#define PATHSEPARATOR "\\"
 #else
 #include <dirent.h>
-#define PATHSEPARATOR "/"
 #endif
 
+#include <functional>
 #include <string>
 
 /// directory reading/writing encapsulated for compatibility and ease of use
@@ -53,6 +52,9 @@ class directory
 	/// Read next filename from directory.
 	///@returns empty string if directory is fully read, filename else
 	std::string read();
+
+	/// Recursivly walk a direcory tree and call a function for every filename
+	static void walk(const std::string& path, std::function<void(const std::string&)> func);
 
  private:
 	// system specific part

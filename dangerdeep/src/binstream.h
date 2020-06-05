@@ -23,17 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef BINSTREAM_H
 #define BINSTREAM_H
 
-#include <SDL_types.h>
-#include <SDL_endian.h>
 #include <iostream>
 #include <string>
 #include "quaternion.h"
 
 // Data is stored in little endian mode.
 // On big endian machines the data is converted for reading and writing.
-// We use the SDL_SwapLE functions for both operations,
-// because they are identical to their inverse functions
-// on both type of machines.
+// This is done with swap functions that are identical to their inverse versions.
 
 // So far we assume sizeof(float)==4 and sizeof(double)==8 (IEEE standard!)
 // The only system dependent assumption is that sizeof(int) >= 4 (32 bits).
@@ -46,119 +42,147 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 union float_u32_shared
 {
 	float f;
-	Uint32 u;
+	uint32_t u;
 };
 
 union double_u64_shared
 {
 	double d;
-	Uint64 u;
+	uint64_t u;
 };
 
+#ifdef BIG_ENDIAN
+inline uint16_t swap_endianess_on_big_endian_machine(uint16_t v)
+{
+	return ((v & 0xFF00) >> 8) | ((v & 0xFF) << 8);
+}
+inline uint32_t swap_endianess_on_big_endian_machine(uint32_t v)
+{
+	return ((v & 0xFF000000) >> 24) | ((v & 0xFF0000) >> 8) | ((v & 0xFF00) << 8) | ((v & 0xFF) << 24);
+}
+inline uint64_t swap_endianess_on_big_endian_machine(uint64_t v)
+{
+	return uint64_t(swap_endianess_on_big_endian_machine(uint32_t(v >> 32))) |
+		(uint64_t(swap_endianess_on_big_endian_machine(uint32_t(v))) << 32);
+}
+#else
+inline uint16_t swap_endianess_on_big_endian_machine(uint16_t v)
+{
+	return v;
+}
+inline uint32_t swap_endianess_on_big_endian_machine(uint32_t v)
+{
+	return v;
+}
+inline uint64_t swap_endianess_on_big_endian_machine(uint64_t v)
+{
+	return v;
+}
+#endif
 
 
-inline void write_i8(std::ostream& out, Sint8 i)
+inline void write_i8(std::ostream& out, int8_t i)
 {
 	// no LE/BE swap needed.
 	out.write((char*)&i, 1);
 }
 
-inline void write_i16(std::ostream& out, Sint16 i)
+inline void write_i16(std::ostream& out, int16_t i)
 {
-	Uint16 ii = SDL_SwapLE16((Uint16)i);
+	uint16_t ii = swap_endianess_on_big_endian_machine((uint16_t)i);
 	out.write((char*)&ii, 2);
 }
 
-inline void write_i32(std::ostream& out, Sint32 i)
+inline void write_i32(std::ostream& out, int32_t i)
 {
-	Uint32 ii = SDL_SwapLE32((Uint32)i);
+	uint32_t ii = swap_endianess_on_big_endian_machine((uint32_t)i);
 	out.write((char*)&ii, 4);
 }
 
-inline void write_i64(std::ostream& out, Sint64 i)
+inline void write_i64(std::ostream& out, int64_t i)
 {
-	Uint64 ii = SDL_SwapLE64((Uint64)i);
+	uint64_t ii = swap_endianess_on_big_endian_machine((uint64_t)i);
 	out.write((char*)&ii, 8);
 }
 
-inline void write_u8(std::ostream& out, Uint8 i)
+inline void write_u8(std::ostream& out, uint8_t i)
 {
 	// no LE/BE swap needed.
 	out.write((char*)&i, 1);
 }
 
-inline void write_u16(std::ostream& out, Uint16 i)
+inline void write_u16(std::ostream& out, uint16_t i)
 {
-	Uint16 ii = SDL_SwapLE16(i);
+	uint16_t ii = swap_endianess_on_big_endian_machine(i);
 	out.write((char*)&ii, 2);
 }
 
-inline void write_u32(std::ostream& out, Uint32 i)
+inline void write_u32(std::ostream& out, uint32_t i)
 {
-	Uint32 ii = SDL_SwapLE32(i);
+	uint32_t ii = swap_endianess_on_big_endian_machine(i);
 	out.write((char*)&ii, 4);
 }
 
-inline void write_u64(std::ostream& out, Uint64 i)
+inline void write_u64(std::ostream& out, uint64_t i)
 {
-	Uint64 ii = SDL_SwapLE64(i);
+	uint64_t ii = swap_endianess_on_big_endian_machine(i);
 	out.write((char*)&ii, 8);
 }
 
-inline Sint8 read_i8(std::istream& in)
+inline int8_t read_i8(std::istream& in)
 {
-	Sint8 i = 0;	// no LE/BE swap needed.
+	int8_t i = 0;	// no LE/BE swap needed.
 	in.read((char*)&i, 1);
 	return i;
 }
 
-inline Sint16 read_i16(std::istream& in)
+inline int16_t read_i16(std::istream& in)
 {
-	Uint16 i = 0;
+	uint16_t i = 0;
 	in.read((char*)&i, 2);
-	return Sint16(SDL_SwapLE16(i));
+	return int16_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline Sint32 read_i32(std::istream& in)
+inline int32_t read_i32(std::istream& in)
 {
-	Uint32 i = 0;
+	uint32_t i = 0;
 	in.read((char*)&i, 4);
-	return Sint32(SDL_SwapLE32(i));
+	return int32_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline Sint64 read_i64(std::istream& in)
+inline int64_t read_i64(std::istream& in)
 {
-	Uint64 i = 0;
+	uint64_t i = 0;
 	in.read((char*)&i, 8);
-	return Sint64(SDL_SwapLE64(i));
+	return int64_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline Uint8 read_u8(std::istream& in)
+inline uint8_t read_u8(std::istream& in)
 {
-	Uint8 i = 0;	// no LE/BE swap needed.
+	uint8_t i = 0;	// no LE/BE swap needed.
 	in.read((char*)&i, 1);
 	return i;
 }
 
-inline Uint16 read_u16(std::istream& in)
+inline uint16_t read_u16(std::istream& in)
 {
-	Uint16 i = 0;
+	uint16_t i = 0;
 	in.read((char*)&i, 2);
-	return Uint16(SDL_SwapLE16(i));
+	return uint16_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline Uint32 read_u32(std::istream& in)
+inline uint32_t read_u32(std::istream& in)
 {
-	Uint32 i = 0;
+	uint32_t i = 0;
 	in.read((char*)&i, 4);
-	return Uint32(SDL_SwapLE32(i));
+	return uint32_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline Uint64 read_u64(std::istream& in)
+inline uint64_t read_u64(std::istream& in)
 {
-	Uint64 i = 0;
+	uint64_t i = 0;
 	in.read((char*)&i, 8);
-	return Uint64(SDL_SwapLE64(i));
+	return uint64_t(swap_endianess_on_big_endian_machine(i));
 }
 
 inline void write_bool(std::ostream& out, bool b)
