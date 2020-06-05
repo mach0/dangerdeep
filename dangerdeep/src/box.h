@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 //
-//  A 3d box (C)+(W) 2016 Thorsten Jordan
+//  A 3d box (C)+(W) 2020 Thorsten Jordan
 //
 
 #ifndef BOX_H

@@ -85,13 +85,13 @@ void texts::read_category(category ct)
 	string catfilename = categoryfiles[ct];
 	parser p(get_data_dir() + TEXTS_DIR + catfilename + ".csv");
 	// as first read language codes / count number of languages
-	if (p.get_cell() != "CODE") p.error("no CODE keyword in texts file");
+	if (p.get_cell() != "CODE") p.report_error("no CODE keyword in texts file");
 	unsigned lcn = 0;
 	for (unsigned i = 0; i < available_language_codes.size(); ++i) {
-		if (!p.next_column()) p.error("no columns left in texts file");
+		if (!p.next_column()) p.report_error("no columns left in texts file");
 		string lc = p.get_cell();
 		if (lc != available_language_codes[i])
-			p.error(string("invalid language code marker found, expected \"")
+			p.report_error(string("invalid language code marker found, expected \"")
 				+ available_language_codes[i] + "\", got \"" + lc + "\"!");
 		if (lc == language_code) lcn = i;
 	}
@@ -101,11 +101,11 @@ void texts::read_category(category ct)
 	while (p.next_line()) {
 		unsigned n = 0;
 		bool ok = p.get_cell_number(n);
-		if (!ok) p.error("invalid line");
+		if (!ok) p.report_error("invalid line");
 		if (n >= txt.size())
 			txt.resize(n + 1);
 		for (unsigned i = 0; i < available_language_codes.size(); ++i) {
-			if (!p.next_column()) p.error("no columns left in texts file");
+			if (!p.next_column()) p.report_error("no columns left in texts file");
 			string s = p.get_cell();
 			if (i == lcn)
 				txt[n] = s;
@@ -238,7 +238,7 @@ void texts::read_available_language_codes()
 {
 	available_language_codes.clear();
 	parser p(get_data_dir() + TEXTS_DIR + "languages.csv");
-	if (p.get_cell() != "CODE") p.error("no CODE keyword in texts file");
+	if (p.get_cell() != "CODE") p.report_error("no CODE keyword in texts file");
 	while (p.next_column()) {
 		string lc = p.get_cell();
 		available_language_codes.push_back(lc);

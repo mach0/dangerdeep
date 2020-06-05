@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 //
-//  A 4x4 matrix (C)+(W) 2001 Thorsten Jordan
+//  A generic NxN matrix (C)+(W) 2001 Thorsten Jordan
 //
 
 #ifndef MATRIX_H
@@ -26,11 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "vector4.h"
 #include <iostream>
-
-#ifndef M_PI
-#define M_PI 3.1415926536
-#endif
-
 
 // helper functions
 template<class D, unsigned size>
@@ -150,7 +145,7 @@ protected:
 	// vector uses new().
 	D values[size*size];
 
-        void columnpivot(unsigned p[], unsigned offset);
+	void columnpivot(unsigned p[], unsigned offset);
 
 public:
 
@@ -160,7 +155,7 @@ public:
 	}
 
 	/// construct from stream
-        matrixt(std::istream& is) {
+	matrixt(std::istream& is) {
 		for (unsigned i = 0; i < size*size; ++i)
 			is >> values[i];
 	}

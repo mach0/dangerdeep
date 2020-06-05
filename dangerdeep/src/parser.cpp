@@ -41,9 +41,9 @@ parser::parser(string  filename_, char separator_)
 	  currcol(string::npos)
 {
 	if (file.fail())
-		throw file_read_error(filename);
+		THROW(file_read_error, filename);
 	if (!next_line())
-		throw ::error(string("Can't read in file ") + filename);
+		THROW(error, string("Can't read in file ") + filename);
 	if ((separator <= ' ' && separator != '\t') || separator == '"')
 		throw std::invalid_argument("invalid separator!");
 }
@@ -117,11 +117,11 @@ bool parser::next_column()
 			if (is_string > 0) {
 				// encountered any non-separator or non-whitespace,
 				// but we already had a string
-				error("error in read, character between end of string and next separator");
+				report_error("error in read, character between end of string and next separator");
 			}
 			if (c == '"') {
 				if (is_string < 0)
-					error("error in read, character before begin of string");
+					report_error("error in read, character before begin of string");
 				in_string = true;
 				is_string = 1;
 				continue;
@@ -132,7 +132,7 @@ bool parser::next_column()
 		}
 	}
 	if (in_string)
-		error("unterminated string");
+		report_error("unterminated string");
 	return true;
 }
 
@@ -147,9 +147,9 @@ bool parser::get_cell_number(unsigned& n) const
 
 
 
-void parser::error(const std::string& text)
+void parser::report_error(const std::string& text)
 {
 	ostringstream oss;
 	oss << "Parse error in file \"" << filename << "\", line " << line << ", column " << unsigned(currcol) << ", error: " << text;
-	throw ::error(oss.str());
+	THROW(error, oss.str());
 }
