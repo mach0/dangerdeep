@@ -82,7 +82,7 @@ void sub_soldbuch_display::display(class game& gm) const
 		font_jphsl->print(offset_x+270, offset_y+140, ss.str(), color(20, 20, 30));
 		if ( pi.career.size() >= 2 ) {
 			unsigned i = 1;
-			list<string>::const_iterator it = pi.career.begin();
+			auto it = pi.career.begin();
 			for (it++; it != pi.career.end(); ++it ) {
 				ss.str("");
 				ss << "A" << (2+1+i);

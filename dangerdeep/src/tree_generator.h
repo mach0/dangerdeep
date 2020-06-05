@@ -81,13 +81,13 @@ std::unique_ptr<model> tree_generator::generate() const
 	}
 	std::unique_ptr<model> mdl(new model());
 
-	model::material_glsl* mat2 = new model::material_glsl("bark", "reliefmapping.vshader", "reliefmapping.fshader");
+	auto* mat2 = new model::material_glsl("bark", "reliefmapping.vshader", "reliefmapping.fshader");
 	mat2->nrtex = 2;
 	mat2->texnames[0] = "tex_color";
 	mat2->texnames[1] = "tex_normal";
 
-	model::material::map* dmap = new model::material::map();
-	model::material::map* bmap = new model::material::map();
+	auto* dmap = new model::material::map();
+	auto* bmap = new model::material::map();
 	//model::material::map* smap = new model::material::map();
 	dmap->set_texture(new texture(get_texture_dir() + "barktest1.png", texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
 	bmap->set_texture(new texture(get_texture_dir() + "treebarktest_normal.png", texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
@@ -117,7 +117,7 @@ std::unique_ptr<model> tree_generator::generate() const
 #if 0
 	dmap->set_texture(new texture(get_texture_dir() + "leaves_log.png", texture::LINEAR_MIPMAP_LINEAR, texture::CLAMP));
 #endif
-	model::material_glsl* mat = new model::material_glsl("leaf", "treeleaves.vshader", "treeleaves.fshader");
+	auto* mat = new model::material_glsl("leaf", "treeleaves.vshader", "treeleaves.fshader");
 	mat->nrtex = 1;
 	mat->texnames[0] = "tex_color";
 	mat->specular = color::white();

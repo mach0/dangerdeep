@@ -113,7 +113,7 @@ void add_loading_screen(const string& msg)
 
 string get_time_string(double tm)
 {
-	unsigned seconds = unsigned(floor(myfmod(tm, 86400)));
+	auto seconds = unsigned(floor(myfmod(tm, 86400)));
 	unsigned hours = seconds / 3600;
 	unsigned minutes = (seconds % 3600) / 60;
 	seconds = seconds % 60;

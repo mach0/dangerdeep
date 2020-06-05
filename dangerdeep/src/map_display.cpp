@@ -308,7 +308,7 @@ map_display::map_display(user_interface& ui_) :
 {
 	game& gm = ui_.get_game();
 
-	game_editor* ge = dynamic_cast<game_editor*>(&gm);
+	auto* ge = dynamic_cast<game_editor*>(&gm);
 	if (ge) {
 		game_editor& gme = *ge;
 
@@ -458,7 +458,7 @@ void map_display::edit_copy_obj(game_editor& gm)
 	vector3 offset(300, 100, 0);
 	for (auto it : selection) {
 		ship* s = dynamic_cast<ship*>(it);
-		submarine* su = dynamic_cast<submarine*>(it);
+		auto* su = dynamic_cast<submarine*>(it);
 		if (s && su == nullptr) {
 			xml_doc spec(data_file().get_filename(s->get_specfilename()));
 			spec.load();
@@ -675,7 +675,7 @@ void map_display::display(class game& gm) const
 	sea_object* target = gm.get_player()->get_target();
 
 	// draw vessel symbols (or noise contacts)
-	submarine* sub_player = dynamic_cast<submarine*> ( player );
+	auto* sub_player = dynamic_cast<submarine*> ( player );
 	if (sub_player && sub_player->is_submerged ()) {
 		// draw pings
 		draw_pings(gm, -offset);
@@ -852,7 +852,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					       edit_timeminute->get_curr_value(),
 					       edit_timesecond->get_curr_value());
 					double time = d.get_time();
-					game_editor& ge = dynamic_cast<game_editor&>(gm);
+					auto& ge = dynamic_cast<game_editor&>(gm);
 					ge.manipulate_time(time);
 					// construct new date to correct possible wrong date values
 					// like 30th february or so...

@@ -293,7 +293,7 @@ water::water(double tm) :
 		float fy = y - 127.5f;
 		for (unsigned x = 0; x < perimetertexs; ++x) {
 			float fx = x - 127.5f;
-			unsigned d = unsigned(sqrt(fy*fy + fx*fx));
+			auto d = unsigned(sqrt(fy*fy + fx*fx));
 			Uint8 a = 0;
 			if (d < perimetertexs/2) {
 				if (d >= perimetertexs/2 - perimetertexborder) {
@@ -316,7 +316,7 @@ water::water(double tm) :
 		//maybe reduce reflections by using 192 or 224 instead of 255 here
 		//looks better! sea water shows less reflections in reality
 		//because it is so rough.
-		Uint8 a = Uint8(255 /*192*/ * exact_fresnel(ff)+0.5f);
+		auto a = Uint8(255 /*192*/ * exact_fresnel(ff)+0.5f);
 		for (unsigned s = 0; s < REFRAC_COLOR_RES; ++s) {
 			fresnelcolortexd[(s*FRESNEL_FCT_RES+f)*4+3] = a;
 		}
@@ -539,7 +539,7 @@ void water::draw_foam_for_ship(const game& gm, const ship* shp, const vector3& v
 	foamtrail.vertices[1] = vector3f(pr.x, pr.y, -viewpos.z);
 
 	// iterate over stored positions, compute normal for trail for each position and width
-	list<ship::prev_pos>::const_iterator pit = prevposn.begin();
+	auto pit = prevposn.begin();
 	//double dist = 0;
 // 	cout << "new trail\n";
 // 	int ctr=0;
@@ -772,7 +772,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 		// normal can be fetched as 2f instead of 3f and z recomputed by renormalization
 		// in v-shader...
 		vertices.init_data(nr_verts_total * nr_vert_attr * 4, nullptr, GL_STREAM_DRAW);
-		float* vertex_data = (float*) vertices.map(GL_WRITE_ONLY);
+		auto* vertex_data = (float*) vertices.map(GL_WRITE_ONLY);
 		//printf("nr_verts_total %u, memory %u\n", nr_verts_total, nr_verts_total*nr_vert_attr*4);
 		//with N=64 we have 21125 vertices, eating 507000 bytes of memory (shader).
 		unsigned vertex_data_ptr = 0;
@@ -781,7 +781,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 		// but this is way fast enough already!
 		for (unsigned level = 0 /*minlevel*/; level < geoclipmap_levels; ++level) {
 			// scalar depending on level
-			double level_fac = double(1 << level);
+			auto level_fac = double(1 << level);
 			// length between samples in meters, depends on level.
 			double L_l = L * level_fac;
 			int xoff = int(round_(0.5*viewpos_mod.x/L_l - 0.25*N)*2);
@@ -886,7 +886,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	// render outer levels with view frustum culling
 	for (unsigned level = 1; level < geoclipmap_levels; ++level) {
 		// scalar depending on level
-		double level_fac = double(1 << level);
+		auto level_fac = double(1 << level);
 		// length between samples in meters, depends on level.
 		double L_l = L * level_fac;
 		// x_base/y_base tells offset in sample data according to level and
@@ -1577,7 +1577,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 #if 1
 	// if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway, just in case.
 	vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
-	uint32_t* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
+	auto* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
 	uint32_t last_index = 0; // avoid reading from VBO
 #else
 	vbo.init_data(nr_indices * 2, 0, GL_STATIC_DRAW);
@@ -1799,7 +1799,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 #if 1
 	// if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway, just in case.
 	vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
-	uint32_t* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
+	auto* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
 #else
 	vbo.init_data(nr_indices * 2, 0, GL_STATIC_DRAW);
 	uint16_t* index_data = (uint16_t*) vbo.map(GL_WRITE_ONLY);

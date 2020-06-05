@@ -369,7 +369,7 @@ int tests::do_gl_tests()
 // more stolen code
 bool tests::extension_supported(const string& s)
 {
-	set<string>::const_iterator it = supported_extensions.find(s);
+	auto it = supported_extensions.find(s);
 	return (it != supported_extensions.end());
 }
 

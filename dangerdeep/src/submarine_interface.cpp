@@ -82,7 +82,7 @@ using namespace std;
 submarine_interface::submarine_interface(game& gm) : 
     	user_interface(gm), selected_tube(0), torpedo_cam_track_nr(0)
 {
-	submarine* player = dynamic_cast<submarine*>(gm.get_player());
+	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	displays.resize(nr_of_displays);
 	displays.reset(display_mode_gauges, new sub_gauges_display(*this));
@@ -128,7 +128,7 @@ submarine_interface::submarine_interface(game& gm) :
 // 	int maxs = 0;
 // 	for (unsigned i = 247; i <= 260; ++i)
 // 		maxs = std::max(widget::get_theme()->myfont->get_size(texts::get(i)).x, maxs);
-	widget_menu* screen_selector_menu = new widget_menu(0, 0, /*maxs + 16*/ 256, 32, texts::get(247));
+	auto* screen_selector_menu = new widget_menu(0, 0, /*maxs + 16*/ 256, 32, texts::get(247));
 	screen_selector->add_child_near_last_child(screen_selector_menu);
 	screen_selector_menu->set_entry_spacing(0);
 	typedef widget_caller_button<submarine_interface, void (submarine_interface::*)()> wcbsubi;
@@ -238,7 +238,7 @@ void submarine_interface::fire_tube(submarine* player, int nr)
 
 void submarine_interface::process_input(const SDL_Event& event)
 {
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 
 	/*
 	// check output for key input
@@ -549,7 +549,7 @@ void submarine_interface::set_time(double tm)
 	user_interface::set_time(tm);
 
 	// change current screen if necessary (forcibly)
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 	if ((current_display == display_mode_uzo || current_display == display_mode_bridge) &&
 	    player->is_submerged()) {
 		set_current_display(display_mode_periscope);
@@ -578,7 +578,7 @@ void submarine_interface::goto_valves()
 
 void submarine_interface::goto_periscope()
 {
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 	if (player->get_depth() > player->get_periscope_depth()) {
 		add_message(texts::get(28));
 		// will later be replaced when scope can be raised in smaller steps...
@@ -592,7 +592,7 @@ void submarine_interface::goto_periscope()
 
 void submarine_interface::goto_UZO()
 {
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 	if (player->is_submerged()) {
 		add_message(texts::get(27));
 	} else {
@@ -604,7 +604,7 @@ void submarine_interface::goto_UZO()
 
 void submarine_interface::goto_bridge()
 {
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 	if (player->is_submerged()) {
 		add_message(texts::get(27));
 	} else {
@@ -714,7 +714,7 @@ void submarine_interface::toggle_popup()
 
 void submarine_interface::display() const
 {
-	submarine* player = dynamic_cast<submarine*>(mygame->get_player());
+	auto* player = dynamic_cast<submarine*>(mygame->get_player());
 
 	// machine sound
 	unsigned thr = 0;

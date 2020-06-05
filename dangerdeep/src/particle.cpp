@@ -97,7 +97,7 @@ vector<Uint8> particle::make_2d_smoothed_noise_map(unsigned wh)
 				   + unsigned(tmp[y1 * wh + x])
 				   + unsigned(tmp[y2 * wh + x])) / 8
 				+ unsigned(tmp[y * wh +x]) / 4;
-			Uint8 r2 = (Uint8)(r);
+			auto r2 = (Uint8)(r);
 			tmp2[y * wh + x] = r2;
 			if (r2 > rmax) rmax = r2;
 			if (r2 < rmin) rmin = r2;
@@ -563,7 +563,7 @@ double explosion_particle::get_height() const
 const texture& explosion_particle::get_tex_and_col(game& gm, const colorf& /*light_color*/, colorf& col) const
 {
 	col = colorf(1,1,1,1);
-	unsigned f = unsigned(EXPL_FRAMES * (1.0 - life));
+	auto f = unsigned(EXPL_FRAMES * (1.0 - life));
 	if (f < 0 || f >= EXPL_FRAMES) f = EXPL_FRAMES-1;
 	// switch on type, fixme
 	return *explosionbig[f];
@@ -618,7 +618,7 @@ double fire_particle::get_height() const
 const texture& fire_particle::get_tex_and_col(game& gm, const colorf& /*light_color*/, colorf& col) const
 {
 	col = colorf(1,1,1,1);
-	unsigned i = unsigned(tex_fire.size() * (1.0 - life));
+	auto i = unsigned(tex_fire.size() * (1.0 - life));
 	return *tex_fire[i];
 }
 

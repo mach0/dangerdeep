@@ -478,11 +478,11 @@ void music::exec_is_playing(bool& isply)
 void music::exec_play_sfx(const std::string& category, const vector3& listener, angle listener_dir, const vector3& noise_pos)
 {
 	if (!use_music) throw std::invalid_argument("no music support");
-	map<string, vector<Mix_Chunk*> >::iterator it = sfx_events.find(category);
+	auto it = sfx_events.find(category);
 	if (it == sfx_events.end())
 		throw invalid_argument(string("unknown category for sfx: ") + category);
 	// chose random sound of category
-	unsigned snr = unsigned(it->second.size() * rnd());
+	auto snr = unsigned(it->second.size() * rnd());
 	Mix_Chunk* chk = it->second[snr];
 
 	double distanceFromPlayer = listener.distance(noise_pos);
@@ -537,7 +537,7 @@ void music::exec_play_sfx(const std::string& category, const vector3& listener, 
 void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 {
 	if (!use_music) throw std::invalid_argument("no music support");
-	map<string, vector<Mix_Chunk*> >::iterator it = sfx_machines.find(name);
+	auto it = sfx_machines.find(name);
 	if (it == sfx_machines.end())
 		throw invalid_argument(string("unknown machine name: ") + name);
 	unsigned nrthr = it->second.size();

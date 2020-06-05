@@ -83,7 +83,7 @@ void data_file_handler::parse_for_data_files(std::string dir, std::list<std::str
 const std::string& data_file_handler::get_rel_path(const std::string& objectid) const
 {
 	static std::string emptystr;
-	std::map<std::string, std::string>::const_iterator it = data_files.find(objectid);
+	auto it = data_files.find(objectid);
 	if (it == data_files.end()) {
 		throw error(std::string("can't find path for object '") + objectid + std::string("'"));
 	}

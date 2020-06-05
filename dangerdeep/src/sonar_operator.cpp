@@ -87,7 +87,7 @@ void sonar_operator::simulate(game& gm, double delta_t)
 // 	printf("sonarman sim, time=%f\n", last_simulation_step_time);
 	last_simulation_step_time -= simulation_step;
 
-	submarine* player = dynamic_cast<submarine*>(gm.get_player());
+	auto* player = dynamic_cast<submarine*>(gm.get_player());
 	angle sub_heading = player->get_heading();
 	double sub_turn_velocity = -player->get_turn_velocity();
 	pair<double, noise> signal = gm.sonar_listen_ships(player, current_angle);
@@ -194,8 +194,8 @@ void sonar_operator::advance_angle_and_erase_old_contacts(double addang, angle s
 // 	printf("try next angle %f->%f\n", curr_angle, next_angle);
 	// now erase all keys between current_angle and next_angle
 	if (next_angle > curr_angle) {
-		std::map<double, contact>::iterator beg = contacts.lower_bound(curr_angle);
-		std::map<double, contact>::iterator end = contacts.upper_bound(next_angle);
+		auto beg = contacts.lower_bound(curr_angle);
+		auto end = contacts.upper_bound(next_angle);
 		//  	printf("check delete %f->%f\n", curr_angle, next_angle);
 		//  	for (std::map<double, contact>::iterator it = beg; it != end; ++it)
 		//  		printf("making contact at angle %f obsolete\n", it->first);

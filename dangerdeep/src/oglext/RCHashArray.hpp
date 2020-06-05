@@ -230,7 +230,7 @@ inline CRenderingContext * CRCHashArray::PrepareRenderingContext(HRCKEY hRCKey)
 
 	// 3: create a new rendering context...
 
-	SHashArrayNode * pNewNode		= new SHashArrayNode;
+	auto * pNewNode		= new SHashArrayNode;
 
 	pNewNode->pNext					= m_pHashArray[uHashIndex];
 	pNewNode->hRCKey					= hRCKey;

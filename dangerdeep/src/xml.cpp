@@ -51,7 +51,7 @@ bool xml_elem::has_child(const std::string& name) const
 
 xml_elem xml_elem::add_child(const std::string& name)
 {
-	TiXmlElement* e = new TiXmlElement(name);
+	auto* e = new TiXmlElement(name);
 	elem->LinkEndChild(e);
 	return {e};
 }
@@ -337,7 +337,7 @@ xml_elem xml_doc::child(const std::string& name)
 
 xml_elem xml_doc::add_child(const std::string& name)
 {
-	TiXmlElement* e = new TiXmlElement(name);
+	auto* e = new TiXmlElement(name);
 	doc->LinkEndChild(e);
 	return {e};
 }

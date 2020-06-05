@@ -168,8 +168,8 @@ float heightmap::compute_height(const vector2f& coord) const
 	vector2f c = coord.max(min_coord).min(max_coord) - min_coord;
 	c.x = xres * c.x / area.x;
 	c.y = yres * c.y / area.y;
-	unsigned x = unsigned(floor(c.x));
-	unsigned y = unsigned(floor(c.y));
+	auto x = unsigned(floor(c.x));
+	auto y = unsigned(floor(c.y));
 	c.x -= x;
 	c.y -= y;
 	unsigned x2 = x + 1, y2 = y + 1;
@@ -271,7 +271,7 @@ canyon::canyon(unsigned w, unsigned h)
 	for (unsigned y = 0; y < h; ++y) {
 		for (unsigned x = 0; x < w; ++x) {
 			float f = heightdata[y * w + x];
-			unsigned t = unsigned(floor(f / terrace_height));
+			auto t = unsigned(floor(f / terrace_height));
 			float f_frac = f / terrace_height - t;
 			float f2 = f_frac * 2.0 - 1.0; // be in -1...1 range
 			// skip this for softer hills (x^3 = more steep walls)
@@ -443,7 +443,7 @@ plant_set::plant_set(vector<float>& heightdata, unsigned nr, unsigned w, unsigne
 	myshader.set_gl_texture(*planttex, loc_textrees, 0);
 	// vertex data per plant are 4 * (3+2+1) floats (3x pos, 2x texc, 1x attr)
 	plantvertexdata.init_data(4 * (3 + 2 + 1) * 4 * plants.size(), nullptr, GL_STATIC_DRAW);
-	float* vertexdata = (float*) plantvertexdata.map(GL_WRITE_ONLY);
+	auto* vertexdata = (float*) plantvertexdata.map(GL_WRITE_ONLY);
 	for (unsigned i = 0; i < plants.size(); ++i) {
 		// render each plant
 		const plant& p = plants[i];
@@ -501,7 +501,7 @@ void plant_set::display(const vector3& viewpos, float zang) const
 	//fixme: why transfer this to a VBO? why not drawing these indices
 	//directly from the array?!
 	plantindexdata.init_data(4 * 4 * plants.size(), nullptr, GL_STREAM_DRAW);
-	uint32_t* indexdata = (uint32_t*) plantindexdata.map(GL_WRITE_ONLY);
+	auto* indexdata = (uint32_t*) plantindexdata.map(GL_WRITE_ONLY);
 	for (unsigned i = 0; i < plants.size(); ++i) {
 		// 4 vertices per plant
 		unsigned bi = sortindices[i].idx * 4; // base index for plant i

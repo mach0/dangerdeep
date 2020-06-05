@@ -66,21 +66,21 @@ cfg::~cfg()
 
 bool cfg::set_str(const string& name, const string& value)
 {
-	map<string, bool>::iterator it = valb.find(name);
+	auto it = valb.find(name);
 	if (it != valb.end()) {
 		if (value == "true" || value == "yes") it->second = true;
 		else if (value == "false" || value == "no") it->second = false;
 		else it->second = bool(atoi(value.c_str()));
 	} else {
-		map<string, int>::iterator it = vali.find(name);
+		auto it = vali.find(name);
 		if (it != vali.end()) {
 			it->second = atoi(value.c_str());
 		} else {
-			map<string, float>::iterator it = valf.find(name);
+			auto it = valf.find(name);
 			if (it != valf.end()) {
 				it->second = atof(value.c_str());
 			} else {
-				map<string, string>::iterator it = vals.find(name);
+				auto it = vals.find(name);
 				if (it != vals.end()) {
 					it->second = value;
 				} else {
@@ -205,7 +205,7 @@ void cfg::register_key(const string& name, SDLKey keysym, bool ctrl, bool alt, b
 
 void cfg::set(const string& name, bool value)
 {
-	map<string, bool>::iterator it = valb.find(name);
+	auto it = valb.find(name);
 	if (it != valb.end())
 		it->second = value;
 	else
@@ -216,7 +216,7 @@ void cfg::set(const string& name, bool value)
 
 void cfg::set(const string& name, int value)
 {
-	map<string, int>::iterator it = vali.find(name);
+	auto it = vali.find(name);
 	if (it != vali.end())
 		it->second = value;
 	else
@@ -227,7 +227,7 @@ void cfg::set(const string& name, int value)
 
 void cfg::set(const string& name, float value)
 {
-	map<string, float>::iterator it = valf.find(name);
+	auto it = valf.find(name);
 	if (it != valf.end())
 		it->second = value;
 	else
@@ -238,7 +238,7 @@ void cfg::set(const string& name, float value)
 
 void cfg::set(const string& name, const string& value)
 {
-	map<string, string>::iterator it = vals.find(name);
+	auto it = vals.find(name);
 	if (it != vals.end())
 		it->second = value;
 	else
@@ -249,7 +249,7 @@ void cfg::set(const string& name, const string& value)
 	
 void cfg::set_key(unsigned nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
 {
-	map<unsigned, key>::iterator it = valk.find(nr);
+	auto it = valk.find(nr);
 	if (it != valk.end())
 		it->second = key(it->second.action, keysym, ctrl, alt, shift);
 	else
@@ -260,7 +260,7 @@ void cfg::set_key(unsigned nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
 
 bool cfg::getb(const string& name) const
 {
-	map<string, bool>::const_iterator it = valb.find(name);
+	auto it = valb.find(name);
 	if (it != valb.end())
 		return it->second;
 	else
@@ -272,7 +272,7 @@ bool cfg::getb(const string& name) const
 
 int cfg::geti(const string& name) const
 {
-	map<string, int>::const_iterator it = vali.find(name);
+	auto it = vali.find(name);
 	if (it != vali.end())
 		return it->second;
 	else
@@ -284,7 +284,7 @@ int cfg::geti(const string& name) const
 
 float cfg::getf(const string& name) const
 {
-	map<string, float>::const_iterator it = valf.find(name);
+	auto it = valf.find(name);
 	if (it != valf.end())
 		return it->second;
 	else
@@ -296,7 +296,7 @@ float cfg::getf(const string& name) const
 
 string cfg::gets(const string& name) const
 {
-	map<string, string>::const_iterator it = vals.find(name);
+	auto it = vals.find(name);
 	if (it != vals.end())
 		return it->second;
 	else
@@ -308,7 +308,7 @@ string cfg::gets(const string& name) const
 
 cfg::key cfg::getkey(unsigned nr) const
 {
-	map<unsigned, key>::const_iterator it = valk.find(nr);
+	auto it = valk.find(nr);
 	if (it != valk.end())
 		return it->second;
 	else

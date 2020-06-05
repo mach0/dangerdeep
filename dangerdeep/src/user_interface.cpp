@@ -134,7 +134,7 @@ user_interface::user_interface(game& gm) :
 		}
 		musiclist(int x, int y, int w, int h) : widget_list(x, y, w, h), active(false) {}
 	};
-	musiclist* playlist = new musiclist(0, 0, 384, 512);
+	auto* playlist = new musiclist(0, 0, 384, 512);
 	music_playlist->add_child_near_last_child(playlist);
 	music& m = music::instance();
 	vector<string> mpl = m.get_playlist();
@@ -671,7 +671,7 @@ void user_interface::draw_infopanel(bool onlytexts) const
 	double vanish_time = mygame->get_time() - message_vanish_time;
 	int y = (onlytexts ? sys().get_res_y_2d() : panel->get_pos().y)
 		- font_vtremington12->get_height();
-	for (std::list<std::pair<double, std::string> >::const_reverse_iterator it = messages.rbegin();
+	for (auto it = messages.rbegin();
 	     it != messages.rend(); ++it) {
 		if (it->first < vanish_time)
 			break;
@@ -692,7 +692,7 @@ void user_interface::add_message(const string& s)
 	while (messages.size() > 6)
 		messages.pop_front();
 	double vanish_time = mygame->get_time() - message_vanish_time;
-	for (std::list<std::pair<double, std::string> >::iterator it = messages.begin(); it != messages.end(); ) {
+	for (auto it = messages.begin(); it != messages.end(); ) {
 		if (it->first < vanish_time) {
 			it = messages.erase(it);
 		} else {

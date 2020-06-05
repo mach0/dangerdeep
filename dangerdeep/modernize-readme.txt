@@ -1,8 +1,11 @@
 Steps to adjust existing, working code base to code modernization state.
+===================================================================================================
 After each step check functionality.
+
 1. Migrate SCons -> CMake, build all executables
 	DONE, later split to finer libraries
 2. Use clang to modernize code automatically
+	DONE for modernizer checks (more error checks may be sensible)
 3. Migrate to SDL2
 3b. Use C++11 threads etc.
 4. Introduce newer system input handling
@@ -13,6 +16,10 @@ After each step check functionality.
 9. Finally adjust rendering
 10. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 11. Turn on -Wall
+
+
+Notes
+===================================================================================================
 
 clang tidy modernizers
 DONE
@@ -44,9 +51,10 @@ DONE
     modernize-return-braced-init-list
     modernize-pass-by-value
     modernize-loop-convert
-TODO
+    llvm-include-order
     modernize-use-auto
-    llvm-include-order ?
 DO NOT USE    
     modernize-use-trailing-return-type
+CHECK
+    There is a long list of clang tidy checks that could also be applied!
 

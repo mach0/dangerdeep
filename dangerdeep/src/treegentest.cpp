@@ -72,7 +72,7 @@ int mymain(list<string>& args)
 	bool fullscreen = true;
 
 	// parse commandline
-	for (list<string>::iterator it = args.begin(); it != args.end(); ++it) {
+	for (auto it = args.begin(); it != args.end(); ++it) {
 		if (*it == "--help") {
 			cout << "*** Danger from the Deep ***\nusage:\n--help\t\tshow this\n"
 			<< "--res n\t\tuse resolution n horizontal,\n\t\tn is 512,640,800,1024 (recommended) or 1280\n"
@@ -88,7 +88,7 @@ int mymain(list<string>& args)
 			fullscreen = false;
 			res_x = 800;
 		} else if (*it == "--res") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				int r = atoi(it2->c_str());
 				if (r==512||r==640||r==800||r==1024||r==1280)
@@ -200,7 +200,7 @@ void run()
 					  colorf(0.5,0.8,0.5,1)).render();
 
 		treemdl->display();
-		model::material_glsl& leafmat = dynamic_cast<model::material_glsl&>(treemdl->get_material(1));
+		auto& leafmat = dynamic_cast<model::material_glsl&>(treemdl->get_material(1));
 		glsl_shader_setup& gss = leafmat.get_shadersetup();
 		gss.use();
 		gss.set_uniform(gss.get_uniform_location("wind_movement"), wind_movement);

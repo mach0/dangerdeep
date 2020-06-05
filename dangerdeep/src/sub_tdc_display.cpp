@@ -103,9 +103,9 @@ sub_tdc_display::sub_tdc_display(user_interface& ui_)
 
 void sub_tdc_display::process_input(class game& gm, const SDL_Event& event)
 {
-	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	int mx, my;
-	submarine_interface& si = dynamic_cast<submarine_interface&>(ui);
+	auto& si = dynamic_cast<submarine_interface&>(ui);
 	tdc& TDC = sub->get_tdc();
 
 	if (show_screen1) {
@@ -210,7 +210,7 @@ void sub_tdc_display::process_input(class game& gm, const SDL_Event& event)
 
 void sub_tdc_display::display(class game& gm) const
 {
-	submarine* player = dynamic_cast<submarine*>(gm.get_player());
+	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();
 

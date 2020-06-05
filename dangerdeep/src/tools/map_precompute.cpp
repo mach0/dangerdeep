@@ -75,7 +75,7 @@ int mymain(list<string>& args)
 	bool clip = false;
 	vector2i clip_tl, clip_br;
 	
-	for (std::list<std::string>::iterator it = args.begin(); it != args.end(); ++it) {
+	for (auto it = args.begin(); it != args.end(); ++it) {
 		if(*it == "--help") {
 			std::cout   << "*** Danger from the Deep maptool ***"																<< std::endl
 						<< "usage: map_precompute --infile <file> --outdir <dir> [options]\n"									<< std::endl
@@ -92,7 +92,7 @@ int mymain(list<string>& args)
 			return 0;
 		}
 		if(*it == "--mapsize=") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				string::size_type st = it2->find("*");
 				if (st != string::npos) {
@@ -105,25 +105,25 @@ int mymain(list<string>& args)
 			}
 		}
 		if(*it == "--infile") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				infile = *it2;
 			}
 		}
 		if(*it == "--outdir") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				outdir = *it2;
 			}
 		}
 		if(*it == "--tile_size") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				sqr_size = atol((*it2).c_str());
 			}
 		}
 		if(*it == "--clip") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				
 				string::size_type st = it2->find(",");

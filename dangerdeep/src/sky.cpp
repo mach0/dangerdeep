@@ -109,7 +109,7 @@ sky::sky(const double tm, const unsigned int sectors_h, const unsigned int secto
 	compute_clouds();
 
 	clouds_texcoords.init_data(nr_sky_vertices*2*4, nullptr, GL_STATIC_DRAW);
-	float* ptr = (float*)clouds_texcoords.map(GL_WRITE_ONLY);
+	auto* ptr = (float*)clouds_texcoords.map(GL_WRITE_ONLY);
 	for (unsigned beta = 0; beta <= sectors_v; ++beta) {
 		float t = (1.0-float(beta)/sectors_v)/2;
 		for (unsigned alpha = 0; alpha <= sectors_h; ++alpha) {
@@ -512,8 +512,8 @@ void sky::rebuild_colors(const vector3& sunpos_, const vector3& moonpos_, const 
 		// rebuild colors
 		daysky skycol(-sun_azimuth, sun_elevation, turbidity);
 
-		std::vector<vector2f>::const_iterator skyangle = skyangles.begin();
-		std::vector<color>::iterator skycolor = skycolors.begin();
+		auto skyangle = skyangles.begin();
+		auto skycolor = skycolors.begin();
 		while (skyangle != skyangles.end()) {
 #if 0	//	debug (angles mapped on hemisphere)
 			*skycolor = colorf( skyangle->x/(M_PI*2), skyangle->y/(M_PI/2.0f), 0, sky_alpha );

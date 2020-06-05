@@ -286,7 +286,7 @@ void glsl_program::attach(glsl_shader& s)
 void glsl_program::detach(glsl_shader& s)
 {
 	glDetachShader(id, s.id);
-	for (list<glsl_shader*>::iterator it = attached_shaders.begin(); it != attached_shaders.end(); )
+	for (auto it = attached_shaders.begin(); it != attached_shaders.end(); )
 		if (*it == &s) {
 			glDetachShader(id, (*it)->id);
 			it = attached_shaders.erase(it);

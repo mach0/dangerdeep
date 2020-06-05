@@ -83,7 +83,7 @@ int mymain(list<string>& args)
 	sys().set_res_2d(1024, 768);
 	sys().set_max_fps(60);
 
-	list<string>::iterator it = ++args.begin();
+	auto it = ++args.begin();
 	std::unique_ptr<model> modelA(new model(*it++));
 	std::unique_ptr<model> modelB(new model(*it++));
 	modelA->register_layout(model::default_layout);

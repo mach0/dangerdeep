@@ -124,7 +124,7 @@ T tile_cache<T>::get_value(vector2i coord)
 
 	vector2i tile_coord = coord_to_tile(coord);
 
-	tile_list_iterator it = tile_list.find(tile_coord);
+	auto it = tile_list.find(tile_coord);
 
 	if(it != tile_list.end()) return_value = it->second.get_value(coord-tile_coord);
 	else {
@@ -152,7 +152,7 @@ inline void tile_cache<T>::free_slot()
 {
 	unsigned long min = sys().millisec();
 	vector2i min_key;
-	for (tile_list_iterator it = tile_list.begin(); it != tile_list.end(); it++) {
+	for (auto it = tile_list.begin(); it != tile_list.end(); it++) {
 		if (it->second.get_last_access()<=min) {
 			min = it->second.get_last_access();
 			min_key = it->first;
@@ -166,7 +166,7 @@ inline void tile_cache<T>::erase_expired()
 {
 	if (configuration.expire>0) {
 		long time = sys().millisec();
-		for (tile_list_iterator it = tile_list.begin(); it != tile_list.end();)
+		for (auto it = tile_list.begin(); it != tile_list.end();)
 			if (time-it->second.get_last_access() >= configuration.expire) {
 				tile_list.erase(it++);
 			} else {

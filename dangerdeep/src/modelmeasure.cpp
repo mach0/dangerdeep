@@ -231,7 +231,7 @@ int mymain(list<string>& args)
 	res_x = 1024;
 	bool fullscreen = true;
 	string modelfilename;
-	for (list<string>::iterator it = args.begin(); it != args.end(); ++it) {
+	for (auto it = args.begin(); it != args.end(); ++it) {
 		if (*it == "--help") {
 			cout << "crosssection, usage:\n--help\t\tshow this\n"
 			<< "--res n\t\tuse resolution n horizontal,\n\t\tn is 512,640,800,1024 (recommended) or 1280\n"
@@ -241,7 +241,7 @@ int mymain(list<string>& args)
 		} else if (*it == "--nofullscreen") {
 			fullscreen = false;
 		} else if (*it == "--res") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				int r = atoi(it2->c_str());
 				if (r==512||r==640||r==800||r==1024||r==1280)
@@ -249,7 +249,7 @@ int mymain(list<string>& args)
 				++it;
 			}
 		} else if (*it == "--angles") {
-			list<string>::iterator it2 = it; ++it2;
+			auto it2 = it; ++it2;
 			if (it2 != args.end()) {
 				int r = atoi(it2->c_str());
 				ANGLES = r;

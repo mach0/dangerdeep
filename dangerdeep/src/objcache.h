@@ -58,14 +58,14 @@ public:
 
 	// call to deinit cache
 	void clear() {
-		for (typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.begin(); it != cache.end(); ++it)
+		for (auto it = cache.begin(); it != cache.end(); ++it)
 			delete it->second.second;
 		cache.clear();
 	}
 
 	T* find(const std::string& objname) {
 		if (objname.empty()) return (T*)nullptr;
-		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
+		auto it = cache.find(objname);
 		if (it == cache.end())
 			return nullptr;
 		return it->second.second;
@@ -73,7 +73,7 @@ public:
 
 	T* ref(const std::string& objname) {
 		if (objname.empty()) return (T*)nullptr;
-		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
+		auto it = cache.find(objname);
 		if (it == cache.end()) {
 			it = cache.insert(std::make_pair(objname, std::make_pair( (unsigned)1, new T(basedir + objname)))).first;
 		} else {
@@ -84,7 +84,7 @@ public:
 
 	bool ref(const std::string& objname, T* obj) {
 		if (objname.empty()) return false;	// no valid name
-		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
+		auto it = cache.find(objname);
 		if (it == cache.end()) {
 			it = cache.insert(std::make_pair(objname, std::make_pair((unsigned)1, obj))).first;
 		} else {
@@ -95,7 +95,7 @@ public:
 
 	void unref(const std::string& objname) {
 		if (objname.empty()) return;
-		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
+		auto it = cache.find(objname);
 		if (it != cache.end()) {
 			if (it->second.first == 0) {
 				// error, unref'd too much...
@@ -110,7 +110,7 @@ public:
 	}
 	
 	void unref(T* obj) {
-		for (typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.begin(); it != cache.end(); ++it) {
+		for (auto it = cache.begin(); it != cache.end(); ++it) {
 			if (it->second.second == obj) {
 				if (it->second.first == 0) {
 					// error, unref'd too much...

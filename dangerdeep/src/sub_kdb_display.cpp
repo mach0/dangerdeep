@@ -155,7 +155,7 @@ void sub_kdb_display::process_input(class game& gm, const SDL_Event& event)
 
 pair<angle, double> find_peak_noise(angle startangle, double step, double maxstep, game& gm)
 {
-	submarine* player = dynamic_cast<submarine*>(gm.get_player());
+	auto* player = dynamic_cast<submarine*>(gm.get_player());
 	angle ang_peak = startangle;
 	double peak_val = gm.sonar_listen_ships(player, startangle).first;
 	startangle += step;
@@ -190,7 +190,7 @@ pair<angle, double> find_peak_noise(angle startangle, double step, double maxste
 
 void sub_kdb_display::display(game& gm) const
 {
-	submarine* player = dynamic_cast<submarine*>(gm.get_player());
+	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();
 

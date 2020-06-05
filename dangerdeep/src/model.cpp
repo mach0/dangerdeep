@@ -503,7 +503,7 @@ void model::mesh::compute_vertex_bounds()
 	if (vertices.size() == 0) return;
 	min = max = vertices[0];
 
-	for (vector<vector3f>::iterator it2 = ++vertices.begin(); it2 != vertices.end(); ++it2) {
+	for (auto it2 = ++vertices.begin(); it2 != vertices.end(); ++it2) {
 		min = it2->min(min);
 		max = it2->max(max);
 	}
@@ -878,7 +878,7 @@ void model::mesh::compile()
 	if (has_texture_u0 && tangentsx.size() == vs) {
 		if (mymaterial->use_default_shader()) {
 			vbo_tangents_righthanded.init_data(4 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
-			float* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
+			auto* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
 			for (unsigned i = 0; i < vs; ++i) {
 				xdata[4*i+0] = tangentsx[i].x;
 				xdata[4*i+1] = tangentsx[i].y;
@@ -892,7 +892,7 @@ void model::mesh::compile()
 			vertex_attrib_index = gss.get_vertex_attrib_index("tangentx_righthanded");
 		} else {
 			vbo_tangents_righthanded.init_data(3 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
-			float* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
+			auto* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
 			for (unsigned i = 0; i < vs; ++i) {
 				xdata[3*i+0] = tangentsx[i].x;
 				xdata[3*i+1] = tangentsx[i].y;
@@ -948,8 +948,8 @@ pair<model::mesh*, model::mesh*> model::mesh::split(const vector3f& abc, float d
 {
 	if (indices_type != pt_triangles) throw std::runtime_error("split: can't handle primitives other than triangles!");
 
-	model::mesh* part0 = new model::mesh("split0");
-	model::mesh* part1 = new model::mesh("split1");
+	auto* part0 = new model::mesh("split0");
+	auto* part1 = new model::mesh("split1");
 	part0->name = name + "_part0";
 	part1->name = name + "_part1";
 	part0->mymaterial = part1->mymaterial = mymaterial;
@@ -1379,7 +1379,7 @@ void model::material::map::register_layout(const std::string& name,
 					   float detailh,
 					   bool rgb2grey)
 {
-	std::map<string, skin>::iterator it = skins.find(name);
+	auto it = skins.find(name);
 	if (it != skins.end()) {
 		// skin texture
 		if (it->second.ref_count == 0) {
@@ -1409,7 +1409,7 @@ void model::material::map::register_layout(const std::string& name,
 
 void model::material::map::unregister_layout(const std::string& name)
 {
-	std::map<string, skin>::iterator it = skins.find(name);
+	auto it = skins.find(name);
 	if (it != skins.end()) {
 		if (it->second.ref_count == 0)
 			throw error("unregistered texture, but skin ref_count already zero");
@@ -2118,13 +2118,13 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 
 	// save materials.
 	unsigned nr = 0;
-	for (vector<material*>::const_iterator it = materials.begin(); it != materials.end(); ++it, ++nr) {
+	for (auto it = materials.begin(); it != materials.end(); ++it, ++nr) {
 		const material* m = *it;
 		xml_elem mat = root.add_child("material");
 		mat.set_attr(m->name, "name");
 		mat.set_attr(nr, "id");
 
-		const material_glsl* matglsl = dynamic_cast<const material_glsl*>(m);
+		const auto* matglsl = dynamic_cast<const material_glsl*>(m);
 		if (matglsl) {
 			// fixme: save code
 			xml_elem es = mat.add_child("shader");
@@ -2159,7 +2159,7 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 
 	// save meshes.
 	nr = 0;
-	for (vector<mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it, ++nr) {
+	for (auto it = meshes.begin(); it != meshes.end(); ++it, ++nr) {
 		mesh* mp = *it;
 		xml_elem msh = root.add_child("mesh");
 		msh.set_attr(mp->name, "name");
@@ -2438,7 +2438,7 @@ void model::read_dftd_model_file(const std::string& filename)
 			// material
 			if (e.has_attr("material")) {
 				unsigned matid = e.attru("material");
-				map<unsigned, material* >::iterator it = mat_id_mapping.find(matid);
+				auto it = mat_id_mapping.find(matid);
 				if (it != mat_id_mapping.end()) {
 					msh->mymaterial = it->second;
 				} else {

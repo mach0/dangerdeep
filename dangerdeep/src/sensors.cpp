@@ -218,7 +218,7 @@ bool passive_sonar_sensor::is_detected ( double& sound_level,
 	sound_level = 0.0f;
 
 	// Surfaced submarines detect anything with their passive sonars.
-	const submarine* sub = dynamic_cast<const submarine*> ( d );
+	const auto* sub = dynamic_cast<const submarine*> ( d );
     if ( sub && !sub->is_submerged () )
     {
 		detected = false;
@@ -329,7 +329,7 @@ bool radar_sensor::is_detected ( const game* gm, const sea_object* d,
 	bool detected = false;
 	
 	// Surfaced submarines cannot use ASDIC.
-	const submarine* dsub = dynamic_cast<const submarine*> ( d );
+	const auto* dsub = dynamic_cast<const submarine*> ( d );
 	if ((dsub && !dsub->is_submerged ()) || !dsub)
 	{
 		vector2 r = t->get_pos ().xy () - d->get_pos ().xy ();
@@ -373,7 +373,7 @@ bool active_sonar_sensor::is_detected ( const game* gm, const sea_object* d,
 	bool detected = false;
 
 	// Surfaced submarines cannot use ASDIC.
-	const submarine* dsub = dynamic_cast<const submarine*> ( d );
+	const auto* dsub = dynamic_cast<const submarine*> ( d );
     if ( dsub && !dsub->is_submerged () )
 	{
 		detected = false;
@@ -381,7 +381,7 @@ bool active_sonar_sensor::is_detected ( const game* gm, const sea_object* d,
 	else
 	{
 		// Only submerged submarines can be detected with ASDIC.
-		const submarine* tsub = dynamic_cast<const submarine*> ( t );
+		const auto* tsub = dynamic_cast<const submarine*> ( t );
 		if ( tsub && tsub->is_submerged () )
 		{
 			vector2 r = t->get_pos ().xy () - d->get_pos ().xy ();

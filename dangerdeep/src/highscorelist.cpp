@@ -70,7 +70,7 @@ highscorelist::highscorelist(const string& filename)
 void highscorelist::save(const string& filename) const
 {
 	ofstream out(filename.c_str(), ios::out|ios::binary);
-	Uint8 n = Uint8(entries.size());
+	auto n = Uint8(entries.size());
 	write_u8(out, n);
 	for (unsigned i = 0; i < n; ++i)
 		entries[i].save(out);

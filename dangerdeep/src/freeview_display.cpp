@@ -126,7 +126,7 @@ freeview_display::freeview_display(user_interface& ui_) :
 	user_display(ui_), aboard(false), withunderwaterweapons(true), drawbridge(false),
 	conning_tower(nullptr)
 {
-	submarine* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
+	auto* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
 	add_pos = sub->get_freeview_position();
 	conning_tower = modelcache().ref(sub->get_bridge_filename());
 
@@ -539,7 +539,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	for (auto object : objects) {
 		ship* s = dynamic_cast<ship*>(object);
 		if (s) {
-			torpedo* t = dynamic_cast<torpedo*>(s);
+			auto* t = dynamic_cast<torpedo*>(s);
 			if (!t) {
 				// do NOT store torpedoes here, because they have no foam trail,
 				// they travel under water.

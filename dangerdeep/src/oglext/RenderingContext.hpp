@@ -2194,7 +2194,7 @@ inline void CRenderingContext::InitExtensionString()
 
 		// 2.1: create a new node and connect to the existing list...
 
-		SExtensionName * pNewExtensionName	= new SExtensionName;
+		auto * pNewExtensionName	= new SExtensionName;
 
 		pNewExtensionName->pNext				= m_pFirstExtensionName;
 		pNewExtensionName->szExtension		= szExtensions;
