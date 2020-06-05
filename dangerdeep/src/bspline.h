@@ -69,7 +69,7 @@ class non_uniform_bsplinet
 		deBoor_pts.resize((n+1)*(n+2)/2);
 	}
 
-	virtual ~non_uniform_bsplinet() {}
+	virtual ~non_uniform_bsplinet() = default;
 
 	const std::vector<T>& control_points() const { return cp; }
 	
@@ -249,7 +249,7 @@ public:
 
 };
 
-typedef bsplinet<double> bspline;
-typedef non_uniform_bsplinet<double> non_uniform_bspline;
+using bspline = bsplinet<double>;
+using non_uniform_bspline = non_uniform_bsplinet<double>;
 
 #endif

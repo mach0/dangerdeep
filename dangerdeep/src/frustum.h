@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// model of a frustum for view calculations.
 class frustum
 {
-	frustum();
+	frustum() = delete;
 public:
 	/// frustum is modelled by planes, each frustum has 6.
 	std::vector<plane> planes;

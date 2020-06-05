@@ -100,7 +100,7 @@ public:
 			const angle& ping_angle_ ) :
 			pos(p), dir(d), time(t), range ( range ), ping_angle ( ping_angle_ )
 			{}
-		~ping() {}
+		~ping() = default;
 		ping(const xml_elem& parent);
 		void save(xml_elem& parent) const;
 	};
@@ -120,10 +120,10 @@ public:
 	};
 	
 	struct job {
-		job() {}
+		job() = default;
 		virtual void run() = 0;
 		virtual double get_period() const = 0;
-		virtual ~job() {}
+		virtual ~job() = default;
 	};
 
 	struct player_info {

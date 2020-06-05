@@ -201,7 +201,7 @@ class triangle_intersection_t
 	}
 };
 
-typedef triangle_intersection_t<double> triangle_intersection;
-typedef triangle_intersection_t<float> triangle_intersectionf;
+using triangle_intersection = triangle_intersection_t<double>;
+using triangle_intersectionf = triangle_intersection_t<float>;
 
 #endif

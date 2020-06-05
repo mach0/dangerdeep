@@ -40,9 +40,9 @@ public:
 		entry() : points(0), name("--------") {}
 		entry(unsigned p, const std::string& n) : points(p), name(n) {}
 		entry(std::istream& in);
-		~entry() {}
-		entry(const entry& e) : points(e.points), name(e.name) {}
-		entry& operator= (const entry& e) { points = e.points; name = e.name; return *this; }
+		~entry() = default;
+		entry(const entry& e)  = default;
+		entry& operator= (const entry& e) = default;
 		void save(std::ostream& out) const;
 		bool is_worse_than(unsigned pts) const;	// is entry worse than given value?
 	};
@@ -52,7 +52,7 @@ protected:
 	
 public:
 	highscorelist(unsigned maxentries = 10);
-	~highscorelist() {}
+	~highscorelist() = default;
 	highscorelist(const std::string& filename);	// read from file
 	void save(const std::string& filename) const;
 	unsigned get_listpos_for(unsigned points) const; // returns place in list or entries.size() if not in list

@@ -89,7 +89,7 @@ class model_load_dialog
 {
 public:
         model_load_dialog();
-        virtual ~model_load_dialog() {}
+        virtual ~model_load_dialog() = default;
 
         void get_model_list(const list<string>& namelist);
         const list<string>& get_models();

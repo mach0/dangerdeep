@@ -300,7 +300,7 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 	if (parent.has_child("tanks")) { // fixme: later all subs should have it!!
 		xml_elem etanks = parent.child("tanks");
 		for (xml_elem::iterator it = etanks.iterate("tank"); !it.end(); it.next()) {
-			tanks.push_back(tank(it.elem()));
+			tanks.emplace_back(it.elem());
 			ballast_tank_capacity += tanks.back().get_volume();
 		}
 	}
@@ -326,7 +326,7 @@ void submarine::load(const xml_elem& parent)
 	torpedoes.clear();
 	torpedoes.reserve(tp.attru("nr"));
 	for (xml_elem::iterator it = tp.iterate("stored_torpedo"); !it.end(); it.next()) {
-		torpedoes.push_back(stored_torpedo());
+		torpedoes.emplace_back();
 		torpedoes.back().load(gm, it.elem());
 	}
 

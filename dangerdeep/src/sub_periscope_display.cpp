@@ -204,8 +204,7 @@ sub_periscope_display::sub_periscope_display(user_interface& ui_)
 
 
 sub_periscope_display::~sub_periscope_display()
-{
-}
+= default;
 
 
 

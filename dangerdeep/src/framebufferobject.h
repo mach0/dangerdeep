@@ -56,9 +56,9 @@ class framebufferobject
 	void destroy();
 
  private:
-	framebufferobject();
-	framebufferobject(const framebufferobject& );	// no copy
-	framebufferobject& operator= (const framebufferobject&);
+	framebufferobject() = delete;
+	framebufferobject(const framebufferobject& ) = delete;	// no copy
+	framebufferobject& operator= (const framebufferobject&) = delete;
 
 	const char* init_failure_reason( int status );
 };

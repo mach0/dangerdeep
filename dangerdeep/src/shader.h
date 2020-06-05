@@ -49,7 +49,7 @@ class glsl_shader
 	};
 
 	/// a list of strings with shader preprocessor defines
-	typedef std::list<std::string> defines_list;
+	using defines_list = std::list<std::string>;
 
 	/// use a default define HQSFX everywhere if enabled
 	static bool enable_hqsfx;
@@ -69,9 +69,9 @@ class glsl_shader
 	unsigned id;
 
  private:
-	glsl_shader();
-	glsl_shader(const glsl_shader& );
-	glsl_shader& operator= (const glsl_shader& );
+	glsl_shader() = delete;
+	glsl_shader(const glsl_shader& ) = delete;
+	glsl_shader& operator= (const glsl_shader& ) = delete;
 };
 
 
@@ -152,8 +152,8 @@ class glsl_program
 	static const glsl_program* used_program;
 
  private:
-	glsl_program(const glsl_program& );
-	glsl_program& operator= (const glsl_program& );
+	glsl_program(const glsl_program& ) = delete;
+	glsl_program& operator= (const glsl_program& ) = delete;
 };
 
 

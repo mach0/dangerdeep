@@ -55,14 +55,12 @@ bool cfg::key::equal(const SDL_keysym& ks) const
 
 
 cfg::cfg()
-{
-}
+= default;
 
 
 
 cfg::~cfg()
-{
-}
+= default;
 
 
 

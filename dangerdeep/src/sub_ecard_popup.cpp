@@ -45,8 +45,7 @@ sub_ecard_popup::sub_ecard_popup(user_interface& ui_) : user_popup(ui_)
 
 
 sub_ecard_popup::~sub_ecard_popup()
-{
-}
+= default;
 
 
 

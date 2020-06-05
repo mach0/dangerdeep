@@ -685,7 +685,7 @@ void user_interface::draw_infopanel(bool onlytexts) const
 void user_interface::add_message(const string& s)
 {
 	// add message
-	messages.push_back(std::make_pair(mygame->get_time(), s));
+	messages.emplace_back(mygame->get_time(), s);
 
 	// remove old messages
 	while (messages.size() > 6)

@@ -39,9 +39,9 @@ class game;
 class submarine : public ship
 {
  private:
-	submarine();
-	submarine& operator= (const submarine& other);
-	submarine(const submarine& other);
+	submarine() = delete;
+	submarine& operator= (const submarine& other) = delete;
+	submarine(const submarine& other) = delete;
 
  public:
 
@@ -211,7 +211,7 @@ protected:
 		bool flood_valve_open; // can water enter tank?
 
 	private:
-		tank();
+		tank() = delete;
 	};
 
 	std::vector<tank> tanks;

@@ -57,7 +57,7 @@ class xml_elem_error : public xml_error
 class xml_elem
 {
  private:
-	xml_elem();
+	xml_elem() = delete;
  protected:
 	TiXmlElement* elem;
 	xml_elem(TiXmlElement* e) : elem(e) {}
@@ -95,7 +95,7 @@ class xml_elem
 
 	class iterator {
 	private:
-		iterator();
+		iterator() = delete;
 	protected:
 		const xml_elem& parent;
 		TiXmlElement* e;
@@ -123,9 +123,9 @@ class xml_elem
 class xml_doc
 {
  private:
-	xml_doc();
-	xml_doc(const xml_doc& );
-	xml_doc& operator= (const xml_doc& );
+	xml_doc() = delete;
+	xml_doc(const xml_doc& ) = delete;
+	xml_doc& operator= (const xml_doc& ) = delete;
  protected:
 	// can't use auto_ptr here because TiXmlDocument is not yet defined.
 	class TiXmlDocument* doc;

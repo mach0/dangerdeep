@@ -117,8 +117,7 @@ void thread::run()
 
 
 thread::~thread()
-{
-}
+= default;
 
 
 

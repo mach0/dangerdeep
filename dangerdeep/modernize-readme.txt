@@ -33,17 +33,18 @@ DONE
     modernize-unary-static-assert
     modernize-use-nodiscard
     modernize-use-noexcept
-TODO
     modernize-avoid-c-arrays
+    modernize-use-emplace
+    modernize-use-equals-default
+    modernize-use-equals-delete
+    modernize-use-using
+TODO
     modernize-loop-convert
     modernize-make-unique
     modernize-pass-by-value
     modernize-return-braced-init-list
     modernize-use-auto
     modernize-use-default-member-init
-    modernize-use-emplace
-    modernize-use-equals-default
-    modernize-use-equals-delete
     modernize-use-nullptr
     modernize-use-trailing-return-type
-    modernize-use-using
+

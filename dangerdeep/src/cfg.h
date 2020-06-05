@@ -41,18 +41,17 @@ public:
 		SDLKey keysym;
 		bool ctrl, alt, shift;
 		key() : keysym(SDLK_UNKNOWN), ctrl(false), alt(false), shift(false) {}
-		~key() {}
+		~key() = default;
 		key(const std::string& ac, SDLKey ks, bool c, bool a, bool s) :
 			action(ac), keysym(ks), ctrl(c), alt(a), shift(s) {}
-		key(const key& k) : action(k.action), keysym(k.keysym), ctrl(k.ctrl), alt(k.alt), shift(k.shift) {}
-		key& operator= (const key& k) { action = k.action; keysym = k.keysym; ctrl = k.ctrl; alt = k.alt;
-			shift = k.shift; return *this; }
+		key(const key& k)  = default;
+		key& operator= (const key& k) = default;
 		std::string get_name() const; // uses SDLK_GetKeyName
 		bool equal(const SDL_keysym& ks) const;
 	};
 private:
-	cfg(const cfg& );
-	cfg& operator= (const cfg& );
+	cfg(const cfg& ) = delete;
+	cfg& operator= (const cfg& ) = delete;
 
 	std::map<std::string, bool> valb;
 	std::map<std::string, int> vali;

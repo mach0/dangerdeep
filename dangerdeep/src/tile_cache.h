@@ -86,7 +86,7 @@ public:
 		configuration.expire = expire;
 
 	};
-	tile_cache() {};
+	tile_cache() = default;;
 	/* Returns a value from the corresponding tile. If the tile isn't in the cache it's added to it.
 	 * 
 	 * coord: should be clear. Note that it takes global coordinates, no tile local coordinates!

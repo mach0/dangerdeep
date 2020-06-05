@@ -123,9 +123,9 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 {
 	//myai = new ai(this, ai::convoy);
 
-	waypoints.push_back(vector2(0, 0));
+	waypoints.emplace_back(0, 0);
 	for (int wp = 0; wp < 4; ++wp)
-		waypoints.push_back(vector2(rnd()*300000-150000,rnd()*300000-150000));
+		waypoints.emplace_back(rnd()*300000-150000,rnd()*300000-150000);
 	angle heading = angle(*(++waypoints.begin()) - *(waypoints.begin()));
 	vector2 coursevec = heading.direction();
 	//position = vector2(0, 0);
@@ -169,7 +169,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 				s->manipulate_heading(heading);
 				s->manipulate_speed(velocity);
 				s->set_throttle(throttle);
-				merchants.push_back(make_pair(s, pos));
+				merchants.emplace_back(s, pos);
 				++shps;
 			}
 		}
@@ -204,7 +204,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 			s->manipulate_heading(heading);
 			s->manipulate_speed(velocity);
 			s->set_throttle(throttle);
-			escorts.push_back(make_pair(s, pos));
+			escorts.emplace_back(s, pos);
 		}
 			
 		// spawn the objects in class game after creating them
@@ -250,13 +250,13 @@ bool convoy::add_ship(ship* shp)
 	vector2 spos = shp->get_pos().xy() - position;
 	switch (shp->get_class()) {
 	case WARSHIP:
-		warships.push_back(make_pair(shp, spos));
+		warships.emplace_back(shp, spos);
 		return true;
 	case ESCORT:
-		escorts.push_back(make_pair(shp, spos));
+		escorts.emplace_back(shp, spos);
 		return true;
 	case MERCHANT:
-		merchants.push_back(make_pair(shp, spos));
+		merchants.emplace_back(shp, spos);
 		return true;
 	default:
 		// can't add this to convoy
@@ -275,19 +275,19 @@ void convoy::load(const xml_elem& parent)
 	merchants.clear();
 	//merchants.reserve(mc.attru("nr"));
 	for (xml_elem::iterator it = mc.iterate("merchant"); !it.end(); it.next()) {
-		merchants.push_back(make_pair(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2()));
+		merchants.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
 	}
 	xml_elem ws = parent.child("warships");
 	warships.clear();
 	//warships.reserve(ws.attru("nr"));
 	for (xml_elem::iterator it = ws.iterate("warship"); !it.end(); it.next()) {
-		warships.push_back(make_pair(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2()));
+		warships.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
 	}
 	xml_elem es = parent.child("escorts");
 	escorts.clear();
 	//escorts.reserve(es.attru("nr"));
 	for (xml_elem::iterator it = es.iterate("escort"); !it.end(); it.next()) {
-		escorts.push_back(make_pair(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2()));
+		escorts.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
 	}
 	xml_elem wp = parent.child("waypoints");
 	waypoints.clear();

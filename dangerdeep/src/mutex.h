@@ -32,8 +32,8 @@ class mutex
  protected:
 	struct SDL_mutex* mtx;
  private:
-	mutex(const mutex& );
-	mutex& operator=(const mutex& );
+	mutex(const mutex& ) = delete;
+	mutex& operator=(const mutex& ) = delete;
  public:
 	/// create a mutex
 	mutex();
@@ -60,9 +60,9 @@ class mutex_locker
  protected:
 	::mutex& mymutex;
  private:
-	mutex_locker();
-	mutex_locker(const mutex_locker& );
-	mutex_locker& operator=(const mutex_locker& );
+	mutex_locker() = delete;
+	mutex_locker(const mutex_locker& ) = delete;
+	mutex_locker& operator=(const mutex_locker& ) = delete;
  public:
 	/// create mutex locker
 	///@param mtx - mutex to lock

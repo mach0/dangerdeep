@@ -90,9 +90,9 @@ protected:
 	static objcachet<class image>& imagecache();	// checks for existance
 public:
 	class theme {
-		theme();
-		theme(const theme& );
-		theme& operator= (const theme& );
+		theme() = delete;
+		theme(const theme& ) = delete;
+		theme& operator= (const theme& ) = delete;
 	public:
 		std::unique_ptr<texture> backg;
 		std::unique_ptr<texture> skbackg;
@@ -389,7 +389,7 @@ protected:
 	int entryw, entryh;
 	int entryspacing;
 
-	widget_menu() {}
+	widget_menu() = default;
 	widget_menu(const widget_menu& );
 	widget_menu& operator= (const widget_menu& );
 	
@@ -513,7 +513,7 @@ protected:
 			dynamic_cast<widget_fileselector*>(parent)->listclick();
 		}
 		filelist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
-		~filelist() override {}
+		~filelist() override = default;
 	};
 
 	widget_fileselector();

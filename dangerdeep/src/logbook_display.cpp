@@ -104,7 +104,7 @@ void logbook_display::display(class game& gm) const
 				first_entry_cp_right = int(i);
 			last_entry_cp_right = int(i) + 1;
 		}
-		entry_page_and_line.push_back(make_pair(cur_page, cur_line));
+		entry_page_and_line.emplace_back(cur_page, cur_line);
 		cur_line += lines_per_entry[i];
 		if (cur_line >= lines_per_page) {
 			cur_line -= lines_per_page;

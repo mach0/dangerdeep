@@ -66,8 +66,8 @@ std::ostream& operator<< ( std::ostream& os, const vector4t<D>& v )
 	return os;
 }
 
-typedef vector4t<double> vector4;
-typedef vector4t<float> vector4f;
-typedef vector4t<int> vector4i;
+using vector4 = vector4t<double>;
+using vector4f = vector4t<float>;
+using vector4i = vector4t<int>;
 
 #endif

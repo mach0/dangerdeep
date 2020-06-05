@@ -146,7 +146,7 @@ std::ostream& operator<< ( std::ostream& os, const quaterniont<D>& q )
 	return os;
 }
 
-typedef quaterniont<double> quaternion;
-typedef quaterniont<float> quaternionf;
+using quaternion = quaterniont<double>;
+using quaternionf = quaterniont<float>;
 
 #endif

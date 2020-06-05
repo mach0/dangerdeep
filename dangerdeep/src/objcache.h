@@ -44,9 +44,9 @@ class objcachet
 {
 	std::map<std::string, std::pair<unsigned, T*> > cache;
 	std::string basedir;
-	objcachet();
-	objcachet<T>& operator= (const objcachet<T>& );
-	objcachet(const objcachet<T>& );
+	objcachet() = delete;
+	objcachet<T>& operator= (const objcachet<T>& ) = delete;
+	objcachet(const objcachet<T>& ) = delete;
 
 public:
 	objcachet(const std::string& basedir_) : basedir(basedir_) {}

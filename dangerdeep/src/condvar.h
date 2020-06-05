@@ -32,8 +32,8 @@ class condvar
  protected:
 	struct SDL_cond* cdv;
  private:
-	condvar(const condvar& );
-	condvar& operator=(const condvar& );
+	condvar(const condvar& ) = delete;
+	condvar& operator=(const condvar& ) = delete;
  public:
 	/// create condition variable
 	condvar();

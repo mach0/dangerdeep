@@ -70,7 +70,7 @@ class sonar_operator
 
  public:
 	sonar_operator();
-	virtual ~sonar_operator() {}
+	virtual ~sonar_operator() = default;
 	// only make a simulation step each n seconds, n ca. 0.1 or so, simulate
 	// human reaction on events.
 	virtual void simulate(class game& gm, double delta_t);

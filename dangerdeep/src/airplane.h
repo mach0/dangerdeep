@@ -35,9 +35,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class airplane : public sea_object
 {
  private:
-	airplane();
-	airplane& operator=(const airplane& other);
-	airplane(const airplane& other);
+	airplane() = delete;
+	airplane& operator=(const airplane& other) = delete;
+	airplane(const airplane& other) = delete;
 	
  protected:
 	double rollfac, pitchfac;	// rudder state, pitch/roll factor per time.

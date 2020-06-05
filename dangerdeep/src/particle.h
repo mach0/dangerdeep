@@ -32,7 +32,7 @@ class texture;
 // particles: smoke, water splashes, fire, explosions, spray caused by ship's bow
 // fire particles can produce smoke particles!
 
-typedef unsigned char Uint8;
+using Uint8 = unsigned char;
 
 ///\brief Simulates and displays particles that are rendered as billboard images.
 class particle
@@ -91,7 +91,7 @@ protected:
 
 public:
 	particle(const vector3& pos, const vector3& velo = vector3()) : position(pos), velocity(velo), life(1.0) {}
-	virtual ~particle() {}
+	virtual ~particle() = default;
 
 	static void init();
 	static void deinit();

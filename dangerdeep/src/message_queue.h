@@ -31,15 +31,15 @@
 class message
 {
  public:
-	typedef std::unique_ptr<message> ptr;
+	using ptr = std::unique_ptr<message>;
  private:
 	friend class message_queue;
 	bool needsanswer;
 	mutable bool result;
 
 	// no copy
-	message(const message& );
-	message& operator= (const message& );
+	message(const message& ) = delete;
+	message& operator= (const message& ) = delete;
 
  protected:
 	/// evaluate the message. overload with your functionality.
@@ -48,10 +48,10 @@ class message
 
  public:
 	/// create message
-	message() {}
+	message() = default;
 
 	/// destroy message
-	virtual ~message() {}
+	virtual ~message() = default;
 
 	/// evaluate the message. Do not overload!
 	///@note Method is <b>not</b> virtual by intent. Do <b>not</b> overload. use eval() instead.
@@ -68,8 +68,8 @@ class message_queue
 {
  private:
 	// no copy
-	message_queue(const message_queue& );
-	message_queue& operator= (const message_queue& );
+	message_queue(const message_queue& ) = delete;
+	message_queue& operator= (const message_queue& ) = delete;
 
  protected:
 	std::list<message*> myqueue;//fixme use ptrlist

@@ -91,8 +91,8 @@ private:
     int fill_buffer();
     int bzip2stream(char*, int);
 
-    bzip_streambuf(const bzip_streambuf &);
-    bzip_streambuf & operator=(const bzip_streambuf &);
+    bzip_streambuf(const bzip_streambuf &) = delete;
+    bzip_streambuf & operator=(const bzip_streambuf &) = delete;
 
 public:
     bzip_streambuf(std::ostream*, int, int, int);

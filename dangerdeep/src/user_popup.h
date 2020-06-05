@@ -30,9 +30,9 @@ class user_popup
 {
 private:
 	// no empty construction, no copy
-	user_popup();
-	user_popup(user_popup& );
-	user_popup& operator= (const user_popup& );
+	user_popup() = delete;
+	user_popup(user_popup& ) = delete;
+	user_popup& operator= (const user_popup& ) = delete;
 
 protected:
 	// display position. (fixme: could vary for each display - maybe store there)
@@ -45,7 +45,7 @@ protected:
 
 public:
 	// needed for correct destruction of heirs.
-	virtual ~user_popup() {}
+	virtual ~user_popup() = default;
 	// very basic. Just draw display and handle input.
 	virtual void display(class game& gm) const = 0;
 	// returns true if event was used

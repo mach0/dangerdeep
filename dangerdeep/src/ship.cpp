@@ -219,7 +219,7 @@ ship::ship(game& gm_, const xml_elem& parent)
 	turn_rate = emotion.attrf("turnrate");
 
 	for (xml_elem::iterator it = parent.iterate("smoke"); !it.end(); it.next()) {
-		smoke.push_back(make_pair(it.elem().attru("type"), it.elem().attrv3()));
+		smoke.emplace_back(it.elem().attru("type"), it.elem().attrv3());
 	}
 
 	if (parent.has_child("ai")) {

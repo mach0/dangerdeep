@@ -44,7 +44,7 @@ class bivector
 	std::vector<T> data;
 
  public:
-	bivector() {}
+	bivector() = default;
 	bivector(const vector2i& sz, const T& v = T()) : datasize(sz), data(sz.x*sz.y, v) {}
 		
 

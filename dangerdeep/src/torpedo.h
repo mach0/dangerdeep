@@ -128,9 +128,9 @@ class torpedo : public ship
 				NR_SPEEDRANGE_TYPES = 3 };
 
  private:
-	torpedo();
-	torpedo& operator=(const torpedo& other);
-	torpedo(const torpedo& other);
+	torpedo() = delete;
+	torpedo& operator=(const torpedo& other) = delete;
+	torpedo(const torpedo& other) = delete;
 
  protected:
 

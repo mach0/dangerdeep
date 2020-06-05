@@ -78,9 +78,9 @@ public:
 	};
 
  private:
-	submarine_interface();
-	submarine_interface& operator= (const submarine_interface& other);
-	submarine_interface(const submarine_interface& other);
+	submarine_interface() = delete;
+	submarine_interface& operator= (const submarine_interface& other) = delete;
+	submarine_interface(const submarine_interface& other) = delete;
 
  protected:
 	unsigned selected_tube;

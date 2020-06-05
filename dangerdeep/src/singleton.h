@@ -41,11 +41,11 @@ class singleton
 	static D* release_instance() { D*& p = instance_ptr(); D* ptr = p; p = 0; return ptr; }
 
  protected:
-	singleton() {}
+	singleton() = default;
 
  private:
-	singleton(const singleton& );
-	singleton& operator= (const singleton& );
+	singleton(const singleton& ) = delete;
+	singleton& operator= (const singleton& ) = delete;
 };
 
 #endif

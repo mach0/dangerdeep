@@ -128,7 +128,7 @@ struct TiXmlCursor
 class TiXmlVisitor
 {
 public:
-	virtual ~TiXmlVisitor() {}
+	virtual ~TiXmlVisitor() = default;
 
 	/// Visit a document.
 	virtual bool VisitEnter( const TiXmlDocument& /*doc*/ )			{ return true; }
@@ -199,7 +199,7 @@ class TiXmlBase
 
 public:
 	TiXmlBase()	:	userData(0)		{}
-	virtual ~TiXmlBase()			{}
+	virtual ~TiXmlBase()			= default;
 
 	/**	All TinyXml classes can print themselves to a filestream
 		or the string class (TiXmlString in non-STL mode, std::string
@@ -926,8 +926,8 @@ public:
 private:
 	//*ME:	Because of hidden/disabled copy-construktor in TiXmlAttribute (sentinel-element),
 	//*ME:	this class must be also use a hidden/disabled copy-constructor !!!
-	TiXmlAttributeSet( const TiXmlAttributeSet& );	// not allowed
-	void operator=( const TiXmlAttributeSet& );	// not allowed (as TiXmlAttribute)
+	TiXmlAttributeSet( const TiXmlAttributeSet& ) = delete;	// not allowed
+	void operator=( const TiXmlAttributeSet& ) = delete;	// not allowed (as TiXmlAttribute)
 
 	TiXmlAttribute sentinel;
 };
@@ -1171,7 +1171,7 @@ public:
 	TiXmlComment( const TiXmlComment& );
 	TiXmlComment& operator=( const TiXmlComment& base );
 
-	~TiXmlComment() override	{}
+	~TiXmlComment() override	= default;
 
 	/// Returns a copy of this Comment.
 	TiXmlNode* Clone() const override;
@@ -1222,7 +1222,7 @@ public:
 		SetValue( initValue );
 		cdata = false;
 	}
-	~TiXmlText() override {}
+	~TiXmlText() override = default;
 
 	#ifdef TIXML_USE_STL
 	/// Constructor.
@@ -1303,7 +1303,7 @@ public:
 	TiXmlDeclaration( const TiXmlDeclaration& copy );
 	TiXmlDeclaration& operator=( const TiXmlDeclaration& copy );
 
-	~TiXmlDeclaration() override	{}
+	~TiXmlDeclaration() override	= default;
 
 	/// Version. Will return an empty string if none was found.
 	const char *Version() const			{ return version.c_str (); }
@@ -1355,7 +1355,7 @@ class TiXmlUnknown : public TiXmlNode
 {
 public:
 	TiXmlUnknown() : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )	{}
-	~TiXmlUnknown() override {}
+	~TiXmlUnknown() override = default;
 
 	TiXmlUnknown( const TiXmlUnknown& copy ) : TiXmlNode( TiXmlNode::TINYXML_UNKNOWN )		{ copy.CopyTo( this ); }
 	TiXmlUnknown& operator=( const TiXmlUnknown& copy )										{ copy.CopyTo( this ); return *this; }
@@ -1406,7 +1406,7 @@ public:
 	TiXmlDocument( const TiXmlDocument& copy );
 	TiXmlDocument& operator=( const TiXmlDocument& copy );
 
-	~TiXmlDocument() override {}
+	~TiXmlDocument() override = default;
 
 	/** Load a file using the current document value.
 		Returns true if successful. Will delete any existing

@@ -126,7 +126,7 @@ system::system(const parameters& params_) :
 	// request available SDL video modes
 	SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
 	for (unsigned i = 0; modes[i]; ++i) {
-		available_resolutions.push_back(vector2i(modes[i]->w, modes[i]->h));
+		available_resolutions.emplace_back(modes[i]->w, modes[i]->h);
 	}
 
 	try {

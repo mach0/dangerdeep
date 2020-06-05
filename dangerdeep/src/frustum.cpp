@@ -32,7 +32,7 @@ frustum::frustum(polygon poly, const vector3& viewp, double znear_)
 	planes.reserve(poly.points.size());
 	for (unsigned i = 0; i < poly.points.size(); ++i) {
 		unsigned j = (i+1)%poly.points.size();
-		planes.push_back(plane(poly.points[i], viewpos, poly.points[j]));
+		planes.emplace_back(poly.points[i], viewpos, poly.points[j]);
 	}
 }
 

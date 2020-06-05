@@ -136,7 +136,7 @@ perlinnoise::perlinnoise(unsigned size, unsigned sizeminfreq, unsigned sizemaxfr
 	noise_functions.reserve(nrfunc);
 	for (unsigned i = 0; i < nrfunc; ++i) {
 		// growing size, constant frequency
-		noise_functions.push_back(noise_func(size/(sizemaxfreq>>i), 1));
+		noise_functions.emplace_back(size/(sizemaxfreq>>i), 1);
 		// alternative, always same size, but growing frequency
 //		noise_functions.push_back(noise_func(size/sizemaxfreq, 1<<i));
 	}
@@ -243,7 +243,7 @@ perlinnoise::perlinnoise(unsigned levelsize, unsigned sizeminfreq, unsigned leve
 
 	noise_functions.reserve(levels);
 	for (unsigned i = 0; i < levels; ++i) {
-		noise_functions.push_back(noise_func(levelsize, 1));
+		noise_functions.emplace_back(levelsize, 1);
 	}
 
 	// create interpolation function
@@ -453,7 +453,7 @@ perlinnoise3d::perlinnoise3d(unsigned size, unsigned sizeminfreq, unsigned sizem
 	noise_functions.reserve(nrfunc);
 	for (unsigned i = 0; i < nrfunc; ++i) {
 		// growing size, constant frequency
-		noise_functions.push_back(noise_func(size/(sizemaxfreq>>i), 1));
+		noise_functions.emplace_back(size/(sizemaxfreq>>i), 1);
 		// alternative, always same size, but growing frequency
 		//noise_functions.push_back(noise_func(size/sizemaxfreq, 1<<i));
 	}

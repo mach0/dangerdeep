@@ -28,7 +28,7 @@ class random_generator
 {
  public:
 	random_generator(unsigned seed = 0) : reg(seed) {}
-	virtual ~random_generator() {}
+	virtual ~random_generator() = default;
 	virtual unsigned rnd() { chaos(); return reg; }
 	virtual float rndf() { unsigned n = rnd(); return float(double(n)/unsigned(-1)); }
 	virtual void set_seed(unsigned seed) { reg = seed; }

@@ -1120,12 +1120,12 @@ void water::generate_wavetile(ocean_wave_generator<float>& myowg, double tiletim
 	unsigned mipmap_levels = wave_resolution_shift;
 	wtp.mipmaps.reserve(mipmap_levels);
 	double L = wavetile_length / wave_resolution;
-	wtp.mipmaps.push_back(wavetile_phase::mipmap_level(displacements, heights,
-							   wave_resolution_shift, L));
+	wtp.mipmaps.emplace_back(displacements, heights,
+							   wave_resolution_shift, L);
 	for (unsigned i = 1; i < mipmap_levels; ++i) {
-		wtp.mipmaps.push_back(wavetile_phase::mipmap_level(wtp.mipmaps.back().wavedata,
+		wtp.mipmaps.emplace_back(wtp.mipmaps.back().wavedata,
 								   wave_resolution_shift - i,
-								   L * (1 << i)));
+								   L * (1 << i));
 	}
 
 /*

@@ -71,7 +71,7 @@ class ocean_wave_generator
 	std::vector<std::complex<T> > h0tilde;
 	std::vector<std::complex<T> > htilde;	// holds values for one fix time.
 	
-	ocean_wave_generator& operator= (const ocean_wave_generator& );
+	ocean_wave_generator& operator= (const ocean_wave_generator& ) = delete;
 	static T myrnd();
 	static std::complex<T> gaussrand();
 	T phillips(const vector2t<T>& K) const;

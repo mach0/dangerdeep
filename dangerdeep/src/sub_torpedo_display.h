@@ -65,7 +65,7 @@ class sub_torpedo_display : public user_display
 	class desc_text
 	{
 		std::vector<std::string> txtlines;
-		desc_text();
+		desc_text() = delete;
 	public:
 		desc_text(const std::string& filename);
 		// give startline and number of lines to fetch (nr=0: all).

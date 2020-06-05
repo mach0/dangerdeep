@@ -29,9 +29,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class water_splash : public sea_object
 {
  private:
-	water_splash();
-	water_splash& operator=(const water_splash& other);
-	water_splash(const water_splash& other);
+	water_splash() = delete;
+	water_splash& operator=(const water_splash& other) = delete;
+	water_splash(const water_splash& other) = delete;
 
  protected:
 	double resttime;

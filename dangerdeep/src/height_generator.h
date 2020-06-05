@@ -54,7 +54,7 @@ class height_generator
 {
  public:
 	/// destructor
-	virtual ~height_generator() {}
+	virtual ~height_generator() = default;
 
 	/// compute height values of given detail and coordinate area (including given coordinates)
 	///@param detail - detail level to be generated and also coordinate domain,

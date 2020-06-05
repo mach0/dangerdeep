@@ -30,7 +30,7 @@ class user_interface;
 class event
 {
  public:
-	virtual ~event() {}
+	virtual ~event() = default;
 	virtual void evaluate(user_interface& ui) = 0;
 };
 

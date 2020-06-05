@@ -45,8 +45,7 @@ sub_control_popup::sub_control_popup(user_interface& ui_) : user_popup(ui_)
 
 
 sub_control_popup::~sub_control_popup()
-{
-}
+= default;
 
 
 

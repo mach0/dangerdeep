@@ -124,8 +124,7 @@ geoclipmap::geoclipmap(unsigned nr_levels, unsigned resolution_exp, height_gener
 
 
 geoclipmap::~geoclipmap()
-{
-}
+= default;
 
 
 

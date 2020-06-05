@@ -61,9 +61,9 @@ class thread
 	void run();
 
 	// can't copy thread objects
-	thread(const thread& );
-	thread& operator=(const thread& );
-	thread();
+	thread(const thread& ) = delete;
+	thread& operator=(const thread& ) = delete;
+	thread() = delete;
 
  public:
 	static int thread_entry(void* arg);
@@ -100,7 +100,7 @@ class thread
 	static void sleep(unsigned ms);
 
 	/// define SDL conform thread id type
-	typedef uint32_t id;
+	using id = uint32_t;
 
 	/// get ID of current (caller) thread
 	static id get_my_id();
@@ -115,8 +115,8 @@ class thread
 	template<class T>
 	class auto_ptr
 	{
-		auto_ptr(const auto_ptr& );
-		auto_ptr& operator=(const auto_ptr& );
+		auto_ptr(const auto_ptr& ) = delete;
+		auto_ptr& operator=(const auto_ptr& ) = delete;
 
 		T* p;
 	public:

@@ -37,9 +37,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class depth_charge : public sea_object
 {
  private:
-	depth_charge();
-	depth_charge& operator=(const depth_charge& other);
-	depth_charge(const depth_charge& other);
+	depth_charge() = delete;
+	depth_charge& operator=(const depth_charge& other) = delete;
+	depth_charge(const depth_charge& other) = delete;
 
 protected:
 	double explosion_depth;
