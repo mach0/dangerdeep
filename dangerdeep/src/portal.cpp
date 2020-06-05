@@ -46,7 +46,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mymain.cpp"
 #include "cfg.h"
 
-#include <time.h>
+#include <ctime>
 
 int res_x, res_y;
 

@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "perlinnoise.h"
-#include <math.h>
-#include <sstream>
+#include <cmath>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 using std::vector;
 

@@ -20,23 +20,23 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <math.h>
-#include <SDL.h>
-#include "vector2.h"
-#include "vector3.h"
-#include "global_constants.h"
-#include "xml.h"
-#include "height_generator.h"
 #include "bivector.h"
-#include "tile_cache.h"
-#include "game.h"
+#include "cfg.h"
 #include "datadirs.h"
 #include "fractal.h"
-#include "cfg.h"
+#include "game.h"
+#include "global_constants.h"
 #include "global_data.h"
+#include "height_generator.h"
+#include "tile_cache.h"
+#include "vector2.h"
+#include "vector3.h"
+#include "xml.h"
+#include <SDL.h>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 #define M 714025
 #define IA 1366

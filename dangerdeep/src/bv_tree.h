@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // one day MS might start supporting standards
 	#include <SDL_config_win32.h>
 #else
-	#include <stdint.h>
+	#include <cstdint>
 #endif
 
 /// a binary tree representing a bounding volume hierarchy

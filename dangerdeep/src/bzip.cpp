@@ -18,7 +18,7 @@
  */
 
 #include "bzip.h"
-#include <string.h>	//for memmove
+#include <cstring>	//for memmove
 
 bzip_streambuf::bzip_streambuf(std::ostream* os, int blocksize, int _workfactor, int _buffer_size)
 : outstream(os), in_buffer(_buffer_size, 0), out_buffer(_buffer_size, 0), blocksize_100_k(blocksize), workfactor(_workfactor), buffer_size(_buffer_size), put_back(0), mode(COMPRESS)

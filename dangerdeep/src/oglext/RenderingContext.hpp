@@ -30,8 +30,8 @@
 	#include <mach-o/dyld.h>
 #endif
 
-#include	<stdlib.h>
-#include	<string.h>
+#include	<cstdlib>
+#include	<cstring>
 
 #include	"glext.h"
 

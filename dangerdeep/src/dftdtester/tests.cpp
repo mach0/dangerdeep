@@ -25,11 +25,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // 		Test under OSX
 //
 
-#include <iostream>
-#include <sstream>
-#include <set>
-#include <stdlib.h>
 #include "../oglext/OglExt.h"
+#include <cstdlib>
+#include <iostream>
+#include <set>
+#include <sstream>
 
 #include "tests.h"
 

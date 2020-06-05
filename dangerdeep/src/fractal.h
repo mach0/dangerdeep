@@ -19,11 +19,11 @@
 
 #ifndef FRACTAL_H
 #define FRACTAL_H
+#include "simplex_noise.h"
 #include "vector2.h"
 #include "vector3.h"
-#include "simplex_noise.h"
+#include <cmath>
 #include <vector>
-#include <math.h>
 
 
 class fractal_noise {

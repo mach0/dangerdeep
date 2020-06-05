@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SIMPLEX_NOISE_H
 #define SIMPLEX_NOISE_H
 
+#include "morton_bivector.h"
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
-#include "morton_bivector.h"
-#include <math.h>
-#include <vector>
 #include <SDL_types.h>
+#include <cmath>
+#include <vector>
 
 class simplex_noise {
 protected:

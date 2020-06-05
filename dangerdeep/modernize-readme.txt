@@ -17,11 +17,11 @@ clang tidy modernizers
 DONE
     modernize-use-override
     modernize-replace-auto-ptr
-TODO
     modernize-avoid-bind
-    modernize-avoid-c-arrays
     modernize-concat-nested-namespaces
     modernize-deprecated-headers
+TODO
+    modernize-avoid-c-arrays
     modernize-deprecated-ios-base-aliases
     modernize-loop-convert
     modernize-make-shared

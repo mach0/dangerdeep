@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "xml.h"
 #include "tinyxml/tinyxml.h"
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef WIN32
 #ifdef _MSC_VER
