@@ -37,8 +37,7 @@ tone_reproductor::tone_reproductor() : Lda(50.f), Lwa(40000.f), MaxdL(100.f), ga
 }
 
 tone_reproductor::~tone_reproductor()
-{
-}
+= default;
 
 // Set the eye adaptation luminance for the display and precompute what can be
 // Usual luminance range is 1-100 cd/m^2 for a CRT screen

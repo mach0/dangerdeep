@@ -37,7 +37,7 @@ class sub_bridge_display : public freeview_display
 
 public:
 	sub_bridge_display(class user_interface& ui_);
-	~sub_bridge_display() override{};
+	~sub_bridge_display() override= default;;
 
 	//overload for glasses key handling ('y')
 	void process_input(class game& gm, const SDL_Event& event) override;

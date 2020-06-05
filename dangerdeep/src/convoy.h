@@ -38,9 +38,9 @@ class ship;
 class convoy
 {
  private:
-	convoy();
-	convoy(const convoy& other);
-	convoy& operator= (const convoy& other);
+	convoy() = delete;
+	convoy(const convoy& other) = delete;
+	convoy& operator= (const convoy& other) = delete;
 
  protected:
 	std::list<std::pair<ship*, vector2> > merchants, warships, escorts;
@@ -71,7 +71,7 @@ class convoy
 	/// create empty convoy (only used in the editor!)
 	convoy(class game& gm, const vector2& pos, const std::string& name);
 
-	virtual ~convoy() {}
+	virtual ~convoy() = default;
 
 	/// add ship to convoy. returns false if this is impossible (wrong type of ship)
 	bool add_ship(ship* shp);

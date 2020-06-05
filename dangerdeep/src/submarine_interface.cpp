@@ -161,8 +161,7 @@ submarine_interface::submarine_interface(game& gm) :
 
 
 submarine_interface::~submarine_interface()
-{
-}
+= default;
 
 
 

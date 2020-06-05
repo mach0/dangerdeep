@@ -99,7 +99,7 @@ public:
 	mutex mtx;
 	std::list<log_msg> loglines;
 	std::map<Uint32, const char* > threadnames;
-	log_internal() {}
+	log_internal() = default;
 };
 
 
@@ -115,7 +115,7 @@ bool log::copy_output_to_console = false;
 void log::append(log::level l, const std::string& msg)
 {
 	mutex_locker ml(mylogint->mtx);
-	mylogint->loglines.push_back(log_msg(l, msg));
+	mylogint->loglines.emplace_back(l, msg);
 	if (copy_output_to_console) {
 		std::cout << mylogint->loglines.back().pretty_print() << std::endl;
 	}

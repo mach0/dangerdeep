@@ -42,7 +42,7 @@ class texture;
 template<unsigned size>
 class primitive
 {
-	primitive();
+	primitive() = delete;
  public:
 	primitive(int type_, const colorf& col_) : type(type_), col(col_) {}
 	void render_plain() {
@@ -64,7 +64,7 @@ class primitive
 template<unsigned size>
 class primitive_col
 {
-	primitive_col();
+	primitive_col() = delete;
  public:
 	primitive_col(int type_) : type(type_) {}
 	void render_plain() {
@@ -88,7 +88,7 @@ class primitive_col
 template<unsigned size>
 class primitive_tex
 {
-	primitive_tex();
+	primitive_tex() = delete;
  public:
 	primitive_tex(int type_, const colorf& col_, const texture& tex_) : type(type_), col(col_), tex(tex_) {}
 	void render_plain() {
@@ -116,7 +116,7 @@ class primitive_tex
 template<unsigned size>
 class primitive_coltex
 {
-	primitive_coltex();
+	primitive_coltex() = delete;
  public:
 	primitive_coltex(int type_, const texture& tex_) : type(type_), tex(tex_) {}
 	void render_plain() {
@@ -147,7 +147,7 @@ class primitive_coltex
 /// this class models OpenGL primitives with variable vertex count
 class primitives_plain
 {
-	primitives_plain();
+	primitives_plain() = delete;
  public:
 	primitives_plain(int type, unsigned size, bool with_colors = false, bool with_tex = false);
 	void render();
@@ -163,7 +163,7 @@ class primitives_plain
 /// this class models OpenGL primitives with variable vertex count and default shaders
 class primitives : public primitives_plain
 {
-	primitives();
+	primitives() = delete;
  public:
 	primitives(int type, unsigned size, const colorf& col); // uni-color
 	primitives(int type, unsigned size); // per-vertex colors

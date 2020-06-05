@@ -34,8 +34,8 @@ class fixed32
 	Sint32 x;
  public:
 	fixed32() : x(0) {}
-	fixed32(const fixed32& f) : x(f.x) {}
-	fixed32& operator= (const fixed32& f) { x = f.x; return *this; }
+	fixed32(const fixed32& f)  = default;
+	fixed32& operator= (const fixed32& f) = default;
 	fixed32(Sint32 n) : x(n) {}
 	fixed32(float f) : x(Sint32(f * ONE)) {}
 	fixed32 frac() const { return fixed32(x & (ONE-1)); }

@@ -115,7 +115,7 @@ public:
 	}
 };
 
-typedef plane_t<double> plane;
-typedef plane_t<float> planef;
+using plane = plane_t<double>;
+using planef = plane_t<float>;
 
 #endif

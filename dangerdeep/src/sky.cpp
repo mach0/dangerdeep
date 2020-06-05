@@ -457,8 +457,8 @@ void sky::build_dome(const unsigned int sectors_h, const unsigned int sectors_v)
 			y = radius * sin(theta) * cos(phi);
 			z = radius * sin(phi);
 
-			skyangles.push_back( vector2f( (1-theta/(M_PI*2))*2*M_PI, phi ) );
-			skyverts.push_back( vector3f(x,y,z) );
+			skyangles.emplace_back( (1-theta/(M_PI*2))*2*M_PI, phi );
+			skyverts.emplace_back(x,y,z );
 		}
 	}
 

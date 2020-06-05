@@ -35,8 +35,8 @@ class ptrvector
 	std::vector<T*> data;
 
  private:
-	ptrvector(const ptrvector& );
-	ptrvector& operator= (const ptrvector& );
+	ptrvector(const ptrvector& ) = delete;
+	ptrvector& operator= (const ptrvector& ) = delete;
 
  public:
 	ptrvector(size_t capacity = 0) : data(capacity) {}

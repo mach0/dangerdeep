@@ -182,7 +182,7 @@ class matrix3t
 	const D& elem(unsigned col, unsigned row) const { return values[col + row * 3]; }
 };
 
-typedef matrix3t<double> matrix3;
-typedef matrix3t<float> matrix3f;
+using matrix3 = matrix3t<double>;
+using matrix3f = matrix3t<float>;
 
 #endif

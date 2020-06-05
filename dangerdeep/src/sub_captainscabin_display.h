@@ -42,7 +42,7 @@ class sub_captainscabin_display : public user_display
 		void (sub_captainscabin_display::*action)();
 		color desc_color;
 	private:
-		clickable_area();
+		clickable_area() = delete;
 	public:
 		clickable_area(const vector2i& tl, const vector2i& br,
 			       int descr,

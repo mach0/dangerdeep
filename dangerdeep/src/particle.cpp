@@ -382,7 +382,7 @@ void particle::display_all(const vector<particle*>& pts, const vector3& viewpos,
 	// but this computation is not costly.
 	for (vector<particle*>::const_iterator it = pts.begin(); it != pts.end(); ++it) {
 		vector3 pp = (mvtrans + (*it)->get_pos() - viewpos);
-		pds.push_back(particle_dist(*it, pp.square_length(), pp));
+		pds.emplace_back(*it, pp.square_length(), pp);
 	}
 	// this could be a huge performance killer.... fixme
 	// how to solve this problem: particles are rendered in groups most of the time,

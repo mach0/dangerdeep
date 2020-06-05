@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class coastsegment
 {
 public:
-	typedef vector2t<unsigned short> segpos;
+	using segpos = vector2t<unsigned short>;
 
 	struct segcl
 	{
@@ -128,9 +128,9 @@ class coastmap
 
 	std::unique_ptr<texture> atlanticmap;
 	
-	coastmap();
-	coastmap(const coastmap& );
-	coastmap& operator= (const coastmap& );
+	coastmap() = delete;
+	coastmap(const coastmap& ) = delete;
+	coastmap& operator= (const coastmap& ) = delete;
 
 	// very fast integer clamping (no branch needed, only for 32bit signed integers!)
 	Sint32 clamp_zero(Sint32 x) { return x & ~(x >> 31); }

@@ -191,7 +191,7 @@ loadsavequit_dialogue::loadsavequit_dialogue(const game *g) : widget(0, 0, 1024,
 			dynamic_cast<loadsavequit_dialogue*>(parent)->get_gamename()->set_text(get_selected_entry());
 		}
 		lsqlist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
-		~lsqlist() override {}
+		~lsqlist() override = default;
 	};
 	gamelist = new lsqlist(40, 100, 944, 580);
 	add_child(gamelist);
@@ -1043,7 +1043,7 @@ void choose_historical_mission()
 				wdescr->set_text("");
 		}
 		msnlist(int x, int y, int w, int h, const vector<string>& descrs_, widget_text* wdescr_) : widget_list(x, y, w, h), descrs(descrs_), wdescr(wdescr_) {}
-		~msnlist() override {}
+		~msnlist() override = default;
 	};
 	widget_text* wdescr = new widget_text(40, 380, 1024-80, 300, "", 0, true);
 	widget_list* wmission = new msnlist(40, 60, 1024-80, 300, descrs, wdescr);
@@ -1308,7 +1308,7 @@ void configure_key(widget_list* wkeys)
 				add_child(keyname);
 				add_child(new widget_text(40, 120, 432, 40, texts::get(217)));
 			}
-		~confkey_widget() override {}
+		~confkey_widget() override = default;
 	};
 	unsigned sel = wkeys->get_selected();
 	confkey_widget w(256, 256, 512, 256, texts::get(216), 0, "", sel);

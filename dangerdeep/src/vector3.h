@@ -119,8 +119,8 @@ std::ostream& operator<< ( std::ostream& os, const vector3t<D>& v )
 	return os;
 }
 
-typedef vector3t<double> vector3;
-typedef vector3t<float> vector3f;
-typedef vector3t<int> vector3i;
+using vector3 = vector3t<double>;
+using vector3f = vector3t<float>;
+using vector3i = vector3t<int>;
 
 #endif

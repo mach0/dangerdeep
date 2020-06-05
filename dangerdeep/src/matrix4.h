@@ -358,7 +358,7 @@ template<class D> matrix4t<D> matrix4t<D>::get_glf(GLenum pname) {
 	return r;
 }
 
-typedef matrix4t<double> matrix4;
-typedef matrix4t<float> matrix4f;
+using matrix4 = matrix4t<double>;
+using matrix4f = matrix4t<float>;
 
 #endif

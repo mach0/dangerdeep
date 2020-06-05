@@ -499,27 +499,27 @@ void run()
 					polygon pbott (s.basepos+vector3(0,0,0), s.basepos+vector3(1,0,0), s.basepos+vector3(1,1,0), s.basepos+vector3(0,1,0));
 					// look for adjacent sectors, create portals to them
 					if (level_at(x, y+1, z) == 0)
-						s.portals.push_back(portal(pup, &sectors[x+LVL_X*(y+1+LVL_Y*z)]));
+						s.portals.emplace_back(pup, &sectors[x+LVL_X*(y+1+LVL_Y*z)]);
 					else
 						s.walls |= 1;
 					if (level_at(x, y-1, z) == 0)
-						s.portals.push_back(portal(pdown, &sectors[x+LVL_X*(y-1+LVL_Y*z)]));
+						s.portals.emplace_back(pdown, &sectors[x+LVL_X*(y-1+LVL_Y*z)]);
 					else
 						s.walls |= 2;
 					if (level_at(x-1, y, z) == 0)
-						s.portals.push_back(portal(pleft, &sectors[x-1+LVL_X*(y+LVL_Y*z)]));
+						s.portals.emplace_back(pleft, &sectors[x-1+LVL_X*(y+LVL_Y*z)]);
 					else
 						s.walls |= 4;
 					if (level_at(x+1, y, z) == 0)
-						s.portals.push_back(portal(pright, &sectors[x+1+LVL_X*(y+LVL_Y*z)]));
+						s.portals.emplace_back(pright, &sectors[x+1+LVL_X*(y+LVL_Y*z)]);
 					else
 						s.walls |= 8;
 					if (level_at(x, y, z-1) == 0)
-						s.portals.push_back(portal(pbott, &sectors[x+LVL_X*(y+LVL_Y*(z-1))]));
+						s.portals.emplace_back(pbott, &sectors[x+LVL_X*(y+LVL_Y*(z-1))]);
 					else
 						s.walls |= 16;
 					if (level_at(x, y, z+1) == 0)
-						s.portals.push_back(portal(ptop, &sectors[x+LVL_X*(y+LVL_Y*(z+1))]));
+						s.portals.emplace_back(ptop, &sectors[x+LVL_X*(y+LVL_Y*(z+1))]);
 					else
 						s.walls |= 32;
 				}

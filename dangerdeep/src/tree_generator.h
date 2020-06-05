@@ -57,7 +57,7 @@ auto-imposter-berechnung in class model implementieren.
 class tree_generator
 {
  public:
-	tree_generator() {}
+	tree_generator() = default;
 	std::unique_ptr<model> generate() const;
  protected:
 	// bend: evtl. gebe besser axis unten und oben an, dazwischen einfach biegen

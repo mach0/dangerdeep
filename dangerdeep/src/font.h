@@ -41,9 +41,9 @@ private:
 		int top;	// offset
 		character() : width(0), height(0), left(0), top(0) {}
 	};
-	font();
-	font& operator=(const font& other);
-	font(const font& other);
+	font() = delete;
+	font& operator=(const font& other) = delete;
+	font(const font& other) = delete;
 	std::vector<character> characters;
 	std::unique_ptr<texture> character_texture;
 

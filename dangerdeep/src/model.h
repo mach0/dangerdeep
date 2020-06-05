@@ -45,17 +45,17 @@ class xml_elem;
 class model
 {
 public:
-	typedef std::unique_ptr<model> ptr;
+	using ptr = std::unique_ptr<model>;
 
 	class material
 	{
-		material(const material& );
-		material& operator= (const material& );
+		material(const material& ) = delete;
+		material& operator= (const material& ) = delete;
 	public:
 		class map
 		{
-			map(const map& );
-			map& operator= (const map& );
+			map(const map& ) = delete;
+			map& operator= (const map& ) = delete;
 		public:
 			std::string filename;	// also in mytexture, a bit redundant
 
@@ -107,7 +107,7 @@ public:
 		bool two_sided;
 		
 		material(const std::string& nm = "Unnamed material");
-		virtual ~material() {}
+		virtual ~material() = default;
 		virtual void set_gl_values(const texture *caustic_map = 0) const;
 		virtual void set_gl_values_mirror_clip() const;
 		virtual void register_layout(const std::string& name, const std::string& basepath);
@@ -120,7 +120,7 @@ public:
 
 	class material_glsl : public material
 	{
-		material_glsl();
+		material_glsl() = delete;
 		std::string vertexshaderfn, fragmentshaderfn;
 		glsl_shader_setup shadersetup;
 	public:
@@ -166,7 +166,7 @@ public:
 			unsigned ptr;
 		public:
 			triangle_iterator(const std::vector<Uint32>& indices);
-			virtual ~triangle_iterator() {}
+			virtual ~triangle_iterator() = default;
 			unsigned i0() const { return _i0; }
 			unsigned i1() const { return _i1; }
 			unsigned i2() const { return _i2; }
@@ -284,9 +284,9 @@ public:
 		void (model::mesh::*get_triangle_ptr) (unsigned triangle, Uint32 indices[3]) const;
 
 	private:
-		mesh();
-		mesh(const mesh& );
-		mesh& operator= (const mesh& );
+		mesh() = delete;
+		mesh(const mesh& ) = delete;
+		mesh& operator= (const mesh& ) = delete;
 	};
 
 	/// voxel, the space of a model is partitioned in subspaces

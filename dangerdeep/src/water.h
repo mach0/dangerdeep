@@ -190,9 +190,9 @@ protected:
 		unsigned get_nr_indices() const { return nr_indices; } // for analysis
 
 	private:
-		geoclipmap_patch();
-		geoclipmap_patch(const geoclipmap_patch& );
-		geoclipmap_patch& operator=(const geoclipmap_patch& );
+		geoclipmap_patch() = delete;
+		geoclipmap_patch(const geoclipmap_patch& ) = delete;
+		geoclipmap_patch& operator=(const geoclipmap_patch& ) = delete;
 	};
 	ptrvector<geoclipmap_patch> patches;
 	mutable vertexbufferobject vertices;

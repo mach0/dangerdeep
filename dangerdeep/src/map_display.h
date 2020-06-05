@@ -107,7 +107,7 @@ protected:
 	void check_edit_sel();
 
 private:
-	map_display();
+	map_display() = delete;
 
 public:
 	map_display(class user_interface& ui_);

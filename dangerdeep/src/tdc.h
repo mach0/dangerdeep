@@ -31,8 +31,8 @@ class tdc
 public:
 
 private:
-	tdc& operator=(const tdc& other);
-	tdc(const tdc& other);
+	tdc& operator=(const tdc& other) = delete;
+	tdc(const tdc& other) = delete;
 
 protected:
 	// tracker switches

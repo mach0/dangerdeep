@@ -59,8 +59,7 @@ music::music(bool useit, unsigned sample_rate_)
 
 
 music::~music()
-{
-}
+= default;
 
 
 

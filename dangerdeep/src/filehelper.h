@@ -39,9 +39,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// directory reading/writing encapsulated for compatibility and ease of use
 class directory
 {
-	directory();
-	directory(const directory& );
-	directory& operator= (const directory& );
+	directory() = delete;
+	directory(const directory& ) = delete;
+	directory& operator= (const directory& ) = delete;
  public:
 	/// Open directory.
 	///@note throws exception if it is an invalid directory or if filename does note exist

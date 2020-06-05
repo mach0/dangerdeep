@@ -361,7 +361,7 @@ struct plant_alpha_sortidx
 {
 	float sqd;
 	unsigned idx;
-	plant_alpha_sortidx() {}
+	plant_alpha_sortidx() = default;
 	plant_alpha_sortidx(const std::vector<plant>& plants, unsigned i, const vector2f& viewpos)
 		: sqd(plants[i].pos.xy().square_distance(viewpos)), idx(i) {}
 	bool operator< (const plant_alpha_sortidx& other) const {
@@ -420,9 +420,9 @@ plant_set::plant_set(vector<float>& heightdata, unsigned nr, unsigned w, unsigne
 		float th = treeheight * rnd() * 0.25;
 		float tw = treewidth * rnd() * 0.25;
 		float h = heightdata[idxy * w + idxx] * 0.5;
-		plants.push_back(plant(vector3f(x, y, h),
+		plants.emplace_back(vector3f(x, y, h),
 				       vector2f(treewidth + tw, treeheight + th),
-				       rnd(plant::nr_plant_types)));
+				       rnd(plant::nr_plant_types));
 	}
 	planttex.reset(new texture(get_texture_dir() + "plants.png", texture::LINEAR_MIPMAP_LINEAR, texture::CLAMP));
 
@@ -572,14 +572,14 @@ void add_tree(const vector3f& pos, float ang,
 	vector3f postop = pos;
 	postop.z += treeheight + th;
 	vertices.push_back(postop);
-	normals.push_back(vector3f(0, 0, 1));
-	texcoords.push_back(vector2f(0.5, 0.0));
+	normals.emplace_back(0, 0, 1);
+	texcoords.emplace_back(0.5, 0.0);
 	for (unsigned i = 0; i <= 8; ++i) {
 		angle a(ang - i * 360/8);
 		vector3f pos2 = pos + (a.direction() * (treewidth + tw) * 0.5).xyz((postop.z - pos.z)*0.25);
 		vertices.push_back(pos2);
-		normals.push_back(a.direction().xyz(2.0f).normal());
-		texcoords.push_back(vector2f(float(i)/8, 0.75));
+		normals.emplace_back(a.direction().xyz(2.0f).normal());
+		texcoords.emplace_back(float(i)/8, 0.75);
 	}
 	for (unsigned i = 0; i < 8; ++i) {
 		indices.push_back(bi);
@@ -593,10 +593,10 @@ void add_tree(const vector3f& pos, float ang,
 		vertices.push_back(pos2);
 		pos2.z = pos.z;
 		vertices.push_back(pos2);
-		normals.push_back(a.direction().xyz(2.0f).normal());
-		normals.push_back(a.direction().xyz(2.0f).normal());
-		texcoords.push_back(vector2f(float(i)/3, 0.75));
-		texcoords.push_back(vector2f(float(i)/3, 1.0));
+		normals.emplace_back(a.direction().xyz(2.0f).normal());
+		normals.emplace_back(a.direction().xyz(2.0f).normal());
+		texcoords.emplace_back(float(i)/3, 0.75);
+		texcoords.emplace_back(float(i)/3, 1.0);
 	}
 	for (unsigned i = 0; i < 3; ++i) {
 		indices.push_back(bi+2*i);

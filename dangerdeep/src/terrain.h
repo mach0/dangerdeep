@@ -45,7 +45,7 @@
 template <class T>
 class terrain : public height_generator {
 private:
-    terrain();
+    terrain() = delete;
 
 protected:
     tile_cache<T> m_tile_cache;

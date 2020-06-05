@@ -69,8 +69,8 @@ class global_data : public singleton<class global_data>
 {
  private:
 	// no copy
-	global_data(const global_data& );
-	global_data& operator= (const global_data& );
+	global_data(const global_data& ) = delete;
+	global_data& operator= (const global_data& ) = delete;
 
  public:
 	objcachet<class model> modelcache;

@@ -36,7 +36,7 @@ class polygon_t
 public:
 	std::vector<vector3t<D> > points;
 	/// empty polygon
-	polygon_t() {}
+	polygon_t() = default;
 	/// polygon with prepared space
 	polygon_t(unsigned capacity_) { points.reserve(capacity_); }
 	/// make from three points.
@@ -152,7 +152,7 @@ public:
 	}
 };
 
-typedef polygon_t<double> polygon;
-typedef polygon_t<float> polygonf;
+using polygon = polygon_t<double>;
+using polygonf = polygon_t<float>;
 
 #endif

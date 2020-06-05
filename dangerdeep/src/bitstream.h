@@ -67,7 +67,7 @@ private:
 	
 public:
 	ibitstream(std::istream* is, long bufsize = 128);
-	~ibitstream() {}
+	~ibitstream() = default;
 	
 	Uint16 read(Uint8 len = 16);
 };

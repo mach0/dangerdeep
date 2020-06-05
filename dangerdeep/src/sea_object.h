@@ -161,9 +161,9 @@ public:
 	};
 
 private:
-	sea_object();
-	sea_object& operator=(const sea_object& other);
-	sea_object(const sea_object& other);
+	sea_object() = delete;
+	sea_object& operator=(const sea_object& other) = delete;
+	sea_object(const sea_object& other) = delete;
 
 protected:
 	// game exists before and after live of each sea_object, but calls to game are very common.

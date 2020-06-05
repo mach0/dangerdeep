@@ -59,8 +59,7 @@ global_data::global_data()
 
 
 global_data::~global_data()
-{
-}
+= default;
 
 
 font *font_arial = 0, *font_jphsl = 0, *font_vtremington10 = 0, *font_vtremington12 = 0, 
@@ -94,7 +93,7 @@ void display_loading_screen()
 void reset_loading_screen()
 {
 	loading_screen_messages.clear();
-	loading_screen_messages.push_back("Loading...");
+	loading_screen_messages.emplace_back("Loading...");
 	log_info("Loading...");
 	display_loading_screen();
 	starttime = sys().millisec();

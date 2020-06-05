@@ -70,8 +70,7 @@ ai::ai(ship* parent_, types type_) : type(type_), state(followpath),
 
 
 ai::~ai()
-{
-}
+= default;
 
 
 

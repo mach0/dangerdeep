@@ -539,14 +539,14 @@ game::game(const string& filename)
 
 	xml_elem sks = sg.child("sunken_ships");
 	for (xml_elem::iterator it = sks.iterate("sink_record"); !it.end(); it.next()) {
-		sunken_ships.push_back(sink_record(it.elem()));
+		sunken_ships.emplace_back(it.elem());
 	}
 
 	//fixme save and load logbook
 
 	xml_elem pgs = sg.child("pings");
 	for (xml_elem::iterator it = pgs.iterate("ping"); !it.end(); it.next()) {
-		pings.push_back(ping(it.elem()));
+		pings.emplace_back(it.elem());
 	}
 
 	playerinfo = player_info(sg.child("player_info"));
@@ -1186,7 +1186,7 @@ vector<sonar_contact> game::sonar_ships (const sea_object* o ) const
 			break;
 
 		if ( pss->is_detected ( this, o, sh ) )
-			result.push_back(sonar_contact(sh->get_pos().xy(), sh->get_class()));
+			result.emplace_back(sh->get_pos().xy(), sh->get_class());
 	}
 	return result;
 }
@@ -1209,7 +1209,7 @@ vector<sonar_contact> game::sonar_submarines (const sea_object* o ) const
 			continue;
 
 		if ( pss->is_detected ( this, o, submarines[k] ) )
-			result.push_back(sonar_contact(submarines[k]->get_pos().xy(), submarines[k]->get_class()));
+			result.emplace_back(submarines[k]->get_pos().xy(), submarines[k]->get_class());
 	}
 	return result;
 }
@@ -1486,7 +1486,7 @@ void game::ship_sunk(const ship* s)
 	ostringstream oss;
 	oss << texts::get(83) << " " << s->get_description ( 2 );
 	date d((unsigned)time);
-	sunken_ships.push_back(sink_record(d, s->get_description(2), s->get_modelname(), s->get_specfilename(), s->get_skin_layout(), s->get_tonnage()));
+	sunken_ships.emplace_back(d, s->get_description(2), s->get_modelname(), s->get_specfilename(), s->get_skin_layout(), s->get_tonnage());
 }
 
 
@@ -1515,9 +1515,9 @@ void game::ping_ASDIC ( list<vector3>& contacts, sea_object* d,
 
 		// remember ping (for drawing)
 		//fixme: seems redundant with event list...!
-		pings.push_back ( ping ( d->get_pos ().xy (),
+		pings.emplace_back( d->get_pos ().xy (),
 			ass->get_bearing () + d->get_heading (), time,
-			ass->get_range (), ass->get_detection_cone () ) );
+			ass->get_range (), ass->get_detection_cone () );
 		events.push_back(new event_ping(d->get_pos()));
 
 		// fixme: noise from ships can disturb ASDIC or may generate more contacs.
@@ -1546,7 +1546,7 @@ void game::ping_ASDIC ( list<vector3>& contacts, sea_object* d,
 
 void game::register_job(job* j)
 {
-	jobs.push_back(make_pair(0.0, j));
+	jobs.emplace_back(0.0, j);
 }
 
 void game::unregister_job(job* j)

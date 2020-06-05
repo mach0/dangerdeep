@@ -691,7 +691,7 @@ model::mesh::mesh(unsigned w, unsigned h, const std::vector<float>& heights, con
 	for (unsigned y = 0; y < h; ++y) {
 		for (unsigned x = 0; x < w; ++x) {
 			vertices.push_back(vector3f(float(x)-rw*0.5f, float(y)-rh*0.5f, heights[y*w+x]).coeff_mul(scales) + trans);
-			texcoords.push_back(vector2f(float(x)/(w-1), float(y)/(h-1)));
+			texcoords.emplace_back(float(x)/(w-1), float(y)/(h-1));
 		}
 	}
 
@@ -2014,10 +2014,10 @@ void model::read_phys_file(const string& filename)
 					float m = f * mass_part;
 					if (!massdistri.empty())
 						m = massdistri[ptr];
-					voxel_data.push_back(voxel(vector3f(ixx + 0.5 + bmin.x/voxel_size.x,
+					voxel_data.emplace_back(vector3f(ixx + 0.5 + bmin.x/voxel_size.x,
 									    iyy + 0.5 + bmin.y/voxel_size.y,
 									    izz + 0.5 + bmin.z/voxel_size.z),
-								   f, m, f * voxel_volume * volume_rcp));
+								   f, m, f * voxel_volume * volume_rcp);
 					mass_part_sum += m;
 				}
 				++ptr;
@@ -2457,7 +2457,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				y = atof(value.c_str());
 				value = next_part_of_string(values, valuepos);
 				z = atof(value.c_str());
-				msh->vertices.push_back(vector3f(x, y, z));
+				msh->vertices.emplace_back(x, y, z);
 			}
 			// indices
 			xml_elem indis = e.child("indices");
@@ -2494,7 +2494,7 @@ void model::read_dftd_model_file(const std::string& filename)
 					x = atof(value.c_str());
 					value = next_part_of_string(values, valuepos);
 					y = atof(value.c_str());
-					msh->texcoords.push_back(vector2f(x, y));
+					msh->texcoords.emplace_back(x, y);
 				}
 			}
 
@@ -2512,7 +2512,7 @@ void model::read_dftd_model_file(const std::string& filename)
 					y = atof(value.c_str());
 					value = next_part_of_string(values, valuepos);
 					z = atof(value.c_str());
-					msh->normals.push_back(vector3f(x, y, z));
+					msh->normals.emplace_back(x, y, z);
 				}
 			}
 		} else if (etype == "objecttree") {

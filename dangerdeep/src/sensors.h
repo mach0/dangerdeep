@@ -83,7 +83,7 @@ public:
 	*/
 	sensor ( double range = 0.0f, double detectionCone = 360.0f );
 	/// Destructor
-	virtual ~sensor () {};
+	virtual ~sensor () = default;;
 
 	/**
 		Sets the range value.
@@ -152,7 +152,7 @@ public:
 
 public:
 	lookout_sensor ( lookout_type type = lookout_type_default );
-	~lookout_sensor () override {};
+	~lookout_sensor () override = default;;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -180,7 +180,7 @@ private:
 
 public:
 	passive_sonar_sensor ( passive_sonar_type type = passive_sonar_type_default );
-	~passive_sonar_sensor () override {};
+	~passive_sonar_sensor () override = default;;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -215,7 +215,7 @@ protected:
 
 public:
 	active_sensor ( double range = 0.0f );
-	~active_sensor () override {};
+	~active_sensor () override = default;;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -240,7 +240,7 @@ private:
 
 public:
 	radar_sensor ( radar_type type = radar_type_default );
-	~radar_sensor () override {};
+	~radar_sensor () override = default;;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.
@@ -262,7 +262,7 @@ private:
 
 public:
 	active_sonar_sensor ( active_sonar_type type = active_sonar_type_default );
-	~active_sonar_sensor () override {};
+	~active_sonar_sensor () override = default;;
 	/**
 		This method verifies if the target unit t can be detected by
 		detecting unit d.

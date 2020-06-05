@@ -446,7 +446,7 @@ bool coastmap::find_coastline(int x, int y, vector<vector2i>& points, bool& cycl
 	int olddir = -1, turncount = 0, length = 0;
 	while (true) {
 		// store x,y
-		points.push_back(vector2i(x, y));
+		points.emplace_back(x, y);
 
 		// compute next x,y
 		int dir = -1;
@@ -741,7 +741,7 @@ void coastmap::process_coastline(int x, int y)
 	vector<vector2> tmp;
 	tmp.reserve(points.size());
 	for (unsigned i = 0; i < points.size(); ++i) {
-		tmp.push_back(vector2(points[i].x, points[i].y));
+		tmp.emplace_back(points[i].x, points[i].y);
 //		cout << i << "/" << points.size() << " is " << points[i] << " / " << vector2(points[i].x, points[i].y) << "\n";
 	}
 
@@ -966,9 +966,9 @@ coastmap::coastmap(const string& filename)
 	realoffset.y = et.attrf("realoffsety");
 	if (er.has_child("cities")) {
 		for (xml_elem::iterator it = er.child("cities").iterate("city"); !it.end(); it.next()) {
-			cities.push_back(make_pair(vector2(transform_nautic_posx_to_real(it.elem().attr("posx")),
+			cities.emplace_back(vector2(transform_nautic_posx_to_real(it.elem().attr("posx")),
 							   transform_nautic_posy_to_real(it.elem().attr("posy"))),
-						   it.elem().attr("name")));
+						   it.elem().attr("name"));
 		}
 	}
 
@@ -979,9 +979,9 @@ coastmap::coastmap(const string& filename)
 			model* m = modelcache().ref(path);
 			m->register_layout();
 			m->set_layout();
-			props.push_back(prop(path,
+			props.emplace_back(path,
 					     vector2(it.elem().attrf("posx"), it.elem().attrf("posy")),
-					     it.elem().attrf("angle")));
+					     it.elem().attrf("angle"));
 		}
 	}
 

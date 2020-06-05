@@ -80,10 +80,10 @@ void sub_captainscabin_display::clickable_area::do_action(sub_captainscabin_disp
 sub_captainscabin_display::sub_captainscabin_display(user_interface& ui_) :
 	user_display(ui_), mx(0), my(0)
 {
-	clickable_areas.push_back(clickable_area(vector2i(0, 540), vector2i(292,705), 272, &sub_captainscabin_display::goto_successes, color(255, 224, 224)));
-	clickable_areas.push_back(clickable_area(vector2i(415, 495), vector2i(486,520), 255, &sub_captainscabin_display::goto_logbook, color(224, 224, 255)));
-	clickable_areas.push_back(clickable_area(vector2i(713, 176), vector2i(862, 575), 253, &sub_captainscabin_display::goto_torpedoes, color(224, 255, 224)));
-	clickable_areas.push_back(clickable_area(vector2i(405, 430), vector2i(462,498), 273, &sub_captainscabin_display::goto_recogmanual, color(255, 224, 224)));
+	clickable_areas.emplace_back(vector2i(0, 540), vector2i(292,705), 272, &sub_captainscabin_display::goto_successes, color(255, 224, 224));
+	clickable_areas.emplace_back(vector2i(415, 495), vector2i(486,520), 255, &sub_captainscabin_display::goto_logbook, color(224, 224, 255));
+	clickable_areas.emplace_back(vector2i(713, 176), vector2i(862, 575), 253, &sub_captainscabin_display::goto_torpedoes, color(224, 255, 224));
+	clickable_areas.emplace_back(vector2i(405, 430), vector2i(462,498), 273, &sub_captainscabin_display::goto_recogmanual, color(255, 224, 224));
 }
 
 void sub_captainscabin_display::display(class game& gm) const

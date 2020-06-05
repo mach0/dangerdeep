@@ -100,9 +100,9 @@ class bv_tree
 	std::unique_ptr<bv_tree> children[2];
 
  private:
-	bv_tree();
-	bv_tree(const bv_tree& );
-	bv_tree& operator= (const bv_tree& );
+	bv_tree() = delete;
+	bv_tree(const bv_tree& ) = delete;
+	bv_tree& operator= (const bv_tree& ) = delete;
 };
 
 #endif

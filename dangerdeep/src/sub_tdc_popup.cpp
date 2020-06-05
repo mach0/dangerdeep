@@ -44,8 +44,7 @@ sub_tdc_popup::sub_tdc_popup(user_interface& ui_) : user_popup(ui_)
 
 
 sub_tdc_popup::~sub_tdc_popup()
-{
-}
+= default;
 
 
 

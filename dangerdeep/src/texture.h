@@ -83,9 +83,9 @@ class sdl_image
 	SDL_Surface* img;
 
  private:
-	sdl_image();	// no copy
-	sdl_image& operator= (const sdl_image& other);
-	sdl_image(const sdl_image& other);
+	sdl_image() = delete;	// no copy
+	sdl_image& operator= (const sdl_image& other) = delete;
+	sdl_image(const sdl_image& other) = delete;
 };
 
 
@@ -94,7 +94,7 @@ class sdl_image
 class texture
 {
 public:
-	typedef std::unique_ptr<texture> ptr;
+	using ptr = std::unique_ptr<texture>;
 
 	enum mapping_mode {
 		NEAREST,
@@ -149,7 +149,7 @@ protected:
 	static unsigned mem_alloced;
 	static unsigned mem_freed;
 
-	texture() {}
+	texture() = default;
 	
 	struct dds_data {
 	    GLsizei  width;
@@ -207,7 +207,7 @@ public:
 		texerror(const std::string& name, const std::string& s)
 			: error(std::string("texture \"") + name +
 				std::string("\" error: ") + s) {}
-		~texerror() noexcept override {}
+		~texerror() noexcept override = default;
 	};
 
 	// if "makenormalmap" is true and format is GL_LUMINANCE,

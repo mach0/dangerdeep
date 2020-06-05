@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ocean_wave_generator.h"
 #include <fstream>
 using namespace std;
-typedef unsigned char Uint8;
+using Uint8 = unsigned char;
 
 #ifndef fmin
 #define fmin(x,y) (x<y) ? x : y

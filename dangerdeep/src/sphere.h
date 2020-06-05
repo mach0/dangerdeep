@@ -66,7 +66,7 @@ public:
 	}
 };
 
-typedef sphere_t<double> sphere;
-typedef sphere_t<float> spheref;
+using sphere = sphere_t<double>;
+using spheref = sphere_t<float>;
 
 #endif

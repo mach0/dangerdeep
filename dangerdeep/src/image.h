@@ -41,9 +41,9 @@ protected:
 	ptrvector<texture> textures;
 
 private:
-	image();
-	image& operator= (const image& other);
-	image(const image& other);
+	image() = delete;
+	image& operator= (const image& other) = delete;
+	image(const image& other) = delete;
 
 public:
 	/// create image

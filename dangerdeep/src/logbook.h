@@ -33,8 +33,8 @@ protected:
 	std::list<std::string> entries;
 
 public:
-	logbook() {}
-	virtual ~logbook () {}
+	logbook() = default;
+	virtual ~logbook () = default;
 	virtual void add_entry(const std::string& entry);
 	virtual std::list<std::string>::const_iterator get_entry(unsigned i) const;
 	virtual std::list<std::string>::const_iterator begin() const { return entries.begin(); }

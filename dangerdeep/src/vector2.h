@@ -96,9 +96,9 @@ template<class D2> std::ostream& operator<< ( std::ostream& os, const vector2t<D
 	return os;
 }
 
-typedef vector2t<double> vector2;
-typedef vector2t<float> vector2f;
-typedef vector2t<int> vector2i;
-typedef vector2t<long int> vector2l;
+using vector2 = vector2t<double>;
+using vector2f = vector2t<float>;
+using vector2i = vector2t<int>;
+using vector2l = vector2t<long>;
 
 #endif

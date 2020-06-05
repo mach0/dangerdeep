@@ -35,11 +35,11 @@ class ptrlist
 	std::list<T*> data;
 
  private:
-	ptrlist(const ptrlist& );
-	ptrlist& operator= (const ptrlist& );
+	ptrlist(const ptrlist& ) = delete;
+	ptrlist& operator= (const ptrlist& ) = delete;
 
  public:
-	ptrlist() {}
+	ptrlist() = default;
 	~ptrlist() { clear(); }
 
 	size_t size() const { return data.size(); }

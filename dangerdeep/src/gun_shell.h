@@ -32,9 +32,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class gun_shell : public sea_object
 {
  private:
-	gun_shell();
-	gun_shell& operator=(const gun_shell& other);
-	gun_shell(const gun_shell& other);
+	gun_shell() = delete;
+	gun_shell& operator=(const gun_shell& other) = delete;
+	gun_shell(const gun_shell& other) = delete;
  protected:
 	vector3 oldpos;		// position at last iteration (for collision detection)
 	double damage_amount;

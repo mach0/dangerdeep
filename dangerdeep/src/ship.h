@@ -36,9 +36,9 @@ class game;
 class ship : public sea_object
 {
  private:
-	ship();
-	ship(const ship& other);
-	ship& operator= (const ship& other);
+	ship() = delete;
+	ship(const ship& other) = delete;
+	ship& operator= (const ship& other) = delete;
 
  public:
 	// give negative values for fixed speeds, positive values for knots.
@@ -255,10 +255,10 @@ class ship : public sea_object
 	};
 	bool gun_manning_is_changing;
 	std::list<struct gun_turret> gun_turrets;
-	typedef std::list<struct gun_turret>::iterator gun_turret_itr;
-	typedef std::list<struct gun_turret>::const_iterator const_gun_turret_itr;
-	typedef std::list<struct gun_barrel>::iterator gun_barrel_itr;
-	typedef std::list<struct gun_barrel>::const_iterator const_gun_barrel_itr;	
+	using gun_turret_itr = std::list<struct gun_turret>::iterator;
+	using const_gun_turret_itr = std::list<struct gun_turret>::const_iterator;
+	using gun_barrel_itr = std::list<struct gun_barrel>::iterator;
+	using const_gun_barrel_itr = std::list<struct gun_barrel>::const_iterator;	
 	double maximum_gun_range;
 	
 	int propeller_1_id, propeller_2_id; // for display()

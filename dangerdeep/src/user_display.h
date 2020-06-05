@@ -36,9 +36,9 @@ class user_display
 {
 private:
 	// no empty construction, no copy
-	user_display();
-	user_display(user_display& );
-	user_display& operator= (const user_display& );
+	user_display() = delete;
+	user_display(user_display& ) = delete;
+	user_display& operator= (const user_display& ) = delete;
 
 protected:
 	// common functions: draw_infopanel(class game& gm)
@@ -106,7 +106,7 @@ protected:
 
 public:
 	// needed for correct destruction of heirs.
-	virtual ~user_display() {}
+	virtual ~user_display() = default;
 	// very basic. Just draw display and handle input.
 	virtual void display(class game& gm) const = 0;
 	virtual void process_input(class game& gm, const SDL_Event& event) = 0;
