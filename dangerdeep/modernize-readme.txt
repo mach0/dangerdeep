@@ -6,13 +6,17 @@ After each step check functionality.
 	DONE, later split to finer libraries
 2. Use clang to modernize code automatically
 	DONE for modernizer checks (more error checks may be sensible)
-3. Migrate to SDL2
-3b. Use C++11 threads etc.
-4. Introduce newer system input handling
+3. Use C++11 threads etc.
+4. Introduce newer system input handling (needs SDL2?)
 5. make use of new C++ features for widgets etc.
 6. use new C++ features for XML reader etc.
+6b. Compare basic classes between branches for differences!
 7. add new sensors
 8. update internal game classes
+8a. Copy new classes like gpu interface to master branch so they can be
+	tested and used by standalone apps
+8b. Divide code into separate libraries better
+9a. Migrate to SDL2
 9. Finally adjust rendering
 10. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 11. Turn on -Wall
@@ -57,4 +61,6 @@ DO NOT USE
     modernize-use-trailing-return-type
 CHECK
     There is a long list of clang tidy checks that could also be applied!
-
+TRIED BUT NO EFFECT
+	performance-move-const-arg
+	performance-unnecessary-copy-initialization
