@@ -76,7 +76,7 @@ vector3 torpedo_camera_display::get_viewpos(class game& gm) const
 {
 	if (trackobj)
 		return trackobj->get_pos() + add_pos;
-	return vector3();
+	return {};
 }
 
 

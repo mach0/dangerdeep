@@ -56,14 +56,14 @@ class angle
 	unsigned ui_abs_value180() const { return unsigned(fabs(round(value_pm180()))); };
 	double rad() const { return value()*M_PI/180.0; };
 	double value_pm180() const { double d = clamped(val); return d <= 180.0 ? d : d-360.0; };
-	angle operator+(const angle& other) const { return angle(val + other.val); };
-	angle operator-(const angle& other) const { return angle(val - other.val); };
-	angle operator-() const { return angle(-val); };
-	angle operator*(double t) const { return angle(val * t); };
+	angle operator+(const angle& other) const { return {val + other.val}; };
+	angle operator-(const angle& other) const { return {val - other.val}; };
+	angle operator-() const { return {-val}; };
+	angle operator*(double t) const { return {val * t}; };
 	/// returns true if the turn from "this" to "a" is shorter when done clockwise
 	bool is_cw_nearer(const angle& a) const { return clamped(a.val - val) <= 180.0; };
-	static angle from_rad(double d) { return angle(d*180.0/M_PI); };
-	static angle from_math(double d) { return angle((M_PI/2-d)*180.0/M_PI); };
+	static angle from_rad(double d) { return {d*180.0/M_PI}; };
+	static angle from_math(double d) { return {(M_PI/2-d)*180.0/M_PI}; };
 	angle& operator+=(const angle& other) { val += other.val; return *this; };
 	angle& operator-=(const angle& other) { val -= other.val; return *this; };
 	double diff(const angle& other) const { double d = clamped(other.val - val); if (d > 180.0) d = 360.0 - d; return d; };

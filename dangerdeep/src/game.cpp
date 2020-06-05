@@ -2105,7 +2105,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
 	double lg = lbrit * (1 - pow( cos(color_elevation+.39), 20));
 	double lb = lbrit * (1 - pow( cos(color_elevation+.22), 15));
    
-	return colorf(lr, lg, lb);
+	return {lr, lg, lb};
 }
 
 

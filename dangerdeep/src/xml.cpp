@@ -36,7 +36,7 @@ xml_elem xml_elem::child(const std::string& name) const
 {
 	TiXmlElement* e = elem->FirstChildElement(name);
 	if (!e) throw xml_elem_error(name, doc_name());
-	return xml_elem(e);
+	return {e};
 }
 
 
@@ -53,7 +53,7 @@ xml_elem xml_elem::add_child(const std::string& name)
 {
 	TiXmlElement* e = new TiXmlElement(name);
 	elem->LinkEndChild(e);
-	return xml_elem(e);
+	return {e};
 }
 
 
@@ -132,7 +132,7 @@ quaternion xml_elem::attrq() const
 
 angle xml_elem::attra() const
 {
-	return angle(attrf("angle"));
+	return {attrf("angle")};
 }
 
 
@@ -269,7 +269,7 @@ xml_elem::iterator xml_elem::iterate() const
 xml_elem xml_elem::iterator::elem() const
 {
 	if (!e) throw xml_error("elem() on empty iterator", parent.doc_name());
-	return xml_elem(e);
+	return {e};
 }
 
 
@@ -321,7 +321,7 @@ xml_elem xml_doc::first_child()
 {
 	TiXmlElement* e = doc->FirstChildElement();
 	if (!e) throw xml_elem_error("<first-child>", doc->Value());
-	return xml_elem(e);
+	return {e};
 }
 
 
@@ -330,7 +330,7 @@ xml_elem xml_doc::child(const std::string& name)
 {
 	TiXmlElement* e = doc->FirstChildElement(name);
 	if (!e) throw xml_elem_error(name, doc->Value());
-	return xml_elem(e);
+	return {e};
 }
 
 
@@ -339,7 +339,7 @@ xml_elem xml_doc::add_child(const std::string& name)
 {
 	TiXmlElement* e = new TiXmlElement(name);
 	doc->LinkEndChild(e);
-	return xml_elem(e);
+	return {e};
 }
 
 
