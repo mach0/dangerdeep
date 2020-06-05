@@ -88,6 +88,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	bspline_test.cpp
 	bv_tree.cpp
 	bv_tree.h
+	circle.h
 	constant.h
 	date.cpp	use std::chrono??
 	date.h
@@ -114,8 +115,13 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	logbook.h
 	matrix.h
 	matrix3.h
+	mesh.cpp
+	mesh.h
 	message_queue.cpp
 	message_queue.h
+	model_state.cpp
+	model_state.h
+	object_store.h
 	parser.cpp
 	parser.h
 	plane.h
@@ -123,6 +129,7 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	polyhedron.h
 	quaternion.h
 	rectangle.h
+	ressource_ptr.h
 	rigid_body.cpp
 	rigid_body.h
 	sphere.h
