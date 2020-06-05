@@ -153,7 +153,7 @@ water::water(double tm) :
 	wave_resolution(nextgteqpow2(cfg::instance().geti("wave_fft_res"))),
 	wave_resolution_shift(ulog2(wave_resolution)),
 	wavetile_data(wave_phases),
-	curr_wtp(0),
+	curr_wtp(nullptr),
 	owg(wave_resolution,
 	    vector2f(1,1), // wind direction
 	    12 /*12*/ /*10*/ /*31*/,	// wind speed m/s. fixme make dynamic (weather!)
@@ -357,7 +357,7 @@ water::water(double tm) :
 	add_loading_screen("water height data computed");
 
 	// set up curr_wtp and subdetail
-	curr_wtp = 0;
+	curr_wtp = nullptr;
 #ifdef MEASURE_WAVE_HEIGHTS
 	cout << "total minh " << totalmin << " maxh " << totalmax << "\n";
 #endif
@@ -773,7 +773,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 		// Some papers state that 32bytes per vertex are ideal (ATI cards), so 8f ideal here...
 		// normal can be fetched as 2f instead of 3f and z recomputed by renormalization
 		// in v-shader...
-		vertices.init_data(nr_verts_total * nr_vert_attr * 4, 0, GL_STREAM_DRAW);
+		vertices.init_data(nr_verts_total * nr_vert_attr * 4, nullptr, GL_STREAM_DRAW);
 		float* vertex_data = (float*) vertices.map(GL_WRITE_ONLY);
 		//printf("nr_verts_total %u, memory %u\n", nr_verts_total, nr_verts_total*nr_vert_attr*4);
 		//with N=64 we have 21125 vertices, eating 507000 bytes of memory (shader).
@@ -876,10 +876,10 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 
 	// as first, map buffers correctly.
 	vertices.bind();
-	glVertexPointer(3, GL_FLOAT, nr_vert_attr*4, (float*)0 + 0);
+	glVertexPointer(3, GL_FLOAT, nr_vert_attr*4, (float*)nullptr + 0);
 	glEnableClientState(GL_NORMAL_ARRAY);
-	glNormalPointer(GL_FLOAT, nr_vert_attr*4, (float*)0 + 3);
-	glVertexAttribPointer(vattr_aof_index, 1, GL_FLOAT, GL_FALSE, nr_vert_attr*4, (float*)0 + 6);
+	glNormalPointer(GL_FLOAT, nr_vert_attr*4, (float*)nullptr + 3);
+	glVertexAttribPointer(vattr_aof_index, 1, GL_FLOAT, GL_FALSE, nr_vert_attr*4, (float*)nullptr + 6);
 	glEnableVertexAttribArray(vattr_aof_index);
 	vertices.unbind();
 
@@ -1578,7 +1578,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 	// Generate space for indices. Init VBO directly and map its space.
 #if 1
 	// if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway, just in case.
-	vbo.init_data(nr_indices * 4, 0, GL_STATIC_DRAW);
+	vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
 	uint32_t* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
 	uint32_t last_index = 0; // avoid reading from VBO
 #else
@@ -1800,7 +1800,7 @@ water::geoclipmap_patch::geoclipmap_patch(unsigned N,
 	// Generate space for indices. Init VBO directly and map its space.
 #if 1
 	// if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway, just in case.
-	vbo.init_data(nr_indices * 4, 0, GL_STATIC_DRAW);
+	vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
 	uint32_t* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
 #else
 	vbo.init_data(nr_indices * 2, 0, GL_STATIC_DRAW);
@@ -1890,6 +1890,6 @@ void water::geoclipmap_patch::render() const
 	// vertex/texture pointers are already set up
 	vbo.bind();
 	glDrawRangeElements(use_fan ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP,
-			    min_vertex_index, max_vertex_index, nr_indices, GL_UNSIGNED_INT, 0);
+			    min_vertex_index, max_vertex_index, nr_indices, GL_UNSIGNED_INT, nullptr);
 	vbo.unbind();
 }

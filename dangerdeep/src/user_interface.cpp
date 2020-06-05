@@ -103,7 +103,7 @@ user_interface::user_interface(game& gm) :
 	add_loading_screen("coast map initialized");
 	mysky = std::make_unique<sky>();
 	panel = std::make_unique<widget>(0, 768-32, 1024, 32, "");
-	panel->set_background(0);
+	panel->set_background(nullptr);
 	// ca. 1024-2*8 for 6 texts => 168 pix. for each text
 	int paneltextnrs[6] = { 1, 4, 5, 2, 98, 61 };
 	const char* paneltexts[6] = { "000", "000", "000", "000", "000", "00:00:00" };
@@ -118,11 +118,11 @@ user_interface::user_interface(game& gm) :
 
 	// create screen selector widget
 	screen_selector = std::make_unique<widget>(0, 0, 256, 32, "");
-	screen_selector->set_background(0);
+	screen_selector->set_background(nullptr);
 
 	// create playlist widget
 	music_playlist = std::make_unique<widget>(0, 0, 384, 512, texts::get(262));
-	music_playlist->set_background(0);
+	music_playlist->set_background(nullptr);
 	struct musiclist : public widget_list
 	{
 		bool active;
@@ -160,7 +160,7 @@ user_interface::user_interface(game& gm) :
 
 	// create main menu widget
 	main_menu = std::make_unique<widget>(0, 0, 256, 128, texts::get(104));
-	main_menu->set_background(0);
+	main_menu->set_background(nullptr);
 	typedef widget_caller_button<user_interface, void (user_interface::*)()> wcbui;
 	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::show_screen_selector, 0, 0, 256, 32, texts::get(266)));
 	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::toggle_popup, 0, 0, 256, 32, texts::get(267)), 0);
@@ -301,7 +301,7 @@ void user_interface::finish_construction()
 user_interface* user_interface::create(game& gm)
 {
 	sea_object* p = gm.get_player();
-	user_interface* ui = 0;
+	user_interface* ui = nullptr;
 	// check for interfaces
 	if (dynamic_cast<submarine*>(p)) ui = new submarine_interface(gm);
 #if 0

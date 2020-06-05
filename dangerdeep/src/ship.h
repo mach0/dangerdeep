@@ -285,7 +285,7 @@ public:
 	virtual void sink();
 
 	virtual void ignite();
-	bool is_burning() const { return myfire != 0; }
+	bool is_burning() const { return myfire != nullptr; }
 
 	// command interface
 	virtual gun_status fire_shell_at(const vector2& pos);

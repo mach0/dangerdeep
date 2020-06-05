@@ -240,7 +240,7 @@ void sub_torpedo_display::display(class game& gm) const
 	if (tb != ILLEGAL_TUBE) {
 		// display type info.
 		if (torpedoes[tb].status == submarine::stored_torpedo::st_loaded) {
-			desc_text* torpdesctext = 0;
+			desc_text* torpdesctext = nullptr;
 			string sfn = torpedoes[tb].specfilename;
 			try {
 				torpdesctext = desc_texts.ref(data_file().get_rel_path(sfn) + sfn + "_"

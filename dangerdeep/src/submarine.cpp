@@ -1254,7 +1254,7 @@ bool submarine::set_snorkel_up ( bool snorkelup )
 
 bool submarine::launch_torpedo(int tubenr, sea_object* target)
 {
-	if (target == 0) return false;	// maybe assert this?
+	if (target == nullptr) return false;	// maybe assert this?
 	if (target == this) return false;
 	
 	bool usebowtubes = false;

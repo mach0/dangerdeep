@@ -51,7 +51,7 @@ music::music(bool useit, unsigned sample_rate_)
 	  usersel_fadein(0),
 	  pbm(PBM_LOOP_LIST),
 	  stopped(true),
-	  current_machine_sfx(0)
+	  current_machine_sfx(nullptr)
 {
 	use_music = useit;
 }
@@ -338,7 +338,7 @@ void music::exec_append_track(const std::string& filename)
 
 	Mix_Music *tmp = Mix_LoadMUS(( get_sound_dir() +  filename).c_str());
 
-	if (0 == tmp) {
+	if (nullptr == tmp) {
 		log_warning("Failed to load track: " << filename << ", " << Mix_GetError() );
 		throw file_read_error(filename);
 	}
@@ -553,7 +553,7 @@ void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 		// stop machine
 		if (Mix_Playing(SFX_CHANNEL_MACHINE))
 			Mix_HaltChannel(SFX_CHANNEL_MACHINE);
-		current_machine_sfx = 0;
+		current_machine_sfx = nullptr;
 		return;
 	}
 	thr = std::min(thr-1, nrthr-1);
@@ -566,7 +566,7 @@ void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 	// stop old sfx
 	if (Mix_Playing(SFX_CHANNEL_MACHINE))
 		Mix_HaltChannel(SFX_CHANNEL_MACHINE);
-	current_machine_sfx = 0;
+	current_machine_sfx = nullptr;
 	if (Mix_PlayChannel(SFX_CHANNEL_MACHINE, chk, -1) < 0)
 		throw sdl_error("can't play channel");
 	current_machine_sfx = chk;

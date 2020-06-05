@@ -97,7 +97,7 @@ bool is_directory(const string& filename)
 #include <sys/stat.h>
 #include <unistd.h>
 directory::directory(const string& filename)
-	: dir(0)
+	: dir(nullptr)
 {
 	dir = opendir(filename.c_str());
 	if (!dir)
@@ -136,8 +136,8 @@ string get_current_directory()
 {
 	unsigned sz = 256;
 	vector<char> s(sz);
-	char* c = 0;
-	while (c == 0) {
+	char* c = nullptr;
+	while (c == nullptr) {
 		c = getcwd(&s[0], sz-1);
 		if (!c) {
 			sz += sz;

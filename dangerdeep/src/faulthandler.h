@@ -158,7 +158,7 @@ inline void print_stack_trace()
 		if (p1 != std::string::npos) {
 			func = s.substr(p1, p2 - p1);
 			int status = 0;
-			char* c = abi::__cxa_demangle(func.c_str(), 0, 0, &status);
+			char* c = abi::__cxa_demangle(func.c_str(), nullptr, nullptr, &status);
 			if (c)
 				func = c;
 			else
@@ -185,7 +185,7 @@ inline void print_stack_trace()
 	if (f) {
 		for (std::list<std::string>::iterator it = lines.begin(); it != lines.end(); ++it) {
 			char tmp[128];
-			if ( NULL == fgets(tmp, 127, f) )
+			if ( nullptr == fgets(tmp, 127, f) )
 				break;
 			fprintf(stderr, "%s at %s", it->c_str(), tmp);
 		}

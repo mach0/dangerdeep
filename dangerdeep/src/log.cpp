@@ -104,7 +104,7 @@ public:
 
 
 log::log()
-	: mylogint(0)
+	: mylogint(nullptr)
 {
 	mylogint = new log_internal();
 	mylogint->threadnames[SDL_ThreadID()] = "__main__";

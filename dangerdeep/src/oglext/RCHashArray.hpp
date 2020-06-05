@@ -134,7 +134,7 @@ inline CRCHashArray::CRCHashArray()
 
 	for(unsigned long uIndex = 0; uIndex < HASH_SIZE; ++uIndex) {
 
-		m_pHashArray[uIndex]	= NULL;
+		m_pHashArray[uIndex]	= nullptr;
 	}
 }
 
@@ -194,7 +194,7 @@ inline CRenderingContext * CRCHashArray::GetRenderingContext(HRCKEY hRCKey)
 
 	// 2: nothing was found...
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -224,9 +224,9 @@ inline CRenderingContext * CRCHashArray::PrepareRenderingContext(HRCKEY hRCKey)
 
 	// 2: if it's not a gl rendering context, we skip the rest...
 
-	if(hRCKey == NULL) {
+	if(hRCKey == nullptr) {
 
-		return NULL;
+		return nullptr;
 	}
 
 	// 3: create a new rendering context...

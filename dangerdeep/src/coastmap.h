@@ -79,7 +79,7 @@ public:
 
 	void push_back_segcl(const segcl& scl);	// avoids segcls with < 2 points.
 
-	coastsegment(/*unsigned topon, const std::vector<float>& topod*/) : type(0), /*topo(topon, topod),*/ atlanticmap(0), pointcachedetail(0) {}
+	coastsegment(/*unsigned topon, const std::vector<float>& topod*/) : type(0), /*topo(topon, topod),*/ atlanticmap(nullptr), pointcachedetail(0) {}
 	
 	void draw_as_map(const class coastmap& cm, int x, int y, int detail = 0) const;
 };

@@ -86,7 +86,7 @@ void* vertexbufferobject::map(int access)
 		throw std::runtime_error("vertex buffer object mapped twice");
 	bind();
 	void* addr = glMapBuffer(target, access);
-	if (addr == 0)
+	if (addr == nullptr)
 		throw std::runtime_error("vertex buffer object mapping failed");
 	mapped = true;
 	return addr;

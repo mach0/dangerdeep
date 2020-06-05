@@ -39,7 +39,7 @@ void torpedo_camera_display::pre_display(game& gm) const
 	if (!trackobj)
 		return;
 	if (!trackobj->is_reference_ok()) {
-		trackobj = 0;
+		trackobj = nullptr;
 		return;
 	}
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -81,7 +81,7 @@ vector3 torpedo_camera_display::get_viewpos(class game& gm) const
 
 
 
-torpedo_camera_display::torpedo_camera_display(user_interface& ui_) : freeview_display(ui_), trackobj(0)
+torpedo_camera_display::torpedo_camera_display(user_interface& ui_) : freeview_display(ui_), trackobj(nullptr)
 {
 	add_pos = vector3(0, 0, 0.5); // on the back of the torpedo like riding a whale...
 	aboard = true; // ?

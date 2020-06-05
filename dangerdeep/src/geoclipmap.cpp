@@ -235,7 +235,7 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level)
 	// mostly static...
 	vertices.init_data(gcm.resolution_vbo*gcm.resolution_vbo*geoclipmap_fperv*4
 			   + (outmost ? 8*geoclipmap_fperv*4 : 0),
-			   0, GL_STATIC_DRAW);
+			   nullptr, GL_STATIC_DRAW);
 	// size of T-junction triangles: 4 indices per triangle (3 + 2 degen. - 1), 4*N/2 triangles
 	// max. size for normal triangles + T-junc.: 2*N^2 - 4*N + 8*N - 16 = 2*N^2 + 4*N - 16
 	// size for multiple columns: 2 per new column, at most N columns, mostly less.
@@ -901,7 +901,7 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
 		static const unsigned roundup = 8191;
 		//printf("REALLOC VBO level=%u old=%u new=%u (%u) scratchsize=%u\n", index, vbo_data_size, nridx, (nridx + roundup) & ~roundup, gcm.idxscratchbuf.size());
 		vbo_data_size = (nridx + roundup) & ~roundup;
-		indices.init_data(vbo_data_size * 4/*GLuint*/, 0, GL_STATIC_DRAW);
+		indices.init_data(vbo_data_size * 4/*GLuint*/, nullptr, GL_STATIC_DRAW);
 	}
 #endif
 	indices.init_sub_data(0, nridx*4, &gcm.idxscratchbuf[0]);
@@ -909,8 +909,8 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
 	// render the data
 	if (nridx < 4) return; // first index is remove always, and we need at least 3 for one triangle
 	vertices.bind();
-	glVertexPointer(3, GL_FLOAT, geoclipmap_fperv*4, (float*)0 + 0);
-	glVertexAttribPointer(gcm.myshader_vattr_z_c_index[si], 1, GL_FLOAT, GL_FALSE, geoclipmap_fperv*4, (float*)0 + 3);
+	glVertexPointer(3, GL_FLOAT, geoclipmap_fperv*4, (float*)nullptr + 0);
+	glVertexAttribPointer(gcm.myshader_vattr_z_c_index[si], 1, GL_FLOAT, GL_FALSE, geoclipmap_fperv*4, (float*)nullptr + 3);
 	glEnableVertexAttribArray(gcm.myshader_vattr_z_c_index[si]);
 	vertices.unbind();
 	indices.bind();
@@ -919,7 +919,7 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
 	glDrawRangeElements(GL_TRIANGLE_STRIP,
 			    0/*min_vertex_index*/,
 			    gcm.resolution_vbo*gcm.resolution_vbo-1/*max_vertex_index*/,
-			    nridx-1, GL_UNSIGNED_INT, (unsigned*)0 + 1); // skip first index
+			    nridx-1, GL_UNSIGNED_INT, (unsigned*)nullptr + 1); // skip first index
 	indices.unbind();
 	glDisableVertexAttribArray(gcm.myshader_vattr_z_c_index[si]);
 

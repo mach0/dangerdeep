@@ -62,15 +62,15 @@ public:
 	}
 
 	T* find(const std::string& objname) {
-		if (objname.empty()) return (T*)0;
+		if (objname.empty()) return (T*)nullptr;
 		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
 		if (it == cache.end())
-			return 0;
+			return nullptr;
 		return it->second.second;
 	}
 
 	T* ref(const std::string& objname) {
-		if (objname.empty()) return (T*)0;
+		if (objname.empty()) return (T*)nullptr;
 		typename std::map<std::string, std::pair<unsigned, T*> >::iterator it = cache.find(objname);
 		if (it == cache.end()) {
 			it = cache.insert(std::make_pair(objname, std::make_pair( (unsigned)1, new T(basedir + objname)))).first;

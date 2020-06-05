@@ -27,7 +27,7 @@ template<typename D>
 class singleton
 {
  private:
-	static D*& instance_ptr() { static D* myinstanceptr = 0; return myinstanceptr; }
+	static D*& instance_ptr() { static D* myinstanceptr = nullptr; return myinstanceptr; }
 
  public:
 	// since D is constructed not before first call, it avoids
@@ -36,9 +36,9 @@ class singleton
 
 	static void create_instance(D* ptr) { D*& p = instance_ptr(); delete p; p = ptr; }
 
-	static void destroy_instance() { D*& p = instance_ptr(); delete p; p = 0; }
+	static void destroy_instance() { D*& p = instance_ptr(); delete p; p = nullptr; }
 
-	static D* release_instance() { D*& p = instance_ptr(); D* ptr = p; p = 0; return ptr; }
+	static D* release_instance() { D*& p = instance_ptr(); D* ptr = p; p = nullptr; return ptr; }
 
  protected:
 	singleton() = default;

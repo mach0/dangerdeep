@@ -291,7 +291,7 @@ void sea_object::set_skin_layout(const std::string& layout)
 sea_object::sea_object(game& gm_, const string& modelname_)
 	: gm(gm_),
 	  modelname(modelname_),
-	  mymodel(0),
+	  mymodel(nullptr),
 	  skin_country(UNKNOWNCOUNTRY),
 	  mass(1.0),//fixme
 	  mass_inv(1.0/mass),
@@ -300,7 +300,7 @@ sea_object::sea_object(game& gm_, const string& modelname_)
 	  roll_velocity(0),
 	  alive_stat(alive),
 	  sensors(last_sensor_system),
-	  target(0),
+	  target(nullptr),
 	  invulnerable(false), country(UNKNOWNCOUNTRY), party(UNKNOWNPARTY),
 	  redetect_time(0)
 {
@@ -331,7 +331,7 @@ sea_object::sea_object(game& gm_, const string& modelname_)
 
 sea_object::sea_object(game& gm_, const xml_elem& parent)
 	: gm(gm_),
-	  mymodel(0),
+	  mymodel(nullptr),
 	  skin_country(UNKNOWNCOUNTRY),
 	  mass(1.0),//fixme
 	  mass_inv(1.0/mass),
@@ -340,7 +340,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 	  roll_velocity(0),
 	  alive_stat(alive),
 	  sensors(last_sensor_system),
-	  target(0),
+	  target(nullptr),
 	  invulnerable(false), country(UNKNOWNCOUNTRY), party(UNKNOWNPARTY),
 	  redetect_time(0)
 {
@@ -571,7 +571,7 @@ void sea_object::simulate(double delta_time)
 
 	// check target. heirs should check for "out of range" condition too
 	if (target && !target->is_alive())
-		target = 0;
+		target = nullptr;
 
 	// check if list of detected objects needs to be compressed.
 	// needs to be called for every frame and object, because objects can become defunct every frame
@@ -824,7 +824,7 @@ sensor* sea_object::get_sensor ( sensor_system ss )
 	if ( ss >= 0 && ss < last_sensor_system )
 		return sensors[ss];
 
-	return 0;
+	return nullptr;
 }
 
 
@@ -834,7 +834,7 @@ const sensor* sea_object::get_sensor ( sensor_system ss ) const
 	if ( ss >= 0 && ss < last_sensor_system )
 		return sensors[ss];
 
-	return 0;
+	return nullptr;
 }
 
 
@@ -846,7 +846,7 @@ void sea_object::compress(std::vector<sea_object*>& vec)
 	for (unsigned i = 0; i < vec.size(); ++i) {
 		if (vec[i]->is_reference_ok()) {
 			sea_object* tmp = vec[i];
-			vec[i] = 0;
+			vec[i] = nullptr;
 			vec[j] = tmp;
 			++j;
 		}

@@ -44,7 +44,7 @@ xml_elem xml_elem::child(const std::string& name) const
 bool xml_elem::has_child(const std::string& name) const
 {
 	TiXmlElement* e = elem->FirstChildElement(name);
-	return e != 0;
+	return e != nullptr;
 }
 
 
@@ -70,7 +70,7 @@ std::string xml_elem::doc_name() const
 
 bool xml_elem::has_attr(const std::string& name) const
 {
-	return elem->Attribute(name) != 0;
+	return elem->Attribute(name) != nullptr;
 }
 
 

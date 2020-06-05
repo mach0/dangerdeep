@@ -48,8 +48,8 @@ using std::ostringstream;
 using std::cout;
 
 std::unique_ptr<widget::theme> widget::globaltheme;
-widget* widget::focussed = 0;
-widget* widget::mouseover = 0;
+widget* widget::focussed = nullptr;
+widget* widget::mouseover = nullptr;
 int widget::oldmx = 0;
 int widget::oldmy = 0;
 int widget::oldmb = 0;
@@ -60,7 +60,7 @@ std::string widget::text_ok = "Ok"; // fixme: let user read them from text datab
 std::string widget::text_cancel = "Cancel";
 
 widget::widget(xml_elem& elem, widget* _parent) 
-	: parent(_parent), background_tex(0), retval(-1), closeme(false), redrawme(true)
+	: parent(_parent), background_tex(nullptr), retval(-1), closeme(false), redrawme(true)
 {
 	name = elem.attr("name");
 	
@@ -282,7 +282,7 @@ void widget::add_action_listener(const action_listener* listener, bool recursive
 
 widget* widget::get_child(const std::string& child, bool recursive)
 {
-	widget* retval = 0;
+	widget* retval = nullptr;
 	
 	for(std::list<widget*>::iterator it = children.begin(); it != children.end(); it++) {
 		if((*it)->name == child) return *it;
@@ -299,7 +299,7 @@ void widget::ref_all_backgrounds()
 {
 	for (list<widget*>::iterator it = widgets.begin(); it != widgets.end(); ++it) {
 		widget& w = *(*it);
-		if (!w.background_image_name.empty() && w.background == 0) {
+		if (!w.background_image_name.empty() && w.background == nullptr) {
 			w.background = imagecache().ref(w.background_image_name);
 		}
 	}
@@ -311,12 +311,12 @@ void widget::unref_all_backgrounds()
 		widget& w = *(*it);
 		if (w.background) {
 			imagecache().unref(w.background_image_name);
-			w.background = 0;
+			w.background = nullptr;
 		}
 	}
 }
 
-objcachet<image>* widget::myimagecache = 0;
+objcachet<image>* widget::myimagecache = nullptr;
 
 /* fixme: when new widget is opened that fills the whole screen, unref
    the images of previously open widgets to avoid wasting system and/or
@@ -332,9 +332,9 @@ objcachet<class image>& widget::imagecache()
 
 void widget::set_image_cache(objcachet<class image>* imagecache)
 {
-	if (imagecache == 0)
+	if (imagecache == nullptr)
 		throw error("trying to set empty image cache!");
-	if (myimagecache != 0)
+	if (myimagecache != nullptr)
 		throw error("image cache already set!");
 	myimagecache = imagecache;
 }
@@ -382,7 +382,7 @@ std::unique_ptr<widget::theme> widget::replace_theme(std::unique_ptr<widget::the
 widget::widget(int x, int y, int w, int h, const string& text_, widget* parent_, const std::string& backgrimg)
 	: pos(x, y), size(w, h), text(text_), parent(parent_), background_image_name(backgrimg),
 	  background(imagecache().ref(backgrimg)),
-	  background_tex(0), enabled(true), retval(-1), closeme(false), redrawme(true)
+	  background_tex(nullptr), enabled(true), retval(-1), closeme(false), redrawme(true)
 {
 	// note: when backgrimg is empty, the cache automatically returns a NULL pointer.
 }
@@ -394,7 +394,7 @@ widget::~widget()
 	for (list<widget*>::iterator it = children.begin(); it != children.end(); ++it)
 		delete *it;
 	if (this == focussed) focussed = parent;
-	if (this == mouseover) mouseover = 0;
+	if (this == mouseover) mouseover = nullptr;
 }
 
 void widget::add_child(widget* w)
@@ -536,7 +536,7 @@ void widget::draw() const
 
 bool widget::compute_focus(int mx, int my)
 {
-	focussed = 0;
+	focussed = nullptr;
 	// if the widget is disabled, it can't get the focus and neither one of its children.
 	if (!is_enabled()) return false;
 	if (is_mouse_over(mx, my)) {
@@ -550,7 +550,7 @@ bool widget::compute_focus(int mx, int my)
 
 bool widget::compute_mouseover(int mx, int my)
 {
-	mouseover = 0;
+	mouseover = nullptr;
 	if (is_mouse_over(mx, my)) {
 		for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it)
 			if ((*it)->compute_mouseover(mx, my)) return true;
@@ -773,7 +773,7 @@ int widget::run(unsigned timeout, bool do_stacking, widget* focussed_at_begin)
 	bool inited = false; // draw first, then only draw when an event occurred
 	glClearColor(0, 0, 0, 0);
 	widget* myparent = parent;	// store parent info and unlink chain to parent
-	parent = 0;
+	parent = nullptr;
 	if (myparent) myparent->disable();
 	closeme = false;
 	if (!do_stacking)

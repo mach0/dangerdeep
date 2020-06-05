@@ -92,7 +92,7 @@ class bv_tree
 	void debug_dump(unsigned level = 0) const;
 	const spheref& get_sphere() const { return volume; }
 	void collect_volumes_of_tree_depth(std::list<spheref>& volumes, unsigned depth) const;
-	bool is_leaf() const { return children[0].get() == 0; }
+	bool is_leaf() const { return children[0].get() == nullptr; }
 
  protected:
 	spheref volume;

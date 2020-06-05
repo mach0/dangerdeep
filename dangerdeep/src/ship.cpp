@@ -182,7 +182,7 @@ ship::ship(game& gm_, const xml_elem& parent)
 	  fuel_level(0),
 	  flooding_speed(0),
 	  max_flooded_mass(0),
-	  myfire(0),		
+	  myfire(nullptr),		
 	  gun_manning_is_changing(false),
 	  maximum_gun_range(0.0)
 {
@@ -296,7 +296,7 @@ void ship::sink()
 	sea_object::set_inactive();
 	if (myfire) {
 		myfire->kill();
-		myfire = 0;
+		myfire = nullptr;
 	}
 }
 
@@ -306,7 +306,7 @@ void ship::ignite()
 {
 	if (myfire) {
 		myfire->kill();
-		myfire = 0;
+		myfire = nullptr;
 	}
 	myfire = new fire_particle(get_pos());
 	gm.spawn_particle(myfire);
@@ -665,7 +665,7 @@ void ship::simulate(double delta_time)
 			}
 			double t = myfmod(gm.get_time(), produce_time);
 			if (t + delta_time >= produce_time) {
-				particle* p = 0;
+				particle* p = nullptr;
 				// handle orientation here!
 				// maybe add some random offset, but it don't seems necessary
 				vector3 ppos = position + orientation.rotate(it->second);

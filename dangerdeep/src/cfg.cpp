@@ -31,7 +31,7 @@ using namespace std;
 
 
 
-cfg* cfg::myinst = 0;
+cfg* cfg::myinst = nullptr;
 
 string cfg::key::get_name() const
 {
@@ -301,7 +301,7 @@ string cfg::gets(const string& name) const
 		return it->second;
 	else
 		throw error(string("cfg: get(), name not registered: ") + name);
-	return 0;
+	return nullptr;
 }
 
 

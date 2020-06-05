@@ -258,7 +258,7 @@ void * CRenderingContext::GetProcAddress(char const * szFunction)
 			char * szNewFunction = new char [strlen(szFunction) + 3];
 			if(!szNewFunction) {
 
-				return NULL;
+				return nullptr;
 			}
 
 			// U.2: create the new function name...

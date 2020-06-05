@@ -158,7 +158,7 @@ private:
 	virtual void act_convoy(class game& g, double delta_time);
 	virtual bool set_course_to_pos(class game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
 	virtual void relax(class game& gm);	// follow path/object, remove contact info
-	virtual void follow(sea_object* t = 0);	// follows path if t is 0
+	virtual void follow(sea_object* t = nullptr);	// follows path if t is 0
 	void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };
 

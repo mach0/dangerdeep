@@ -2180,7 +2180,7 @@ inline void CRenderingContext::InitExtensionString()
 {
 	// 1: initialize first pointer and get the opengl extension string...
 
-	m_pFirstExtensionName = NULL;
+	m_pFirstExtensionName = nullptr;
 
 	char const * szExtensions = (char const *) ::glGetString(GL_EXTENSIONS);
 	if(!szExtensions) {

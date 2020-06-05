@@ -67,8 +67,8 @@ using std::vector;
 
 
 int res_x, res_y;
-font* font_arial = 0;
-font *font_vtremington12 = 0;
+font* font_arial = nullptr;
+font *font_vtremington12 = nullptr;
 
 vector4t<GLfloat> lposition(0,0,0,1);
 
@@ -140,16 +140,16 @@ void model_load_dialog::load_menu()
         widget_text *models_lbl;
         widget_list *models_list;
         
-        widget w(0, 0, 1024, 768, "", 0, "threesubs.jpg");
+        widget w(0, 0, 1024, 768, "", nullptr, "threesubs.jpg");
         w.set_theme(std::move(theme));
 
         title = new widget_text(10, 10, 800, 80, "Danger from the Deep Viewmodel OpenGL Frontend.\nCopyright (C) 2003-2006 Thorsten Jordan.");
         w.add_child(title);
 
-        models_lbl = new widget_text(300, 100, 424, 30, "Available Models:", 0, true);
+        models_lbl = new widget_text(300, 100, 424, 30, "Available Models:", nullptr, true);
         w.add_child(models_lbl);
 
-        models_list = new widget_list(300, 150, 424, 438, NULL);
+        models_list = new widget_list(300, 150, 424, 438, nullptr);
         
         vector<model_entry>::iterator it = files.begin();
         for (; it != files.end(); ++it) {
@@ -201,9 +201,9 @@ model_load_dialog::load_model(widget_list* models)
 void
 model_load_dialog::message(const string& msg)
 {
-        widget w(0,0,1024,768,"", 0, "threesubs.jpg");
+        widget w(0,0,1024,768,"", nullptr, "threesubs.jpg");
 
-        widget_text *msgtext = new widget_text(0, 0, 0, 0, msg, 0, true);
+        widget_text *msgtext = new widget_text(0, 0, 0, 0, msg, nullptr, true);
         w.add_child(msgtext);
 
         widget_menu *wm = new widget_menu(112,120,200,40,"",true);
@@ -596,7 +596,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
                                 // Check if x,,y,z are pressed and if so mouse wheel moves smoke position by delta.
                                 // delta is either 1.0 if a shift key is pressed or 0.1 otherwise.
-                                Uint8 *keys = SDL_GetKeyState(NULL);
+                                Uint8 *keys = SDL_GetKeyState(nullptr);
                                 float delta = (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT))? 1.000 : 0.100; 
 
 				if (event.button.button == SDL_BUTTON_WHEELUP) {
@@ -838,7 +838,7 @@ int mymain(list<string>& args)
 	font_arial = new font(get_font_dir() + "font_arial");
         font_vtremington12 = new font(get_font_dir() + "font_vtremington12");
         
-	sys().draw_console_with(font_arial, 0);
+	sys().draw_console_with(font_arial, nullptr);
 
 	objcachet<class image> imagecache(get_image_dir());
 	widget::set_image_cache(&imagecache);

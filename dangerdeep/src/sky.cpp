@@ -110,7 +110,7 @@ sky::sky(const double tm, const unsigned int sectors_h, const unsigned int secto
 	noisemaps_1 = compute_noisemaps();
 	compute_clouds();
 
-	clouds_texcoords.init_data(nr_sky_vertices*2*4, 0, GL_STATIC_DRAW);
+	clouds_texcoords.init_data(nr_sky_vertices*2*4, nullptr, GL_STATIC_DRAW);
 	float* ptr = (float*)clouds_texcoords.map(GL_WRITE_ONLY);
 	for (unsigned beta = 0; beta <= sectors_v; ++beta) {
 		float t = (1.0-float(beta)/sectors_v)/2;
@@ -322,13 +322,13 @@ void sky::display(const colorf& lightcolor, const vector3& viewpos, double max_v
 	// render sky
 	glsl_shader_setup::default_col->use();
 	sky_colors.bind();
-	glVertexAttribPointer(glsl_shader_setup::idx_c_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, 0);
+	glVertexAttribPointer(glsl_shader_setup::idx_c_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, nullptr);
 	glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
 	sky_vertices.bind();
-	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), 0);
+	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), nullptr);
 	sky_vertices.unbind();
 	sky_indices.bind();
-	glDrawRangeElements(GL_QUAD_STRIP, 0, nr_sky_vertices-1, nr_sky_indices, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_QUAD_STRIP, 0, nr_sky_vertices-1, nr_sky_indices, GL_UNSIGNED_INT, nullptr);
 	sky_indices.unbind();
 	glDisableVertexAttribArray(glsl_shader_setup::idx_c_color);
 
@@ -390,16 +390,16 @@ void sky::display(const colorf& lightcolor, const vector3& viewpos, double max_v
 	// fixme: better give color as uniform to shader!
 	glColor4ub(lightcolor.r, lightcolor.g, lightcolor.b, lightcolor.a);
 	sky_vertices.bind();
-	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), 0);
+	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), nullptr);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	clouds_texcoords.bind();
-	glTexCoordPointer(2, GL_FLOAT, 2*4, (float*)0);
+	glTexCoordPointer(2, GL_FLOAT, 2*4, (float*)nullptr);
 	glEnableClientState(GL_COLOR_ARRAY);
 	sky_colors.bind();
-	glColorPointer(4, GL_UNSIGNED_BYTE, 0, 0);
+	glColorPointer(4, GL_UNSIGNED_BYTE, 0, nullptr);
 	sky_colors.unbind();
 	sky_indices.bind();
-	glDrawRangeElements(GL_QUAD_STRIP, 0, nr_sky_vertices-1, nr_sky_indices, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_QUAD_STRIP, 0, nr_sky_vertices-1, nr_sky_indices, GL_UNSIGNED_INT, nullptr);
 	sky_indices.unbind();
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -430,7 +430,7 @@ void sky::build_dome(const unsigned int sectors_h, const unsigned int sectors_v)
 	// 2 start indices, two indices per quad, 4 indices for sector change (2 degenerated quads)
 	// but not for last sector.
 	nr_sky_indices = 2 + sectors_v*sectors_h*2 + (sectors_v-1)*2*2;
-	sky_colors.init_data(nr_sky_vertices * 4, 0, GL_DYNAMIC_DRAW);
+	sky_colors.init_data(nr_sky_vertices * 4, nullptr, GL_DYNAMIC_DRAW);
 	skycolors.resize(nr_sky_vertices);
 	std::vector<vector3f> skyverts;
 	std::vector<unsigned> skyindices;
