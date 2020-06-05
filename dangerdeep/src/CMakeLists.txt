@@ -100,7 +100,6 @@ set ( dftdall_src
 	image.h
 	keys.cpp
 	keys.h
-	logbook.cpp
 	logbook_display.cpp
 	logbook_display.h
 	logbook.h

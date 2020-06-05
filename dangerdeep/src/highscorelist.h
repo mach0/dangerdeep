@@ -24,10 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define HIGHSCORELIST_H
 
 #include <iostream>
-#include <utility>
-
 #include <vector>
 #include <string>
+#include <utility>
 
 ///\brief Handles a list of high scores (hall of fame).
 class highscorelist

@@ -22,12 +22,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "highscorelist.h"
 #include "binstream.h"
-#include "texts.h"
 #include "widget.h"
-#include <fstream>
+#include "texts.h"
 #include <sstream>
-#include <utility>
-
+#include <fstream>
 using std::string;
 using std::ostream;
 using std::ofstream;
@@ -70,7 +68,7 @@ highscorelist::highscorelist(const string& filename)
 void highscorelist::save(const string& filename) const
 {
 	ofstream out(filename.c_str(), ios::out|ios::binary);
-	auto n = Uint8(entries.size());
+	auto n = uint8_t(entries.size());
 	write_u8(out, n);
 	for (unsigned i = 0; i < n; ++i)
 		entries[i].save(out);
@@ -95,13 +93,14 @@ void highscorelist::record(unsigned points, const string& name)
 	unsigned pos = get_listpos_for(points);
 	if (pos < entries.size()) {
 		// move rest down one step
-		for (unsigned j = entries.size(); j > pos+1; --j)
+		for (auto j = unsigned(entries.size()); j > pos+1; --j)
 			entries[j-1] = entries[j-2];
 		entries[pos] = entry(points, name);
 	}
 }
 
-void highscorelist::show(class widget* parent) const
+// fixme if we could separate this method we would separate data from view, better for include!
+void highscorelist::show(widget* parent) const
 {
 	const font* fnt = widget::get_theme()->myfont;
 	unsigned lh = fnt->get_height();
@@ -110,11 +109,11 @@ void highscorelist::show(class widget* parent) const
 	parent->add_child(new widget_text(scw/2, y, 0, 0, texts::get(202)));
 	parent->add_child(new widget_text(2*scw, y, 0, 0, texts::get(203)));
 	y += 2*lh;
-	for (const auto & entrie : entries) {
+	for (const auto& elem : entries) {
 		ostringstream osp;
-		osp << entrie.points;
+		osp << elem.points;
 		parent->add_child(new widget_text(scw/2, y, 0, 0, osp.str()));
-		parent->add_child(new widget_text(2*scw, y, 0, 0, entrie.name));
+		parent->add_child(new widget_text(2*scw, y, 0, 0, elem.name));
 		y += lh*3/2;
 	}
 }

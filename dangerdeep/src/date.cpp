@@ -27,6 +27,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "date.h"
 #include "texts.h"
 
+#ifdef WIN32
+#ifdef _MSC_VER
+#define snprintf sprintf_s
+#define sscanf sscanf_s
+#endif
+#endif
+
 using std::string;
 using std::ostream;
 using std::setw;
@@ -124,12 +131,12 @@ date::date (const std::string& datestr)
 {
 	string::size_type moff = datestr.find("/");
 	if (moff == string::npos)
-		throw error("error in parsing date string, missed / for months");
+		THROW(error, "error in parsing date string, missed / for months");
 	date_values[year] = atoi(datestr.substr(0, moff).c_str());
 	string rest = datestr.substr(moff+1);
 	string::size_type doff = rest.find("/");
 	if (doff == string::npos)
-		throw error("error in parsing date string, missed / for days");
+		THROW(error, "error in parsing date string, missed / for days");
 	date_values[month] = atoi(rest.substr(0, doff).c_str());
 	date_values[day] = atoi(rest.substr(doff+1).c_str());
 	date_values[hour] = 0;
@@ -179,17 +186,17 @@ void date::load(const xml_elem& parent)
 	sscanf(tm.c_str(), "%u:%u:%u", &date_values[hour], &date_values[minute], &date_values[second]);
 	// some plausibility checks
 	if (date_values[year] < 1939 || date_values[year] > 1945)
-		throw error("date year out of valid range");
+		THROW(error, "date year out of valid range");
 	if (date_values[month] < 1 || date_values[month] > 12)
-		throw error("date month out of valid range");
+		THROW(error, "date month out of valid range");
 	if (date_values[day] < 1 || date_values[day] > 31)
-		throw error("date day out of valid range");
+		THROW(error, "date day out of valid range");
 	if (date_values[hour] > 23)
-		throw error("date hour out of valid range");
+		THROW(error, "date hour out of valid range");
 	if (date_values[minute] > 59)
-		throw error("date minute out of valid range");
+		THROW(error, "date minute out of valid range");
 	if (date_values[second] > 59)
-		throw error("date second out of valid range");
+		THROW(error, "date second out of valid range");
 	set_linear();
 }
 

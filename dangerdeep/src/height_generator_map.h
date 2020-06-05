@@ -46,7 +46,7 @@ public:
 			     unsigned line_stride = 0, bool noise = true) override;
 
 	void compute_colors(int detail, const vector2i& coord_bl,
-			    const vector2i& coord_sz, Uint8* dest);
+			    const vector2i& coord_sz, uint8_t* dest);
 
 	void get_min_max_height(double& minh, double& maxh) const override;
 
@@ -54,7 +54,7 @@ protected:
 	bivector<float> generate_patch(int detail, const vector2i& coord_bl,
 				       const vector2i& coord_sz);
 
-	void gen_col(float h, Uint8* c);
+	void gen_col(float h, uint8_t* c);
 };
 
 #endif

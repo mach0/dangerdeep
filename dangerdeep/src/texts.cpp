@@ -22,15 +22,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "texts.h"
 
-#include "datadirs.h"
-#include "date.h"
-#include "error.h"
-#include "global_data.h"
 #include "parser.h"
-#include <memory>
+#include "global_data.h"
+#include "error.h"
+#include "date.h"
+#include "datadirs.h"
 #include <sstream>
-#include <utility>
-
+#include <memory>
 using namespace std;
 
 #define TEXTS_DIR "texts/"
@@ -70,7 +68,7 @@ texts::texts(string  langcode) : language_code(std::move(langcode))
 	}
 
 	if (!ok) {
-		throw error(string("invalid language code: ") + language_code);
+		THROW(error, string("invalid language code: ") + language_code);
 	}
 
 	strings.resize(nr_of_categories);
@@ -127,7 +125,7 @@ void texts::set_language(unsigned nr)
 	if (available_language_codes.empty())
 		read_available_language_codes();
 	if (nr >= available_language_codes.size())
-		throw error(string("trying to set illegal language nr, valid 0...")
+		THROW(error, string("trying to set illegal language nr, valid 0...")
 			    + str(available_language_codes.size()) + ", requested " + str(nr));
 	texts_singleton_handler.reset(new texts(available_language_codes[nr]));
 }
@@ -157,10 +155,10 @@ string texts::get(unsigned no, category ct)
 {
 	const texts& t = obj();
 	if (ct >= nr_of_categories)
-		throw error("invalid category for texts::get()");
+		THROW(error, "invalid category for texts::get()");
 	const vector<string>& tx = t.strings[ct];
 	if (no >= tx.size())
-		throw error(string("invalid text nummer for texts::get() ") + str(no)
+		THROW(error, string("invalid text nummer for texts::get() ") + str(no)
 			    + string(", valid 0...") + str(tx.size())
 			    + string(" category=") + str(int(ct)));
 	return tx[no];
