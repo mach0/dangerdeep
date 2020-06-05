@@ -24,12 +24,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef MATRIX4_H
 #define MATRIX4_H
 
+#include "constant.h"
 #include "matrix3.h"
 #include "oglext/OglExt.h"
 #include <cstring>
 
 /// a 4x4 matrix, reimplemented for 4x4 case for speed issues
-template<class D>
+template<typename D>
 class matrix4t
 {
 	D values[4*4];
@@ -39,30 +40,69 @@ class matrix4t
  public:
 	/// empty matrix
 	matrix4t() {
-		memset(values, 0, sizeof(D)*4*4);
+		for (int i = 0; i < 4*4; ++i) values[i] = (D)(0);
 	}
 
 	/// create full matrix
-	matrix4t(const D& e0, const D& e1, const D& e2, const D& e3,
-		const D& e4, const D& e5, const D& e6, const D& e7,
-		const D& e8, const D& e9, const D& e10, const D& e11,
-		const D& e12, const D& e13, const D& e14, const D& e15) {
-		values[0] = e0;
-		values[1] = e1;
-		values[2] = e2;
-		values[3] = e3;
-		values[4] = e4;
-		values[5] = e5;
-		values[6] = e6;
-		values[7] = e7;
-		values[8] = e8;
-		values[9] = e9;
+	matrix4t(D e0, D e1, D e2, D e3, D e4, D e5, D e6, D e7, D e8, D e9, D e10, D e11, D e12, D e13, D e14, D e15) {
+		values[0]  = e0;
+		values[1]  = e1;
+		values[2]  = e2;
+		values[3]  = e3;
+		values[4]  = e4;
+		values[5]  = e5;
+		values[6]  = e6;
+		values[7]  = e7;
+		values[8]  = e8;
+		values[9]  = e9;
 		values[10] = e10;
 		values[11] = e11;
 		values[12] = e12;
 		values[13] = e13;
 		values[14] = e14;
 		values[15] = e15;
+	}
+
+	/// create matrix from column vectors
+	matrix4t(const vector3t<D>& v0, const vector3t<D>& v1, const vector3t<D>& v2, const vector3t<D>& v3)
+	{
+		values[0]  = v0.x;
+		values[4]  = v0.y;
+		values[8]  = v0.z;
+		values[12] = D(0.0);
+		values[1]  = v1.x;
+		values[5]  = v1.y;
+		values[9]  = v1.z;
+		values[13] = D(0.0);
+		values[2]  = v2.x;
+		values[6]  = v2.y;
+		values[10] = v2.z;
+		values[14] = D(0.0);
+		values[3]  = v3.x;
+		values[7]  = v3.y;
+		values[11] = v3.z;
+		values[15] = D(1.0);
+	}
+
+	/// create matrix from column vectors
+	matrix4t(const vector4t<D>& v0, const vector4t<D>& v1, const vector4t<D>& v2, const vector4t<D>& v3)
+	{
+		values[0]  = v0.x;
+		values[4]  = v0.y;
+		values[8]  = v0.z;
+		values[12] = v0.w;
+		values[1]  = v1.x;
+		values[5]  = v1.y;
+		values[9]  = v1.z;
+		values[13] = v1.w;
+		values[2]  = v2.x;
+		values[6]  = v2.y;
+		values[10] = v2.z;
+		values[14] = v2.w;
+		values[3]  = v3.x;
+		values[7]  = v3.y;
+		values[11] = v3.z;
+		values[15] = v3.w;
 	}
 
 	/// return pointer to array of elements
@@ -76,27 +116,33 @@ class matrix4t
 	}
 
 	/// construct 4x4 matrix from one with different template type but same dimension
-	template<class E> matrix4t(const matrix4t<E>& other) {
+	template<typename E> matrix4t(const matrix4t<E>& other) {
 		const E* ea = other.elemarray();
 		for (unsigned i = 0; i < 4*4; ++i)
 			values[i] = D(ea[i]);
 	}
 
 	/// construct from stream
-        matrix4t(std::istream& is) {
-		for (auto & value : values)
-			is >> value;
+	matrix4t(std::istream& is) {
+		for (auto & elem : values)
+			is >> elem;
 	}
 
 	/// print to stream
 	void to_stream(std::ostream& os) const {
-		os << values[0];
-		for (unsigned i = 1; i < 4 * 4; ++i)
-			os << " " << values[i];
+		os << "/----\n";
+		for (unsigned y = 0; y < 4; ++y) {
+			os << "(\t";
+			for (unsigned x = 0; x < 4; ++x) {
+				os << values[y*4+x] << "\t";
+			}
+			os << ")\n";
+		}
+		os << "\\----\n";
 	}
 
 	/// multiply by scalar
-	matrix4t<D> operator* (const D& s) const {
+	matrix4t<D> operator* (D s) const {
 		matrix4t<D> r(int(0));
 		for (unsigned i = 0; i < 4*4; ++i) r.values[i] = values[i] * s;
 		return r;
@@ -118,7 +164,7 @@ class matrix4t
 
 	/// multiply matrices
 	matrix4t<D> operator* (const matrix4t<D>& other) const {
-		matrix4t<D> r(int(0));
+		matrix4t<D> r;
 		r.values[0] = values[0] * other.values[0] + values[1] * other.values[4] + values[2] * other.values[8] + values[3] * other.values[12];
 		r.values[1] = values[0] * other.values[1] + values[1] * other.values[5] + values[2] * other.values[9] + values[3] * other.values[13];
 		r.values[2] = values[0] * other.values[2] + values[1] * other.values[6] + values[2] * other.values[10] + values[3] * other.values[14];
@@ -138,6 +184,29 @@ class matrix4t
 		return r;
 	}
 
+	matrix4t<D>& operator*= (const matrix4t<D>& other) {
+		matrix4t<D> r;
+		r.values[0] = values[0] * other.values[0] + values[1] * other.values[4] + values[2] * other.values[8] + values[3] * other.values[12];
+		r.values[1] = values[0] * other.values[1] + values[1] * other.values[5] + values[2] * other.values[9] + values[3] * other.values[13];
+		r.values[2] = values[0] * other.values[2] + values[1] * other.values[6] + values[2] * other.values[10] + values[3] * other.values[14];
+		r.values[3] = values[0] * other.values[3] + values[1] * other.values[7] + values[2] * other.values[11] + values[3] * other.values[15];
+		r.values[4] = values[4] * other.values[0] + values[5] * other.values[4] + values[6] * other.values[8] + values[7] * other.values[12];
+		r.values[5] = values[4] * other.values[1] + values[5] * other.values[5] + values[6] * other.values[9] + values[7] * other.values[13];
+		r.values[6] = values[4] * other.values[2] + values[5] * other.values[6] + values[6] * other.values[10] + values[7] * other.values[14];
+		r.values[7] = values[4] * other.values[3] + values[5] * other.values[7] + values[6] * other.values[11] + values[7] * other.values[15];
+		r.values[8] = values[8] * other.values[0] + values[9] * other.values[4] + values[10] * other.values[8] + values[11] * other.values[12];
+		r.values[9] = values[8] * other.values[1] + values[9] * other.values[5] + values[10] * other.values[9] + values[11] * other.values[13];
+		r.values[10] = values[8] * other.values[2] + values[9] * other.values[6] + values[10] * other.values[10] + values[11] * other.values[14];
+		r.values[11] = values[8] * other.values[3] + values[9] * other.values[7] + values[10] * other.values[11] + values[11] * other.values[15];
+		r.values[12] = values[12] * other.values[0] + values[13] * other.values[4] + values[14] * other.values[8] + values[15] * other.values[12];
+		r.values[13] = values[12] * other.values[1] + values[13] * other.values[5] + values[14] * other.values[9] + values[15] * other.values[13];
+		r.values[14] = values[12] * other.values[2] + values[13] * other.values[6] + values[14] * other.values[10] + values[15] * other.values[14];
+		r.values[15] = values[12] * other.values[3] + values[13] * other.values[7] + values[14] * other.values[11] + values[15] * other.values[15];
+		*this = r;
+		return *this;
+	}
+
+
 	/// negate matrix
 	matrix4t<D> operator- () const {
 		matrix4t<D> r(int(0));
@@ -150,25 +219,11 @@ class matrix4t
 	static matrix4t<D> one() { matrix4t<D> r; r.values[0] = r.values[5] = r.values[10] = r.values[15] = D(1.0); return r; }
 
 	/// get transposed matrix
-	matrix4t<D> transpose() const {
-		matrix4t<D> r(int(0));
-		r.values[0] = values[0];
-		r.values[1] = values[4];
-		r.values[2] = values[8];
-		r.values[3] = values[12];
-		r.values[4] = values[1];
-		r.values[5] = values[5];
-		r.values[6] = values[9];
-		r.values[7] = values[13];
-		r.values[8] = values[2];
-		r.values[9] = values[6];
-		r.values[10] = values[10];
-		r.values[11] = values[14];
-		r.values[12] = values[3];
-		r.values[13] = values[7];
-		r.values[14] = values[11];
-		r.values[15] = values[15];
-		return r;
+	matrix4t<D> transposed() const {
+		return matrix4t<D>(values[0], values[4], values[8], values[12],
+				   values[1], values[5], values[9], values[13],
+				   values[2], values[6], values[10], values[14],
+				   values[3], values[7], values[11], values[15]);
 	}
 
 	/// get inverse of matrix
@@ -216,42 +271,61 @@ class matrix4t
 	static matrix4t<D> get_gl(GLenum pname); // GL_PROJECTION_MATRIX, GL_MODELVIEW_MATRIX, GL_TEXTURE_MATRIX
 	static matrix4t<D> get_glf(GLenum pname); // GL_PROJECTION_MATRIX, GL_MODELVIEW_MATRIX, GL_TEXTURE_MATRIX
 	
-	static matrix4t<D> rot_x(const D& degrees) {
-		D a = degrees * D(M_PI/180);
+	static matrix4t<D> rot_x(D degrees) {
+		D a = degrees * D(constant::PI/180);
 		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
 		return matrix4t<D>(o, n, n, n,  n, c,-s, n,  n, s, c, n,  n, n, n, o);
 	}
 
-	static matrix4t<D> rot_y(const D& degrees) {
-		D a = degrees * D(M_PI/180);
+	static matrix4t<D> rot_y(D degrees) {
+		D a = degrees * D(constant::PI/180);
 		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
 		return matrix4t<D>(c, n, s, n,  n, o, n, n, -s, n, c, n,  n, n, n, o);
 	}
 
-	static matrix4t<D> rot_z(const D& degrees) {
-		D a = degrees * D(M_PI/180);
+	static matrix4t<D> rot_z(D degrees) {
+		D a = degrees * D(constant::PI/180);
 		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
 		return matrix4t<D>(c,-s, n, n,  s, c, n, n,  n, n, o, n,  n, n, n, o);
 	}
-	
-	static matrix4t<D> trans(const D& x, const D& y, const D& z) {
+
+	static matrix4t<D> rot_x_rad(D a) {
+		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
+		return matrix4t<D>(o, n, n, n,  n, c,-s, n,  n, s, c, n,  n, n, n, o);
+	}
+
+	static matrix4t<D> rot_y_rad(D a) {
+		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
+		return matrix4t<D>(c, n, s, n,  n, o, n, n, -s, n, c, n,  n, n, n, o);
+	}
+
+	static matrix4t<D> rot_z_rad(D a) {
+		D c = D(cos(a)), s = D(sin(a)), o = D(1.0), n = D(0.0);
+		return matrix4t<D>(c,-s, n, n,  s, c, n, n,  n, n, o, n,  n, n, n, o);
+	}
+
+	static matrix4t<D> trans(D x, D y, D z) {
 		D o = D(1.0), n = D(0.0);
 		return matrix4t<D>(o, n, n, x,  n, o, n, y,  n, n, o, z,  n, n, n, o);
 	}
-	
+
 	static matrix4t<D> trans(const vector3t<D>& v) {
 		D o = D(1.0), n = D(0.0);
 		return matrix4t<D>(o, n, n, v.x,  n, o, n, v.y,  n, n, o, v.z,  n, n, n, o);
 	}
-	
-	static matrix4t<D> diagonal(const D& x, const D& y, const D& z, const D& w = D(1.0)) {
+
+	static matrix4t<D> diagonal(D x, D y, D z, D w = D(1.0)) {
 		D n = D(0.0);
 		return matrix4t<D>(x, n, n, n,  n, y, n, n,  n, n, z, n,  n, n, n, w);
 	}
 
-	static matrix4t<D> diagonal(const vector3t<D>& v, const D& w = D(1.0)) {
+	static matrix4t<D> diagonal(const vector3t<D>& v, D w = D(1.0)) {
 		D n = D(0.0);
 		return matrix4t<D>(v.x, n, n, n,  n, v.y, n, n,  n, n, v.z, n,  n, n, n, w);
+	}
+
+	static matrix4t<D> scale(D factor) {
+		return diagonal(factor, factor, factor);
 	}
 
 	void clear_rot() {
@@ -263,20 +337,47 @@ class matrix4t
 		values[3] = values[7] = values[11] = D(0.0);
 	}
 
-	static matrix4t<D> frustum_fovx(double fovx, double aspect, double znear, double zfar) {
-		double tanfovx2 = tan(M_PI*fovx/360.0);
-		double tanfovy2 = tanfovx2 / aspect;
-		double r = znear * tanfovx2;
-		double t = znear * tanfovy2;
-		double n = znear;
-		double f = zfar;
+	static matrix4t<D> frustum_fovx(D fovx, D aspect, D znear, D zfar) {
+		D tanfovx2 = D(tan(constant::PI*fovx/360.0));
+		D tanfovy2 = tanfovx2 / aspect;
+		D r = znear * tanfovx2;
+		D t = znear * tanfovy2;
+		D n_m_f = znear - zfar;
 		// glFrustum(l,r,b,t,n,f) generates
 		// 2n/(r-l)   0      (r+l)/(r-l)   0
 		//    0     2n/(t-b) (t+b)/(t-b)   0
 		//    0       0      -(f+n)/(f-n) -2f*n/(f-n)
 		//    0       0       -1           0
 		// here we generate glFrustum(-r, r, -t, t, n, f);
-		return matrix4t<D>(n/r, 0, 0, 0, 0, n/t, 0, 0, 0, 0, -(f+n)/(f-n), -2*f*n/(f-n), 0, 0, -1, 0);
+		// since l = -r and b = -t we get a matrix:
+		//   n/r      0       0            0
+		//    0      n/t      0            0
+		//    0       0      (f+n)/(n-f) 2f*n/(n-f)
+		//    0       0       -1           0
+		return matrix4t<D>(znear/r, 0, 0, 0,
+				   0, znear/t, 0, 0,
+				   0, 0, (zfar+znear)/n_m_f, 2*zfar*znear/n_m_f,
+				   0, 0, -1, 0);
+	}
+
+	static matrix4t<D> ortho(D left, D right, D bottom, D top, D znear, D zfar) {
+		D r_m_l = right - left;
+		D t_m_b = top - bottom;
+		D n_m_f = znear - zfar;
+		// glOrtho(l,r,b,t,n,f) generates
+		// 2/(r-l)    0       0           -(r+l)/(r-l)
+		//    0     2/(t-b)   0           -(t+b)/(t-b)
+		//    0       0      -2/(f-n)     -(f+n)/(f-n)
+		//    0       0       0           1
+		// gluOrtho2D is like calling glOrtho with near=-1, far=1
+		return matrix4t<D>(2/r_m_l, 0, 0, -(right+left)/r_m_l,
+				   0, 2/t_m_b, 0, -(top+bottom)/t_m_b,
+				   0, 0, 2/n_m_f,  (zfar+znear)/n_m_f,
+				   0, 0, 0, 1);
+	}
+
+	static matrix4t<D> ortho2D(D left, D right, D bottom, D top) {
+		return ortho(left, right, bottom, top, -1.0, 1.0);
 	}
 
 	/// multiply 4x4 matrix with 3-vector, with w-renormalization
@@ -360,5 +461,12 @@ template<class D> matrix4t<D> matrix4t<D>::get_glf(GLenum pname) {
 
 using matrix4 = matrix4t<double>;
 using matrix4f = matrix4t<float>;
+
+template<typename D>
+std::ostream& operator<< (std::ostream& os, const matrix4t<D>& m)
+{
+	m.to_stream(os);
+	return os;
+}
 
 #endif
