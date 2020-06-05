@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2006  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2020  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -143,7 +143,7 @@ void model_load_dialog::load_menu()
         widget w(0, 0, 1024, 768, "", nullptr, "threesubs.jpg");
         w.set_theme(std::move(theme));
 
-        title = new widget_text(10, 10, 800, 80, "Danger from the Deep Viewmodel OpenGL Frontend.\nCopyright (C) 2003-2006 Thorsten Jordan.");
+        title = new widget_text(10, 10, 800, 80, "Danger from the Deep Viewmodel OpenGL Frontend.\nCopyright (C) 2003-2020 Thorsten Jordan.");
         w.add_child(title);
 
         models_lbl = new widget_text(300, 100, 424, 30, "Available Models:", nullptr, true);

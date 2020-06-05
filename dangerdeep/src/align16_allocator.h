@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 //
-//  An memory allocator for STL data types with alignment. (C)+(W) 2006 Thorsten Jordan
+//  An memory allocator for STL data types with alignment. (C)+(W) 2020 Thorsten Jordan
 //
 
 #ifndef ALIGN16_ALLOCATOR_H
