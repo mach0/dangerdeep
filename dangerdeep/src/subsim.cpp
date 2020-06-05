@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "vector3.h"
 #include <iostream>
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -501,7 +503,7 @@ void run_game(unique_ptr<game> gm)
 				// of player (and thus same type of ui)
 				gm.reset();
 				ui.reset();
-				gm.reset(new game(dlg.get_gamefilename_to_load()));
+				gm = std::make_unique<game>(dlg.get_gamefilename_to_load());
 				// embrace user interface generation with right theme set!
 				tmp = widget::replace_theme(std::move(gametheme));
 				ui.reset(user_interface::create(*gm));
@@ -562,7 +564,7 @@ void run_game_editor(unique_ptr<game> gm)
 			// won't work.
 			gm.reset();
 			ui.reset();
-			gm.reset(new game_editor(dlg.get_gamefilename_to_load()));
+			gm = std::make_unique<game_editor>(dlg.get_gamefilename_to_load());
 			// embrace user interface generation with right theme set!
 			tmp = widget::replace_theme(std::move(gametheme));
 			ui.reset(user_interface::create(*gm));
@@ -994,12 +996,12 @@ void create_convoy_mission()
 			// reset loading screen here to show user we are doing something
 			//fixme: give data to game! player data. maybe combine that to a struct!
 			reset_loading_screen();
-			run_game(unique_ptr<game>(new game(st,
+			run_game(std::make_unique<game>(st,
 							 wcvsize->get_selected(),
 							 wescortsize->get_selected(),
 							 wtimeofday->get_selected(),
 							 gamedate,
-							 pi)));
+							 pi));
 		} else {
 			break;
 		}
@@ -1095,7 +1097,7 @@ void choose_historical_mission()
 	if (result == 2) {	// start game
 		unique_ptr<game> gm;
 		try {
-			gm.reset(new game(get_mission_dir() + missions[wmission->get_selected()]));
+			gm = std::make_unique<game>(get_mission_dir() + missions[wmission->get_selected()]);
 		}
 		catch (error& e) {
 			log_warning("error loading game: " << e.what());
@@ -1120,7 +1122,7 @@ void choose_saved_game()
 	if (q == 2) {
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game(unique_ptr<game>(new game(dlg.get_gamefilename_to_load())));
+		run_game(std::make_unique<game>(dlg.get_gamefilename_to_load()));
 	}
 }
 
@@ -2061,11 +2063,11 @@ int mymain(list<string>& args)
 	//music::instance().set_playback_mode(music::PBM_SHUFFLE_TRACK);
 	music::instance().play();
 	
-	widget::set_theme(unique_ptr<widget::theme>(new widget::theme("widgetelements_menu.png", "widgeticons_menu.png",
+	widget::set_theme(std::make_unique<widget::theme>("widgetelements_menu.png", "widgeticons_menu.png",
 								    font_typenr16,
 								    color(182, 146, 137),
 								    color(240, 217, 127) /*color(222, 208, 195)*/,
-								    color(92, 72 ,68))));
+								    color(92, 72 ,68)));
 
 	std::unique_ptr<texture> metalbackground(new texture(get_image_dir() + "metalbackground.jpg"));
 	sys().draw_console_with(font_arial, metalbackground.get());
@@ -2116,7 +2118,7 @@ int mymain(list<string>& args)
 		unique_ptr<game> gm;
 		bool ok = true;
 		try {
-			gm.reset(new game(get_mission_dir() + cmdmissionfilename));
+			gm = std::make_unique<game>(get_mission_dir() + cmdmissionfilename);
 		}
 		catch (error& e) {
 			log_warning("error loading mission: " << e.what());

@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sub_uzo_display.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "submarine_interface.h"
@@ -179,11 +181,11 @@ unsigned sub_uzo_display::get_popup_allow_mask() const
 
 void sub_uzo_display::enter(bool is_day)
 {
-	uzotex.reset(new texture(get_texture_dir() + "uzo.png"));
+	uzotex = std::make_unique<texture>(get_texture_dir() + "uzo.png");
 	if (is_day)
-		compass.reset(new texture(get_texture_dir() + "uzo_compass_daylight.png"));
+		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_daylight.png");
 	else
-		compass.reset(new texture(get_texture_dir() + "uzo_compass_redlight.png"));
+		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_redlight.png");
 	
 	comp_size = int(compass->get_width()/3.6);
 	dx = int(comp_size*0.5);

@@ -26,20 +26,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 #include "oglext/OglExt.h"
 
-#include "coastmap.h"
 #include "binstream.h"
-#include "global_data.h"
-#include "texture.h"
-#include "system.h"
-#include "triangulate.h"
-#include "xml.h"
+#include "coastmap.h"
 #include "datadirs.h"
 #include "global_data.h"
 #include "model.h"
 #include "primitives.h"
+#include "system.h"
+#include "texture.h"
+#include "triangulate.h"
+#include "xml.h"
 #include <SDL_image.h>
 #include <fstream>
 #include <list>
+#include <memory>
+
 #include <vector>
 using namespace std;
 
@@ -953,7 +954,7 @@ vector2f coastmap::segcoord_to_texc(int segx, int segy) const
 // load from xml description file
 coastmap::coastmap(const string& filename)
 {
-	atlanticmap.reset(new texture(get_texture_dir() + "atlanticmap.jpg", texture::LINEAR, texture::CLAMP));
+	atlanticmap = std::make_unique<texture>(get_texture_dir() + "atlanticmap.jpg", texture::LINEAR, texture::CLAMP);
 
 	global_clnr = 0;
 

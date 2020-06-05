@@ -34,6 +34,8 @@ double log2( double n )
 #include <SDL.h>
 
 #include "system.h"
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -195,10 +197,10 @@ game::game()
 	freezetime = 0;
 	freezetime_start = 0;
 
-	mywater.reset(new water(0.0));
+	mywater = std::make_unique<water>(0.0);
 	//myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen.reset(new terrain<Sint16>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1));
+	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 	
 #if 0
 	if (cfg::instance().geti("cpucores") > 1) {
@@ -268,10 +270,10 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	date currentdate((unsigned)time);
 	equipment_date = currentdate;	// fixme: another crude guess or hack
 
-	mywater.reset(new water(time));
+	mywater = std::make_unique<water>(time);
 //myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen.reset(new terrain<Sint16>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1));
+	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 
 	// Convoy-constructor creates all the objects and spawns them in this game object.
 	// fixme: creation of convoys should be rather moved to this class, so object creation
@@ -389,11 +391,11 @@ game::game(const string& filename)
 
 	// fixme: save original water creation time and random seed with that water was generated.
 	// set the same seed here again, so water is exactly like it was at game start.
-	mywater.reset(new water(time));
+	mywater = std::make_unique<water>(time);
 
 	//myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen.reset(new terrain<Sint16>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1));
+	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 
 	// create empty objects so references can be filled.
 	// there must be ships in a mission...

@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iomanip>
 #include <iostream>
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -99,8 +101,8 @@ user_interface::user_interface(game& gm) :
 	daymode(gm.is_day_mode())
 {
 	add_loading_screen("coast map initialized");
-	mysky.reset(new sky());
-	panel.reset(new widget(0, 768-32, 1024, 32, "", 0));
+	mysky = std::make_unique<sky>();
+	panel = std::make_unique<widget>(0, 768-32, 1024, 32, "");
 	panel->set_background(0);
 	// ca. 1024-2*8 for 6 texts => 168 pix. for each text
 	int paneltextnrs[6] = { 1, 4, 5, 2, 98, 61 };
@@ -115,11 +117,11 @@ user_interface::user_interface(game& gm) :
 	}
 
 	// create screen selector widget
-	screen_selector.reset(new widget(0, 0, 256, 32, "", 0));
+	screen_selector = std::make_unique<widget>(0, 0, 256, 32, "");
 	screen_selector->set_background(0);
 
 	// create playlist widget
-	music_playlist.reset(new widget(0, 0, 384, 512, texts::get(262), 0));
+	music_playlist = std::make_unique<widget>(0, 0, 384, 512, texts::get(262));
 	music_playlist->set_background(0);
 	struct musiclist : public widget_list
 	{
@@ -157,7 +159,7 @@ user_interface::user_interface(game& gm) :
 	playlist->active = true;
 
 	// create main menu widget
-	main_menu.reset(new widget(0, 0, 256, 128, texts::get(104), 0));
+	main_menu = std::make_unique<widget>(0, 0, 256, 128, texts::get(104));
 	main_menu->set_background(0);
 	typedef widget_caller_button<user_interface, void (user_interface::*)()> wcbui;
 	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::show_screen_selector, 0, 0, 256, 32, texts::get(266)));
@@ -281,7 +283,7 @@ user_interface::user_interface(game& gm) :
 
   add_loading_screen("user interface initialized");
 
-	mygeoclipmap.reset(new geoclipmap(TERRAIN_NR_LEVELS, TERRAIN_RESOLUTION_N, mygame->get_height_gen()));
+	mygeoclipmap = std::make_unique<geoclipmap>(TERRAIN_NR_LEVELS, TERRAIN_RESOLUTION_N, mygame->get_height_gen());
   mygeoclipmap->set_viewerpos(gm.get_player()->get_pos());
 
 	add_loading_screen("terrain loaded");

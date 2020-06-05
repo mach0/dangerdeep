@@ -33,6 +33,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "widget.h"
 #include <algorithm>
+#include <memory>
+
 #include <set>
 #include <sstream>
 #include <utility>
@@ -70,7 +72,7 @@ widget::widget(xml_elem& elem, widget* _parent)
 		background_image_name = elem.attr("bg_image");
 	background = imagecache().ref(background_image_name);
 	if(elem.has_attr("bg_texture")) {
-		set_background(std::unique_ptr<texture>(new texture(get_texture_dir() += elem.attr("bg_texture"))).get());
+		set_background(std::make_unique<texture>(get_texture_dir() += elem.attr("bg_texture")).get());
 	}
 	if(elem.has_attr("enabled"))
 		enabled = elem.attrb("enabled");
@@ -353,20 +355,20 @@ widget::theme::theme(const char* elements_filename, const char* icons_filename, 
 	{
 		sdl_image tmp(get_texture_dir() + elements_filename);
 		int fw = tmp->h;
-		backg.reset(new texture(tmp, 0, 0, fw, fw));
-		skbackg.reset(new texture(tmp, fw, 0, fw, fw));
+		backg = std::make_unique<texture>(tmp, 0, 0, fw, fw);
+		skbackg = std::make_unique<texture>(tmp, fw, 0, fw, fw);
 		for (int i = 0; i < 8; ++i)
-			frame[i].reset(new texture(tmp, (i+2)*fw, 0, fw, fw));
+			frame[i] = std::make_unique<texture>(tmp, (i+2)*fw, 0, fw, fw);
 		for (int i = 0; i < 8; ++i)
-			frameinv[i].reset(new texture(tmp, (i+10)*fw, 0, fw, fw));
-		sbarbackg.reset(new texture(tmp, (2+2*8)*fw, 0, fw, fw));
-		sbarsurf.reset(new texture(tmp, (2+2*8+1)*fw, 0, fw, fw));
+			frameinv[i] = std::make_unique<texture>(tmp, (i+10)*fw, 0, fw, fw);
+		sbarbackg = std::make_unique<texture>(tmp, (2+2*8)*fw, 0, fw, fw);
+		sbarsurf = std::make_unique<texture>(tmp, (2+2*8+1)*fw, 0, fw, fw);
 	}
 	{
 		sdl_image tmp(get_texture_dir() + icons_filename);
 		int fw = tmp->h;
 		for (int i = 0; i < 4; ++i)
-			icons[i].reset(new texture(tmp, i*fw, 0, fw, fw));
+			icons[i] = std::make_unique<texture>(tmp, i*fw, 0, fw, fw);
 	}
 }
 

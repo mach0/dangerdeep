@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "torpedo.h"
 #include <fstream>
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -149,8 +151,8 @@ void sub_captainscabin_display::process_input(class game& gm, const SDL_Event& e
 
 void sub_captainscabin_display::enter(bool is_day)
 {
-	background.reset(new image(get_image_dir() + "captainscabin_main_"
-				   + (is_day ? "daylight" : "redlight") + ".jpg"));
+	background = std::make_unique<image>(get_image_dir() + "captainscabin_main_"
+				   + (is_day ? "daylight" : "redlight") + ".jpg");
 }
 
 void sub_captainscabin_display::leave()

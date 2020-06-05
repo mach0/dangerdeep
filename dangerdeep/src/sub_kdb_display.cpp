@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "submarine_interface.h"
 #include "system.h"
 #include "texture.h"
+#include <memory>
+
 #include <sstream>
 #include <utility>
 
@@ -41,7 +43,7 @@ static const unsigned TK_PHASES = 6;
 sub_kdb_display::scheme::scheme(bool day)
 {
 	const string x = day ? "KDB_daylight" : "KDB_redlight";
-	background.reset(new image(get_image_dir() + x + "_background.jpg"));
+	background = std::make_unique<image>(get_image_dir() + x + "_background.jpg");
 	direction_ptr.set(x + "_pointer.png", 323, 122, 377, 373);
 
 	for (unsigned i = 0; i < TK_PHASES; ++i) {
@@ -270,7 +272,7 @@ void sub_kdb_display::display(game& gm) const
 
 void sub_kdb_display::enter(bool is_day)
 {
-	myscheme.reset(new scheme(is_day));
+	myscheme = std::make_unique<scheme>(is_day);
 }
 
 

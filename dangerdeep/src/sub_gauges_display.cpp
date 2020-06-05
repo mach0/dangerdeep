@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sub_gauges_display.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "user_interface.h"
@@ -194,9 +196,9 @@ int sub_gauges_display::compute_throttle_angle(int throttle_pos) const
 void sub_gauges_display::enter(bool is_day)
 {
 	if (is_day)
-		controlscreen.reset(new image(get_image_dir() + "daylight_typevii_controlscreen_background.jpg"));
+		controlscreen = std::make_unique<image>(get_image_dir() + "daylight_typevii_controlscreen_background.jpg");
 	else
-		controlscreen.reset(new image(get_image_dir() + "redlight_typevii_controlscreen_background.jpg"));
+		controlscreen = std::make_unique<image>(get_image_dir() + "redlight_typevii_controlscreen_background.jpg");
 
 	sdl_image compassi(get_image_dir() + "compass_outer_masked.png");
 	sdl_image dials(get_image_dir() + (is_day ? "daylight_controlscreen_pointers.png" : "redlight_controlscreen_pointers.png"));
@@ -214,13 +216,13 @@ void sub_gauges_display::enter(bool is_day)
 	//	indicator_knots->set(dialsday, dialsnight, 756, 44, 94, 94);
 	//	indicator_main_rudder->set(dialsday, dialsnight, 788, 429, 96, 96);
 	//	indicator_mt->set(dialsday, dialsnight, 426, 37, 158, 158);
-	indicator_compass.reset(new indicator(compassi, 87, 378, 338, 338));
-	indicator_bow_depth_rudder.reset(new indicator(dials, 563, 550, 148, 148));
-	indicator_stern_depth_rudder.reset(new indicator(dials, 795, 550, 148, 148));
-	indicator_depth.reset(new indicator(dials, 391, 50, 270, 270));
-	indicator_knots.reset(new indicator(dials, 782, 95, 132, 132));
-	indicator_main_rudder.reset(new indicator(dials, 681, 337, 152, 152));
-	indicator_mt.reset(new indicator(dials, 88, 93, 173, 173));
+	indicator_compass = std::make_unique<indicator>(compassi, 87, 378, 338, 338);
+	indicator_bow_depth_rudder = std::make_unique<indicator>(dials, 563, 550, 148, 148);
+	indicator_stern_depth_rudder = std::make_unique<indicator>(dials, 795, 550, 148, 148);
+	indicator_depth = std::make_unique<indicator>(dials, 391, 50, 270, 270);
+	indicator_knots = std::make_unique<indicator>(dials, 782, 95, 132, 132);
+	indicator_main_rudder = std::make_unique<indicator>(dials, 681, 337, 152, 152);
+	indicator_mt = std::make_unique<indicator>(dials, 88, 93, 173, 173);
 }
 
 

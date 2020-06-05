@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sub_bridge_display.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "user_interface.h"
@@ -116,7 +118,7 @@ void sub_bridge_display::process_input(class game& gm, const SDL_Event& event)
 
 void sub_bridge_display::enter(bool is_day)
 {
-	glasses_tex.reset(new texture(get_texture_dir() + "glasses.png", texture::LINEAR, texture::CLAMP));
+	glasses_tex = std::make_unique<texture>(get_texture_dir() + "glasses.png", texture::LINEAR, texture::CLAMP);
 }
 
 

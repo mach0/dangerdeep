@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <list>
 #include <map>
+#include <memory>
+
 #include <set>
 #include <sstream>
 #include <utility>
@@ -119,7 +121,7 @@ submarine_interface::submarine_interface(game& gm) :
 	popups.reset(popup_mode_recogmanual, new sub_recogmanual_popup(*this));
 
 	// torpedo cam
-	torpedo_cam_view.reset(new torpedo_camera_display(*this));
+	torpedo_cam_view = std::make_unique<torpedo_camera_display>(*this);
 
 	// note: we could change the width of the menu dynamically, according to longest text of the
 	// buttons.

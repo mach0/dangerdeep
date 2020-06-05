@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sub_control_popup.h"
 
 
+#include <memory>
+
 #include <utility>
 
 #include "system.h"
@@ -38,8 +40,8 @@ sub_control_popup::sub_control_popup(user_interface& ui_) : user_popup(ui_)
 {
 	x = 8;
 	y = 134;
-	background_daylight.reset(new image(get_image_dir() + "popup_TDC_daylight.jpg|png"));
-	background_nightlight.reset(new image(get_image_dir() + "popup_TDC_redlight.jpg|png"));
+	background_daylight = std::make_unique<image>(get_image_dir() + "popup_TDC_daylight.jpg|png");
+	background_nightlight = std::make_unique<image>(get_image_dir() + "popup_TDC_redlight.jpg|png");
 }
 
 

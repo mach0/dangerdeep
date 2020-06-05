@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "oglext/OglExt.h"
 
 #include "moon.h"
+
+
+#include <memory>
+
 #include "matrix4.h"
 #include "texture.h"
 #include "datadirs.h"
@@ -38,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 moon::moon()
 {
-	map_diffuse = texture::ptr(new texture(get_texture_dir()+"moon_d.png", texture::LINEAR));
+	map_diffuse = std::make_unique<texture>(get_texture_dir()+"moon_d.png", texture::LINEAR);
 	// compute moon normal map
 	const unsigned mns = 256; // moon normal map size
 	std::vector<Uint8> mnp(3*mns*mns);
@@ -64,9 +68,9 @@ moon::moon()
 			mnpc += 3;
 		}
 	}
-	map_normal = texture::ptr(new texture(mnp, mns, mns, GL_RGB, texture::LINEAR, texture::CLAMP));
-	glsl_moon.reset(new glsl_shader_setup(get_shader_dir() + "moon.vshader",
-					      get_shader_dir() + "moon.fshader"));
+	map_normal = std::make_unique<texture>(mnp, mns, mns, GL_RGB, texture::LINEAR, texture::CLAMP);
+	glsl_moon = std::make_unique<glsl_shader_setup>(get_shader_dir() + "moon.vshader",
+					      get_shader_dir() + "moon.fshader");
 	glsl_moon->use();
 	loc_diffcol = glsl_moon->get_uniform_location("tex_diff");
 	loc_nrml = glsl_moon->get_uniform_location("tex_nrml");

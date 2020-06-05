@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #endif
 
 #include <iostream>
+#include <memory>
+
 #include <sstream>
 #include <string>
 #include <utility>
@@ -116,7 +118,7 @@ private:
 
 model_load_dialog::model_load_dialog()
 {
-        theme.reset( new widget::theme("widgetelements_menu.png", "widgeticons_menu.png", font_vtremington12, color(182, 146, 137), color(222, 208, 195), color(92, 72, 68)) );
+        theme = std::make_unique<widget::theme>( "widgetelements_menu.png", "widgeticons_menu.png", font_vtremington12, color(182, 146, 137), color(222, 208, 195), color(92, 72, 68) );
 }
 
 

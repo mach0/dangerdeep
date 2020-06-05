@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <cfloat>
 #include <iomanip>
+#include <memory>
+
 #include <sstream>
 
 using namespace std;
@@ -48,7 +50,7 @@ caustics::caustics()
 		stringstream filename;
 		filename << "caustic" << setfill('0') << setw(2) << i << ".png";
 
-		texture_pointers.push_back(unique_ptr<texture>( new texture(get_texture_dir()+filename.str(), texture::LINEAR) ));
+		texture_pointers.push_back(std::make_unique<texture>( get_texture_dir()+filename.str(), texture::LINEAR ));
 	}
 }
 
