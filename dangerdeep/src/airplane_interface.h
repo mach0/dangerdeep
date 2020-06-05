@@ -51,7 +51,7 @@ protected:
 
 public:	
 	airplane_interface(airplane* player_plane, class game& gm);
-	virtual ~airplane_interface();
+	~airplane_interface() override;
 
 	virtual void display(class game& gm);
 };

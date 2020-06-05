@@ -43,7 +43,7 @@ public:
 	const ptrvector<convoy>& get_convoy_list() const { return convoys; }
 
 	// is editor?
-	virtual bool is_editor() const { return true; }
+	bool is_editor() const override { return true; }
 
 	// manipulator functions
 	virtual void manipulate_time(double tm);

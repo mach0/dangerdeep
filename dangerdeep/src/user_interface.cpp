@@ -122,7 +122,7 @@ user_interface::user_interface(game& gm) :
 	struct musiclist : public widget_list
 	{
 		bool active;
-		void on_sel_change() {
+		void on_sel_change() override {
 			if (!active) return;
 			int s = get_selected();
 			if (s >= 0)

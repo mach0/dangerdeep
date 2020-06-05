@@ -185,11 +185,11 @@ loadsavequit_dialogue::loadsavequit_dialogue(const game *g) : widget(0, 0, 1024,
 	wm->adjust_buttons(944);
 	struct lsqlist : public widget_list
 	{
-		void on_sel_change() {
+		void on_sel_change() override {
 			dynamic_cast<loadsavequit_dialogue*>(parent)->get_gamename()->set_text(get_selected_entry());
 		}
 		lsqlist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
-		~lsqlist() {}
+		~lsqlist() override {}
 	};
 	gamelist = new lsqlist(40, 100, 944, 580);
 	add_child(gamelist);
@@ -616,7 +616,7 @@ public:
 		background = imagecache().ref(*current + extension);
 		redraw();
 	}
-	void draw() const
+	void draw() const override
 	{
 		redrawme = false;
 		vector2i p = get_pos();
@@ -664,7 +664,7 @@ public:
 		direction = dir;
 		attached_widget = att;
 	}
-	void draw() const
+	void draw() const override
 	{
 		redrawme = false;
 		vector2i p = get_pos();
@@ -677,7 +677,7 @@ public:
 		background->draw(p.x + size.x/2 - bw/2, p.y + size.y/2 - bh/2, col);
 		
 	}
-	void on_release ()
+	void on_release () override
 	{
 		pressed = false;
 		attached_widget->next(direction);
@@ -794,7 +794,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 			     const std::string& ext_,
 			     const std::list<std::string>& imagenames_)
 			: widget_image_select(x,y,w,h,ext_,imagenames_), flst(0) {}
-		void on_release() {
+		void on_release() override {
 			widget_image_select::on_release();
 			if (flst)
 				flst->set_selected(get_selected());
@@ -814,7 +814,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 		const std::vector<flotilla>& availableflotillas;
 		widget_button* infobut;
 		std::string& infobutdesc;
-		void on_sel_change() {
+		void on_sel_change() override {
 			wis->select_by_nr(std::max(0, get_selected()));
 			wsns->clear();
 			// iterate list of available flotillas and offer sub numbers
@@ -1033,7 +1033,7 @@ void choose_historical_mission()
 	{
 		const vector<string>& descrs;
 		widget_text* wdescr;
-		void on_sel_change() {
+		void on_sel_change() override {
 			int sel = get_selected();
 			if (sel >= 0 && sel < int(descrs.size()))
 				wdescr->set_text(descrs[sel]);
@@ -1041,7 +1041,7 @@ void choose_historical_mission()
 				wdescr->set_text("");
 		}
 		msnlist(int x, int y, int w, int h, const vector<string>& descrs_, widget_text* wdescr_) : widget_list(x, y, w, h), descrs(descrs_), wdescr(wdescr_) {}
-		~msnlist() {}
+		~msnlist() override {}
 	};
 	widget_text* wdescr = new widget_text(40, 380, 1024-80, 300, "", 0, true);
 	widget_list* wmission = new msnlist(40, 60, 1024-80, 300, descrs, wdescr);
@@ -1184,7 +1184,7 @@ void menu_select_language()
 
 	struct lgclist : public widget_list
 	{
-		void on_sel_change() {
+		void on_sel_change() override {
 			texts::set_language(get_selected());
 			cfg::instance().set("language", get_selected());
 		}
@@ -1286,7 +1286,7 @@ void configure_key(widget_list* wkeys)
 	struct confkey_widget : public widget {
 		widget_text* keyname;
 		unsigned keynr;
-		void on_char(const SDL_keysym& ks) {
+		void on_char(const SDL_keysym& ks) override {
 			if (ks.sym == SDLK_ESCAPE) {
 				close(0);
 				return;
@@ -1306,7 +1306,7 @@ void configure_key(widget_list* wkeys)
 				add_child(keyname);
 				add_child(new widget_text(40, 120, 432, 40, texts::get(217)));
 			}
-		~confkey_widget() {}
+		~confkey_widget() override {}
 	};
 	unsigned sel = wkeys->get_selected();
 	confkey_widget w(256, 256, 512, 256, texts::get(216), 0, "", sel);

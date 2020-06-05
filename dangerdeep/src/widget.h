@@ -268,7 +268,7 @@ public:
 	widget_text(int x, int y, int w, int h, const std::string& text_, widget* parent_ = 0, bool sunken_ = false)
 		: widget(x, y, w, h, text_, parent_), sunken(sunken_) {}
 	widget_text(xml_elem& elem, widget* _parent = 0);
-	void draw() const;
+	void draw() const override;
 	virtual void set_text_and_resize(const std::string& s);
 };
 
@@ -284,8 +284,8 @@ public:
 	widget_checkbox(int x, int y, int w, int h, bool checked_, const std::string& text_, widget* parent_ = 0)
 		: widget(x, y, w, h, text_, parent_), checked(checked_) {}
 	widget_checkbox(xml_elem& elem, widget* _parent = 0);
-	void draw() const;
-	void on_click(int mx, int my, int mb);
+	void draw() const override;
+	void on_click(int mx, int my, int mb) override;
 	bool is_checked() const { return checked; }
 	virtual void on_change() {}
 };
@@ -302,9 +302,9 @@ public:
 	widget_button(int x, int y, int w, int h, const std::string& text_,
 		      widget* parent_ = 0, const std::string& backgrimg = std::string()) : widget(x, y, w, h, text_, parent_, backgrimg), pressed(false) {}
 	widget_button(xml_elem& elem, widget* _parent = 0);
-	void draw() const;
-	void on_click(int mx, int my, int mb);
-	void on_release();
+	void draw() const override;
+	void on_click(int mx, int my, int mb) override;
+	void on_release() override;
 	bool is_pressed() const { return pressed; }
 	virtual void on_change() {}
 };
@@ -318,7 +318,7 @@ public:
 	widget_caller_button(Obj* obj_, Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
 		const std::string& text = "", widget* parent = 0)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_) {}
-	void on_release() { widget_button::on_release(); (obj->*func)(); }
+	void on_release() override { widget_button::on_release(); (obj->*func)(); }
 };
 
 template<class Obj, class Func, class Arg>
@@ -331,7 +331,7 @@ public:
 	widget_caller_arg_button(Obj* obj_, Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
 		const std::string& text = "", widget* parent = 0)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_), arg(arg_) {}
-	void on_release() { widget_button::on_release(); (obj->*func)(arg); }
+	void on_release() override { widget_button::on_release(); (obj->*func)(arg); }
 };
 
 template<class Func>
@@ -342,7 +342,7 @@ public:
 	widget_func_button(Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
 		const std::string& text = "", widget* parent = 0)
 		: widget_button(x, y, w, h, text, parent), func(func_) {}
-	void on_release() { widget_button::on_release(); func(); }
+	void on_release() override { widget_button::on_release(); func(); }
 };
 
 template<class Func, class Arg>
@@ -354,7 +354,7 @@ public:
 	widget_func_arg_button(Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
 		const std::string& text = "", widget* parent = 0)
 		: widget_button(x, y, w, h, text, parent), func(func_), arg(arg_) {}
-	void on_release() { widget_button::on_release(); func(arg); }
+	void on_release() override { widget_button::on_release(); func(arg); }
 };
 
 template<class Obj>
@@ -366,7 +366,7 @@ public:
 	widget_set_button(Obj& obj_, const Obj& val, int x = 0, int y = 0, int w = 0, int h = 0,
 		const std::string& text = "", widget* parent = 0)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), value(val) {}
-	void on_release() { widget_button::on_release(); obj = value; }
+	void on_release() override { widget_button::on_release(); obj = value; }
 };
 
 template<class Obj, class Func>
@@ -379,7 +379,7 @@ public:
 			       bool checked = false,
 			       const std::string& text = "", widget* parent = 0)
 		: widget_checkbox(x, y, w, h, checked, text, parent), obj(obj_), func(func_) {}
-	void on_change() { widget_checkbox::on_change(); (obj->*func)(); }
+	void on_change() override { widget_checkbox::on_change(); (obj->*func)(); }
 };
 
 class widget_menu : public widget
@@ -393,7 +393,7 @@ protected:
 	widget_menu(const widget_menu& );
 	widget_menu& operator= (const widget_menu& );
 	
-	void add_child(widget* w) { widget::add_child(w); };	// clients must use add_entry
+	void add_child(widget* w) override { widget::add_child(w); };	// clients must use add_entry
 	
 public:
 	widget_menu(int x, int y, int w, int h, const std::string& text_, bool horizontal_ = false,
@@ -403,7 +403,7 @@ public:
 	void adjust_buttons(unsigned totalsize);	// width or height
 	widget_button* add_entry(const std::string& s, widget_button* wb = 0); // wb's text is always set to s
 	int get_selected() const;
-	void draw() const;
+	void draw() const override;
 };
 
 class widget_scrollbar : public widget
@@ -417,7 +417,7 @@ protected:
 	unsigned get_scrollbarsize() const;	// height of slider bar in pixels
 	void compute_scrollbarpixelpos();	// recompute value from pos values
 
-	void draw_area(int x, int y, int w, int h, bool out) const;
+	void draw_area(int x, int y, int w, int h, bool out) const override;
 
 	widget_scrollbar();
 	widget_scrollbar(const widget_scrollbar& );
@@ -428,10 +428,10 @@ public:
 	void set_nr_of_positions(unsigned s);
 	unsigned get_current_position() const;
 	void set_current_position(unsigned p);
-	void draw() const;
-	void on_click(int mx, int my, int mb);
-	void on_drag(int mx, int my, int rx, int ry, int mb);
-	void on_wheel(int wd);
+	void draw() const override;
+	void on_click(int mx, int my, int mb) override;
+	void on_drag(int mx, int my, int rx, int ry, int mb) override;
+	void on_wheel(int wd) override;
 	virtual void on_scroll() {}
 };
 
@@ -466,10 +466,10 @@ public:
 	std::string get_selected_entry() const;
 	unsigned get_nr_of_visible_entries() const;
 	void clear();
-	void draw() const;
-	void on_click(int mx, int my, int mb);
-	void on_drag(int mx, int my, int rx, int ry, int mb);
-	void on_wheel(int wd);
+	void draw() const override;
+	void on_click(int mx, int my, int mb) override;
+	void on_drag(int mx, int my, int rx, int ry, int mb) override;
+	void on_wheel(int wd) override;
 	virtual void on_sel_change() {}
 	void set_column_width(int cw);
 };
@@ -489,9 +489,9 @@ public:
 	widget_edit(int x, int y, int w, int h, const std::string& text_, widget* parent_ = 0)
 		: widget(x, y, w, h, text_, parent_), cursorpos(text_.length()) {}
 	widget_edit(xml_elem& elem, widget* _parent = 0);
-	void set_text(const std::string& s) { widget::set_text(s); cursorpos = s.length(); }
-	void draw() const;
-	void on_char(const SDL_keysym& ks);
+	void set_text(const std::string& s) override { widget::set_text(s); cursorpos = s.length(); }
+	void draw() const override;
+	void on_char(const SDL_keysym& ks) override;
 	virtual void on_enter() {}	// run on pressed ENTER-key
 	virtual void on_change() {}
 };
@@ -508,12 +508,12 @@ protected:
 	
 	struct filelist : public widget_list
 	{
-		void on_click(int mx, int my, int mb) {
+		void on_click(int mx, int my, int mb) override {
 			widget_list::on_click(mx, my, mb);
 			dynamic_cast<widget_fileselector*>(parent)->listclick();
 		}
 		filelist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
-		~filelist() {}
+		~filelist() override {}
 	};
 
 	widget_fileselector();
@@ -537,8 +537,8 @@ protected:
 	vector4f lightdir;
 	color lightcol;
 
-	void on_wheel(int wd);
-	void on_drag(int mx, int my, int rx, int ry, int mb);
+	void on_wheel(int wd) override;
+	void on_drag(int mx, int my, int rx, int ry, int mb) override;
 
 	widget_3dview();
 	widget_3dview(const widget_3dview& );
@@ -546,7 +546,7 @@ protected:
 public:
 	widget_3dview(int x, int y, int w, int h, std::auto_ptr<model> mdl, color bgcol, widget* parent_ = 0);
 	widget_3dview(xml_elem& elem, widget* _parent = 0);
-	void draw() const;
+	void draw() const override;
 	void set_model(std::auto_ptr<model> mdl_);
 	model* get_model() { return mdl.get(); }
 	// widget will handle orientation itself. also user input for changing that...
@@ -572,10 +572,10 @@ public:
 		      int minv, int maxv, int currv, int descrstep,
 		      widget* parent_ = 0);
 	widget_slider(xml_elem& elem, widget* _parent = 0);
-	void draw() const;
-	void on_char(const SDL_keysym& ks);
-	void on_click(int mx, int my, int mb);
-	void on_drag(int mx, int my, int rx, int ry, int mb);
+	void draw() const override;
+	void on_char(const SDL_keysym& ks) override;
+	void on_click(int mx, int my, int mb) override;
+	void on_drag(int mx, int my, int rx, int ry, int mb) override;
 	virtual void set_values(int minv, int maxv, int currv, int descrstep);
 	virtual void on_change() {}
 	virtual int get_min_value() const { return minvalue; }

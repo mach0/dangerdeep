@@ -48,11 +48,11 @@ public:
 	depth_charge(game& gm_);	// for loading
 	depth_charge(game& gm_, double expl_depth, const vector3& pos);	// for creation
 
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 
-	virtual void simulate(double delta_time);
-	void compute_force_and_torque(vector3& F, vector3& T) const;
+	void simulate(double delta_time) override;
+	void compute_force_and_torque(vector3& F, vector3& T) const override;
 };
 
 #endif

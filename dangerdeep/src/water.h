@@ -204,7 +204,7 @@ protected:
 		unsigned ps, pa;
 	public:
 		worker(water& w, unsigned s, unsigned a) : thread("waterwrk"), wa(w), owg(w.owg), ps(s), pa(a) {}
-		void loop()
+		void loop() override
 		{
 			wa.construction_threaded(owg, ps, pa);
 			request_abort();

@@ -48,12 +48,12 @@ class gun_shell : public sea_object
 	gun_shell(game& gm_, const vector3& pos, angle direction, angle elevation,
 		double initial_velocity, double damage);	// for creation
 
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 
-	virtual void simulate(double delta_time);
+	void simulate(double delta_time) override;
 	virtual void display() const;
-	virtual float surface_visibility(const vector2& watcher) const;
+	float surface_visibility(const vector2& watcher) const override;
 	// acceleration is only gravity and already handled by sea_object
 	virtual double damage() const { return damage_amount; }
 };

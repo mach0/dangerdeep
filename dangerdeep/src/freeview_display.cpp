@@ -389,7 +389,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
 	// compute light source position and brightness (must be set AFTER modelview matrix)
 	vector3 sundir = gm.compute_sun_pos(viewpos).normal();
-	GLfloat lposition[4] = { sundir.x, sundir.y, sundir.z, 0.0f };
+	GLfloat lposition[4] = { static_cast<GLfloat>(sundir.x), static_cast<GLfloat>(sundir.y), static_cast<GLfloat>(sundir.z), 0.0f };
 
 	// get light color, previously all channels were uniform, so we'll make a
 	// function of elevation to have some variation

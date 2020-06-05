@@ -43,12 +43,12 @@ public:
 
 	void compute_heights(int detail, const vector2i& coord_bl,
 			     const vector2i& coord_sz, float* dest, unsigned stride = 0,
-			     unsigned line_stride = 0, bool noise = true);
+			     unsigned line_stride = 0, bool noise = true) override;
 
 	void compute_colors(int detail, const vector2i& coord_bl,
 			    const vector2i& coord_sz, Uint8* dest);
 
-	void get_min_max_height(double& minh, double& maxh) const;
+	void get_min_max_height(double& minh, double& maxh) const override;
 
 protected:
 	bivector<float> generate_patch(int detail, const vector2i& coord_bl,

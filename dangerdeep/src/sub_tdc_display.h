@@ -88,13 +88,13 @@ public:
 	sub_tdc_display(class user_interface& ui_);
 
 	//overload for zoom key handling ('y') and TDC input
-	virtual void process_input(class game& gm, const SDL_Event& event);
-	virtual void display(class game& gm) const;
+	void process_input(class game& gm, const SDL_Event& event) override;
+	void display(class game& gm) const override;
 
 	void next_sub_screen(bool is_day);
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 };
 
 #endif

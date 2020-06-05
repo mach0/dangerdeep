@@ -88,7 +88,7 @@ public:
 	mutable unsigned torpedo_cam_track_nr;
 
 	/// overloaded from user_interface, for forced screen switching
-	virtual void set_time(double tm);
+	void set_time(double tm) override;
 
  public:
 	// public, because the functions could be called by heirs of user_display,
@@ -110,15 +110,15 @@ public:
 	void goto_recogmanual();
 	void goto_valves();
 
-	void toggle_popup();
+	void toggle_popup() override;
 
 	submarine_interface(class game& gm);
-	virtual ~submarine_interface();
+	~submarine_interface() override;
 
 	void fire_tube(submarine* player, int nr);
 
-	virtual void display() const;
-	virtual void process_input(const SDL_Event& events);
+	void display() const override;
+	void process_input(const SDL_Event& events) override;
 	virtual unsigned get_selected_tube() const { return selected_tube; }
 	virtual void select_tube(unsigned nr) { selected_tube = nr; }
 };

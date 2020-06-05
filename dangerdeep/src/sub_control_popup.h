@@ -35,11 +35,11 @@ protected:
 
 public:
 	sub_control_popup(class user_interface& ui_);
-	virtual ~sub_control_popup();
+	~sub_control_popup() override;
 
-	virtual void display(class game& gm) const;
+	void display(class game& gm) const override;
 
-	virtual bool process_input(class game& gm, const SDL_Event& event);
+	bool process_input(class game& gm, const SDL_Event& event) override;
 };
 
 #endif /* SUB_CONTROL_POPUP_H */

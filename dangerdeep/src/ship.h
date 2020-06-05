@@ -163,7 +163,7 @@ class ship : public sea_object
 	// can be volume * density of water.
 	double max_flooded_mass;
 
-	void compute_force_and_torque(vector3& F, vector3& T) const; // drag must be already included!
+	void compute_force_and_torque(vector3& F, vector3& T) const override; // drag must be already included!
 
 	/// implementation of the steering logic: helmsman simulation, or simpler model for torpedoes.
 	virtual void steering_logic();
@@ -268,19 +268,19 @@ class ship : public sea_object
 	bool calculate_gun_angle(const double distance, angle &elevation, const double initial_velocity);
 	void calc_max_gun_range(double initial_velocity);
 
-	bool detect_other_sea_objects() const { return true; }
+	bool detect_other_sea_objects() const override { return true; }
 
 public:
 	// create empty object from specification xml file
 	// construct a sea_object. called by heirs
 	ship(game& gm_, const xml_elem& parent);
 	
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 
 	virtual shipclass get_class() const { return myclass; }
 
-	virtual void simulate(double delta_time);
+	void simulate(double delta_time) override;
 
 	virtual void sink();
 
@@ -305,8 +305,8 @@ public:
 
 	virtual bool has_smoke() const { return !smoke.empty(); }
 
-	virtual bool damage(const vector3& fromwhere, unsigned strength);
-	virtual unsigned calc_damage() const;	// returns damage in percent (100 means dead)
+	bool damage(const vector3& fromwhere, unsigned strength) override;
+	unsigned calc_damage() const override;	// returns damage in percent (100 means dead)
 	// this depends on ship's tonnage, type, draught and depth (subs/sinking ships)
 	virtual unsigned get_tonnage() const { return tonnage; }
 	virtual double get_fuel_level () const { return fuel_level; }
@@ -317,7 +317,7 @@ public:
 	virtual double get_throttle_accel() const;	// returns acceleration caused by current throttle
 	virtual bool screw_cavitation() const;	// returns true if screw causes cavitation
 	virtual double get_rudder_pos() const { return rudder.angle; }
-	virtual double get_noise_factor () const;
+	double get_noise_factor () const override;
 	virtual gun_status fire_shell_at(const sea_object& s);
 
 	// needed for launching torpedoes
@@ -340,7 +340,7 @@ public:
 	   custom convoy generation (called from class convoy).
 	   Nobody else should manipulate objects like this.
 	*/
-	virtual void manipulate_heading(angle hdg);
+	void manipulate_heading(angle hdg) override;
 
 	/// compute bv_tree parameter values for collision tests
 	virtual bv_tree::param compute_bv_tree_params() const;

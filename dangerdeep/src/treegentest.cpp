@@ -186,7 +186,7 @@ void run()
 		// set light
 		vector3 ld(cos((sys().millisec()%10000)*2*3.14159/10000), sin((sys().millisec()%10000)*2*3.14159/10000), 1.0);
 		ld.normalize();
-		GLfloat lposition[4] = {ld.x,ld.y,ld.z,0};
+		GLfloat lposition[4] = {static_cast<GLfloat>(ld.x),static_cast<GLfloat>(ld.y),static_cast<GLfloat>(ld.z),0};
 		glLightfv(GL_LIGHT0, GL_POSITION, lposition);
 		wind_movement.z = cos(tm1/2000.0f * M_PI) * 0.01;
 

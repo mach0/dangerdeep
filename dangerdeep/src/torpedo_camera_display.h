@@ -27,20 +27,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class torpedo_camera_display : public freeview_display
 {
-	void pre_display(class game& gm) const;
-	projection_data get_projection_data(class game& gm) const;
-	void post_display(class game& gm) const;
-	vector3 get_viewpos(class game& gm) const;
+	void pre_display(class game& gm) const override;
+	projection_data get_projection_data(class game& gm) const override;
+	void post_display(class game& gm) const override;
+	vector3 get_viewpos(class game& gm) const override;
 
 	mutable const class torpedo* trackobj;
 
 public:
 	torpedo_camera_display(class user_interface& ui_);
 
-	virtual unsigned get_popup_allow_mask() const;
+	unsigned get_popup_allow_mask() const override;
 
-	void enter(bool is_day);
-	void leave();
+	void enter(bool is_day) override;
+	void leave() override;
 
 	void set_tracker(const class torpedo* t) { trackobj = t; }
 };

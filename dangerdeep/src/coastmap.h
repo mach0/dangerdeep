@@ -153,7 +153,7 @@ class coastmap
 		coastmap& cm;
 	public:
 		worker(coastmap& c) : thread("coastmap"), cm(c) {}
-		void loop()
+		void loop() override
 		{
 			cm.construction_threaded();
 			request_abort();

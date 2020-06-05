@@ -69,9 +69,9 @@ protected:
 public:
 
     terrain(const std::string&, const std::string&, unsigned);
-    void compute_heights(int, const vector2i&, const vector2i&, float*, unsigned = 0, unsigned = 0, bool = true);
+    void compute_heights(int, const vector2i&, const vector2i&, float*, unsigned = 0, unsigned = 0, bool = true) override;
 
-    void get_min_max_height(double& minh, double& maxh) const {
+    void get_min_max_height(double& minh, double& maxh) const override {
         minh = (double) min_height;
         maxh = (double) max_height;
     }

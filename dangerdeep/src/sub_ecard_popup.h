@@ -35,11 +35,11 @@ protected:
 
 public:
 	sub_ecard_popup(class user_interface& ui_);
-	virtual ~sub_ecard_popup();
+	~sub_ecard_popup() override;
 
-	virtual void display(class game& gm) const;
+	void display(class game& gm) const override;
 
-	virtual bool process_input(class game& gm, const SDL_Event& event);
+	bool process_input(class game& gm, const SDL_Event& event) override;
 };
 
 #endif /* SUB_ECARD_POPUP_H */

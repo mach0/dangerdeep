@@ -42,16 +42,16 @@ class airplane : public sea_object
  protected:
 	double rollfac, pitchfac;	// rudder state, pitch/roll factor per time.
 
-	bool detect_other_sea_objects() const { return true; }
+	bool detect_other_sea_objects() const override { return true; }
 
  public:
 	// create empty object from specification xml file
 	airplane(game& gm_, const xml_elem& parent);
 
-	virtual void load(const xml_elem& parent);
-	virtual void save(xml_elem& parent) const;
+	void load(const xml_elem& parent) override;
+	void save(xml_elem& parent) const override;
 
-	virtual void simulate(double delta_time);
+	void simulate(double delta_time) override;
 
 	virtual double get_mass() const { return 4000.0; }	// 4 tons.
 	virtual double get_engine_thrust() const { return 20000.0; }
