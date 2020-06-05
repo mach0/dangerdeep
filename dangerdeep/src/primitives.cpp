@@ -300,9 +300,9 @@ primitives primitives::cylinder_z(double radius_bottom, double radius_top,
 		double sa = sin(a);
 		double ca = cos(a);
 		if (inside) ca = -ca;
-		col.a = Uint8(128 + 127*alpha);
+		col.a = uint8_t(128 + 127*alpha);
 		cyl.colors[2*i] = col;
-		col.a = Uint8(255*alpha);
+		col.a = uint8_t(255*alpha);
 		cyl.colors[2*i+1] = col;
 		cyl.texcoords[2*i] = vector2f(i * us, 1);
 		cyl.texcoords[2*i+1] = vector2f(i * us, 0);

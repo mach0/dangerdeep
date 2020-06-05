@@ -16,13 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
- 
+
 #ifndef BITSTREAM_H
 #define BITSTREAM_H
 
-#include <SDL_types.h>
 #include <iostream>
 #include <vector>
+#include <stdint.h>
 
 #ifndef IS_BENDIAN
 const int ENDIAN_TEST = 1;
@@ -32,22 +32,22 @@ const int ENDIAN_TEST = 1;
 class obitstream
 {
 private:
-	static Uint8 bitmask[];
-	
+	static uint8_t bitmask[];
+
 	unsigned long byte_pos, bit_pos;
-	std::vector<Uint8> buffer;
+	std::vector<uint8_t> buffer;
 	std::ostream* outstream;
-	
-	inline void to_buffer(Uint8 bits, Uint8 len);
+
+	inline void to_buffer(uint8_t bits, uint8_t len);
 	
 public:
 	obitstream(std::ostream* os, long bufsize = 128) : byte_pos(0), bit_pos(0), buffer(bufsize, 0), outstream(os) {
 		if(buffer.size()<4) buffer.resize(4, 0);
 	}
 	~obitstream() { last_write(); }
-	
-	bool write(Uint8 bits, Uint8 len = 8);
-	bool write(Uint16 bits, Uint8 len = 16);
+
+	bool write(uint8_t bits, uint8_t len = 8);
+	bool write(uint16_t bits, uint8_t len = 16);
 	void flush();
 	void last_write();
 };
@@ -55,20 +55,20 @@ public:
 class ibitstream
 {
 private:
-	static Uint8 bitmask[8];
-	
+	static uint8_t bitmask[8];
+
 	unsigned long byte_pos, bit_pos, end_pos;
-	std::vector<Uint8> buffer;
+	std::vector<uint8_t> buffer;
 	std::istream* instream;
 
-	Uint8 read_byte(Uint8 len = 8);
+	uint8_t read_byte(uint8_t len = 8);
 	void inline fill_buffer();
-	void inline update_position(Uint8& len);
-	
+	void inline update_position(uint8_t& len);
+
 public:
 	ibitstream(std::istream* is, long bufsize = 128);
-	~ibitstream() = default;
-	
-	Uint16 read(Uint8 len = 16);
+	~ibitstream() {}
+
+	uint16_t read(uint8_t len = 16);
 };
 #endif

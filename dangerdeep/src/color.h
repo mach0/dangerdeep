@@ -23,38 +23,39 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef COLOR_H
 #define COLOR_H
 
-#include <SDL_types.h>
+#include <ostream>
+#include "vector4.h"
 
 ///\brief Color representation with some basic transformations and OpenGL usage.
 struct color
 {
-	Uint8 r, g, b, a;
-	color(Uint8 r_ = 0, Uint8 g_ = 0, Uint8 b_ = 0, Uint8 a_ = 255) : r(r_), g(g_), b(b_), a(a_) {};
+	uint8_t r, g, b, a;
+	color(uint8_t r_ = 0, uint8_t g_ = 0, uint8_t b_ = 0, uint8_t a_ = 255) : r(r_), g(g_), b(b_), a(a_) {};
 	color(const color& c1, const color &c2, float scal) {
-		r = (Uint8)(c1.r*(1-scal) + c2.r*scal);
-		g = (Uint8)(c1.g*(1-scal) + c2.g*scal);
-		b = (Uint8)(c1.b*(1-scal) + c2.b*scal);
-		a = (Uint8)(c1.a*(1-scal) + c2.a*scal);
+		r = (uint8_t)(c1.r*(1-scal) + c2.r*scal);
+		g = (uint8_t)(c1.g*(1-scal) + c2.g*scal);
+		b = (uint8_t)(c1.b*(1-scal) + c2.b*scal);
+		a = (uint8_t)(c1.a*(1-scal) + c2.a*scal);
 	}
-	color(const class colorf& c);
+	color(const struct colorf& c);
 
 	color operator* (const color& c) const {
 		return {
-			(Uint8)(unsigned(r)*unsigned(c.r)/255),
-			(Uint8)(unsigned(g)*unsigned(c.g)/255),
-			(Uint8)(unsigned(b)*unsigned(c.b)/255),
-			(Uint8)(unsigned(a)*unsigned(c.a)/255)
+			(uint8_t)(unsigned(r)*unsigned(c.r)/255),
+			(uint8_t)(unsigned(g)*unsigned(c.g)/255),
+			(uint8_t)(unsigned(b)*unsigned(c.b)/255),
+			(uint8_t)(unsigned(a)*unsigned(c.a)/255)
 		};
 	}
 	
-	void store_rgb(Uint8* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; }
-	void store_rgba(Uint8* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; ptr[3] = a; }
+	void store_rgb(uint8_t* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; }
+	void store_rgba(uint8_t* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; ptr[3] = a; }
 	void store_rgb(float* ptr) const { ptr[0] = float(r)/255; ptr[1] = float(g)/255; ptr[2] = float(b)/255; }
 	void store_rgba(float* ptr) const { ptr[0] = float(r)/255; ptr[1] = float(g)/255; ptr[2] = float(b)/255; ptr[3] = float(a)/255; }
 
 	// transform color to grey value (model of human vision, 29.9% to 58.7% to 11.4% RGB)
 	float brightness() const { return (r*0.299+g*0.587+b*0.114)/255; }
-	color grey_value() const { auto c = (Uint8)(r*0.299+g*0.587+b*0.114); return {c, c, c, a}; }
+	color grey_value() const { auto c = (uint8_t)(r*0.299+g*0.587+b*0.114); return {c, c, c, a}; }
 	
 	//color(istream& in) { r = read_u8(in); g = read_u8(in); b = read_u8(in); a = read_u8(in); }
 	//void save(ostream& out) const { write_u8(out, r); write_u8(out, g); write_u8(out, b); write_u8(out, a); }
@@ -63,11 +64,23 @@ struct color
 		int rr = (int(r)-128)*fac+128;
 		int gg = (int(g)-128)*fac+128;
 		int bb = (int(b)-128)*fac+128;
-		return {Uint8(rr > 255 ? 255 : rr < 0 ? 0 : rr),
-			     Uint8(gg > 255 ? 255 : gg < 0 ? 0 : gg),
-			     Uint8(bb > 255 ? 255 : bb < 0 ? 0 : bb)};
+		return {uint8_t(rr > 255 ? 255 : rr < 0 ? 0 : rr),
+			     uint8_t(gg > 255 ? 255 : gg < 0 ? 0 : gg),
+			     uint8_t(bb > 255 ? 255 : bb < 0 ? 0 : bb)};
 	}
-	
+
+	vector4f vec4() const
+	{
+		// *1/255
+		return {r * 0.003921569f, g * 0.003921569f, b * 0.003921569f, a * 0.003921569f};
+	}
+
+	vector3f vec3() const
+	{
+		// *1/255
+		return {r * 0.003921569f, g * 0.003921569f, b * 0.003921569f};
+	}
+
 	// some useful standard colors
 	static color black() { return {0,0,0}; }
 	static color blue() { return {0,0,255}; }
@@ -87,7 +100,9 @@ struct color
 struct colorf
 {
 	float r, g, b, a;
-	colorf(float r_ = 0, float g_ = 0, float b_ = 0, float a_ = 1.0f) : r(r_), g(g_), b(b_), a(a_) {};
+	colorf(float r_ = 0, float g_ = 0, float b_ = 0, float a_ = 1.0f) : r(r_), g(g_), b(b_), a(a_) {}
+	/// Allow initialization with double values
+	//colorf(double r_, double g_, double b_, double a_ = 1.0) : r(float(r_)), g(float(g_)), b(float(b_)), a(float(a_)) {}
 	colorf(const color& c)
 		: r(c.r * 0.003921569f), g(c.g * 0.003921569f),
 		  b(c.b * 0.003921569f), a(c.a * 0.003921569f) {} // 0.003921569 = 1/255
@@ -101,17 +116,31 @@ struct colorf
 	colorf operator* (const colorf& c) const {
 		return {r*c.r, g*c.g, b*c.b, a*c.a};
 	}
-	
-	///> component wise linear interpolation
+
+	colorf operator* (float f) const {
+		return {r*f, g*f, b*f, a*f};
+	}
+
+	/// component wise linear interpolation
 	colorf lerp(const colorf& c1, const colorf& c2) const {
 		return {c1.r*(1-r) + c2.r*r,
 			      c1.g*(1-g) + c2.g*g,
 			      c1.b*(1-b) + c2.b*b,
 			      c1.a*(1-a) + c2.a*a};
 	}
-	
-	void store_rgb(Uint8* ptr) const { ptr[0] = Uint8(r*255); ptr[1] = Uint8(g*255); ptr[2] = Uint8(b*255); }
-	void store_rgba(Uint8* ptr) const { ptr[0] = Uint8(r*255); ptr[1] = Uint8(g*255); ptr[2] = Uint8(b*255); ptr[3] = Uint8(a*255); }
+
+	vector3f vec3() const
+	{
+		return {r, g, b};
+	}
+
+	vector4f vec4() const
+	{
+		return {r, g, b, a};
+	}
+
+	void store_rgb(uint8_t* ptr) const { ptr[0] = uint8_t(r*255); ptr[1] = uint8_t(g*255); ptr[2] = uint8_t(b*255); }
+	void store_rgba(uint8_t* ptr) const { ptr[0] = uint8_t(r*255); ptr[1] = uint8_t(g*255); ptr[2] = uint8_t(b*255); ptr[3] = uint8_t(a*255); }
 	void store_rgb(float* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; }
 	void store_rgba(float* ptr) const { ptr[0] = r; ptr[1] = g; ptr[2] = b; ptr[3] = a; }
 
@@ -121,8 +150,20 @@ struct colorf
 };
 
 inline color::color(const colorf& c)
-	: r(Uint8(c.r*255)), g(Uint8(c.g*255)), b(Uint8(c.b*255)), a(Uint8(c.a*255))
+	: r(uint8_t(c.r*255)), g(uint8_t(c.g*255)), b(uint8_t(c.b*255)), a(uint8_t(c.a*255))
 {
+}
+
+inline std::ostream& operator<< (std::ostream& os, const color& c)
+{
+	os << "R=" << unsigned(c.r) << ", G=" << unsigned(c.g) << ", B=" << unsigned(c.b) << ", A=" << unsigned(c.a) << ".";
+	return os;
+}
+
+inline std::ostream& operator<< (std::ostream& os, const colorf& c)
+{
+	os << "R=" << c.r << ", G=" << c.g << ", B=" << c.b << ", A=" << c.a << ".";
+	return os;
 }
 
 #endif
