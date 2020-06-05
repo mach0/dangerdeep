@@ -34,10 +34,10 @@ class highscorelist
 
 public:
 	struct entry {
-		unsigned points;
+		unsigned points{0};
 		std::string name;
 		// missing: maybe start & end date, realism factor, rank/merits, submarine number
-		entry() : points(0), name("--------") {}
+		entry() :  name("--------") {}
 		entry(unsigned p, const std::string& n) : points(p), name(n) {}
 		entry(std::istream& in);
 		~entry() = default;

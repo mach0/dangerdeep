@@ -23,17 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "tdc.h"
 
 tdc::tdc()
-	: bearing_tracking(true),
-	  angleonthebow_tracking(true),
-	  auto_mode(true),
-	  target_speed(0),
-	  target_distance(0),
-	  target_bow_is_left(true),
-	  torpedo_speed(0),
-	  torpedo_runlength(0),
-	  torpedo_runtime(0),
-	  compute_stern_tube(false),
-	  valid_solution(false)
+	
+	  
 {
 }
 

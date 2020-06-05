@@ -153,16 +153,14 @@ water::water(double tm) :
 	wave_resolution(nextgteqpow2(cfg::instance().geti("wave_fft_res"))),
 	wave_resolution_shift(ulog2(wave_resolution)),
 	wavetile_data(wave_phases),
-	curr_wtp(nullptr),
+	
 	owg(wave_resolution,
 	    vector2f(1,1), // wind direction
 	    12 /*12*/ /*10*/ /*31*/,	// wind speed m/s. fixme make dynamic (weather!)
 	    wave_resolution * (1e-8) /* roughly 2e-6 for 128 */,	// scale factor for heights. depends on wave resolution, maybe also on tidecycle time
 	    wavetile_length,
 	    wave_tidecycle_time),
-	use_hqsfx(false),
-	vattr_aof_index(0),
-	rerender_new_wtp(true),
+	
 	geoclipmap_resolution(cmpdtl(cfg::instance().geti("water_detail"))), // should be power of two
 	geoclipmap_levels(wave_resolution_shift-2),
 	patches(1 + (geoclipmap_levels-1)*8*3*3 + 4 /*horizon*/)

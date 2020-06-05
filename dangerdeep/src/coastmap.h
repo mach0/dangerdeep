@@ -47,18 +47,18 @@ public:
 		std::vector<segpos> points;	// coordinates of the segcl. relative to segment.
 		mutable std::vector<vector2> points2;	// cached, real world per segment coordinates.
 		mutable std::vector<vector2> normals;	// cached, coastline normals.
-		int beginpos;		// positions are on border in 0-64k scale: s=65535. (-1 = not on border)
-		int endpos;		// then bottom,right,top,left border of segment are 0s+x, 1s+x, 2s+x, 3s+x
-		int next;		// successor of this cl. is itself for cyclic segcl's.
-		bool cyclic;		// is segcl cyclic inside this segment (island)?
+		int beginpos{-1};		// positions are on border in 0-64k scale: s=65535. (-1 = not on border)
+		int endpos{-1};		// then bottom,right,top,left border of segment are 0s+x, 1s+x, 2s+x, 3s+x
+		int next{-1};		// successor of this cl. is itself for cyclic segcl's.
+		bool cyclic{false};		// is segcl cyclic inside this segment (island)?
 		void print() const;	// for debugging
-		segcl(int glcn = -1) : global_clnr(glcn), beginpos(-1), endpos(-1), next(-1), cyclic(false) {}
+		segcl(int glcn = -1) : global_clnr(glcn) {}
 		void push_back_point(const segpos& sp);	// avoids double points
 	};
 
-	unsigned type;	// 0 - sea, 1 - land, 2 mixed
+	unsigned type{0};	// 0 - sea, 1 - land, 2 mixed
 	std::vector<segcl> segcls;
-	class texture* atlanticmap;
+	class texture* atlanticmap{nullptr};
 
 	// terrain elevation (no matter if land or sea, total elevation in meters)
 	// user for computation of water depth or terrain height (not yet)
@@ -70,7 +70,7 @@ public:
 		std::vector<unsigned> indices;
 		void push_back_point(const vector2& p);	// avoids double points.
 	};
-	mutable int pointcachedetail;
+	mutable int pointcachedetail{0};
 	mutable std::vector<cacheentry> pointcache;
 	// check if cache needs to be (re)generated, and do that
 	void generate_point_cache(const class coastmap& cm, int x, int y, int detail) const;
@@ -79,7 +79,7 @@ public:
 
 	void push_back_segcl(const segcl& scl);	// avoids segcls with < 2 points.
 
-	coastsegment(/*unsigned topon, const std::vector<float>& topod*/) : type(0), /*topo(topon, topod),*/ atlanticmap(nullptr), pointcachedetail(0) {}
+	coastsegment(/*unsigned topon, const std::vector<float>& topod*/)  {}
 	
 	void draw_as_map(const class coastmap& cm, int x, int y, int detail = 0) const;
 };

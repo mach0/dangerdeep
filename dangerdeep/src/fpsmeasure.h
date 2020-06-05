@@ -35,9 +35,9 @@ class fpsmeasure
 
  protected:
 	const unsigned measure_interval;
-	unsigned tm0, tm_lastframe, tm_lastmeasure, nr_frames, frames_lastmeasure;
-	float curfps;
-	unsigned slowest_frame, fastest_frame;
+	unsigned tm0{0}, tm_lastframe{0}, tm_lastmeasure{0}, nr_frames{0}, frames_lastmeasure{0};
+	float curfps{0};
+	unsigned slowest_frame{0}, fastest_frame{0};
 };
 
 #endif

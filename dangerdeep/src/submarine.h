@@ -51,10 +51,10 @@ class submarine : public ship
 		// a torpedo transfer must not copy this structure!
 		std::string specfilename; ///< torpedo type, to be copied on transfer
 		torpedo::setup setup;	///< tube setup, don't copy
-		double temperature;	///< current torpedo temperatue - fixme: as attribute of class torpedo?
-		st_status status;	///< 0 empty 1 reloading 2 unloading 3 loaded
-		unsigned associated;	///< reloading from/unloading to
-		double remaining_time;	///< remaining time until work is finished
+		double temperature{15.0};	///< current torpedo temperatue - fixme: as attribute of class torpedo?
+		st_status status{st_empty};	///< 0 empty 1 reloading 2 unloading 3 loaded
+		unsigned associated{0};	///< reloading from/unloading to
+		double remaining_time{0};	///< remaining time until work is finished
 		angle addleadangle;	///< additional lead angle (only per tube) fixme: replace by lead angle reported from TDC
 
 		stored_torpedo();

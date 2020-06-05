@@ -52,19 +52,19 @@ public:
 	/// parameter structure for class system
 	struct parameters
 	{
-		double near_z;
-		double far_z;
-		unsigned resolution_x;
-		unsigned resolution_y;
+		double near_z{1.0};
+		double far_z{1000.0};
+		unsigned resolution_x{1024};
+		unsigned resolution_y{768};
 		std::string window_caption;
-		bool fullscreen;
-		bool use_multisampling;
-		int hint_multisampling;
-		int multisample_level;
-		int hint_fog;
-		int hint_mipmap;
-		int hint_texture_compression;
-		bool vertical_sync;
+		bool fullscreen{true};
+		bool use_multisampling{false};
+		int hint_multisampling{0};
+		int multisample_level{0};
+		int hint_fog{0};
+		int hint_mipmap{0};
+		int hint_texture_compression{0};
+		bool vertical_sync{true};
 		
 		parameters();
 		parameters(double near_z_, double far_z_, unsigned res_x, unsigned res_y, bool fullscreen_);

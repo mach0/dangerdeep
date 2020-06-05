@@ -30,16 +30,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "ptrvector.h"
 #include "texture.h"
-
+#include <cfloat>
 
 
 
 class caustics
 {
 protected:
-	double mytime;
+	double mytime{-DBL_MAX};
 	ptrvector<texture> texture_pointers;
-	unsigned int current_texture;
+	unsigned int current_texture{0};
 
 public:
 	caustics();

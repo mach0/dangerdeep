@@ -104,14 +104,14 @@ protected:
 		float get_height(unsigned idx) const { return mipmaps.front().wavedata[idx].z; }
 
 		std::vector<mipmap_level> mipmaps;
-		float minh, maxh;
+		float minh{0}, maxh{0};
 
-		wavetile_phase() : minh(0), maxh(0) {}
+		wavetile_phase()  {}
 	};
 
 	// wave tile data
 	std::vector<wavetile_phase> wavetile_data;
-	const wavetile_phase* curr_wtp;	// pointer to current phase
+	const wavetile_phase* curr_wtp{nullptr};	// pointer to current phase
 
 	// test
 	ocean_wave_generator<float> owg;
@@ -120,7 +120,7 @@ protected:
 	std::unique_ptr<texture> water_bumpmap;
 
 	// Config options (only used when supported)
-	bool use_hqsfx; // high quality special effects.
+	bool use_hqsfx{false}; // high quality special effects.
 
 	// Shader program
 	std::unique_ptr<glsl_shader_setup> glsl_water;
@@ -148,10 +148,10 @@ protected:
 	unsigned loc_w_reflection_transform;
 
 	// indices for vertex attributes
-	unsigned vattr_aof_index;
+	unsigned vattr_aof_index{0};
 
 	// avoid unnecessary vertex generation
-	mutable bool rerender_new_wtp;
+	mutable bool rerender_new_wtp{true};
 	mutable vector3 rerender_viewpos;
 
 	water& operator= (const water& other);

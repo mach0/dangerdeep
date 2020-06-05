@@ -44,11 +44,11 @@ inline double round(double d) { return floor(d + 0.5); }
 class angle
 {
 	protected:
-	double val;
+	double val{0};
 	static double clamped(double d) { return d - 360.0*floor(d/360.0); };
 	
 	public:
-	angle() : val(0) {};
+	angle()  {};
 	angle(double d) : val(d) {};
 	angle(const vector2& v) { val = (v == vector2(0,0)) ? 0 : 90-atan2(v.y, v.x)*180.0/M_PI; };
 	double value() const { return clamped(val); };

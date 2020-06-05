@@ -40,8 +40,8 @@ class particle
 protected:
 	vector3 position;
 	vector3 velocity;
-	double life;	// 0...1, 0 = faded out
-	particle() : life(1.0) {}
+	double life{1.0};	// 0...1, 0 = faded out
+	particle()  {}
 	particle(const particle& other);
 	particle& operator= (const particle& other);
 

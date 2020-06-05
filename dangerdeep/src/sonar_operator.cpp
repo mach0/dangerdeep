@@ -35,9 +35,8 @@ const double sonar_operator::turn_speed_slow = 2.0;	// degrees per second.
 const double sonar_operator::simulation_step = 0.1;	// in seconds
 
 sonar_operator::sonar_operator()
-	: state(initial),
-	  current_signal_strength(-1),
-	  last_simulation_step_time(0)
+	
+	  
 {
 }
 

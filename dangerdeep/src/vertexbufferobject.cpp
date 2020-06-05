@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 vertexbufferobject::vertexbufferobject(bool indexbuffer)
-	: id(0), size(0), mapped(false),
+	: 
 	  target(indexbuffer ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER)
 {
 	if (!sys().extension_supported("GL_ARB_vertex_buffer_object"))

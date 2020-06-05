@@ -66,19 +66,8 @@ bad_typeid
 
 */
 
-system::parameters::parameters() :
-	near_z(1.0),
-	far_z(1000.0),
-	resolution_x(1024),
-	resolution_y(768),
-	fullscreen(true),
-	use_multisampling(false),
-	hint_multisampling(0),
-	multisample_level(0),
-	hint_fog(0),
-	hint_mipmap(0),
-	hint_texture_compression(0),
-	vertical_sync(true)
+system::parameters::parameters() 
+	
 {
 }
 	

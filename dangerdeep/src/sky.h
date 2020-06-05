@@ -74,8 +74,8 @@ protected:
 	mutable std::vector<color> skycolors;	// needed as lookup
 	mutable vector3 sunpos, moonpos;
 	mutable vector3 sundir, moondir;
-	mutable float sun_azimuth, sun_elevation;
-	float turbidity;
+	mutable float sun_azimuth{10.0f}, sun_elevation{10.0f};
+	float turbidity{2.0f};
 
 	std::unique_ptr<glsl_shader_setup> glsl_clouds;
 	unsigned loc_cloudstex;

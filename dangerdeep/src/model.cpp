@@ -1356,7 +1356,7 @@ const bv_tree& model::mesh::get_bv_tree() const
 
 
 model::material::map::map()
-	: tex(nullptr), ref_count(0)
+	 
 {
 }
 
@@ -1464,7 +1464,7 @@ void model::material::map::get_all_layout_names(std::set<std::string>& result) c
 
 
 
-model::material::material(const std::string& nm) : name(nm), shininess(50.0f), two_sided(false)
+model::material::material(const std::string& nm) : name(nm) 
 {
 }
 

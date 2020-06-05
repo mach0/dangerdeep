@@ -128,7 +128,7 @@ public:
 
 	struct player_info {
 		std::string name;
-		unsigned flotilla;
+		unsigned flotilla{1};
 		std::string submarineid;
 		std::string photo;
 		

@@ -146,8 +146,8 @@ class glsl_program
 	unsigned get_vertex_attrib_index(const std::string& name) const;
 
  protected:
-	unsigned id;
-	bool linked;
+	unsigned id{0};
+	bool linked{false};
 	std::list<glsl_shader*> attached_shaders;
 	static const glsl_program* used_program;
 

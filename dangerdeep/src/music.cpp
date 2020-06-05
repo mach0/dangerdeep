@@ -44,14 +44,9 @@ bool music::use_music = true;
 
 music::music(bool useit, unsigned sample_rate_)
 	: thread("music___"),
-	  nr_reserved_channels(1),
-	  sample_rate(sample_rate_),
-	  current_track(0),
-	  usersel_next_track(-1),
-	  usersel_fadein(0),
-	  pbm(PBM_LOOP_LIST),
-	  stopped(true),
-	  current_machine_sfx(nullptr)
+	  
+	  sample_rate(sample_rate_)
+	  
 {
 	use_music = useit;
 }

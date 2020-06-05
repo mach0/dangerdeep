@@ -228,11 +228,11 @@ class sector
 public:
 	//model geometry;
 	vector3 basepos;
-	unsigned walls;
+	unsigned walls{0};
 	std::vector<portal> portals;
-	mutable bool displayed;
-	mutable bool visited;	// needed during rendering.
-	sector() : walls(0), displayed(false), visited(false) {}
+	mutable bool displayed{false};
+	mutable bool visited{false};	// needed during rendering.
+	sector()  {}
 	void display(const frustum& f) const;
 	bool check_movement(const vector3& currpos, const vector3& nextpos, sector*& nextseg) const;
 };

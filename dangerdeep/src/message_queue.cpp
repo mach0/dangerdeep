@@ -43,7 +43,7 @@ void message::evaluate() const
 
 
 message_queue::message_queue()
-	: msginqueue(false), abortwait(false)
+	 
 {
 }
 
