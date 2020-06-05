@@ -461,10 +461,10 @@ bool system_interface::finish_frame()
 			switch (event.type) {
 			case SDL_QUIT:			// Quit event
 				log_info("---------- immediate exit ----------");
-				log::instance().write(std::cerr, log::LOG_SYSINFO);
+				log::instance().write(std::cerr, log::level::SYSINFO);
 				{
 					std::ofstream f("log.txt");
-					log::instance().write(f, log::LOG_SYSINFO);
+					log::instance().write(f, log::level::SYSINFO);
 				}
 				return true;
 

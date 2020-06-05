@@ -25,15 +25,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define LOG_H
 
 #include <sstream>
+#include <thread>
 #include "singleton.h"
 
 #ifdef DEBUG
 #define log_template(x, y) do { std::ostringstream oss; oss << __FILE__ << ":" << __LINE__ << " " << x; log::instance().append(log::y, oss.str()); } while(0)
-#define log_debug(x) log_template(x, LOG_DEBUG)
-#define log_info(x) log_template(x, LOG_INFO)
+#define log_debug(x) log_template(x, level::DEBUG)
+#define log_info(x) log_template(x, level::INFO)
 // use this only internally for special events
-#define log_sysinfo(x) log_template(x, LOG_SYSINFO)
-#define log_warning(x) log_template(x, LOG_WARNING)
+#define log_sysinfo(x) log_template(x, level::SYSINFO)
+#define log_warning(x) log_template(x, level::WARNING)
 #else
 #define log_debug(x) do { } while (0)
 #define log_info(x) do { } while (0)
@@ -47,20 +48,19 @@ class log : public singleton<class log>
 	friend class singleton<log>;
  public:
 	/// level of log message, in descending importance.
-	/// we use LOG_ prefix to avoid collisions with DEBUG compile flag.
-	enum level {
-		LOG_WARNING,
-		LOG_INFO,
-		LOG_SYSINFO,
-		LOG_DEBUG,
-		LOG_NR_LEVELS
+	enum class level {
+		WARNING,
+		INFO,
+		SYSINFO,
+		DEBUG,
+		NR_LEVELS
 	};
 
 	/// wether log output should go to console as well
 	static bool copy_output_to_console;
 
 	/// write the log to a stream, with optional filtering of importance, threadsafe
-	void write(std::ostream& out, log::level limit_level = log::LOG_NR_LEVELS) const;
+	void write(std::ostream& out, log::level limit_level = log::level::NR_LEVELS) const;
 
 	/// append a message to the log, threadsafe
 	void append(log::level l, const std::string& msg);
@@ -78,8 +78,8 @@ class log : public singleton<class log>
 	log();
 	class log_internal* mylogint{nullptr};
 	const char* get_thread_name() const;
-	const char* get_thread_name( unsigned tid ) const;
-	friend class log_msg;
+	const char* get_thread_name(std::thread::id) const;
+	friend struct log_msg;
 };
 
 #endif

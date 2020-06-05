@@ -500,10 +500,10 @@ list<SDL_Event> system::poll_event_queue()
 			switch (event.type) {
 				case SDL_QUIT:			// Quit event
 					log_info("---------- immediate exit ----------");
-					log::instance().write(std::cerr, log::LOG_SYSINFO);
+					log::instance().write(std::cerr, log::level::SYSINFO);
  					{
  						std::ofstream f("log.txt");
- 						log::instance().write(f, log::LOG_SYSINFO);
+ 						log::instance().write(f, log::level::SYSINFO);
 					}
 					throw quit_exception(0);
 				
