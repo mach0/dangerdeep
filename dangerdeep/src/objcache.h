@@ -23,9 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef OBJCACHE_H
 #define OBJCACHE_H
 
-#include <string>
-#include <map>
 #include <iostream>
+#include <map>
+#include <string>
+#include <utility>
+
 
 ///\brief Handles and caches instances of globally used objects.
 //fixme: to make it useable as *cache* we need to delay destruction. when an object reaches refcount zero, do not
@@ -49,7 +51,7 @@ class objcachet
 	objcachet(const objcachet<T>& ) = delete;
 
 public:
-	objcachet(const std::string& basedir_) : basedir(basedir_) {}
+	objcachet(std::string  basedir_) : basedir(std::move(std::move(basedir_))) {}
 	~objcachet() {
 		clear();
 	}

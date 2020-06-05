@@ -379,8 +379,8 @@ std::unique_ptr<widget::theme> widget::replace_theme(std::unique_ptr<widget::the
 	return std::move(r);
 }
 
-widget::widget(int x, int y, int w, int h, const string& text_, widget* parent_, const std::string& backgrimg)
-	: pos(x, y), size(w, h), text(text_), parent(parent_), background_image_name(backgrimg),
+widget::widget(int x, int y, int w, int h, string  text_, widget* parent_, const std::string& backgrimg)
+	: pos(x, y), size(w, h), text(std::move(text_)), parent(parent_), background_image_name(backgrimg),
 	  background(imagecache().ref(backgrimg)),
 	  background_tex(nullptr), enabled(true), retval(-1), closeme(false), redrawme(true)
 {

@@ -23,11 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "log.h"
 #include "mutex.h"
+#include <iostream>
 #include <list>
 #include <map>
-#include <string>
-#include <iostream>
 #include <stdexcept>
+#include <string>
+#include <utility>
+
 #include <SDL.h>
 
 
@@ -38,11 +40,11 @@ struct log_msg
 	Uint32 time;
 	std::string msg;
 
-	log_msg(log::level l, const std::string& m)
+	log_msg(log::level l, std::string  m)
 		: lvl(l),
 		  tid(SDL_ThreadID()),
 		  time(SDL_GetTicks()),
-		  msg(m)
+		  msg(std::move(m))
 	{
 	}
 

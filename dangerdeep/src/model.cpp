@@ -41,8 +41,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cmath>
 #include <memory>
 
-#include <sstream>
 #include <map>
+#include <sstream>
+#include <utility>
+
 
 const unsigned model::mesh::no_adjacency = unsigned(-1);
 
@@ -300,8 +302,8 @@ model::model()
 }
 
 
-model::model(const string& filename_, bool use_material)
-	: filename(filename_),
+model::model(string  filename_, bool use_material)
+	: filename(std::move(filename_)),
 	  scene(0xffffffff, "<scene>", nullptr)
 {
 	if (init_count == 0) render_init();
@@ -649,8 +651,8 @@ bool model::mesh::compute_tangentx(unsigned i0, unsigned i1, unsigned i2)
 
 
 
-model::mesh::mesh(const string& nm)
-	: name(nm),
+model::mesh::mesh(string  nm)
+	: name(std::move(nm)),
 	  mymaterial(nullptr),
 	  vbo_positions(false),
 	  vbo_normals(false),
@@ -669,8 +671,8 @@ model::mesh::mesh(const string& nm)
 
 model::mesh::mesh(unsigned w, unsigned h, const std::vector<float>& heights, const vector3f& scales,
 		  const vector3f& trans,
-		  const std::string& nm)
-	: name(nm),
+		  std::string  nm)
+	: name(std::move(nm)),
 	  mymaterial(nullptr),
 	  vbo_positions(false),
 	  vbo_normals(false),
@@ -1464,7 +1466,7 @@ void model::material::map::get_all_layout_names(std::set<std::string>& result) c
 
 
 
-model::material::material(const std::string& nm) : name(nm) 
+model::material::material(std::string  nm) : name(std::move(nm)) 
 {
 }
 

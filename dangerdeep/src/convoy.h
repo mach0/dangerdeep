@@ -69,7 +69,7 @@ class convoy
 	convoy(class game& gm, types type_, esctypes esct_);
 
 	/// create empty convoy (only used in the editor!)
-	convoy(class game& gm, const vector2& pos, const std::string& name);
+	convoy(class game& gm, const vector2& pos, std::string  name);
 
 	virtual ~convoy() = default;
 

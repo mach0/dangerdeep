@@ -47,7 +47,7 @@ private:
 
 public:
 	/// create image
-	image(const std::string& s);
+	image(std::string  s);
 
 	/// draw image at position
 	void draw(int x, int y, const colorf& col = colorf(1,1,1,1)) const;

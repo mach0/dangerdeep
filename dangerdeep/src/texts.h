@@ -43,7 +43,7 @@ class texts
 
 	static const texts& obj();
 
-	texts(const std::string& langcode = "en");
+	texts(std::string  langcode = "en");
 
 	static std::vector<std::string> available_language_codes;
  public:

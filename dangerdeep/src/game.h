@@ -32,6 +32,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define TERRAIN_RESOLUTION_N	7
 
 #include <list>
+#include <utility>
+
 #include <vector>
 #include "thread.h"
 #include "mutex.h"
@@ -112,9 +114,9 @@ public:
 		std::string specfilename; // spec file name (base model name)
 		std::string layoutname; // model skin
 		unsigned tons;
-		sink_record(date d, const std::string& s, const std::string& m,
-			    const std::string& sn, const std::string& ln, unsigned t)
-			: dat(d), descr(s), mdlname(m), specfilename(sn), layoutname(ln), tons(t) {}
+		sink_record(date d, std::string  s, std::string  m,
+			    std::string  sn, std::string  ln, unsigned t)
+			: dat(d), descr(std::move(std::move(s))), mdlname(std::move(std::move(m))), specfilename(std::move(std::move(sn))), layoutname(std::move(std::move(ln))), tons(t) {}
 		sink_record(const xml_elem& parent);
 		void save(xml_elem& parent) const;
 	};
@@ -249,7 +251,7 @@ public:
 	// expects: size small,medium,large, escort size none,small,medium,large,
 	// time of day [0,4) night,dawn,day,dusk
 	game(const std::string& subtype, unsigned cvsize, unsigned cvesc, unsigned timeofday,
-	     const date& timeperioddate, const player_info& pi = player_info()/*fixme - must be always given*/, unsigned nr_of_players = 1);
+	     const date& timeperioddate, player_info  pi = player_info()/*fixme - must be always given*/, unsigned nr_of_players = 1);
 
 	// create from mission file or savegame (xml file)
 	game(const std::string& filename);

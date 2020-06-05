@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define _MUSIC_H_
 
 #include <string>
+#include <utility>
+
 #include <vector>
 #include <map>
 #include <SDL_mixer.h>
@@ -199,7 +201,7 @@ class music : public singleton<class music>, public thread
 		std::string filename;
 		void eval() const override { my_music.exec_append_track(filename); }
 	 public:
-		command_append_track(music& my_music_, const std::string& filename_) : my_music(my_music_), filename(filename_) {}
+		command_append_track(music& my_music_, std::string  filename_) : my_music(my_music_), filename(std::move(filename_)) {}
 	};
 
 	class command_set_playback_mode : public message
@@ -309,7 +311,7 @@ class music : public singleton<class music>, public thread
                 vector3 noise_pos;
                 void eval() const override { my_music.exec_play_sfx(category, listener, listener_dir, noise_pos); }
          public:
-                command_play_sfx(music& my_music_, const std::string& category_, const vector3& listener_, angle listener_dir_, const vector3& noise_pos_) : my_music(my_music_), category(category_), listener(listener_), listener_dir(listener_dir_), noise_pos(noise_pos_) {}
+                command_play_sfx(music& my_music_, std::string  category_, const vector3& listener_, angle listener_dir_, const vector3& noise_pos_) : my_music(my_music_), category(std::move(category_)), listener(listener_), listener_dir(listener_dir_), noise_pos(noise_pos_) {}
         };
 
         class command_play_sfx_machine : public message
@@ -319,7 +321,7 @@ class music : public singleton<class music>, public thread
                 unsigned throttle;
                 void eval() const override { my_music.exec_play_sfx_machine(name, throttle); }
          public:
-                command_play_sfx_machine(music& my_music_, const std::string& name_, unsigned throttle_) : my_music(my_music_), name(name_), throttle(throttle_) {}
+                command_play_sfx_machine(music& my_music_, std::string  name_, unsigned throttle_) : my_music(my_music_), name(std::move(name_)), throttle(throttle_) {}
         };
 
         class command_pause_sfx : public message

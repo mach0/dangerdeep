@@ -278,7 +278,7 @@ protected:
 
 	// construct sea_object without spec file (for simple objects like DCs, shells, ...)
 	// these models have no skin support, because there is no spec file.
-	sea_object(game& gm_, const std::string& modelname_);
+	sea_object(game& gm_, std::string  modelname_);
 
 	// construct a sea_object. called by heirs
 	sea_object(game& gm_, const xml_elem& parent);

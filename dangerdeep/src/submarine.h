@@ -58,7 +58,7 @@ class submarine : public ship
 		angle addleadangle;	///< additional lead angle (only per tube) fixme: replace by lead angle reported from TDC
 
 		stored_torpedo();
-		stored_torpedo(game& gm, const std::string& type);
+		stored_torpedo(game& gm, std::string  type);
 		void load(game& gm, const xml_elem& parent);
 		void save(xml_elem& parent) const;
 	};
