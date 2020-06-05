@@ -51,9 +51,9 @@ protected:
 	// commonly used helper classes
 	class rotat_tex {
 	public:
-		rotat_tex() : left(0), top(0), centerx(0), centery(0) {}
+		rotat_tex()  {}
 		std::unique_ptr<texture> tex;
-		int left, top, centerx, centery;
+		int left{0}, top{0}, centerx{0}, centery{0};
 		void draw(double angle) const {
 			// fixme: maybe rotate around pixel center (x/y + 0.5)
 			tex->draw_rot(centerx, centery, angle, centerx - left, centery - top);
@@ -80,9 +80,9 @@ protected:
 
 	class fix_tex {
 	public:
-		fix_tex() : left(0), top(0) {}
+		fix_tex()  {}
 		std::unique_ptr<texture> tex;
-		int left, top;
+		int left{0}, top{0};
 		void draw() const {
 			tex->draw(left, top);
 		}

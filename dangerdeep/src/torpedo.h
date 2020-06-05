@@ -80,10 +80,10 @@ class torpedo : public ship
 	{
 	public:
 		enum types { NONE, IMPACT, INFLUENCE, INERTIAL };
-		types type;
-		float failure_probability;	// in [0...1]
+		types type{NONE};
+		float failure_probability{1.0f};	// in [0...1]
 
-		fuse() : type(NONE), failure_probability(1.0f) {}
+		fuse()  {}
 		fuse(const xml_elem& parent, date equipdate);
 
 		// this function computes if the fuse ignites or fails, call it once
@@ -95,14 +95,14 @@ class torpedo : public ship
 	{
 	public:
 		setup();
-		unsigned primaryrange;	///< primary run length in meters, [SAVE]
-		bool short_secondary_run; ///< secondary run short or long [SAVE]
-		bool initialturn_left;	///< initital turn is left (true) or right (false), [SAVE]
+		unsigned primaryrange{1500};	///< primary run length in meters, [SAVE]
+		bool short_secondary_run{true}; ///< secondary run short or long [SAVE]
+		bool initialturn_left{true};	///< initital turn is left (true) or right (false), [SAVE]
 		angle turnangle;	///< (0...240 degrees, for LUT, FAT has 180), [SAVE]
 		angle lut_angle;	///< angle to turn to after initial run for LuT [SAVE]
-		unsigned torpspeed;	///< torpspeed (0-2 slow-fast, only for G7a torps), [SAVE]
-		double rundepth;	///< depth the torpedo should run at, [SAVE]
-		bool preheating;	///< preheating on?
+		unsigned torpspeed{NORMAL};	///< torpspeed (0-2 slow-fast, only for G7a torps), [SAVE]
+		double rundepth{3};	///< depth the torpedo should run at, [SAVE]
+		bool preheating{false};	///< preheating on?
 
 		void load(const xml_elem& parent);
 		void save(xml_elem& parent) const;

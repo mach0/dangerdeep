@@ -76,7 +76,7 @@ class log : public singleton<class log>
 
  protected:
 	log();
-	class log_internal* mylogint;
+	class log_internal* mylogint{nullptr};
 	const char* get_thread_name() const;
 	const char* get_thread_name( unsigned tid ) const;
 	friend class log_msg;

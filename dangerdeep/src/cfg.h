@@ -38,9 +38,9 @@ public:
 	struct key
 	{
 		std::string action;
-		SDLKey keysym;
-		bool ctrl, alt, shift;
-		key() : keysym(SDLK_UNKNOWN), ctrl(false), alt(false), shift(false) {}
+		SDLKey keysym{SDLK_UNKNOWN};
+		bool ctrl{false}, alt{false}, shift{false};
+		key()  {}
 		~key() = default;
 		key(const std::string& ac, SDLKey ks, bool c, bool a, bool s) :
 			action(ac), keysym(ks), ctrl(c), alt(a), shift(s) {}

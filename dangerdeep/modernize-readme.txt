@@ -40,8 +40,8 @@ DONE
     modernize-use-using
     modernize-make-unique
     modernize-use-nullptr
-TODO
     modernize-use-default-member-init
+TODO
     modernize-return-braced-init-list
     modernize-pass-by-value
     modernize-loop-convert

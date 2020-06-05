@@ -31,9 +31,9 @@ class fixed32
 	static const Sint32 ONE = 0x10000;
 	static const Sint32 HALF = 0x08000;
 	static const unsigned SHIFT = 16;
-	Sint32 x;
+	Sint32 x{0};
  public:
-	fixed32() : x(0) {}
+	fixed32()  {}
 	fixed32(const fixed32& f)  = default;
 	fixed32& operator= (const fixed32& f) = default;
 	fixed32(Sint32 n) : x(n) {}

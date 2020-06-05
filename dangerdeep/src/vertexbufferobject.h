@@ -31,9 +31,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///> as index format then, which saves memory and copy bandwidth.
 class vertexbufferobject
 {
-	GLuint id;
-	unsigned size;
-	bool mapped;
+	GLuint id{0};
+	unsigned size{0};
+	bool mapped{false};
 	int target;
  public:
 	///> create buffer. Tell the handler if you wish to store indices or other data.

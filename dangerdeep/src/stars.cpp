@@ -40,7 +40,7 @@ const float MIN_TWINKLE_MAGNITUDE = 5.2f; // stars with mag > this value twinkle
 
 
 stars::stars(const float max_magnitude)
- : star_count_static(0), star_count(0)
+  
 {
 	//	load star data
 	xml_doc doc(get_data_dir() + "environment/stars_data.xml");

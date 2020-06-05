@@ -198,7 +198,7 @@ class TiXmlBase
 	friend class TiXmlDocument;
 
 public:
-	TiXmlBase()	:	userData(nullptr)		{}
+	TiXmlBase()				{}
 	virtual ~TiXmlBase()			= default;
 
 	/**	All TinyXml classes can print themselves to a filestream
@@ -373,7 +373,7 @@ protected:
 	TiXmlCursor location;
 
     /// Field containing a generic user pointer
-	void*			userData;
+	void*			userData{nullptr};
 	
 	// None of these methods are reliable for any language except English.
 	// Good for approximation, not great for accuracy.
@@ -1737,7 +1737,7 @@ private:
 class TiXmlPrinter : public TiXmlVisitor
 {
 public:
-	TiXmlPrinter() : depth( 0 ), simpleTextPrint( false ),
+	TiXmlPrinter() : 
 					 buffer(), indent( "    " ), lineBreak( "\n" ) {}
 
 	bool VisitEnter( const TiXmlDocument& doc ) override;
@@ -1790,8 +1790,8 @@ private:
 		buffer += lineBreak;
 	}
 
-	int depth;
-	bool simpleTextPrint;
+	int depth{ 0 };
+	bool simpleTextPrint{ false };
 	TIXML_STRING buffer;
 	TIXML_STRING indent;
 	TIXML_STRING lineBreak;

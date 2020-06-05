@@ -36,20 +36,20 @@ private:
 
 protected:
 	// tracker switches
-	bool bearing_tracking;		// enable bearing tracker
-	bool angleonthebow_tracking;	// enable AoB tracker
-	bool auto_mode;			// is true when TDC is in automatic mode, this means the crew feds the TDC, otherwise the user.
+	bool bearing_tracking{true};		// enable bearing tracker
+	bool angleonthebow_tracking{true};	// enable AoB tracker
+	bool auto_mode{true};			// is true when TDC is in automatic mode, this means the crew feds the TDC, otherwise the user.
 
 	// data about the target
-	double target_speed;		// m/s
-	double target_distance;		// meters
+	double target_speed{0};		// m/s
+	double target_distance{0};		// meters
 	angle target_course;		// set by the crew, AoB is computed from it
-	bool target_bow_is_left;	// if the bow of the target is left of the bearing
+	bool target_bow_is_left{true};	// if the bow of the target is left of the bearing
 	angle angleonthebow;		// computed by target's course, updated by tracker (<=180 deg)
 
 	// data about the torpedo
-	double torpedo_speed;		// set by the crew, m/s
-	double torpedo_runlength;	// meters
+	double torpedo_speed{0};		// set by the crew, m/s
+	double torpedo_runlength{0};	// meters
 
 	// data about the sub
 	angle bearing;			// initially set by crew, updated by tracker, absolute angle
@@ -60,9 +60,9 @@ protected:
 
 	// results / internal data
 	angle lead_angle;		// fire solution, absolute angle, not relative to course
-	double torpedo_runtime;		// time that the torpedo runs before impact
-	bool compute_stern_tube;	// computation is done for stern tube
-	bool valid_solution;		// only true when fire solution is valid
+	double torpedo_runtime{0};		// time that the torpedo runs before impact
+	bool compute_stern_tube{false};	// computation is done for stern tube
+	bool valid_solution{false};		// only true when fire solution is valid
 
 	void compute_aob(angle br);	// compute and set AoB from target course and bearing br
 

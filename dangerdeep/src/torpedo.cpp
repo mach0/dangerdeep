@@ -73,14 +73,10 @@ bool torpedo::fuse::handle_impact(angle impactangle) const
 
 
 torpedo::setup::setup()
-	: primaryrange(1500),
-	  short_secondary_run(true),
-	  initialturn_left(true),
+	: 
 	  turnangle(180.0),
-	  lut_angle(0.0),
-	  torpspeed(NORMAL),
-	  rundepth(3),
-	  preheating(false)
+	  lut_angle(0.0)
+	  
 {
 }
 

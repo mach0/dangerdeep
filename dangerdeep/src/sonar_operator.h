@@ -46,9 +46,9 @@ class sonar_operator
 		find_max_peak_fine,
 		track_signal
 	};
-	states state;
+	states state{initial};
 	angle current_angle;
-	double current_signal_strength;
+	double current_signal_strength{-1};
 	// store angle and contact, per contact strength (dB) and ship type
 	// angle is absolute nautical angle, to make contacts invariant of sub's heading.
 	// fixme: good idea, but a contact is reported many times then while the sub turns, fixme!
@@ -59,7 +59,7 @@ class sonar_operator
 	static const double turn_speed_slow; //= 2.0;	// degrees per second.
 	static const double simulation_step; //= 0.1;	// in seconds
 
-	double last_simulation_step_time;
+	double last_simulation_step_time{0};
 
 	angle find_peak_lower_limit, find_peak_upper_limit;
 	unsigned find_peak_try;

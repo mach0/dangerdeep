@@ -42,7 +42,7 @@ private:
 	vertexbufferobject star_positions;
 	mutable vertexbufferobject star_colors_VBO;
 	std::vector<colorf> star_colors;
-	unsigned int star_count_static, star_count;
+	unsigned int star_count_static{0}, star_count{0};
 
 public:
 	stars(const float max_magnitude = 5.8f); // mag==6.0 => ~5000 stars

@@ -1518,7 +1518,7 @@ class vessel_view
 	set<string>::iterator currentlayout;
 	widget_text* wdesc;
 	// note! this is not destructed by this class...
-	widget_3dview* w3d;
+	widget_3dview* w3d{nullptr};
 	unique_ptr<model> load_model() {
 		xml_doc doc(data_file().get_filename(*current));
 		doc.load();
@@ -1546,7 +1546,7 @@ class vessel_view
 	}
 public:
 	vessel_view(widget_text* wdesc_ = nullptr)
-		: current(shipnames.end()), wdesc(wdesc_), w3d(nullptr)
+		: current(shipnames.end()), wdesc(wdesc_) 
 	{
 		color bgcol(50, 50, 150);
 		shipnames = data_file().get_ship_list();

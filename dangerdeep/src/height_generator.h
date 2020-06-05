@@ -136,7 +136,7 @@ class height_generator
 	/// normal constructor for heirs
 	/// if heirs know L or l2crf right at creation, give some default parameters
 	height_generator(double L = 1.0, unsigned l2crf = 1)
-		: sample_spacing(L), log2_color_res_factor(l2crf), tex_stretch_factor(0.01) {}
+		: sample_spacing(L), log2_color_res_factor(l2crf) {}
 
 	double sample_spacing;	// equal to "L" value of geoclipmap renderer
 	// fixme: is this still needed?
@@ -146,7 +146,7 @@ class height_generator
 												grass_texture, rock_texture, snow_texture, 
 												forest_brdf_texture, rock_brdf_texture,
 												base_texture, noise_texture;
-	float tex_stretch_factor;
+	float tex_stretch_factor{0.01};
 };
 
 #endif

@@ -25,7 +25,7 @@
 #endif
 
 // Set some values to prevent bugs in case of bad use
-tone_reproductor::tone_reproductor() : Lda(50.f), Lwa(40000.f), MaxdL(100.f), gamma(2.3f)
+tone_reproductor::tone_reproductor()  
 {
 	// Update alpha_da and beta_da values
 	float log10Lwa = log10f(Lwa);

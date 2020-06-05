@@ -42,7 +42,7 @@ using namespace std;
 
 
 caustics::caustics()
- : mytime(-DBL_MAX), current_texture(0)
+  
 {
 	//	load caustic maps "caustic??.png"
 	for(unsigned int i=0; i<FRAME_TEXTURE_COUNT; i++)

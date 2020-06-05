@@ -66,9 +66,7 @@ sky::sky(const double tm, const unsigned int sectors_h, const unsigned int secto
 	: mytime(tm),
 	  clouds_texcoords(false),
 	  sky_vertices(false),
-	  sky_indices(true),
-	  sun_azimuth(10.0f), sun_elevation(10.0f),
-	  turbidity(2.0f)//was 2.0, fixme
+	  sky_indices(true)
 {
 	// ******************************** create sky geometry
 	build_dome(sectors_h, sectors_v);

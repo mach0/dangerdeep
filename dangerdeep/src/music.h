@@ -149,20 +149,20 @@ class music : public singleton<class music>, public thread
 	static bool use_music;
 
  protected:
-	const unsigned nr_reserved_channels;
+	const unsigned nr_reserved_channels{1};
 	const unsigned sample_rate;
-	unsigned current_track;
-	int usersel_next_track;
-	unsigned usersel_fadein;
-	playback_mode pbm;
-	bool stopped;
+	unsigned current_track{0};
+	int usersel_next_track{-1};
+	unsigned usersel_fadein{0};
+	playback_mode pbm{PBM_LOOP_LIST};
+	bool stopped{true};
 	std::vector<std::string> playlist;
 	// we can't use the ptrvector here, since Mix_Music ptrs must be freed with special function.
 	std::vector<Mix_Music*> musiclist;
 	message_queue command_queue;
 	std::map<std::string, std::vector<Mix_Chunk*> > sfx_events;
 	std::map<std::string, std::vector<Mix_Chunk*> > sfx_machines;
-	Mix_Chunk* current_machine_sfx;
+	Mix_Chunk* current_machine_sfx{nullptr};
 	void destructor();
 
 	void start_play_track(unsigned nr, unsigned fadeintime = 0);

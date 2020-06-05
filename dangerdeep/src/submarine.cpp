@@ -113,7 +113,7 @@ the waterline although the ship would swim in total.
 
 
 submarine::stored_torpedo::stored_torpedo()
-	: temperature(15.0), status(st_empty), associated(0), remaining_time(0)
+	 
 {
 }
 

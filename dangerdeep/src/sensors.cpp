@@ -35,8 +35,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Class sensor
 sensor::sensor ( double range, double detection_cone ) :
-	range ( range ), bearing ( 0.0f ), detection_cone ( detection_cone ),
-	move_direction ( 1 )
+	range ( range ), bearing ( 0.0f ), detection_cone ( detection_cone )
+	
 {}
 
 double sensor::get_distance_factor ( double d ) const

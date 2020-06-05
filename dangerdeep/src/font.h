@@ -35,11 +35,11 @@ class font
 {
 private:
 	struct character {
-		unsigned width, height;	// real width/height
+		unsigned width{0}, height{0};	// real width/height
 		float u0, v0, u1, v1;	// texture coordinates
-		int left;	// offset
-		int top;	// offset
-		character() : width(0), height(0), left(0), top(0) {}
+		int left{0};	// offset
+		int top{0};	// offset
+		character()  {}
 	};
 	font() = delete;
 	font& operator=(const font& other) = delete;

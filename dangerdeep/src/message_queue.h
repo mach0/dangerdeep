@@ -76,8 +76,8 @@ class message_queue
 	mutex mymutex;
 	condvar emptycondvar;
 	condvar ackcondvar;
-	bool msginqueue;
-	bool abortwait;	// set to true by wakeup_receiver()
+	bool msginqueue{false};
+	bool abortwait{false};	// set to true by wakeup_receiver()
 	std::list<message*> ackqueue; // queue with acknowledged messages
 
  public:

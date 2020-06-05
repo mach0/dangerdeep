@@ -60,18 +60,18 @@ public:
 			std::string filename;	// also in mytexture, a bit redundant
 
 		protected:
-			texture* tex;	// set by set_layout
+			texture* tex{nullptr};	// set by set_layout
 
 			//maybe unite list of skins and default-texture, both
 			//have texture ptr, filename and ref_count.
 			std::unique_ptr<texture> mytexture;	// default "skin", MUST BE SET!
-			unsigned ref_count;
+			unsigned ref_count{0};
 
 			struct skin {
-				texture* mytexture;
-				unsigned ref_count;
+				texture* mytexture{nullptr};
+				unsigned ref_count{0};
 				std::string filename;
-				skin() : mytexture(nullptr), ref_count(0) {}
+				skin()  {}
 			};
 
 			// layout-name to skin mapping
@@ -100,11 +100,11 @@ public:
 		std::string name;
 		color diffuse;	// only used when colormap is 0.
 		color specular;	// material specular color, used with and without texture mapping.
-		float shininess; // shininess (Halfangle dot Normal exponent)
+		float shininess{50.0f}; // shininess (Halfangle dot Normal exponent)
 		std::unique_ptr<map> colormap;	// replaces diffuse color if not defined.
 		std::unique_ptr<map> normalmap;	// should be of type RGB to work properly.
 		std::unique_ptr<map> specularmap; // should be of type LUMINANCE to work properly.
-		bool two_sided;
+		bool two_sided{false};
 		
 		material(const std::string& nm = "Unnamed material");
 		virtual ~material() = default;
@@ -328,13 +328,13 @@ protected:
 		float trans_val_min;	// minimum value for translation along axis
 		float trans_val_max;	// maximum value for translation along axis
 		vector3f rotat_axis;
-		float rotat_angle;	// in degrees
-		float rotat_angle_min;	// in degrees
-		float rotat_angle_max;	// in degrees
+		float rotat_angle{0};	// in degrees
+		float rotat_angle_min{0};	// in degrees
+		float rotat_angle_max{0};	// in degrees
 		std::vector<object> children;
 		object(unsigned id_ = 0, const std::string& nm = "???", mesh* m = nullptr)
-			: id(id_), name(nm), mymesh(m), rotat_angle(0), rotat_angle_min(0),
-			  rotat_angle_max(0) { rotat_axis.z = 1; }
+			: id(id_), name(nm), mymesh(m)
+			  { rotat_axis.z = 1; }
 		bool set_angle(float ang);
 		bool set_translation(float value);
 		object* find(unsigned id);

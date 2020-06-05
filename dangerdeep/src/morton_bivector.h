@@ -51,13 +51,13 @@ class morton_bivector
 {
 private:
 	std::vector<long> morton_x, morton_y;
-	long datasize;
+	long datasize{0};
 	std::vector<T> data;
 
 	template<class U> friend class bivector;
 	
 public:
-	morton_bivector():datasize(0) {}
+	morton_bivector() {}
 	
 	morton_bivector(const bivector<T>& bv) {
 		resize(std::max(pow(2, ceil(log2(bv.datasize.x))), pow(2, ceil(log2(bv.datasize.y)))));

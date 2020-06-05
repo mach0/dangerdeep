@@ -250,7 +250,7 @@ glsl_shader::~glsl_shader()
 
 
 glsl_program::glsl_program()
-	: id(0), linked(false)
+	 
 {
 	id = glCreateProgram();
 	if (id == 0)
