@@ -103,7 +103,7 @@ class height_generator
 	///@param dest - destination where to write normal values
 	virtual void compute_normals(int detail, const vector2i& coord_bl,
 				     const vector2i& coord_sz, vector3f* dest) {
-		const float zh = sample_spacing * 0.5f * (detail >= 0 ? (1<<detail) : 1.0f/(1<<-detail));
+		const auto zh = float(sample_spacing * 0.5f * (detail >= 0 ? (1<<detail) : 1.0f/(1<<-detail)));
 		// compute heights to generate normals, we need one height value more in
 		// every direction
 		vector2i s2 = coord_sz + vector2i(2, 2);

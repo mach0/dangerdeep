@@ -18,28 +18,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 // handle log book entries
-// subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
+// subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #ifndef LOGBOOK_H
 #define LOGBOOK_H
 
 #include <string>
-#include <list>
+#include <vector>
 
 ///\brief Simulates a log book.
 class logbook
 {
 protected:
-	std::list<std::string> entries;
+	std::vector<std::string> entries;
 
 public:
-	logbook() = default;
-	virtual ~logbook () = default;
-	virtual void add_entry(const std::string& entry);
-	virtual std::list<std::string>::const_iterator get_entry(unsigned i) const;
-	virtual std::list<std::string>::const_iterator begin() const { return entries.begin(); }
-	virtual std::list<std::string>::const_iterator end() const { return entries.end(); }
-	virtual unsigned size() const { return entries.size(); }
+	void add_entry(const std::string& entry) { entries.push_back(entry); }
+	void add_entry(std::string&& entry) { entries.push_back(std::move(entry)); }
+	std::vector<std::string>::const_iterator get_entry(unsigned i) const { return entries.begin() + i; }
+	std::vector<std::string>::const_iterator begin() const { return entries.begin(); }
+	std::vector<std::string>::const_iterator end() const { return entries.end(); }
+	unsigned size() const { return unsigned(entries.size()); }
 };
 
 #endif

@@ -73,13 +73,13 @@ height_generator_map::height_generator_map(const std::string& filename)
 	height_data.resize(vector2i(mapw, maph));
 	surf.lock();
 	if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 256)
-		throw error(string("coastmap: image is no greyscale 8bpp paletted image, in ") + filename);
-	auto* offset = (Uint8*)(surf->pixels);
+		THROW(error, string("coastmap: image is no greyscale 8bpp paletted image, in ") + filename);
+	uint8_t* offset = (uint8_t*)(surf->pixels);
 	int mapoffy = maph*mapw;
 	for (int yy = 0; yy < int(maph); yy++) {
 		mapoffy -= mapw;
 		for (int xx = 0; xx < int(mapw); ++xx) {
-			Uint8 c = (*offset++);
+			uint8_t c = (*offset++);
 			height_data.at(xx, maph-1-yy) = (float(c)-128) * 4;
 		}
 		offset += surf->pitch - mapw;
@@ -100,7 +100,7 @@ height_generator_map::height_generator_map(const std::string& filename)
 		sdl_image tmp(get_texture_dir() + texnames[i]);
 		unsigned bpp = 0;
 		ct[i] = tmp.get_plain_data(cw, ch, bpp);
-		if (bpp != 3) throw error("color bpp != 3");
+		if (bpp != 3) THROW(error, "color bpp != 3");
 	}
 	for (unsigned i = 0; i < subdivision_steps+3; ++i) {
 		noisemaps[i] = bivector<float>(vector2i(256, 256), 0.f).add_gauss_noise(float(1<<i), rndgen);
@@ -132,7 +132,7 @@ bivector<float> height_generator_map::generate_patch(int detail, const vector2i&
 	} else if (detail == int(subdivision_steps)) {
 		return height_data.sub_area(coord_bl - mapoff, coord_sz);
 	} else {
-		throw error("invalid detail level requested");
+		THROW(error, "invalid detail level requested");
 	}
 }
 
@@ -153,10 +153,10 @@ void height_generator_map::compute_heights(int detail, const vector2i& coord_bl,
 	}
 }
 
-void height_generator_map::gen_col(float h, Uint8* c)
+void height_generator_map::gen_col(float h, uint8_t* c)
 {
 	unsigned hh = (h + 512) / 128;
-	static const Uint8 cols[8*3] = {
+	static const uint8_t cols[8*3] = {
 		32, 32, 32,
 		48, 48, 48,
 		48, 48, 64,
@@ -172,7 +172,7 @@ void height_generator_map::gen_col(float h, Uint8* c)
 }
 
 void height_generator_map::compute_colors(int detail, const vector2i& coord_bl,
-					  const vector2i& coord_sz, Uint8* dest)
+					  const vector2i& coord_sz, uint8_t* dest)
 {
 	bivector<float> v = generate_patch(detail, coord_bl, coord_sz);
 	for (int y = 0; y < coord_sz.y; ++y) {

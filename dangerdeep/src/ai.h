@@ -96,7 +96,7 @@ Only partly, only older, simpler model.
 
 #include "xml.h"
 #include <list>
-
+#include <memory>
 class ship;
 class sea_object;
 class convoy;
@@ -125,10 +125,10 @@ protected:
 	vector3 contact;	// position of target to attack
 	double remaining_time;	// time to next thought/situation analysis
 	angle main_course;	// which angle to steer, ship zig-zags around it.
-	
+
 	bool cyclewaypoints;
-	std::list<vector2> waypoints;	
-	
+	std::list<vector2> waypoints;
+
 	ai();
 	ai(const ai& other);
 	ai& operator= (const ai& other);

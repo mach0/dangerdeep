@@ -29,6 +29,8 @@ fpsmeasure::fpsmeasure(float mi)
 {
 }
 
+
+
 float fpsmeasure::account_frame()
 {
 	unsigned tm = sys().millisec();
@@ -49,6 +51,8 @@ float fpsmeasure::account_frame()
 	}
 	return curfps;
 }
+
+
 
 float fpsmeasure::get_total_fps() const
 {

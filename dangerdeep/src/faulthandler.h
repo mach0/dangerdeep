@@ -45,7 +45,9 @@ void install_segfault_handler()
 
 #include <windows.h>
 #include <shlobj.h>
+#include <fstream>
 #include "dbghelp.h"
+#include "log.h"
 
 typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hprocess, DWORD pid, HANDLE hfile, MINIDUMP_TYPE dumptype,
 									CONST PMINIDUMP_EXCEPTION_INFORMATION exceptionparam,
@@ -64,16 +66,26 @@ static  LONG WINAPI DangerdeepCrashDump(struct _EXCEPTION_POINTERS *pexceptionin
 	MINIDUMPWRITEDUMP m_dump;
 	static HANDLE m_hfile;
 	static HMODULE m_hdll;
+#ifdef UNICODE
+	wchar_t path[MAX_PATH + 1];
+	wchar_t file[MAX_PATH + 1];
+#else
 	char path[MAX_PATH + 1];
 	char file[MAX_PATH + 1];
+#endif
 	BOOL ok;
 	SYSTEMTIME sysTime = {0};
 	GetSystemTime(&sysTime);
 
-	SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, path);
+	SHGetFolderPath(nullptr, CSIDL_APPDATA, nullptr, 0, path);
 
-	_snprintf( file, MAX_PATH, "\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp", sysTime.wYear, sysTime.wMonth, sysTime.wDay, sysTime.wHour, sysTime.wMinute, sysTime.wSecond );
+#ifdef UNICODE
+	_snwprintf_s( file, MAX_PATH, TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"), sysTime.wYear, sysTime.wMonth, sysTime.wDay, sysTime.wHour, sysTime.wMinute, sysTime.wSecond );
+	std::wstring foo = path;
+#else
+	_snprintf_s(file, MAX_PATH, TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"), sysTime.wYear, sysTime.wMonth, sysTime.wDay, sysTime.wHour, sysTime.wMinute, sysTime.wSecond);
 	std::string foo = path;
+#endif
 	foo = foo + file;
 //	foo = foo + "\\dangerdeep.dmp";
 
@@ -82,23 +94,27 @@ static  LONG WINAPI DangerdeepCrashDump(struct _EXCEPTION_POINTERS *pexceptionin
 	_MINIDUMP_EXCEPTION_INFORMATION exinfo;
 	exinfo.ThreadId = ::GetCurrentThreadId();
 	exinfo.ExceptionPointers = pexceptioninfo;
-	exinfo.ClientPointers = NULL;
+	exinfo.ClientPointers = FALSE;
 
 
 
-	m_hfile = CreateFile( foo.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+	m_hfile = CreateFile( foo.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
 
-	m_hdll = LoadLibrary("DBGHELP.DLL");
+	m_hdll = LoadLibrary(TEXT("DBGHELP.DLL"));
 
         m_dump = (MINIDUMPWRITEDUMP)::GetProcAddress(m_hdll, "MiniDumpWriteDump");
 
-	ok = m_dump(GetCurrentProcess(), GetCurrentProcessId(), m_hfile, MiniDumpNormal, &exinfo, NULL, NULL );
+	ok = m_dump(GetCurrentProcess(), GetCurrentProcessId(), m_hfile, MiniDumpNormal, &exinfo, nullptr, nullptr );
 
-	foo = "Please send the following file to the developers: " + foo;
+#ifdef UNICODE
+	foo = std::wstring(TEXT("Please send the following file to the developers: ")) + foo;
+#else
+	foo = std::string(TEXT("Please send the following file to the developers: ")) + foo;
+#endif
 
 	if ( ok )
 	{
-		MessageBox(NULL, foo.c_str(), "Core dumped", MB_OK | MB_TASKMODAL | MB_ICONERROR);
+		MessageBox(nullptr, foo.c_str(), TEXT("Core dumped"), MB_OK | MB_TASKMODAL | MB_ICONERROR);
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 
@@ -112,15 +128,15 @@ void install_segfault_handler()
 
 #else	//non-WIN32-MacOSX
 
-#include <csignal>
-#include <cstdio>
-#include <cstdlib>
-#include <cxxabi.h>      // Needed for __cxa_demangle
 #include <execinfo.h>
-#include <list>
-#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <cxxabi.h>      // Needed for __cxa_demangle
+#include <signal.h>
 #include <string>
+#include <sstream>
 #include <unistd.h>
+#include <list>
 
 // Note: use --export-dynamic as linker option or you won't get function names here.
 
