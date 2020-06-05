@@ -23,13 +23,15 @@ DONE
     modernize-deprecated-ios-base-aliases
     modernize-replace-random-shuffle
     modernize-raw-string-literal
+    modernize-use-transparent-functors
+    modernize-use-uncaught-exceptions
+    modernize-make-shared
+    modernize-redundant-void-arg
 TODO
     modernize-avoid-c-arrays
     modernize-loop-convert
-    modernize-make-shared
     modernize-make-unique
     modernize-pass-by-value
-    modernize-redundant-void-arg
     modernize-return-braced-init-list
     modernize-shrink-to-fit
     modernize-unary-static-assert
@@ -43,6 +45,4 @@ TODO
     modernize-use-noexcept
     modernize-use-nullptr
     modernize-use-trailing-return-type
-    modernize-use-transparent-functors
-    modernize-use-uncaught-exceptions
     modernize-use-using
