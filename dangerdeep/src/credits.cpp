@@ -767,8 +767,8 @@ void show_credits()
 		vector2f(-0.75,  0.75),
 		vector2f( 0.00,  0.75)
 	};
-	for (unsigned j = 0; j < 13; ++j) {
-		vector2f a = bsp[j] * 256;
+	for (auto & j : bsp) {
+		vector2f a = j * 256;
 		bsppts.push_back(a.xyz(chm.compute_height(a) * 0.5 + 20.0));
 	}
 	bsplinet<vector3f> cam_path(2, bsppts);
@@ -828,10 +828,10 @@ void show_credits()
 	double measuretime = 5;	// seconds
 	while (!quit) {
 		list<SDL_Event> events = sys().poll_event_queue();
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			if (it->type == SDL_KEYDOWN) {
+		for (auto & event : events) {
+			if (event.type == SDL_KEYDOWN) {
 				quit = true;
-			} else if (it->type == SDL_MOUSEBUTTONUP) {
+			} else if (event.type == SDL_MOUSEBUTTONUP) {
 				quit = true;
 			}
 		}

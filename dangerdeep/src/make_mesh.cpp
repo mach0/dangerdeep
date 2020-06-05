@@ -387,8 +387,8 @@ model::mesh* heightfield(unsigned resx, unsigned resy, const vector<Uint8>& heig
 		}
 	}
 
-	for (vector<vector3f>::iterator it = m->normals.begin(); it != m->normals.end(); ++it) {
-		it->normalize();
+	for (auto & normal : m->normals) {
+		normal.normalize();
 	}
 
 	return m;

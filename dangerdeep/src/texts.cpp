@@ -62,9 +62,8 @@ texts::texts(string  langcode) : language_code(std::move(langcode))
 		read_available_language_codes();
 
 	bool ok = false;
-	for (vector<string>::const_iterator it = available_language_codes.begin();
-	     it != available_language_codes.end(); ++it) {
-		if (*it == language_code) {
+	for (const auto & available_language_code : available_language_codes) {
+		if (available_language_code == language_code) {
 			ok = true;
 			break;
 		}

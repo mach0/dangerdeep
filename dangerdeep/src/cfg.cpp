@@ -134,26 +134,26 @@ void cfg::save(const string& filename) const
 {
 	xml_doc doc(filename);
 	xml_elem root = doc.add_child("dftd-cfg");
-	for (map<string, bool>::const_iterator it = valb.begin(); it != valb.end(); ++it) {
-		root.add_child(it->first).set_attr(it->second);
+	for (const auto & it : valb) {
+		root.add_child(it.first).set_attr(it.second);
 	}
-	for (map<string, int>::const_iterator it = vali.begin(); it != vali.end(); ++it) {
-		root.add_child(it->first).set_attr(it->second);
+	for (const auto & it : vali) {
+		root.add_child(it.first).set_attr(it.second);
 	}
-	for (map<string, float>::const_iterator it = valf.begin(); it != valf.end(); ++it) {
-		root.add_child(it->first).set_attr(it->second);
+	for (const auto & it : valf) {
+		root.add_child(it.first).set_attr(it.second);
 	}
-	for (map<string, string>::const_iterator it = vals.begin(); it != vals.end(); ++it) {
-		root.add_child(it->first).set_attr(it->second);
+	for (const auto & val : vals) {
+		root.add_child(val.first).set_attr(val.second);
 	}
 	xml_elem keys = root.add_child("keys");
-	for (map<unsigned, key>::const_iterator it = valk.begin(); it != valk.end(); ++it) {
+	for (const auto & it : valk) {
 		xml_elem key = keys.add_child("key");
-		key.set_attr(it->second.action, "action");
-		key.set_attr(int(it->second.keysym), "keysym");
-		key.set_attr(it->second.ctrl, "ctrl");
-		key.set_attr(it->second.alt, "alt");
-		key.set_attr(it->second.shift, "shift");
+		key.set_attr(it.second.action, "action");
+		key.set_attr(int(it.second.keysym), "keysym");
+		key.set_attr(it.second.ctrl, "ctrl");
+		key.set_attr(it.second.alt, "alt");
+		key.set_attr(it.second.shift, "shift");
 	}
 	doc.save();
 }

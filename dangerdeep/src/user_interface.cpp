@@ -138,9 +138,8 @@ user_interface::user_interface(game& gm) :
 	music_playlist->add_child_near_last_child(playlist);
 	music& m = music::instance();
 	vector<string> mpl = m.get_playlist();
-	for (vector<string>::const_iterator it = mpl.begin();
-	     it != mpl.end(); ++it) {
-		playlist->append_entry(*it);
+	for (const auto & it : mpl) {
+		playlist->append_entry(it);
 	}
 	typedef widget_caller_checkbox<user_interface, void (user_interface::*)()> wccui;
 	// fixme: use checkbox here...

@@ -117,8 +117,8 @@ void ai::save(game& gm, xml_elem& parentnode) const
 	parentnode.set_attr(remaining_time, "remaining_time");
 	parentnode.add_child("main_course").set_attr(main_course);
 	xml_elem wp = parentnode.add_child("waypoints");
-	for (list<vector2>::const_iterator it = waypoints.begin(); it != waypoints.end(); ++it) {
-		wp.add_child("waypoint").set_attr(*it);
+	for (auto waypoint : waypoints) {
+		wp.add_child("waypoint").set_attr(waypoint);
 	}
 	wp.set_attr(cyclewaypoints, "cyclewaypoints");
 }
@@ -207,22 +207,22 @@ void ai::act_escort(game& gm, double delta_time)
 	submarine* nearest_contact = nullptr;
 	// any subs in visual range to attack?
 	vector<submarine*> subs = gm.visible_submarines(parent);
-	for (vector<submarine*>::iterator it = subs.begin(); it != subs.end(); ++it) {
-		double d = (*it)->get_pos().xy().distance(parent->get_pos().xy());
+	for (auto & sub : subs) {
+		double d = sub->get_pos().xy().distance(parent->get_pos().xy());
 		if (d < dist) {
 			dist = d;
-			nearest_contact = *it;
+			nearest_contact = sub;
 		}
 	}
 	
 	if (!nearest_contact) {		
 		// any subs in radar range to attack?
 		subs = gm.radar_submarines(parent);
-		for (vector<submarine*>::iterator it = subs.begin(); it != subs.end(); ++it) {
-			double d = (*it)->get_pos().xy().distance(parent->get_pos().xy());
+		for (auto & sub : subs) {
+			double d = sub->get_pos().xy().distance(parent->get_pos().xy());
 			if (d < dist) {
 				dist = d;
-				nearest_contact = *it;
+				nearest_contact = sub;
 			}
 		}
 	}

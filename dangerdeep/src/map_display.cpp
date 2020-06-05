@@ -109,9 +109,9 @@ void map_display::draw_trail(sea_object* so, const vector2& offset) const
 		tr.colors[0] = colorf(1,1,1,1);
 		float la = 1.0/float(l.size()), lc = 0;
 		unsigned trc = 1;
-		for (list<ship::prev_pos>::const_iterator it = l.begin(); it != l.end(); ++it) {
+		for (const auto & it : l) {
 			tr.colors[trc] = colorf(1,1,1,1-lc);
-			vector2 p = (it->pos + offset)*mapzoom;
+			vector2 p = (it.pos + offset)*mapzoom;
 			tr.vertices[trc].x = 512+p.x;
 			tr.vertices[trc].y = 384-p.y;
 			lc += la;
@@ -128,9 +128,8 @@ void map_display::draw_pings(class game& gm, const vector2& offset) const
 	// draw pings (just an experiment, you can hear pings, locate their direction
 	//	a bit fuzzy but not their origin or exact shape).
 	const list<game::ping>& pings = gm.get_pings();
-	for (list<game::ping>::const_iterator it = pings.begin(); it != pings.end(); ++it) {
-		const game::ping& p = *it;
-		// vector2 r = player->get_pos ().xy () - p.pos;
+	for (const auto & p : pings) {
+			// vector2 r = player->get_pos ().xy () - p.pos;
 		vector2 p1 = (p.pos + offset)*mapzoom;
 		vector2 p2 = p1 + (p.dir + p.ping_angle).direction() * p.range * mapzoom;
 		vector2 p3 = p1 + (p.dir - p.ping_angle).direction() * p.range * mapzoom;
@@ -154,12 +153,12 @@ void map_display::draw_sound_contact(class game& gm, const sea_object* player,
 	double max_view_dist, const vector2& offset) const
 {
 	const vector<sonar_contact>& obj = player->get_sonar_objects();
-	for (vector<sonar_contact>::const_iterator it = obj.begin(); it != obj.end(); ++it) {
-		vector2 ldir = it->pos - player->get_pos().xy();
+	for (const auto & it : obj) {
+		vector2 ldir = it.pos - player->get_pos().xy();
 		ldir = ldir.normal() * 0.666666 * max_view_dist*mapzoom;
 		vector2 pos = (player->get_pos().xy() + offset) * mapzoom;
 		colorf col;
-		switch (it->type) {
+		switch (it.type) {
 		case MERCHANT:
 			col = colorf(0,0,0);
 			break;
@@ -187,15 +186,14 @@ void map_display::draw_sound_contact(game& gm, const submarine* player,
 				     const vector2& offset) const
 {
 	const std::map<double, sonar_operator::contact>& contacts = player->get_sonarman().get_contacts();
-	for (std::map<double, sonar_operator::contact>::const_iterator it = contacts.begin();
-	     it != contacts.end(); ++it) {
+	for (const auto & it : contacts) {
 		// basic length 2km plus 10m per dB, max. 200dB or similar
-		double lng = 2000 + it->second.strength_dB * 10;
-		vector2 ldir = angle(it->first).direction()
+		double lng = 2000 + it.second.strength_dB * 10;
+		vector2 ldir = angle(it.first).direction()
 			* lng * mapzoom;
 		vector2 pos = (player->get_pos().xy() + offset) * mapzoom;
 		colorf col;
-		switch (it->second.type) {
+		switch (it.second.type) {
 		case MERCHANT:
 			col = colorf(0,0,0);
 			break;
@@ -228,17 +226,17 @@ void map_display::draw_visual_contacts(class game& gm,
 	const vector<sea_object*>& objs = player->get_visible_objects();
 
    	// draw trails
-   	for (vector<sea_object*>::const_iterator it = objs.begin(); it != objs.end(); ++it)
-   		draw_trail(*it, offset);
+   	for (auto obj : objs)
+   		draw_trail(obj, offset);
 
    	// draw vessel symbols
-   	for (vector<sea_object*>::const_iterator it = objs.begin(); it != objs.end(); ++it) {
+   	for (auto obj : objs) {
 		color c;
-		if (dynamic_cast<const submarine*>(*it)) c = color(255,255,128);
-		else if (dynamic_cast<const torpedo*>(*it)) c = color(255,0,0);
-		else if (dynamic_cast<const ship*>(*it)) c = color(192,255,192);
-		else if (dynamic_cast<const airplane*>(*it)) c = color(0,0,64);
-   		draw_vessel_symbol(offset, *it, c);
+		if (dynamic_cast<const submarine*>(obj)) c = color(255,255,128);
+		else if (dynamic_cast<const torpedo*>(obj)) c = color(255,0,0);
+		else if (dynamic_cast<const ship*>(obj)) c = color(192,255,192);
+		else if (dynamic_cast<const airplane*>(obj)) c = color(0,0,64);
+   		draw_vessel_symbol(offset, obj, c);
 	}
 }
 
@@ -248,15 +246,15 @@ void map_display::draw_radar_contacts(class game& gm,
 	const vector<sea_object*>& objs = player->get_radar_objects();
 
    	// draw trails
-   	for (vector<sea_object*>::const_iterator it = objs.begin(); it != objs.end(); ++it)
-   		draw_trail(*it, offset);
+   	for (auto obj : objs)
+   		draw_trail(obj, offset);
 
    	// draw vessel symbols
-   	for (vector<sea_object*>::const_iterator it = objs.begin(); it != objs.end(); ++it) {
+   	for (auto obj : objs) {
 		color c;
-		if (dynamic_cast<const submarine*>(*it)) c = color(255,255,128);
-		else if (dynamic_cast<const ship*>(*it)) c = color(192,255,192);
-   		draw_vessel_symbol(offset, *it, c);
+		if (dynamic_cast<const submarine*>(obj)) c = color(255,255,128);
+		else if (dynamic_cast<const ship*>(obj)) c = color(192,255,192);
+   		draw_vessel_symbol(offset, obj, c);
 	}
 }
 
@@ -337,8 +335,8 @@ map_display::map_display(user_interface& ui_) :
 		edit_panel_add->add_child(edit_shiplist);
 		edit_panel_add->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_add.get(), &widget::close, EPFG_SHIPADDED,  20, 768-3*32-8, 512-20, 32, texts::get(224)));
 		edit_panel_add->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_add.get(), &widget::close, EPFG_CANCEL, 512, 768-3*32-8, 512-20, 32, texts::get(117)));
-		for (list<string>::const_iterator it = data_file().get_ship_list().begin(); it != data_file().get_ship_list().end(); ++it) {
-			edit_shiplist->append_entry(*it);
+		for (const auto & it : data_file().get_ship_list()) {
+			edit_shiplist->append_entry(it);
 		}
 
 		// create "motion edit" window
@@ -419,10 +417,9 @@ void map_display::edit_add_obj(game_editor& gm)
 void map_display::edit_del_obj(game_editor& gm)
 {
 	// just delete all selected objects, if they are no subs
-	for (std::set<sea_object*>::iterator it = selection.begin();
-	     it != selection.end(); ++it) {
-		if (*it != gm.get_player()) {
-			(*it)->kill();
+	for (auto it : selection) {
+		if (it != gm.get_player()) {
+			it->kill();
 		}
 	}
 	selection.clear();
@@ -437,8 +434,8 @@ void map_display::edit_change_motion(game_editor& gm)
 
 	// compute max speed.
 	int minspeed = 0, maxspeed = 0;
-	for (std::set<sea_object*>::const_iterator it = selection.begin(); it != selection.end(); ++it) {
-		const ship* s = dynamic_cast<const ship*>(*it);
+	for (auto it : selection) {
+		const ship* s = dynamic_cast<const ship*>(it);
 		if (s) {
 			int sp = int(sea_object::ms2kts(s->get_max_speed()) + 0.5);
 			maxspeed = std::max(maxspeed, sp);
@@ -459,9 +456,9 @@ void map_display::edit_copy_obj(game_editor& gm)
 	// just duplicate the objects with some position offset (1km to x/y)
 	std::set<sea_object*> new_selection;
 	vector3 offset(300, 100, 0);
-	for (std::set<sea_object*>::iterator it = selection.begin(); it != selection.end(); ++it) {
-		ship* s = dynamic_cast<ship*>(*it);
-		submarine* su = dynamic_cast<submarine*>(*it);
+	for (auto it : selection) {
+		ship* s = dynamic_cast<ship*>(it);
+		submarine* su = dynamic_cast<submarine*>(it);
 		if (s && su == nullptr) {
 			xml_doc spec(data_file().get_filename(s->get_specfilename()));
 			spec.load();
@@ -659,16 +656,16 @@ void map_display::display(class game& gm) const
 
 	// draw city names
 	const list<pair<vector2, string> >& cities = ui.get_coastmap().get_city_list();
-	for (list<pair<vector2, string> >::const_iterator it = cities.begin(); it != cities.end(); ++it) {
-		draw_square_mark(gm, it->first, -offset, color(255, 0, 0));
-		vector2 pos = (it->first - offset) * mapzoom;
-		font_vtremington12->print(int(512 + pos.x), int(384 - pos.y), it->second);
+	for (const auto & citie : cities) {
+		draw_square_mark(gm, citie.first, -offset, color(255, 0, 0));
+		vector2 pos = (citie.first - offset) * mapzoom;
+		font_vtremington12->print(int(512 + pos.x), int(384 - pos.y), citie.second);
 	}
 
 	// draw convoy positions	fixme: should be static and fade out after some time
 	vector<vector2> convoy_pos = gm.convoy_positions();
-	for (vector<vector2>::iterator it = convoy_pos.begin(); it != convoy_pos.end(); ++it) {
-		draw_square_mark_special ( gm, (*it), -offset, color ( 0, 0, 0 ) );
+	for (auto & convoy_po : convoy_pos) {
+		draw_square_mark_special ( gm, convoy_po, -offset, color ( 0, 0, 0 ) );
 	}
 
 	// draw view range
@@ -797,9 +794,8 @@ void map_display::display(class game& gm) const
 				primitives::rectangle(vector2f(x1,y1), vector2f(x2,y2), colorf(1,1,0,1)).render();
 			}
 			// selected objects
-			for (std::set<sea_object*>::const_iterator it = selection.begin();
-			     it != selection.end(); ++it) {
-				draw_square_mark(gm, (*it)->get_pos().xy(), -offset,
+			for (auto it : selection) {
+				draw_square_mark(gm, it->get_pos().xy(), -offset,
 						 color(255,0,64));
 			}
 		}
@@ -840,8 +836,8 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					shp->manipulate_invulnerability(true);
 					gm.spawn_ship(shp.release());
 				} else if (retval == EPFG_CHANGEMOTION) {
-					for (std::set<sea_object*>::iterator it = selection.begin(); it != selection.end(); ++it) {
-						ship* s = dynamic_cast<ship*>(*it);
+					for (auto it : selection) {
+						ship* s = dynamic_cast<ship*>(it);
 						if (s) {
 							s->set_throttle(edit_throttle->get_curr_value());
 							s->manipulate_heading(angle(edit_heading->get_curr_value()));
@@ -865,8 +861,8 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					// compute center of ships
 					vector2 center;
 					unsigned nrsh = 0;
-					for (std::set<sea_object*>::iterator it = selection.begin(); it != selection.end(); ++it) {
-						ship* s = dynamic_cast<ship*>(*it);
+					for (auto it : selection) {
+						ship* s = dynamic_cast<ship*>(it);
 						if (s) {
 							center += s->get_pos().xy();
 							++nrsh;
@@ -877,8 +873,8 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					unique_ptr<convoy> cv(new convoy(gm, center, edit_cvname->get_text()));
 					// add all ships to convoy with relative positions
 					nrsh = 0;
-					for (std::set<sea_object*>::iterator it = selection.begin(); it != selection.end(); ++it) {
-						ship* s = dynamic_cast<ship*>(*it);
+					for (auto it : selection) {
+						ship* s = dynamic_cast<ship*>(it);
 						if (s) {
 							if (cv->add_ship(s))
 								++nrsh;
@@ -946,17 +942,17 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					// fixme: later all objects
 					vector<sea_object*> objs = gm.visible_surface_objects(player);
 					if (mode == 0) selection.clear();
-					for (vector<sea_object*>::iterator it = objs.begin(); it != objs.end(); ++it) {
-						vector2 p = ((*it)->get_pos().xy() -
+					for (auto & obj : objs) {
+						vector2 p = (obj->get_pos().xy() -
 							     (player->get_pos().xy() + mapoffset)) * mapzoom;
 						p.x += 512;
 						p.y = 384 - p.y;
 						if (p.x >= x1 && p.x <= x2 &&
 						    p.y >= y1 && p.y <= y2) {
 							if (mode == 1)
-								selection.erase(*it);
+								selection.erase(obj);
 							else
-								selection.insert(*it);
+								selection.insert(obj);
 						}
 					}
 					check_edit_sel();
@@ -968,14 +964,14 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					double mapclickdist = 1e30;
 					sea_object* target = nullptr;
 					if (mode == 0) selection.clear();
-					for (vector<sea_object*>::iterator it = objs.begin(); it != objs.end(); ++it) {
-						vector2 p = ((*it)->get_pos().xy() -
+					for (auto & obj : objs) {
+						vector2 p = (obj->get_pos().xy() -
 							     (player->get_pos().xy() + mapoffset)) * mapzoom;
 						p.x += 512;
 						p.y = 384 - p.y;
 						double clickd = mapclick.square_distance(p);
 						if (clickd < mapclickdist) {
-							target = *it;
+							target = obj;
 							mapclickdist = clickd;
 						}
 					}
@@ -995,12 +991,11 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 			if ((event.motion.state & SDL_BUTTON_MMASK) && (ctrl_key_pressed != 0)) {
 				// move selected objects!
 				vector2 drag = sys().translate_motion(event) * (1.0 / mapzoom);
-				for (std::set<sea_object*>::const_iterator it = selection.begin();
-				     it != selection.end(); ++it) {
-					vector3 p = (*it)->get_pos();
+				for (auto it : selection) {
+					vector3 p = it->get_pos();
 					p.x += drag.x;
 					p.y += drag.y;
-					(*it)->manipulate_position(p);
+					it->manipulate_position(p);
 				}
 				return;
 			}
@@ -1018,15 +1013,15 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 			vector<sea_object*> objs = gm.visible_surface_objects(player);
 			double mapclickdist = 1e30;
 			sea_object* target = nullptr;
-			for (vector<sea_object*>::iterator it = objs.begin(); it != objs.end(); ++it) {
-				if (!(*it)->is_alive()) continue;
-				vector2 p = ((*it)->get_pos().xy() -
+			for (auto & obj : objs) {
+				if (!obj->is_alive()) continue;
+				vector2 p = (obj->get_pos().xy() -
 					     (player->get_pos().xy() + mapoffset)) * mapzoom;
 				p.x += 512;
 				p.y = 384 - p.y;
 				double clickd = mapclick.square_distance(p);
 				if (clickd < mapclickdist) {
-					target = *it;	// fixme: message?
+					target = obj;	// fixme: message?
 					mapclickdist = clickd;
 				}
 			}

@@ -183,16 +183,16 @@ inline void print_stack_trace()
 	oss << "addr2line -e /proc/" << getpid() << "/exe -s " << addrs;
 	FILE* f = popen(oss.str().c_str(), "r");
 	if (f) {
-		for (std::list<std::string>::iterator it = lines.begin(); it != lines.end(); ++it) {
+		for (auto & line : lines) {
 			char tmp[128];
 			if ( nullptr == fgets(tmp, 127, f) )
 				break;
-			fprintf(stderr, "%s at %s", it->c_str(), tmp);
+			fprintf(stderr, "%s at %s", line.c_str(), tmp);
 		}
 		pclose(f);
 	} else {
-		for (std::list<std::string>::iterator it = lines.begin(); it != lines.end(); ++it) {
-			fprintf(stderr, "%s\n", it->c_str());
+		for (auto & line : lines) {
+			fprintf(stderr, "%s\n", line.c_str());
 		}
 	}
 }

@@ -152,106 +152,106 @@ int main(int argc, char** argv)
 
 	float minh = 1e10;
 	float maxh = -1e10;
-	for (vector<float>::const_iterator it = heights1.begin(); it != heights1.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights1) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "1: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg1("waveh1.pgm");
 	osg1 << "P5\n";
 	osg1 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights1.begin(); it != heights1.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255/(maxh - minh));
+	for (float it : heights1) {
+		Uint8 h = Uint8((it - minh)*255/(maxh - minh));
 		osg1.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights2.begin(); it != heights2.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights2) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "2: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg2("waveh2.pgm");
 	osg2 << "P5\n";
 	osg2 << ressml <<" "<< ressml <<"\n255\n";
-	for (vector<float>::const_iterator it = heights2.begin(); it != heights2.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights2) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg2.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights3.begin(); it != heights3.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights3) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "3: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg3("waveh3.pgm");
 	osg3 << "P5\n";
 	osg3 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights3.begin(); it != heights3.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights3) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg3.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights4.begin(); it != heights4.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights4) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "4: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg4("waveh4.pgm");
 	osg4 << "P5\n";
 	osg4 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights4.begin(); it != heights4.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights4) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg4.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights5.begin(); it != heights5.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights5) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "5: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg5("waveh5.pgm");
 	osg5 << "P5\n";
 	osg5 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights5.begin(); it != heights5.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights5) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg5.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights6.begin(); it != heights6.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights6) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "6: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg6("waveh6.pgm");
 	osg6 << "P5\n";
 	osg6 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights6.begin(); it != heights6.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights6) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg6.write((const char*)&h, 1);
 	}
 
 	minh = 1e10;
 	maxh = -1e10;
-	for (vector<float>::const_iterator it = heights7.begin(); it != heights7.end(); ++it) {
-		minh = fmin(minh, *it);
-		maxh = fmax(maxh, *it);
+	for (float it : heights7) {
+		minh = fmin(minh, it);
+		maxh = fmax(maxh, it);
 	}
 	cout << "7: minh " << minh << " maxh " << maxh << "\n";
 	ofstream osg7("waveh7.pgm");
 	osg7 << "P5\n";
 	osg7 << resbig <<" "<< resbig <<"\n255\n";
-	for (vector<float>::const_iterator it = heights7.begin(); it != heights7.end(); ++it) {
-		Uint8 h = Uint8((*it - minh)*255.9/(maxh - minh));
+	for (float it : heights7) {
+		Uint8 h = Uint8((it - minh)*255.9/(maxh - minh));
 		osg7.write((const char*)&h, 1);
 	}
 

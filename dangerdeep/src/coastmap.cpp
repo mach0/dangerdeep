@@ -160,9 +160,9 @@ void coastsegment::generate_point_cache(const class coastmap& cm, int x, int y, 
 				const segcl& cl = segcls[current];
 				ce.points.reserve(ce.points.size() + cl.points.size());
 				double sc = cm.segw_real / SEGSCALE;
-				for (unsigned j = 0; j < cl.points.size(); ++j) {
+				for (auto point : cl.points) {
 					// avoid double points here... fixme. they're removed later. see below
-					ce.points.push_back(vector2(cl.points[j].x, cl.points[j].y) * sc);
+					ce.points.push_back(vector2(point.x, point.y) * sc);
 				}
 				int next = cl.next;
 //				cout << "startpos " << cl.beginpos << " endpos: " << cl.endpos << " next " << next << " next startpos: " << segcls[next].beginpos << "\n";
@@ -233,13 +233,13 @@ void coastsegment::draw_as_map(const class coastmap& cm, int x, int y, int detai
 		vector2f tc1 = cm.segcoord_to_texc(x+1, y+1);
 		generate_point_cache(cm, x, y, detail);
 		unsigned nrv = 0;
-		for (vector<cacheentry>::const_iterator cit = pointcache.begin(); cit != pointcache.end(); ++cit)
-			nrv += cit->indices.size();
+		for (const auto & cit : pointcache)
+			nrv += cit.indices.size();
 		primitives tris(GL_TRIANGLES, nrv, color::white(), *atlanticmap);
 		nrv = 0;
-		for (vector<cacheentry>::const_iterator cit = pointcache.begin(); cit != pointcache.end(); ++cit) {
-			for (vector<unsigned>::const_iterator tit = cit->indices.begin(); tit != cit->indices.end(); ++tit) {
-				const vector2& v = cit->points[*tit];
+		for (const auto & cit : pointcache) {
+			for (vector<unsigned>::const_iterator tit = cit.indices.begin(); tit != cit.indices.end(); ++tit) {
+				const vector2& v = cit.points[*tit];
 				float ex = v.x/cm.segw_real;
 				float ey = v.y/cm.segw_real;
 				float ax = 1.0f - ex;
@@ -741,8 +741,8 @@ void coastmap::process_coastline(int x, int y)
 	// create bspline curve
 	vector<vector2> tmp;
 	tmp.reserve(points.size());
-	for (unsigned i = 0; i < points.size(); ++i) {
-		tmp.emplace_back(points[i].x, points[i].y);
+	for (auto & point : points) {
+		tmp.emplace_back(point.x, point.y);
 //		cout << i << "/" << points.size() << " is " << points[i] << " / " << vector2(points[i].x, points[i].y) << "\n";
 	}
 
@@ -1033,8 +1033,8 @@ coastmap::coastmap(const string& filename)
 
 coastmap::~coastmap()
 {
-	for (list<prop>::iterator it = props.begin(); it != props.end(); ++it)
-		modelcache().unref(it->modelname);
+	for (auto & it : props)
+		modelcache().unref(it.modelname);
 }
 
 
@@ -1043,8 +1043,8 @@ void coastmap::construction_threaded()
 {
 	// they are filled in by process_coastline
 	coastsegments.resize(segsx*segsy);
-	for (unsigned i = 0; i < coastsegments.size(); ++i)
-		coastsegments[i].atlanticmap = & *atlanticmap;
+	for (auto & coastsegment : coastsegments)
+		coastsegment.atlanticmap = & *atlanticmap;
 
 	// find coastlines
 	// when to start processing: all patterns, except: 0,5,10,15
@@ -1138,18 +1138,18 @@ void coastmap::draw_as_map(const vector2& droff, double mapzoom, int detail) con
 void coastmap::render(const vector2& p, double vr, bool mirrored, int detail, bool withterraintop) const
 {
 	// render props, do some view culling for them.
-	for (list<prop>::const_iterator it = props.begin(); it != props.end(); ++it) {
-		if (it->pos.square_distance(p) < vr*vr) {
+	for (const auto & it : props) {
+		if (it.pos.square_distance(p) < vr*vr) {
 			// potentially visible
 			glPushMatrix();
-			glTranslatef(it->pos.x - p.x, it->pos.y - p.y, 0); //- p.z
-			glRotatef(-it->dir, 0, 0, 1);
+			glTranslatef(it.pos.x - p.x, it.pos.y - p.y, 0); //- p.z
+			glRotatef(-it.dir, 0, 0, 1);
 			if (mirrored)
 				// fixme: display_mirror_clip must be called with
 				// certain conditions, that are not used here yet...
-				modelcache().find(it->modelname)->display_mirror_clip();
+				modelcache().find(it.modelname)->display_mirror_clip();
 			else
-				modelcache().find(it->modelname)->display();
+				modelcache().find(it.modelname)->display();
 			glPopMatrix();
 		}
 	}

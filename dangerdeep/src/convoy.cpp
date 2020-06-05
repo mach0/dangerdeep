@@ -208,14 +208,14 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 		}
 			
 		// spawn the objects in class game after creating them
-		for (list<pair<ship*, vector2> >::iterator it = merchants.begin(); it != merchants.end(); ++it) {
-			gm.spawn_ship(it->first);
+		for (auto & merchant : merchants) {
+			gm.spawn_ship(merchant.first);
 		}
-		for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it != warships.end(); ++it) {
-			gm.spawn_ship(it->first);
+		for (auto & warship : warships) {
+			gm.spawn_ship(warship.first);
 		}
-		for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it != escorts.end(); ++it) {
-			gm.spawn_ship(it->first);
+		for (auto & escort : escorts) {
+			gm.spawn_ship(escort.first);
 		}
 
 		return;
@@ -306,29 +306,29 @@ void convoy::save(xml_elem& parent) const
 	parent.add_child("velocity").set_attr(velocity);
 	xml_elem mc = parent.add_child("merchants");
 	mc.set_attr(unsigned(merchants.size()), "nr");
-	for (list<pair<ship*, vector2> >::const_iterator it = merchants.begin(); it != merchants.end(); ++it) {
+	for (const auto & merchant : merchants) {
 		xml_elem mc2 = mc.add_child("merchant");
-		mc2.set_attr(gm.save_ptr(it->first), "ref");
-		mc2.set_attr(it->second);
+		mc2.set_attr(gm.save_ptr(merchant.first), "ref");
+		mc2.set_attr(merchant.second);
 	}
 	xml_elem ws = parent.add_child("warships");
 	ws.set_attr(unsigned(warships.size()), "nr");
-	for (list<pair<ship*, vector2> >::const_iterator it = warships.begin(); it != warships.end(); ++it) {
+	for (const auto & warship : warships) {
 		xml_elem ws2 = ws.add_child("warship");
-		ws2.set_attr(gm.save_ptr(it->first), "ref");
-		ws2.set_attr(it->second);
+		ws2.set_attr(gm.save_ptr(warship.first), "ref");
+		ws2.set_attr(warship.second);
 	}
 	xml_elem es = parent.add_child("escorts");
 	es.set_attr(unsigned(escorts.size()), "nr");
-	for (list<pair<ship*, vector2> >::const_iterator it = escorts.begin(); it != escorts.end(); ++it) {
+	for (const auto & escort : escorts) {
 		xml_elem es2 = es.add_child("escort");
-		es2.set_attr(gm.save_ptr(it->first), "ref");
-		es2.set_attr(it->second);
+		es2.set_attr(gm.save_ptr(escort.first), "ref");
+		es2.set_attr(escort.second);
 	}
 	xml_elem wp = parent.add_child("waypoints");
 	wp.set_attr(unsigned(waypoints.size()), "nr");
-	for (list<vector2>::const_iterator it = waypoints.begin(); it != waypoints.end(); ++it) {
-		wp.add_child("pos").set_attr(*it);
+	for (auto waypoint : waypoints) {
+		wp.add_child("pos").set_attr(waypoint);
 	}
 }
 
@@ -400,7 +400,7 @@ void convoy::simulate(double delta_time)
 
 void convoy::add_contact(const vector3& pos)	// fixme: simple, crude, ugly
 {
-	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it != escorts.end(); ++it) {
-		it->first->get_ai()->attack_contact(pos);
+	for (auto & escort : escorts) {
+		escort.first->get_ai()->attack_contact(pos);
 	}
 }

@@ -43,9 +43,10 @@ DONE
     modernize-use-default-member-init
     modernize-return-braced-init-list
     modernize-pass-by-value
-TODO
     modernize-loop-convert
+TODO
     modernize-use-auto
+    llvm-include-order ?
 DO NOT USE    
     modernize-use-trailing-return-type
 

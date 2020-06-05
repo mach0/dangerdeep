@@ -97,12 +97,11 @@ void sub_captainscabin_display::display(class game& gm) const
 
 	background->draw(0, 0);
 
-	for (vector<clickable_area>::const_iterator it = clickable_areas.begin();
-	     it != clickable_areas.end(); ++it) {
-		if (it->is_mouse_over(mx, my)) {
+	for (const auto & it : clickable_areas) {
+		if (it.is_mouse_over(mx, my)) {
 			font_vtremington12->print_hc(mx, my - font_arial->get_height(),
-					     texts::get(it->get_description()),
-					     it->get_description_color(), true);
+					     texts::get(it.get_description()),
+					     it.get_description_color(), true);
 			break;
 		}
 	}
@@ -131,10 +130,9 @@ void sub_captainscabin_display::process_input(class game& gm, const SDL_Event& e
 		mx = sys().translate_position_x(event);
 		my = sys().translate_position_y(event);
 		if (event.button.button == SDL_BUTTON_LEFT) {
-			for (vector<clickable_area>::iterator it = clickable_areas.begin();
-			     it != clickable_areas.end(); ++it) {
-				if (it->is_mouse_over(mx, my)) {
-					it->do_action(*this);
+			for (auto & it : clickable_areas) {
+				if (it.is_mouse_over(mx, my)) {
+					it.do_action(*this);
 					break;
 				}
 			}

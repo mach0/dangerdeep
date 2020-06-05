@@ -56,9 +56,9 @@ int tests::main()
 	{
 		cout << endl << BAD << "Not all tests returned successful. Dangerdeep might not run well or at all on your hardware! Problems include:" << endl;
 		{
-			for( set<string>::const_iterator it = error_log.begin(); it != error_log.end(); it++ )
+			for(const auto & it : error_log)
 			{
-				cout << it->c_str() << endl;
+				cout << it.c_str() << endl;
 			}
 		}
 	} else {

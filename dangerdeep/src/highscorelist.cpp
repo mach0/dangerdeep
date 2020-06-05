@@ -110,11 +110,11 @@ void highscorelist::show(class widget* parent) const
 	parent->add_child(new widget_text(scw/2, y, 0, 0, texts::get(202)));
 	parent->add_child(new widget_text(2*scw, y, 0, 0, texts::get(203)));
 	y += 2*lh;
-	for (unsigned i = 0; i < entries.size(); ++i) {
+	for (const auto & entrie : entries) {
 		ostringstream osp;
-		osp << entries[i].points;
+		osp << entrie.points;
 		parent->add_child(new widget_text(scw/2, y, 0, 0, osp.str()));
-		parent->add_child(new widget_text(2*scw, y, 0, 0, entries[i].name));
+		parent->add_child(new widget_text(2*scw, y, 0, 0, entrie.name));
 		y += lh*3/2;
 	}
 }

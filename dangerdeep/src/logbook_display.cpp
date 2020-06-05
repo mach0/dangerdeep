@@ -79,8 +79,8 @@ void logbook_display::display(class game& gm) const
 	vector<unsigned> lines_per_entry;
 	unsigned total_lines = 0;
 	lines_per_entry.reserve(lb.size());
-	for (list<string>::const_iterator it = lb.begin(); it != lb.end(); ++it) {
-		unsigned l = font_jphsl->get_nr_of_lines_wrapped(page_size.x, *it).first;
+	for (const auto & it : lb) {
+		unsigned l = font_jphsl->get_nr_of_lines_wrapped(page_size.x, it).first;
 		lines_per_entry.push_back(l);
 		total_lines += l;
 	}

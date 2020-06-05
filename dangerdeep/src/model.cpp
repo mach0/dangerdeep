@@ -133,8 +133,8 @@ bool model::object::set_translation(float value)
 model::object* model::object::find(unsigned id_)
 {
 	if (id == id_) return this;
-	for (vector<object>::iterator it = children.begin(); it != children.end(); ++it) {
-		object* obj = it->find(id_);
+	for (auto & it : children) {
+		object* obj = it.find(id_);
 		if (obj) return obj;
 	}
 	return nullptr;
@@ -145,8 +145,8 @@ model::object* model::object::find(unsigned id_)
 model::object* model::object::find(const std::string& name_)
 {
 	if (name == name_) return this;
-	for (vector<object>::iterator it = children.begin(); it != children.end(); ++it) {
-		object* obj = it->find(name_);
+	for (auto & it : children) {
+		object* obj = it.find(name_);
 		if (obj) return obj;
 	}
 	return nullptr;
@@ -157,8 +157,8 @@ model::object* model::object::find(const std::string& name_)
 const model::object* model::object::find(unsigned id_) const
 {
 	if (id == id_) return this;
-	for (vector<object>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		const object* obj = it->find(id_);
+	for (const auto & it : children) {
+		const object* obj = it.find(id_);
 		if (obj) return obj;
 	}
 	return nullptr;
@@ -169,8 +169,8 @@ const model::object* model::object::find(unsigned id_) const
 const model::object* model::object::find(const std::string& name_) const
 {
 	if (name == name_) return this;
-	for (vector<object>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		const object* obj = it->find(name_);
+	for (const auto & it : children) {
+		const object* obj = it.find(name_);
 		if (obj) return obj;
 	}
 	return nullptr;
@@ -184,8 +184,8 @@ void model::object::display(const texture *caustic_map) const
 	glTranslated(translation.x, translation.y, translation.z);
 	glRotated(rotat_angle, rotat_axis.x, rotat_axis.y, rotat_axis.z);
 	if (mymesh) mymesh->display(caustic_map);
-	for (vector<object>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		it->display(caustic_map);
+	for (const auto & it : children) {
+		it.display(caustic_map);
 	}
 	glPopMatrix();
 }
@@ -200,8 +200,8 @@ void model::object::display_mirror_clip() const
 	glRotated(rotat_angle, rotat_axis.x, rotat_axis.y, rotat_axis.z);
 
 	if (mymesh) mymesh->display_mirror_clip();
-	for (vector<object>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		it->display_mirror_clip();
+	for (const auto & it : children) {
+		it.display_mirror_clip();
 	}
 
 	glPopMatrix();
@@ -217,8 +217,8 @@ void model::object::compute_bounds(vector3f& min, vector3f& max, const matrix4f&
 		mymesh->compute_bounds(min, max, mytransmat);
 	}
 	// handle children
-	for (vector<object>::const_iterator it = children.begin(); it != children.end(); ++it) {
-		it->compute_bounds(min, max, mytransmat);
+	for (const auto & it : children) {
+		it.compute_bounds(min, max, mytransmat);
 	}
 }
 
@@ -311,8 +311,8 @@ model::model(string  filename_, bool use_material)
 
 	string::size_type st = filename.rfind(".");
 	string extension = (st == string::npos) ? "" : filename.substr(st);
-	for (unsigned e = 0; e < extension.length(); ++e)
-		extension[e] = ::tolower(extension[e]);
+	for (char & e : extension)
+		e = ::tolower(e);
 	st = filename.rfind("/");  // we use the slash as path separator on ALL systems. C/C++ want it so.
 	basepath = (st == string::npos) ? "" : filename.substr(0, st+1);
 	basename = filename.substr(basepath.length(),
@@ -341,10 +341,10 @@ model::model(string  filename_, bool use_material)
 
 	// clear material info if requested
 	if (!use_material) {
-		for (vector<mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-			(*it)->mymaterial = nullptr;
-		for (vector<material*>::iterator it = materials.begin(); it != materials.end(); ++it)
-			delete *it;
+		for (auto & meshe : meshes)
+			meshe->mymaterial = nullptr;
+		for (auto & it : materials)
+			delete it;
 		materials.clear();
 	}
 
@@ -360,10 +360,10 @@ model::model(string  filename_, bool use_material)
 
 model::~model()
 {
-	for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-		delete *it;
-	for (vector<model::material*>::iterator it = materials.begin(); it != materials.end(); ++it)
-		delete *it;
+	for (auto & meshe : meshes)
+		delete meshe;
+	for (auto & it : materials)
+		delete it;
 	--init_count;
 	if (init_count == 0) render_deinit();
 }
@@ -375,8 +375,8 @@ void model::compute_bounds()
 	if (meshes.size() == 0) return;
 
 	// could be done once... not here
-	for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-		(*it)->compute_vertex_bounds();
+	for (auto & meshe : meshes)
+		meshe->compute_vertex_bounds();
 
 	// with an objectree, we need to iterate the meshes along the tree and handle
 	// per-object translations, without object tree just handle all meshes
@@ -385,8 +385,8 @@ void model::compute_bounds()
 	if (!scene.children.empty()) {
 		scene.compute_bounds(min, max, matrix4f::one());
 	} else {
-		for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-			(*it)->compute_bounds(min, max, matrix4f::one());
+		for (auto & meshe : meshes)
+			meshe->compute_bounds(min, max, matrix4f::one());
 	}
 
 	boundsphere_radius = max.max(-min).length();
@@ -396,8 +396,8 @@ void model::compute_bounds()
 
 void model::compute_normals()
 {
-	for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it) {
-		(*it)->compute_normals();
+	for (auto & meshe : meshes) {
+		meshe->compute_normals();
 	}
 }
 
@@ -514,8 +514,8 @@ void model::mesh::compute_vertex_bounds()
 void model::mesh::compute_bounds(vector3f& totmin, vector3f& totmax, const matrix4f& transmat)
 {
 	if (vertices.size() == 0) return;
-	for (vector<vector3f>::iterator it2 = vertices.begin(); it2 != vertices.end(); ++it2) {
-		vector3f tmp = transmat * *it2;
+	for (auto & vertice : vertices) {
+		vector3f tmp = transmat * vertice;
 		totmin = tmp.min(totmin);
 		totmax = tmp.max(totmax);
 	}
@@ -558,10 +558,10 @@ void model::mesh::compute_normals()
 				normals[tit->i2()] += face_normal;
 			}
 		} while (tit->next());
-		for (vector<vector3f>::iterator it = normals.begin(); it != normals.end(); ++it) {
+		for (auto & normal : normals) {
 			// this can lead to NAN values in vertex normals.
 			// but only for degenerated vertices, so we don't care.
-			it->normalize();
+			normal.normalize();
 		}
 	}
 	
@@ -917,13 +917,13 @@ void model::mesh::compile()
 
 void model::mesh::transform(const matrix4f& m)
 {
-	for (unsigned i = 0; i < vertices.size(); ++i)
-		vertices[i] = m * vertices[i];
+	for (auto & vertice : vertices)
+		vertice = m * vertice;
 	// transform normals: only apply rotation
 	matrix4f m2 = m;
 	m2.elem(3,0) = m2.elem(3,1) = m2.elem(3,2) = 0;
-	for (unsigned j = 0; j < normals.size(); ++j)
-		normals[j] = m2 * normals[j];
+	for (auto & normal : normals)
+		normal = m2 * normal;
 }
 
 
@@ -932,8 +932,8 @@ void model::mesh::write_off_file(const string& fn) const
 {
 	std::ofstream out(fn.c_str());
 	out << "OFF\n" << vertices.size() << " " << get_nr_of_triangles() << " 0\n";
-	for (unsigned i = 0; i < vertices.size(); ++i) {
-		out << vertices[i].x << " " << vertices[i].y << " " << vertices[i].z << "\n";
+	for (auto vertice : vertices) {
+		out << vertice.x << " " << vertice.y << " " << vertice.z << "\n";
 	}
 	for (unsigned j = 0; j < get_nr_of_triangles(); ++j) {
 		Uint32 idx[3];
@@ -1366,8 +1366,8 @@ model::material::map::map()
 
 model::material::map::~map()
 {
-	for (std::map<string, skin>::iterator it = skins.begin(); it != skins.end(); ++it)
-		delete it->second.mytexture;
+	for (auto & it : skins)
+		delete it.second.mytexture;
 }
 
 
@@ -1460,8 +1460,8 @@ bool model::object_exists(unsigned objid) const
 
 void model::material::map::get_all_layout_names(std::set<std::string>& result) const
 {
-	for (std::map<string, skin>::const_iterator it = skins.begin(); it != skins.end(); ++it)
-		result.insert(it->first);
+	for (const auto & it : skins)
+		result.insert(it.first);
 }
 
 
@@ -1634,8 +1634,8 @@ model::material_glsl::material_glsl(const std::string& nm, const std::string& vs
 	  shadersetup(get_shader_dir() + vsfn, get_shader_dir() + fsfn),
 	  nrtex(0)
 {
-	for (unsigned i = 0; i < DFTD_MAX_TEXTURE_UNITS; ++i)
-		loc_texunit[i] = 0;
+	for (unsigned int & i : loc_texunit)
+		i = 0;
 }
 
 
@@ -1845,8 +1845,8 @@ void model::set_layout(const std::string& layout)
 //	cout << "set layout '" << layout << "' for model '" << filename << "'\n";
 	if (current_layout == layout)
 		return;
-	for (vector<material*>::iterator it = materials.begin(); it != materials.end(); ++it)
-		(*it)->set_layout(layout);
+	for (auto & it : materials)
+		it->set_layout(layout);
 	current_layout = layout;
 }
 
@@ -1860,8 +1860,8 @@ void model::display(const texture *caustic_map) const
 
 	// default scene: no objects, just draw all meshes.
 	if (scene.children.size() == 0) {
-		for (vector<model::mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it) {
-			(*it)->display(caustic_map);
+		for (auto meshe : meshes) {
+			meshe->display(caustic_map);
 		}
 	} else {
 		scene.display(caustic_map);
@@ -1875,8 +1875,8 @@ void model::display_mirror_clip() const
 	// set up a object->worldspace transformation matrix in tex unit#1 matrix.
 	if (scene.children.size() == 0) {
 		// default scene: no objects, just draw all meshes.
-		for (vector<model::mesh*>::const_iterator it = meshes.begin(); it != meshes.end(); ++it) {
-			(*it)->display_mirror_clip();
+		for (auto meshe : meshes) {
+			meshe->display_mirror_clip();
 		}
 	} else {
 		scene.display_mirror_clip();
@@ -1958,8 +1958,8 @@ void model::read_phys_file(const string& filename)
 	xml_elem physcs = physroot.child("cross-section");
 	cross_sections.resize(physcs.attru("angles"));
 	std::istringstream iss(physcs.child_text());
-	for (unsigned i = 0; i < cross_sections.size(); ++i) {
-		iss >> cross_sections[i];
+	for (float & cross_section : cross_sections) {
+		iss >> cross_section;
 	}
 
 	// set inertia tensor of mesh #0
@@ -2030,8 +2030,8 @@ void model::read_phys_file(const string& filename)
 	}
 	// renormalize mass parts
 	if (massdistri.empty()) {
-		for (unsigned i = 0; i < voxel_data.size(); ++i)
-			voxel_data[i].relative_mass /= mass_part_sum;
+		for (auto & i : voxel_data)
+			i.relative_mass /= mass_part_sum;
 	}
 	// compute neighbouring information
 	ptr = 0;
@@ -2091,8 +2091,8 @@ string model::tolower(const string& s)
 
 void model::transform(const matrix4f& m)
 {
-	for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it) {
-		(*it)->transform(m);
+	for (auto & meshe : meshes) {
+		meshe->transform(m);
 	}
 }
 
@@ -2100,8 +2100,8 @@ void model::transform(const matrix4f& m)
 
 void model::compile()
 {
-	for (vector<model::mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it) {
-		(*it)->compile();
+	for (auto & meshe : meshes) {
+		meshe->compile();
 	}
 }
 
@@ -2180,11 +2180,11 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 		verts.set_attr(unsigned(mp->vertices.size()), "nr");
 		ostringstream ossv;
 		//unsigned nrcrd = 0;
-		for (vector<vector3f>::const_iterator vit = mp->vertices.begin(); vit != mp->vertices.end(); ++vit) {
+		for (auto vertice : mp->vertices) {
 			// add return after each 8th coordinate - doesn't work with tinyxml this way!
 			//if (nrcrd++ % 8 == 0)
 			//ossv << "\n";
-			ossv << vit->x << " " << vit->y << " " << vit->z << " ";
+			ossv << vertice.x << " " << vertice.y << " " << vertice.z << " ";
 		}
 		verts.add_child_text(ossv.str());
 
@@ -2195,11 +2195,11 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 		indis.set_attr(std::string(mp->name_primitive_type()), "type");
 		ostringstream ossi;
 		//unsigned nrind = 0;
-		for (vector<Uint32>::const_iterator iit = mp->indices.begin(); iit != mp->indices.end(); ++iit) {
+		for (unsigned int indice : mp->indices) {
 			// add return after each 32th index - doesn't work with tinyxml this way!
 			//if (nrind++ % 32 == 0)
 			//ossi << "\n";
-			ossi << *iit << " ";
+			ossi << indice << " ";
 		}
 		indis.add_child_text(ossi.str());
 
@@ -2208,12 +2208,11 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 			xml_elem texcs = msh.add_child("texcoords");
 			ostringstream osst;
 			//unsigned nrcrd = 0;
-			for (vector<vector2f>::const_iterator tit = mp->texcoords.begin();
-			     tit != mp->texcoords.end(); ++tit) {
+			for (auto texcoord : mp->texcoords) {
 				// add return after each 8th coordinate - doesn't work with tinyxml this way!
 				//if (nrcrd++ % 8 == 0)
 				//osst << "\n";
-				osst << tit->x << " " << tit->y << " ";
+				osst << texcoord.x << " " << texcoord.y << " ";
 			}
 			texcs.add_child_text(osst.str());
 		}
@@ -2223,11 +2222,11 @@ void model::write_to_dftd_model_file(const std::string& filename, bool store_nor
 			xml_elem nrmls = msh.add_child("normals");
 			ostringstream ossn;
 			//unsigned nrcrd = 0;
-			for (vector<vector3f>::const_iterator nit = mp->normals.begin(); nit != mp->normals.end(); ++nit) {
+			for (auto normal : mp->normals) {
 				// add return after each 8th coordinate - doesn't work with tinyxml this way!
 				//if (nrcrd++ % 8 == 0)
 				//ossn << "\n";
-				ossn << nit->x << " " << nit->y << " " << nit->z << " ";
+				ossn << normal.x << " " << normal.y << " " << normal.z << " ";
 			}
 			nrmls.add_child_text(ossn.str());
 		}
@@ -2268,10 +2267,10 @@ void model::material::map::write_to_dftd_model_file(xml_elem& parent,
 	mmap.set_attr(type, "type");
 	mmap.set_attr(filename, "filename");
 	// skins
-	for (std::map<string, skin>::const_iterator it = skins.begin(); it != skins.end(); ++it) {
+	for (const auto & it : skins) {
 		xml_elem s = mmap.add_child("skin");
-		s.set_attr(it->second.filename, "filename");
-		s.set_attr(it->first, "layout");
+		s.set_attr(it.second.filename, "filename");
+		s.set_attr(it.first, "layout");
 	}
 }
 
@@ -2663,8 +2662,8 @@ void model::register_layout(const std::string& name)
 	if (name.length() == 0) {
 		throw error(filename + ": trying to register empty layout!");
 	}
-	for (vector<material*>::iterator it = materials.begin(); it != materials.end(); ++it)
-		(*it)->register_layout(name, basepath);
+	for (auto & it : materials)
+		it->register_layout(name, basepath);
 }
 
 
@@ -2674,16 +2673,16 @@ void model::unregister_layout(const std::string& name)
 	if (name.length() == 0) {
 		throw error(filename + ": trying to unregister empty layout!");
 	}
-	for (vector<material*>::iterator it = materials.begin(); it != materials.end(); ++it)
-		(*it)->unregister_layout(name);
+	for (auto & it : materials)
+		it->unregister_layout(name);
 }
 
 
 
 void model::get_all_layout_names(std::set<std::string>& result) const
 {
-	for (vector<material*>::const_iterator it = materials.begin(); it != materials.end(); ++it)
-		(*it)->get_all_layout_names(result);
+	for (auto it : materials)
+		it->get_all_layout_names(result);
 	result.insert(default_layout);
 }
 

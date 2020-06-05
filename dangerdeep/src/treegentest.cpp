@@ -211,9 +211,8 @@ void run()
 		vector3 forward = -invmvr.column3(2) * movesc;
 		vector3 upward = invmvr.column3(1) * movesc;
 		vector3 sideward = invmvr.column3(0) * movesc;
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			SDL_Event& event = *it;
-			if (event.type == SDL_KEYDOWN) {
+		for (auto & event : events) {
+				if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 					return;

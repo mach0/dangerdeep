@@ -95,8 +95,8 @@ struct noise
 
 	noise()
 	{
-		for (unsigned i = 0; i < NR_OF_FREQUENCY_BANDS; ++i)
-			frequencies[i] = 1e-10;
+		for (double & frequencie : frequencies)
+			frequencie = 1e-10;
 	}
 
 	///\brief transform all strength values from absolute, linear values to dB values

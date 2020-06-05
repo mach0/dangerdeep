@@ -39,8 +39,8 @@ frustum::frustum(polygon poly, const vector3& viewp, double znear_)
 polygon frustum::clip(polygon p) const
 {
 	polygon result = p;
-	for (unsigned i = 0; i < planes.size(); ++i)
-		result = result.clip(planes[i]);
+	for (const auto & plane : planes)
+		result = result.clip(plane);
 	return result;
 }
 
@@ -85,8 +85,8 @@ frustum frustum::from_opengl()
 void frustum::translate(const vector3& delta)
 {
 	viewpos += delta;
-	for (unsigned i = 0; i < planes.size(); ++i)
-		planes[i].translate(delta);
+	for (auto & plane : planes)
+		plane.translate(delta);
 }
 
 
@@ -95,9 +95,9 @@ frustum frustum::get_mirrored() const
 {
 	frustum f = *this;
 	f.viewpos.z = -f.viewpos.z;
-	for (std::vector<plane>::iterator it = f.planes.begin(); it != f.planes.end(); ++it) {
+	for (auto & it : f.planes) {
 		// d remains the same
-		it->N.z = -it->N.z;
+		it.N.z = -it.N.z;
 	}
 	return f;
 }

@@ -112,9 +112,8 @@ public:
 	virtual void process_input(class game& gm, const SDL_Event& event) = 0;
 	virtual void process_input(class game& gm, const std::list<SDL_Event>& events)
 	{
-		for (std::list<SDL_Event>::const_iterator it = events.begin();
-		     it != events.end(); ++it)
-			process_input(gm, *it);
+		for (const auto & event : events)
+			process_input(gm, event);
 	}
 	// mask contains one bit per popup (at most 31 popups)
 	virtual unsigned get_popup_allow_mask() const { return 0; }

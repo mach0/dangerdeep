@@ -42,19 +42,19 @@ std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, 
 	// compute bounding box for leaves
 	vector3f bbox_min = nodes.front().get_pos(vertices, 0);
 	vector3f bbox_max = bbox_min;
-	for (std::list<leaf_data>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+	for (auto & node : nodes) {
 		for (unsigned i = 0; i < 3; ++i) {
-			bbox_min = bbox_min.min(it->get_pos(vertices, i));
-			bbox_max = bbox_max.max(it->get_pos(vertices, i));
+			bbox_min = bbox_min.min(node.get_pos(vertices, i));
+			bbox_max = bbox_max.max(node.get_pos(vertices, i));
 		}
 	}
 	// new sphere center is center of bbox
 	spheref bound_sphere((bbox_min + bbox_max) * 0.5f, 0.0f);
 	// compute sphere radius by vertex distances to center (more accurate than
 	// approximating by bbox size)
-	for (std::list<leaf_data>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+	for (auto & node : nodes) {
 		for (unsigned i = 0; i < 3; ++i) {
-			float r = it->get_pos(vertices, i).distance(bound_sphere.center);
+			float r = node.get_pos(vertices, i).distance(bound_sphere.center);
 			bound_sphere.radius = std::max(r, bound_sphere.radius);
 		}
 	}
@@ -123,9 +123,9 @@ bool bv_tree::is_inside(const vector3f& v) const
 {
 	if (!volume.is_inside(v))
 		return false;
-	for (int i = 0; i < 2; ++i)
-		if (children[i].get())
-			if (children[i]->is_inside(v))
+	for (const auto & i : children)
+		if (i.get())
+			if (i->is_inside(v))
 				return true;
 	return false;
 }
@@ -292,9 +292,9 @@ bool bv_tree::collides(const param& p, const spheref& sp)
 void bv_tree::transform(const matrix4f& mat)
 {
 	volume.center = mat.mul4vec3xlat(volume.center);
-	for (int i = 0; i < 2; ++i)
-		if (children[i].get())
-			children[i]->transform(mat);
+	for (auto & i : children)
+		if (i.get())
+			i->transform(mat);
 }
 
 
@@ -302,9 +302,9 @@ void bv_tree::transform(const matrix4f& mat)
 void bv_tree::compute_min_max(vector3f& minv, vector3f& maxv) const
 {
 	volume.compute_min_max(minv, maxv);
-	for (int i = 0; i < 2; ++i)
-		if (children[i].get())
-			children[i]->compute_min_max(minv, maxv);
+	for (const auto & i : children)
+		if (i.get())
+			i->compute_min_max(minv, maxv);
 }
 
 
@@ -314,9 +314,9 @@ void bv_tree::debug_dump(unsigned level) const
 	for (unsigned i = 0; i < level; ++i)
 		std::cout << "\t";
 	std::cout << "Level " << level << " Sphere " << volume.center << " | " << volume.radius << "\n";
-	for (int i = 0; i < 2; ++i)
-		if (children[i].get())
-			children[i]->debug_dump(level + 1);
+	for (const auto & i : children)
+		if (i.get())
+			i->debug_dump(level + 1);
 }
 
 

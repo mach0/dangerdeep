@@ -613,8 +613,8 @@ void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpo
 //	glDisable(GL_CULL_FACE);
 	// as first trails of all ships
 	// fixme: texture mapping seems to be wrong.
-	for (vector<ship*>::const_iterator it = allships.begin(); it != allships.end(); ++it) {
-		draw_foam_for_ship(gm, *it, viewpos);
+	for (auto allship : allships) {
+		draw_foam_for_ship(gm, allship, viewpos);
 	}
 //	glEnable(GL_TEXTURE_2D);
 //	glEnable(GL_CULL_FACE);
@@ -840,12 +840,12 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 					  vertex_data_ptr + nr_vert_attr*(i + N*(N+1)),
 					  vertex_data_ptr + nr_vert_attr*(i*(N+1)),
 					  vertex_data_ptr + nr_vert_attr*(i*(N+1) + N) };
-			for (unsigned j = 0; j < 4; ++j) {
-				vertex_data[k[j] + 2] = -viewpos.z;
-				vertex_data[k[j] + 3] = 0.0f;
-				vertex_data[k[j] + 4] = 0.0f;
-				vertex_data[k[j] + 5] = 1.0f;
-				vertex_data[k[j] + 6] = 0.0f; // no foam
+			for (unsigned int j : k) {
+				vertex_data[j + 2] = -viewpos.z;
+				vertex_data[j + 3] = 0.0f;
+				vertex_data[j + 4] = 0.0f;
+				vertex_data[j + 5] = 1.0f;
+				vertex_data[j + 6] = 0.0f; // no foam
 			}
 		}
 		// add horizon faces
@@ -1031,9 +1031,9 @@ void water::generate_wavetile(ocean_wave_generator<float>& myowg, double tiletim
 	myowg.compute_heights(heights);
 	wtp.minh = 1e10;
 	wtp.maxh = -1e10;
-	for (vector<float>::const_iterator it = heights.begin(); it != heights.end(); ++it) {
-		wtp.minh = fmin(wtp.minh, *it);
-		wtp.maxh = fmax(wtp.maxh, *it);
+	for (float height : heights) {
+		wtp.minh = fmin(wtp.minh, height);
+		wtp.maxh = fmax(wtp.maxh, height);
 	}
 #ifdef MEASURE_WAVE_HEIGHTS
 	totalmin = std::min(wtp.minh, totalmin);
@@ -1146,8 +1146,8 @@ void water::compute_amount_of_foam()
 	vector<float> aof(wave_resolution*wave_resolution);
 
 	float rndtab[37];
-	for (unsigned k = 0; k < 37; ++k)
-		rndtab[k] = rnd();
+	for (float & k : rndtab)
+		k = rnd();
 
 	// factor to build derivatives correctly
 	const double deriv_fac = wavetile_length_rcp * wave_resolution;

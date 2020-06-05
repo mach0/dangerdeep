@@ -192,18 +192,17 @@ double sea_object::get_cross_section ( const vector2& d ) const
 
 string sea_object::compute_skin_name() const
 {
-	for (list<skin_variant>::const_iterator it = skin_variants.begin();
-	     it != skin_variants.end(); ++it) {
+	for (const auto & it : skin_variants) {
 		// check date
-		if (skin_date < it->from || skin_date > it->until) {
+		if (skin_date < it.from || skin_date > it.until) {
 			continue;
 		}
 		// iterate over regioncodes
-		if (it->regions.size() > 0) {
+		if (it.regions.size() > 0) {
 			// if any regions are given (otherwise all match)
 			bool match = false;
-			for (list<string>::const_iterator it2 = it->regions.begin();
-			     it2 != it->regions.end(); ++it2) {
+			for (list<string>::const_iterator it2 = it.regions.begin();
+			     it2 != it.regions.end(); ++it2) {
 				if (skin_regioncode == *it2) {
 					match = true;
 					break;
@@ -214,11 +213,11 @@ string sea_object::compute_skin_name() const
 			}
 		}
 		// iterate over countrycodes
-		if (it->countries.size() > 0) {
+		if (it.countries.size() > 0) {
 			// if any countries are given (otherwise all match)
 			bool match = false;
-			for (list<string>::const_iterator it2 = it->countries.begin();
-			     it2 != it->countries.end(); ++it2) {
+			for (list<string>::const_iterator it2 = it.countries.begin();
+			     it2 != it.countries.end(); ++it2) {
 				if (*it2 == string(countrycodes[skin_country])) {
 					match = true;
 					break;
@@ -229,7 +228,7 @@ string sea_object::compute_skin_name() const
 			}
 		}
 		// we found a match!
-		return it->name;
+		return it.name;
 	}
 	return model::default_layout;
 }
@@ -889,12 +888,11 @@ unsigned sea_object::get_min_max_voxel_index_for_polyset(const std::vector<polyg
 	vector3f voxel_size_rcp = get_model().get_voxel_size().rcp();
 	vxmin = vres;
 	vxmax = vector3i(-1, -1, -1);
-	for (unsigned i = 0; i < polys.size(); ++i) {
-		const polygon& p = polys[i];
-		if (!p.empty()) {
-			for (unsigned k = 0; k < p.points.size(); ++k) {
+	for (const auto & p : polys) {
+			if (!p.empty()) {
+			for (const auto & point : p.points) {
 				// transform point to voxel space
-				vector3f ptvx = obj2voxel * vector3f(cjq.rotate(p.points[k] - position));
+				vector3f ptvx = obj2voxel * vector3f(cjq.rotate(point - position));
 				// transform to voxel coordinate
 				vector3i v = vector3i(ptvx.coeff_mul(voxel_size_rcp) + voxel_pos_trans);
 				// clip v to valid range

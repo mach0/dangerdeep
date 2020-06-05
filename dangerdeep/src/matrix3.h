@@ -74,8 +74,8 @@ class matrix3t
 
 	/// construct from stream
         matrix3t(std::istream& is) {
-		for (unsigned i = 0; i < 3*3; ++i)
-			is >> values[i];
+		for (auto & value : values)
+			is >> value;
 	}
 
 	/// print to stream

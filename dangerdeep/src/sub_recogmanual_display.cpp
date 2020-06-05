@@ -112,13 +112,13 @@ void sub_recogmanual_display::enter(bool is_day)
 	background = std::make_unique<image>(get_image_dir() + "shiprecogmanual_background.jpg");
 	
 	std::list<string> ship_ids = data_file_handler::instance().get_ship_list();
-	for (list<string>::iterator it = ship_ids.begin(); it != ship_ids.end(); it++) {
+	for (auto & ship_id : ship_ids) {
 
 		try {
-			unique_ptr<image> img(new image(data_file_handler::instance().get_path(*it) + (*it) + "_silhouette.png"));
+			unique_ptr<image> img(new image(data_file_handler::instance().get_path(ship_id) + ship_id + "_silhouette.png"));
 			silhouettes.push_back(std::move(img));
 			
-			xml_doc doc(data_file_handler::instance().get_filename(*it));
+			xml_doc doc(data_file_handler::instance().get_filename(ship_id));
 			doc.load();
 			xml_elem elem = doc.child("dftd-ship"); // will this get destroyed on leaving function?
 			elem = elem.child("shipmanual");
