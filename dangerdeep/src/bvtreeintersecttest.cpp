@@ -116,9 +116,8 @@ int mymain(list<string>& args)
 	// hier laufen lassen
 	for (bool doquit = false; !doquit; ) {
 		list<SDL_Event> events = sys().poll_event_queue();
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			SDL_Event& event = *it;
-			if (event.type == SDL_KEYDOWN) {
+		for (auto & event : events) {
+				if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 					doquit = true;
@@ -259,9 +258,9 @@ int mymain(list<string>& args)
 			spheresA.resize(volumesA.size());
 			spheresB.resize(volumesB.size());
 			unsigned k = 0;
-			for (std::list<spheref>::iterator it = volumesA.begin(); it != volumesA.end(); ++it) {
-				spheresA.reset(k, make_mesh::sphere(it->radius, 2*it->radius));
-				spheresA[k]->transform(matrix4f::trans(it->center));
+			for (auto & it : volumesA) {
+				spheresA.reset(k, make_mesh::sphere(it.radius, 2*it.radius));
+				spheresA[k]->transform(matrix4f::trans(it.center));
 				spheresA[k]->compile();
 				glPushMatrix();
 				(transformA * modelA->get_base_mesh_transformation()).multiply_gl();
@@ -271,9 +270,9 @@ int mymain(list<string>& args)
 				++k;
 			}
 			k = 0;
-			for (std::list<spheref>::iterator it = volumesB.begin(); it != volumesB.end(); ++it) {
-				spheresB.reset(k, make_mesh::sphere(it->radius, 2*it->radius));
-				spheresB[k]->transform(matrix4f::trans(it->center));
+			for (auto & it : volumesB) {
+				spheresB.reset(k, make_mesh::sphere(it.radius, 2*it.radius));
+				spheresB[k]->transform(matrix4f::trans(it.center));
 				spheresB[k]->compile();
 				glPushMatrix();
 				(transformB * modelB->get_base_mesh_transformation()).multiply_gl();

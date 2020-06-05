@@ -124,10 +124,10 @@ string savegamedirectory =
 string get_savegame_name_for(const string& descr, map<string, string>& savegames)
 {
 	unsigned num = 1;
-	for (map<string, string>::iterator it = savegames.begin(); it != savegames.end(); ++it) {
-		if (it->second == descr)
-			return savegamedirectory + it->first;
-		unsigned num2 = unsigned(atoi((it->first.substr(5, 4)).c_str()));
+	for (auto & savegame : savegames) {
+		if (savegame.second == descr)
+			return savegamedirectory + savegame.first;
+		unsigned num2 = unsigned(atoi((savegame.first.substr(5, 4)).c_str()));
 		if (num2 >= num) num = num2+1;
 	}
 	char tmp[20];
@@ -279,9 +279,9 @@ void loadsavequit_dialogue::update_list()
 	gamelist->clear();
 
 	unsigned sel = 0;		
-	for (map<string, string>::iterator it = savegames.begin(); it != savegames.end(); ++it) {
-		gamelist->append_entry(it->second);
-		if (it->second == gamename->get_text())
+	for (auto & savegame : savegames) {
+		gamelist->append_entry(savegame.second);
+		if (savegame.second == gamename->get_text())
 			gamelist->set_selected(sel);
 		++sel;
 	}
@@ -318,8 +318,8 @@ void check_for_highscore(const game& gm)
 {
 	unsigned totaltons = 0;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
-	for (list<game::sink_record>::const_iterator it = sunken_ships.begin(); it != sunken_ships.end(); ++it) {
-		totaltons += it->tons;
+	for (const auto & sunken_ship : sunken_ships) {
+		totaltons += sunken_ship.tons;
 	}
 	highscorelist& hsl = (/* check if game is career or mission fixme */ true) ? hsl_mission : hsl_career;
 	unsigned points = totaltons /* compute points from tons etc here fixme */;
@@ -356,12 +356,12 @@ void show_results_for_game(const game& gm)
 	w.add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, (1024-128)/2, 768-32-16, 128, 32, texts::get(105)));
 	unsigned totaltons = 0;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
-	for (list<game::sink_record>::const_iterator it = sunken_ships.begin(); it != sunken_ships.end(); ++it) {
+	for (const auto & sunken_ship : sunken_ships) {
 		ostringstream oss;
-		oss << texts::numeric_from_date(it->dat) << "\t"
-			<< it->descr << "\t\t"
-			<< it->tons << " BRT";
-		totaltons += it->tons;
+		oss << texts::numeric_from_date(sunken_ship.dat) << "\t"
+			<< sunken_ship.descr << "\t\t"
+			<< sunken_ship.tons << " BRT";
+		totaltons += sunken_ship.tons;
 		wl->append_entry(oss.str());
 	}
 	ostringstream os;
@@ -421,8 +421,8 @@ game::run_state game__exec(game& gm, user_interface& ui)
 				// by next call of game::simulate and new ones are
 				// generated
 				const ptrlist<event>& events = gm.get_events();
-				for (ptrlist<event>::const_iterator it = events.begin(); it != events.end(); ++it) {
-					it->evaluate(ui);
+				for (auto & it : events) {
+					it.evaluate(ui);
 				}
 			}
 		}
@@ -805,8 +805,8 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 		}
 	};
 	std::list<std::string> emblems;
-	for (unsigned i = 0; i < availableflotillas.size(); ++i) {
-		emblems.push_back(availableflotillas[i].insignia);
+	for (auto & availableflotilla : availableflotillas) {
+		emblems.push_back(availableflotilla.insignia);
 	}
 	emblemselect* wemblem = new emblemselect(764-220/2, 572-32-300/2, 220, 300, ".png", emblems);
 
@@ -825,9 +825,9 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 			int s = get_selected();
 			if (s >= 0) {
 				const std::vector<unsigned>& l = availableflotillas[s].subnrs;
-				for (unsigned i = 0; i < l.size(); ++i) {
+				for (unsigned int i : l) {
 					std::ostringstream oss;
-					oss << "U " << l[i];
+					oss << "U " << i;
 					wsns->append_entry(oss.str());
 				}
 				baseloc->set_text(availableflotillas[s].base);
@@ -853,9 +853,9 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 					   baselocation, availableflotillas,
 					   infobutton, infopopupdescr);
 	std::string flotname = texts::get(164);
-	for (unsigned i = 0; i < availableflotillas.size(); ++i) {
+	for (auto & availableflotilla : availableflotillas) {
 		std::string fn = flotname;
-		fn.replace(fn.find("#"), 1, str(availableflotillas[i].nr));
+		fn.replace(fn.find("#"), 1, str(availableflotilla.nr));
 		wflotilla->append_entry(fn);
 	}
 	w2->add_child(new widget_text(20, 80, 0, 0, texts::get(175)));
@@ -1263,9 +1263,9 @@ void menu_resolution()
 	vector2i curr_res(sys().get_res_x(), sys().get_res_y());
 	unsigned curr_entry = 0;
 	unsigned i = 0;
-	for (list<vector2i>::const_iterator it = available_resolutions.begin(); it != available_resolutions.end(); ++it) {
-		wlg->append_entry(str(it->x) + "x" + str(it->y));
-		if (*it == curr_res)
+	for (auto available_resolution : available_resolutions) {
+		wlg->append_entry(str(available_resolution.x) + "x" + str(available_resolution.y));
+		if (available_resolution == curr_res)
 			curr_entry = i;
 		++i;
 	}
@@ -1993,8 +1993,8 @@ int mymain(list<string>& args)
 				ostringstream str_problems;
 				str_problems << "Warnings (missing functionality):\n"; // TODO: use texts::get ?
 
-				for( set<string>::const_iterator it = gltest.warn_log.begin(); it != gltest.warn_log.end(); it++ )
-					str_problems << "  " << it->c_str() << "\n";
+				for(const auto & it : gltest.warn_log)
+					str_problems << "  " << it.c_str() << "\n";
 
 				warnings = str_problems.str();
 			}
@@ -2005,8 +2005,8 @@ int mymain(list<string>& args)
 
 				str_problems << "Dangerdeep cannot run on this machine because the following tests failed:\n\n";
 
-				for( set<string>::const_iterator it = gltest.error_log.begin(); it != gltest.error_log.end(); it++ )
-					str_problems << "  " << it->c_str() << "\n";
+				for(const auto & it : gltest.error_log)
+					str_problems << "  " << it.c_str() << "\n";
 
 				str_problems << "\nPress any key to quit.";
 				str_problems << "\n\n" << warnings;
@@ -2020,10 +2020,10 @@ int mymain(list<string>& args)
 				bool quit = false;
 				while (!quit) {
 					list<SDL_Event> events = sys().poll_event_queue();
-					for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-						if (it->type == SDL_KEYDOWN) {
+					for (auto & event : events) {
+						if (event.type == SDL_KEYDOWN) {
 							quit = true;
-						} else if (it->type == SDL_MOUSEBUTTONUP) {
+						} else if (event.type == SDL_MOUSEBUTTONUP) {
 							quit = true;
 						}
 					}

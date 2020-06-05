@@ -256,7 +256,7 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 	number_of_tubes_at[4] = tb.attru("bowdeckreserve");
 	number_of_tubes_at[5] = tb.attru("sterndeckreserve");
 	unsigned nrtrp = 0;
-	for (unsigned i = 0; i < 6; ++i) nrtrp += number_of_tubes_at[i];
+	for (unsigned int i : number_of_tubes_at) nrtrp += i;
 	torpedoes.resize(nrtrp);
 	xml_elem tf = tp.child("transfertimes");
 	torp_transfer_times[0] = tf.attru("bow");
@@ -375,10 +375,10 @@ void submarine::save(xml_elem& parent) const
 
 	xml_elem tp = parent.add_child("stored_torpedoes");
 	tp.set_attr(unsigned(torpedoes.size()), "nr");
-	for (vector<stored_torpedo>::const_iterator it = torpedoes.begin(); it != torpedoes.end(); ++it) {
+	for (const auto & torpedoe : torpedoes) {
 		//save a stored_torpedo node for each entry
 		xml_elem stp = tp.add_child("stored_torpedo");
-		it->save(stp);
+		torpedoe.save(stp);
 	}
 
 	xml_elem sst = parent.add_child("sub_state");
@@ -458,9 +458,9 @@ void submarine::simulate(double delta_time)
 
 	// simulate all tanks (flooding) and recompute mass_flooded_tanks here
 	mass_flooded_tanks = 0;
-	for (std::vector<tank>::iterator it = tanks.begin(); it != tanks.end(); ++it) {
-		it->simulate(delta_time);
-		mass_flooded_tanks += it->get_fill() * 1000.0 /* water density */;
+	for (auto & it : tanks) {
+		it.simulate(delta_time);
+		mass_flooded_tanks += it.get_fill() * 1000.0 /* water density */;
 	}
 
 	// now simulate the submarine as usual, but modify mass to handle
@@ -1346,9 +1346,9 @@ void submarine::compute_force_and_torque(vector3& F, vector3& T) const
 
 	// add torque caused from tanks here, force is computed by modifying mass
 	// in simulate()
-	for (std::vector<tank>::const_iterator it = tanks.begin(); it != tanks.end(); ++it) {
-		double grav_force = it->get_fill() * 1000.0 /* water_density */ * -GRAVITY;
-		T += orientation.rotate(it->get_pos().cross(vector3(0, 0, grav_force)));
+	for (const auto & it : tanks) {
+		double grav_force = it.get_fill() * 1000.0 /* water_density */ * -GRAVITY;
+		T += orientation.rotate(it.get_pos().cross(vector3(0, 0, grav_force)));
 	}
 }
 
@@ -1356,9 +1356,9 @@ void submarine::compute_force_and_torque(vector3& F, vector3& T) const
 
 void submarine::flood_ballast_tanks()
 {
-	for (std::vector<tank>::iterator it = tanks.begin(); it != tanks.end(); ++it) {
-		if (it->get_type() == tank::ballast) {
-			it->set_flood_valve(true);
+	for (auto & it : tanks) {
+		if (it.get_type() == tank::ballast) {
+			it.set_flood_valve(true);
 		}
 	}
 }
@@ -1368,10 +1368,10 @@ void submarine::flood_ballast_tanks()
 double submarine::push_air_to_ballast_tanks(double amount_cbm)
 {
 	// leverage over all ballast tanks? would be better...
-	for (std::vector<tank>::iterator it = tanks.begin(); it != tanks.end(); ++it) {
-		if (it->get_type() == tank::ballast) {
-			amount_cbm = it->push_air_inside(amount_cbm);
-			it->set_flood_valve(false); // close valves
+	for (auto & it : tanks) {
+		if (it.get_type() == tank::ballast) {
+			amount_cbm = it.push_air_inside(amount_cbm);
+			it.set_flood_valve(false); // close valves
 		}
 	}
 	return amount_cbm;

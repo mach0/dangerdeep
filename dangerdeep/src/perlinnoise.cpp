@@ -183,8 +183,8 @@ vector<Uint8> perlinnoise::generate() const
 	unsigned ptr = 0;
 	fixed32 fy;
 	for (unsigned y = 0; y < resultsize; ++y) {
-		for (unsigned i = 0; i < noise_functions.size(); ++i) {
-			noise_functions[i].set_line_for_interpolation(interpolation_func, fy);
+		for (const auto & noise_function : noise_functions) {
+			noise_function.set_line_for_interpolation(interpolation_func, fy);
 		}
 		fixed32 fx;
 		for (unsigned x = 0; x < resultsize; ++x) {
@@ -486,20 +486,20 @@ vector<float> perlinnoise3d::generate(float& minv, float& maxv) const
 	maxv = -1e10f;
 	minv = -maxv;
 	for (unsigned z = 0; z < resultsize; ++z) {
-		for (unsigned i = 0; i < noise_functions.size(); ++i) {
-			noise_functions[i].set_plane_for_interpolation(interpolation_func, fz);
+		for (const auto & noise_function : noise_functions) {
+			noise_function.set_plane_for_interpolation(interpolation_func, fz);
 		}
 		float fy = 0.0f;
 		for (unsigned y = 0; y < resultsize; ++y) {
-			for (unsigned i = 0; i < noise_functions.size(); ++i) {
-				noise_functions[i].set_line_for_interpolation(interpolation_func, fy);
+			for (const auto & noise_function : noise_functions) {
+				noise_function.set_line_for_interpolation(interpolation_func, fy);
 			}
 			float fx = 0.0f;
 			for (unsigned x = 0; x < resultsize; ++x) {
 				float sum = 0;
 				float divi = 1.0f;
-				for (unsigned i = 0; i < noise_functions.size(); ++i) {
-					sum += noise_functions[i].interpolate(interpolation_func, fx) * divi;
+				for (const auto & noise_function : noise_functions) {
+					sum += noise_function.interpolate(interpolation_func, fx) * divi;
 					divi *= 0.5f;
 				}
 				result[ptr++] = sum;

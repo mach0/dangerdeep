@@ -158,11 +158,11 @@ void postprocessor::bloom()
 	glsl_shader_setup::default_tex->set_gl_texture( *scene_t, glsl_shader_setup::loc_t_tex, 0);
 	
 	// down-sample/size from initial fbo
-	for( unsigned ix = 0; ix < PP_FILTERS; ix++ )
+	for(auto & h_pas : h_pass)
 	{
-		h_pass[ ix ]->bind();
+		h_pas->bind();
 		render_quad();
-		h_pass[ ix ]->unbind();
+		h_pas->unbind();
 	}
 
 	// hqfx

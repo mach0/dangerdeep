@@ -125,8 +125,8 @@ model_load_dialog::model_load_dialog()
 
 void model_load_dialog::get_model_list(const list<string>& namelist)
 {
-	for (list<string>::const_iterator it = namelist.begin(); it != namelist.end(); ++it) {
-		model_entry new_model = { *it, data_file().get_path(*it) };
+	for (const auto & it : namelist) {
+		model_entry new_model = { it, data_file().get_path(it) };
 		files.push_back(new_model);
 	}
 }
@@ -395,9 +395,8 @@ void view_model(const string& modelfilename, const string& datafilename)
 		}
 
 		// test: rotate objects
-		for( vector<constraint>::iterator it=constraints.begin(); it!=constraints.end(); ++it){
-			constraint& c=*it;
-			if(c.max<c.current || c.min>c.current) 
+		for(auto & c : constraints){
+				if(c.max<c.current || c.min>c.current) 
 				c.increasing=!c.increasing;
 			if(c.increasing) {
 				c.current+=ang_delta;
@@ -538,9 +537,8 @@ void view_model(const string& modelfilename, const string& datafilename)
 		}
 
 		list<SDL_Event> events = sys().poll_event_queue();
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			SDL_Event& event = *it;
-			if (event.type == SDL_KEYDOWN) {
+		for (auto & event : events) {
+				if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 					return;

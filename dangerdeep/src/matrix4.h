@@ -84,8 +84,8 @@ class matrix4t
 
 	/// construct from stream
         matrix4t(std::istream& is) {
-		for (unsigned i = 0; i < 4*4; ++i)
-			is >> values[i];
+		for (auto & value : values)
+			is >> value;
 	}
 
 	/// print to stream

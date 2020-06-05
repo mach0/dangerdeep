@@ -132,9 +132,9 @@ inline CRCHashArray::CRCHashArray()
 {
 	// 1: initialize the hash array...
 
-	for(unsigned long uIndex = 0; uIndex < HASH_SIZE; ++uIndex) {
+	for(auto & uIndex : m_pHashArray) {
 
-		m_pHashArray[uIndex]	= nullptr;
+		uIndex	= nullptr;
 	}
 }
 
@@ -145,12 +145,11 @@ inline CRCHashArray::~CRCHashArray()
 {
 	// 1: go through all hash buckets...
 
-	for(unsigned long uIndex = 0; uIndex < HASH_SIZE; ++uIndex) {
+	for(auto pNode : m_pHashArray) {
 
 		// 1.1: delete a hash bucket...
 
-		SHashArrayNode * pNode = m_pHashArray[uIndex];
-		while(pNode) {
+			while(pNode) {
 
 			// 1.1.1: fetch the next node...
 

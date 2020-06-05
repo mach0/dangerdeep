@@ -596,9 +596,9 @@ unsigned geoclipmap::level::generate_indices(const frustum& f,
 					   cv[geoidx[i*8+6]].xyz(minmaxz[geoidx[i*8+7]])));
 		if (!p.empty()) {
 			allempty = false;
-			for (unsigned j = 0; j < p.points.size(); ++j) {
-				minv = minv.min(p.points[j].xy());
-				maxv = maxv.max(p.points[j].xy());
+			for (auto & point : p.points) {
+				minv = minv.min(point.xy());
+				maxv = maxv.max(point.xy());
 			}
 		}
 	}

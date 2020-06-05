@@ -432,8 +432,8 @@ void ship::load(const xml_elem& parent)
 	xml_elem esink = parent.child("sinking");
 	flooding_speed = esink.attrf("flooding_speed");
 	istringstream fiss(esink.child_text());
-	for (unsigned j = 0; j < flooded_mass.size(); ++j)
-		fiss >> flooded_mass[j];
+	for (float & flooded_mas : flooded_mass)
+		fiss >> flooded_mas;
 
 	// fixme load that
 	//list<prev_pos> previous_positions;
@@ -508,8 +508,8 @@ void ship::save(xml_elem& parent) const
 	xml_elem esink = parent.add_child("sinking");
 	esink.set_attr(flooding_speed, "flooding_speed");
 	ostringstream foss;
-	for (unsigned j = 0; j < flooded_mass.size(); ++j)
-		foss << flooded_mass[j] << " ";
+	for (float flooded_mas : flooded_mass)
+		foss << flooded_mas << " ";
 	esink.add_child_text(foss.str());
 
 	// fixme save that
@@ -608,9 +608,8 @@ void ship::simulate(double delta_time)
 					// voxel has been flooded, check for its neighbours
 					// use a bit more so that "< mfm" is always false.
 					flooded_mass[i] = mfm * 1.00001f;
-					for (int k = 0; k < 6; ++k) {
-						int ng = voxdat[i].neighbour_idx[k];
-						if (ng >= 0 && flooded_mass[ng] < 0.06f) {
+					for (int ng : voxdat[i].neighbour_idx) {
+							if (ng >= 0 && flooded_mass[ng] < 0.06f) {
 							// has a neighbour that is not flooding nor full
 							flooded_mass[ng] = 0.1f;
 						}
@@ -621,9 +620,8 @@ void ship::simulate(double delta_time)
 		double flooding_volume_rcp = 1.0/flooding_volume;
 		// add mass to all voxels that are currently flooding.
 		double totally_flooded = 0;
-		for (unsigned k = 0; k < flooding_voxels.size(); ++k) {
-			unsigned i = flooding_voxels[k];
-			flooded_mass[i] += delta_time * flooding_speed * voxdat[i].relative_volume * flooding_volume_rcp;
+		for (unsigned int i : flooding_voxels) {
+				flooded_mass[i] += delta_time * flooding_speed * voxdat[i].relative_volume * flooding_volume_rcp;
 			totally_flooded += flooded_mass[i];
 		}
 		if (position.z < -200)	// used for ships.
@@ -657,9 +655,9 @@ void ship::simulate(double delta_time)
 	
 	// smoke particle generation logic
 	if (is_alive()) {
-		for (list<pair<unsigned, vector3> >::iterator it = smoke.begin(); it != smoke.end(); ++it) {
+		for (auto & it : smoke) {
 			double produce_time = 1e10;
-			switch (it->first) {
+			switch (it.first) {
 			case 1: produce_time = smoke_particle::get_produce_time(); break;
 			case 2: produce_time = smoke_particle_escort::get_produce_time(); break;
 			}
@@ -668,8 +666,8 @@ void ship::simulate(double delta_time)
 				particle* p = nullptr;
 				// handle orientation here!
 				// maybe add some random offset, but it don't seems necessary
-				vector3 ppos = position + orientation.rotate(it->second);
-				switch (it->first) {
+				vector3 ppos = position + orientation.rotate(it.second);
+				switch (it.first) {
 				case 1: p = new smoke_particle(ppos); break;
 				case 2: p = new smoke_particle_escort(ppos); break;
 				}
@@ -808,9 +806,8 @@ bool ship::damage(const vector3& fromwhere, unsigned strength)
 	vector3f objrelpos = orientation.conj().rotate(relpos);
 	//log_debug("DAMAGE! relpos="<<relpos << " objrelpos="<<objrelpos);
 	vector<unsigned> voxlist = mymodel->get_voxels_within_sphere(objrelpos, strength/10.0);
-	for (unsigned j = 0; j < voxlist.size(); ++j) {
-		unsigned i = voxlist[j];
-		// set all damaged voxels to flooding state (mass > 0.05f)
+	for (unsigned int i : voxlist) {
+			// set all damaged voxels to flooding state (mass > 0.05f)
 		flooded_mass[i] = 0.1f;
 	}
 

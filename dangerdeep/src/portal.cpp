@@ -383,9 +383,8 @@ void sector::display(const frustum& f) const
 
 	// check for other portals
 //	f.draw();
-	for (unsigned i = 0; i < portals.size(); ++i) {
-		const portal& p = portals[i];
-		// avoid portals facing away.
+	for (const auto & p : portals) {
+			// avoid portals facing away.
 		// this means viewpos must be on the inner side of the portal plane.
 		// fixme: if we are too close to a portal this is a problem and leads to bugs.
 		// compare distance to portal and znear.
@@ -421,11 +420,11 @@ bool sector::check_movement(const vector3& currpos, const vector3& nextpos, sect
 {
 	// we assume that curros is inside this sector.
 	// check for crossed portal.
-	for (unsigned i = 0; i < portals.size(); ++i) {
-		plane pl = portals[i].shape.get_plane();
+	for (const auto & portal : portals) {
+		plane pl = portal.shape.get_plane();
 		if (pl.test_side(nextpos) <= 0) {
 			// we crossed the plane of that portal, switch sector.
-			nextseg = portals[i].adj_sector;
+			nextseg = portal.adj_sector;
 			return false;
 		}
 	}
@@ -583,8 +582,8 @@ void run()
 		glLightfv(GL_LIGHT0, GL_POSITION, lposition);
 
 		// render sectors.
-		for (unsigned i = 0; i < sectors.size(); ++i)
-			sectors[i].displayed = false;
+		for (auto & sector : sectors)
+			sector.displayed = false;
 		currsector->display(viewfrustum);
 
 		vector3 oldpos = pos;
@@ -593,9 +592,8 @@ void run()
 		vector3 forward = -invmvr.column3(2) * movesc;
 		vector3 upward = invmvr.column3(1) * movesc;
 		vector3 sideward = invmvr.column3(0) * movesc;
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			SDL_Event& event = *it;
-			if (event.type == SDL_KEYDOWN) {
+		for (auto & event : events) {
+				if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:
 					return;

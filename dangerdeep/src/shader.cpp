@@ -195,8 +195,8 @@ glsl_shader::glsl_shader(const string& filename, type stype, const glsl_shader::
 			prg += "#define HQSFX\n";
 
 		// add defines to top of list for preprocessor
-		for (defines_list::const_iterator it = dl.begin(); it != dl.end(); ++it) {
-			prg += string("#define ") + *it + "\n";
+		for (const auto & it : dl) {
+			prg += string("#define ") + it + "\n";
 		}
 
 		// read lines.
@@ -267,8 +267,8 @@ glsl_program::~glsl_program()
 		use_fixed();
 	}
 	// if shaders are still attached, it is rather a bug...
-	for (list<glsl_shader*>::iterator it = attached_shaders.begin(); it != attached_shaders.end(); ++it)
-		glDetachShader(id, (*it)->id);
+	for (auto & attached_shader : attached_shaders)
+		glDetachShader(id, attached_shader->id);
 	glDeleteProgram(id);
 }
 

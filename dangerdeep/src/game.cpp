@@ -184,9 +184,9 @@ void game::player_info::save(xml_elem& parent) const
 	parent.set_attr(marine_roll, "marine_roll");
 	parent.set_attr(marine_group, "marine_group");
 	xml_elem xml_career = parent.add_child("promotions");
-	for (list<string>::const_iterator it = career.begin(); it != career.end(); ++it ) {
+	for (const auto & it : career) {
 		xml_elem elem = xml_career.add_child("promotion");
-		elem.set_attr(*it, "date");
+		elem.set_attr(it, "date");
 	}
 }
 
@@ -304,8 +304,8 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 		do {
 			angleok = true;
 			tmpa = (rnd()*360.0);
-			for (unsigned j = 0; j < subangles.size(); ++j) {
-				if (tmpa.diff(subangles[j]) < anglediff) {
+			for (auto subangle : subangles) {
+				if (tmpa.diff(subangle) < anglediff) {
 					angleok = false;
 					break;
 				}
@@ -559,8 +559,8 @@ game::game(const string& filename)
 
 game::~game()
 {
-	for (list<pair<double, job*> >::iterator it = jobs.begin(); it != jobs.end(); ++it)
-		delete it->second;
+	for (auto & it : jobs)
+		delete it.second;
 }
 
 
@@ -673,8 +673,8 @@ void game::save(const string& savefilename, const string& description) const
 
 	xml_elem sks = sg.add_child("sunken_ships");
 	sks.set_attr(unsigned(sunken_ships.size()), "nr");
-	for (list<sink_record>::const_iterator it = sunken_ships.begin(); it != sunken_ships.end(); ++it) {
-		it->save(sks);
+	for (const auto & sunken_ship : sunken_ships) {
+		sunken_ship.save(sks);
 	}
 
 	//fixme save and load logbook
@@ -690,8 +690,8 @@ void game::save(const string& savefilename, const string& description) const
 	
 	xml_elem pgs = sg.add_child("pings");
 	pgs.set_attr(unsigned(pings.size()), "nr");
-	for (list<ping>::const_iterator it = pings.begin(); it != pings.end(); ++it) {
-		it->save(pgs);
+	for (const auto & it : pings) {
+		it.save(pgs);
 	}
 
 	xml_elem pi = sg.add_child("player_info");
@@ -770,11 +770,11 @@ void game::simulate(double delta_t)
 	events.clear();
 
 	// check if jobs are to be run
-	for (list<pair<double, job*> >::iterator it = jobs.begin(); it != jobs.end(); ++it) {
-		it->first += delta_t;
-		if (it->first >= it->second->get_period()) {
-			it->first -= it->second->get_period();
-			it->second->run();
+	for (auto & it : jobs) {
+		it.first += delta_t;
+		if (it.first >= it.second->get_period()) {
+			it.first -= it.second->get_period();
+			it.second->run();
 		}
 	}
 
@@ -1221,8 +1221,8 @@ vector<sonar_contact> game::sonar_sea_objects(const sea_object* o) const
 	vector<sonar_contact> sships = sonar_ships(o);
 	vector<sonar_contact> ssubmarines = sonar_submarines(o);
 	sships.reserve(sships.size() + ssubmarines.size());
-	for (unsigned i = 0; i < ssubmarines.size(); ++i)
-		sships.push_back(ssubmarines[i]);
+	for (const auto & ssubmarine : ssubmarines)
+		sships.push_back(ssubmarine);
 	return sships;
 }
 
@@ -1347,9 +1347,8 @@ pair<double, noise> game::sonar_listen_ships(const ship* listener,
 
 	// add noise of vessels
 	vector2 lp = listener->get_pos().xy();
-	for (unsigned i = 0; i < tmpships.size(); ++i) {
-		const ship* s = tmpships[i];
-		vector2 relpos = s->get_pos().xy() - lp;
+	for (auto s : tmpships) {
+			vector2 relpos = s->get_pos().xy() - lp;
 		double distance = relpos.length();
 		double speed = s->get_speed();	// s->get_throttle_speed();
 		bool cavit = s->screw_cavitation();

@@ -274,8 +274,8 @@ void widget::fire_mouse_scroll_event(int wd) {
 void widget::add_action_listener(const action_listener* listener, bool recursive) { 
 	action_listeners.push_back(listener);
 	if(recursive) {
-		for(std::list<widget*>::iterator it = children.begin(); it != children.end(); it++) {
-			(*it)->add_action_listener(listener);
+		for(auto & it : children) {
+			it->add_action_listener(listener);
 		}
 	}
 }
@@ -284,10 +284,10 @@ widget* widget::get_child(const std::string& child, bool recursive)
 {
 	widget* retval = nullptr;
 	
-	for(std::list<widget*>::iterator it = children.begin(); it != children.end(); it++) {
-		if((*it)->name == child) return *it;
+	for(auto & it : children) {
+		if(it->name == child) return it;
 		else if(recursive) {
-			retval = (*it)->get_child(child);
+			retval = it->get_child(child);
 			if(retval!=nullptr) return retval;
 		}
 	}
@@ -297,8 +297,8 @@ widget* widget::get_child(const std::string& child, bool recursive)
 
 void widget::ref_all_backgrounds()
 {
-	for (list<widget*>::iterator it = widgets.begin(); it != widgets.end(); ++it) {
-		widget& w = *(*it);
+	for (auto & it : widgets) {
+		widget& w = *it;
 		if (!w.background_image_name.empty() && w.background == nullptr) {
 			w.background = imagecache().ref(w.background_image_name);
 		}
@@ -307,8 +307,8 @@ void widget::ref_all_backgrounds()
 
 void widget::unref_all_backgrounds()
 {
-	for (list<widget*>::iterator it = widgets.begin(); it != widgets.end(); ++it) {
-		widget& w = *(*it);
+	for (auto & it : widgets) {
+		widget& w = *it;
 		if (w.background) {
 			imagecache().unref(w.background_image_name);
 			w.background = nullptr;
@@ -391,8 +391,8 @@ widget::~widget()
 {
  	if (background)
  		imagecache().unref(background);
-	for (list<widget*>::iterator it = children.begin(); it != children.end(); ++it)
-		delete *it;
+	for (auto & it : children)
+		delete it;
 	if (this == focussed) focussed = parent;
 	if (this == mouseover) mouseover = nullptr;
 }
@@ -487,8 +487,8 @@ void widget::remove_child(widget* w)
 
 void widget::remove_children()
 {
-	for (list<widget*>::iterator it = children.begin(); it != children.end(); ++it) {
-		delete *it;
+	for (auto & it : children) {
+		delete it;
 	}
 	children.clear();
 }
@@ -496,8 +496,8 @@ void widget::remove_children()
 void widget::move_pos(const vector2i& p)
 {
 	pos += p;
-	for (list<widget*>::iterator it = children.begin(); it != children.end(); ++it)
-		(*it)->move_pos(p);
+	for (auto & it : children)
+		it->move_pos(p);
 }
 
 void widget::align(int h, int v)
@@ -530,8 +530,8 @@ void widget::draw() const
 	// fixme: if childs have the same size as parent, don't draw parent?
 	// i.e. do not use stacking then...
 	// maybe make chooseable via argument of run()
-	for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it)
-		(*it)->draw();
+	for (auto it : children)
+		it->draw();
 }
 
 bool widget::compute_focus(int mx, int my)
@@ -663,8 +663,8 @@ void widget::process_input(const SDL_Event& event)
 
 void widget::process_input(const list<SDL_Event>& events)
 {
-	for (list<SDL_Event>::const_iterator it = events.begin(); it != events.end(); ++it) {
-		process_input(*it);
+	for (const auto & event : events) {
+		process_input(event);
 	}
 }
 
@@ -799,9 +799,8 @@ int widget::run(unsigned timeout, bool do_stacking, widget* focussed_at_begin)
 		glClear(GL_COLOR_BUFFER_BIT);
 		sys().prepare_2d_drawing();
 		if (do_stacking) {
-			for (list<widget*>::iterator it = widgets.begin(); it != widgets.end();
-			     ++it)
-				(*it)->draw();
+			for (auto & it : widgets)
+				it->draw();
 		} else {
 			draw();
 		}
@@ -894,8 +893,8 @@ void widget_menu::draw() const
 		globaltheme->myfont->print_c(p.x+entryw/2, p.y+entryh/2, text,
 					     globaltheme->textcol, true);
 	}
-	for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it)
-		(*it)->draw();
+	for (auto it : children)
+		it->draw();
 }
 
 void widget_menu::adjust_buttons(unsigned totalsize)
@@ -1505,10 +1504,10 @@ void widget_fileselector::read_current_dir()
 	nr_dirs = dirs.size()+1;
 	nr_files = files.size();
 	current_dir->append_entry("[..]");
-	for (set<string>::iterator it = dirs.begin(); it != dirs.end(); ++it)
-		current_dir->append_entry(string("[") + *it + string("]"));
-	for (set<string>::iterator it = files.begin(); it != files.end(); ++it)
-		current_dir->append_entry(*it);
+	for (const auto & dir : dirs)
+		current_dir->append_entry(string("[") + dir + string("]"));
+	for (const auto & file : files)
+		current_dir->append_entry(file);
 }
 
 void widget_fileselector::listclick()

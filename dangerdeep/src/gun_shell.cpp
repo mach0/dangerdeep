@@ -132,9 +132,8 @@ void gun_shell::check_collision()
 	dvl = sqrt(dvl);
 	vector3 dv = dv2 * (1.0/dvl);
 	std::vector<ship*> allships = gm.get_all_ships();
-	for (unsigned i = 0; i < allships.size(); ++i) {
-		ship* s = allships[i];
-		vector3 k = s->get_pos() - oldpos;
+	for (auto s : allships) {
+			vector3 k = s->get_pos() - oldpos;
 		double kd = k * dv;
 		double r = s->get_bounding_radius();
 		double tmp = kd*kd - k*k + r*r;

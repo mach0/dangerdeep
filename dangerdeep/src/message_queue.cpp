@@ -56,11 +56,11 @@ message_queue::~message_queue()
 	bool ackqueueempty = true;
 	{
 		mutex_locker ml(mymutex);
-		for (std::list<message*>::iterator it = myqueue.begin(); it != myqueue.end(); ++it) {
-			if ((*it)->needsanswer) {
-				ackqueue.push_back(*it);
+		for (auto & it : myqueue) {
+			if (it->needsanswer) {
+				ackqueue.push_back(it);
 			} else {
-				delete *it;
+				delete it;
 			}
 		}
 		ackcondvar.signal();

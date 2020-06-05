@@ -314,7 +314,7 @@ public:
 			root3_part_of_volume(pow(pv, (float)(1.0/3.0))), relative_mass(m),
 			relative_volume(rv)
 		{
-			for (int i = 0; i < 6; ++i) neighbour_idx[i] = -1;
+			for (int & i : neighbour_idx) i = -1;
 		}
 	};
 

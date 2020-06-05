@@ -340,17 +340,17 @@ void particle::init()
 void particle::deinit()
 {
 	if (--init_count != 0) return;
-	for (unsigned i = 0; i < tex_smoke.size(); ++i)
-		delete tex_smoke[i];
+	for (auto & i : tex_smoke)
+		delete i;
 	delete tex_spray;
-	for (unsigned i = 0; i < tex_fire.size(); ++i)
-		delete tex_fire[i];
-	for (unsigned i = 0; i < explosionbig.size(); ++i)
-		delete explosionbig[i];
-	for (unsigned i = 0; i < explosionsml.size(); ++i)
-		delete explosionsml[i];
-	for (unsigned i = 0; i < watersplashes.size(); ++i)
-		delete watersplashes[i];
+	for (auto & i : tex_fire)
+		delete i;
+	for (auto & i : explosionbig)
+		delete i;
+	for (auto & i : explosionsml)
+		delete i;
+	for (auto & watersplashe : watersplashes)
+		delete watersplashe;
 	delete tex_fireworks;
 	delete tex_fireworks_flare;
 	delete tex_marker;
@@ -380,9 +380,9 @@ void particle::display_all(const vector<particle*>& pts, const vector3& viewpos,
 	pds.reserve(pts.size());
 	// Note! we need to compute pp to sort the particles, so this can't go to vertex shaders.
 	// but this computation is not costly.
-	for (vector<particle*>::const_iterator it = pts.begin(); it != pts.end(); ++it) {
-		vector3 pp = (mvtrans + (*it)->get_pos() - viewpos);
-		pds.emplace_back(*it, pp.square_length(), pp);
+	for (auto pt : pts) {
+		vector3 pp = (mvtrans + pt->get_pos() - viewpos);
+		pds.emplace_back(pt, pp.square_length(), pp);
 	}
 	// this could be a huge performance killer.... fixme
 	// how to solve this problem: particles are rendered in groups most of the time,
@@ -404,9 +404,9 @@ void particle::display_all(const vector<particle*>& pts, const vector3& viewpos,
 	std::sort(pds.begin(), pds.end());
 
 	// draw particles, generate coordinates on the fly
-	for (vector<particle_dist>::iterator it = pds.begin(); it != pds.end(); ++it) {
-		const particle& part = *(it->pt);
-		const vector3& z = -it->projpos;
+	for (auto & pd : pds) {
+		const particle& part = *(pd.pt);
+		const vector3& z = -pd.projpos;
 		// fixme: these computations should be deferred to the vertex shaders.
 		vector3 y = vector3(0, 0, 1);
 		vector3 x = y.cross(z).normal();
@@ -675,10 +675,10 @@ fireworks_particle::fireworks_particle(const vector3& pos)
 	  flares(300)
 {
 	const double flare_speed = 20/2; // meters/second
-	for (unsigned i = 0; i < flares.size(); ++i) {
+	for (auto & flare : flares) {
 		double r = rnd();
 		r = 1.0 - r*r*r;
-		flares[i].velocity = (angle(360*rnd()).direction()) * (r * flare_speed);
+		flare.velocity = (angle(360*rnd()).direction()) * (r * flare_speed);
 	}
 }
 

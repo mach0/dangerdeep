@@ -62,16 +62,14 @@ void music::destructor()
 {
 	map<string, vector<Mix_Chunk*> >::iterator it;
 	for (it = sfx_events.begin(); it != sfx_events.end(); ++it) {
-		for (vector<Mix_Chunk*>::iterator ik = it->second.begin();
-		     ik != it->second.end(); ++ik) {
-			Mix_FreeChunk(*ik);
+		for (auto & ik : it->second) {
+			Mix_FreeChunk(ik);
 		}
 	}
 	sfx_events.clear();
 	for (it = sfx_machines.begin(); it != sfx_machines.end(); ++it) {
-		for (vector<Mix_Chunk*>::iterator ik = it->second.begin();
-		     ik != it->second.end(); ++ik) {
-			Mix_FreeChunk(*ik);
+		for (auto & ik : it->second) {
+			Mix_FreeChunk(ik);
 		}
 	}
 	sfx_machines.clear();
@@ -209,8 +207,8 @@ void music::deinit()
 	}
 
 	// clear playlist
-	for (vector<Mix_Music*>::iterator it = musiclist.begin(); it != musiclist.end(); ++it) {
-		Mix_FreeMusic(*it);
+	for (auto & it : musiclist) {
+		Mix_FreeMusic(it);
 	}
 	musiclist.clear();
 
