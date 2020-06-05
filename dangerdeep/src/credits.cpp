@@ -126,7 +126,7 @@ const char* credits[] = {
 	"...",
 	"...and all i may have forgotten here (write me!)",
 	"(no bockwursts were harmed in the making of this game).",
-	0
+	nullptr
 };
 
 
@@ -442,7 +442,7 @@ plant_set::plant_set(vector<float>& heightdata, unsigned nr, unsigned w, unsigne
 	// this is done only once... hmm are uniforms stored per shader and never changed?! fixme
 	myshader.set_gl_texture(*planttex, loc_textrees, 0);
 	// vertex data per plant are 4 * (3+2+1) floats (3x pos, 2x texc, 1x attr)
-	plantvertexdata.init_data(4 * (3 + 2 + 1) * 4 * plants.size(), 0, GL_STATIC_DRAW);
+	plantvertexdata.init_data(4 * (3 + 2 + 1) * 4 * plants.size(), nullptr, GL_STATIC_DRAW);
 	float* vertexdata = (float*) plantvertexdata.map(GL_WRITE_ONLY);
 	for (unsigned i = 0; i < plants.size(); ++i) {
 		// render each plant
@@ -500,7 +500,7 @@ void plant_set::display(const vector3& viewpos, float zang) const
 	// index data per plant are 4 indices = 16 byte
 	//fixme: why transfer this to a VBO? why not drawing these indices
 	//directly from the array?!
-	plantindexdata.init_data(4 * 4 * plants.size(), 0, GL_STREAM_DRAW);
+	plantindexdata.init_data(4 * 4 * plants.size(), nullptr, GL_STREAM_DRAW);
 	uint32_t* indexdata = (uint32_t*) plantindexdata.map(GL_WRITE_ONLY);
 	for (unsigned i = 0; i < plants.size(); ++i) {
 		// 4 vertices per plant
@@ -536,14 +536,14 @@ void plant_set::display(const vector3& viewpos, float zang) const
 
 	plantvertexdata.bind();
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 6*4, (float*)0 + 0);
-	glTexCoordPointer(2, GL_FLOAT, 6*4, (float*)0 + 3);
-	glVertexAttribPointer(vattr_treesize_idx, 1, GL_FLOAT, GL_FALSE, 6*4, (float*)0 + 5);
+	glVertexPointer(3, GL_FLOAT, 6*4, (float*)nullptr + 0);
+	glTexCoordPointer(2, GL_FLOAT, 6*4, (float*)nullptr + 3);
+	glVertexAttribPointer(vattr_treesize_idx, 1, GL_FLOAT, GL_FALSE, 6*4, (float*)nullptr + 5);
 	glEnableVertexAttribArray(vattr_treesize_idx);
 	plantvertexdata.unbind();
 #if 1 // indices in VBO (3fps faster)
 	plantindexdata.bind();
-	glDrawRangeElements(GL_QUADS, 0, plants.size()*4 - 1, plants.size() * 4, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_QUADS, 0, plants.size()*4 - 1, plants.size() * 4, GL_UNSIGNED_INT, nullptr);
 	plantindexdata.unbind();
 #else
 	glDrawRangeElements(GL_QUADS, 0, plants.size()*4 - 1, plants.size() * 4, GL_UNSIGNED_INT, &pidat[0]);
@@ -787,7 +787,7 @@ void show_credits()
 	int lines_per_page = (768+lineheight-1)/lineheight;
 	int textpos = -lines_per_page;
 	int textlines = 0;
-	for ( ; credits[textlines] != 0; ++textlines);
+	for ( ; credits[textlines] != nullptr; ++textlines);
 	int textendpos = textlines;
 	float lineoffset = 0.0f;
 

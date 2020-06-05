@@ -124,7 +124,7 @@ void freeview_display::post_display(game& gm) const
 
 freeview_display::freeview_display(user_interface& ui_) :
 	user_display(ui_), aboard(false), withunderwaterweapons(true), drawbridge(false),
-	conning_tower(0)
+	conning_tower(nullptr)
 {
 	submarine* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
 	add_pos = sub->get_freeview_position();
@@ -243,7 +243,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 	sea_object* player = gm.get_player();
 
 	for (vector<sea_object*>::const_iterator it = objects.begin(); it != objects.end(); ++it) {
-		bool istorp = (dynamic_cast<const torpedo*>(*it) != 0);
+		bool istorp = (dynamic_cast<const torpedo*>(*it) != nullptr);
 		if (istorp && !withunderwaterweapons)
 			continue;
 
@@ -291,7 +291,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 			glLoadIdentity();
 			glMatrixMode(GL_MODELVIEW);
 		} else {
-			(*it)->display(under_water ? ui.get_caustics().get_map() : NULL);
+			(*it)->display(under_water ? ui.get_caustics().get_map() : nullptr);
 		}
 		glPopMatrix();
 	}
@@ -315,7 +315,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 			vector3 pos = (*it)->get_pos() - viewpos;
 			glTranslated(pos.x, pos.y, pos.z);
 			glRotatef(-(*it)->get_heading().value(), 0, 0, 1);
-			(*it)->display(under_water ? ui.get_caustics().get_map() : NULL);
+			(*it)->display(under_water ? ui.get_caustics().get_map() : nullptr);
 			glPopMatrix();
 		}
 	}

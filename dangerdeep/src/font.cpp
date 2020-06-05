@@ -140,7 +140,7 @@ void font::print_text(int x, int y, const string& text, bool ignore_colors) cons
 
 font::font(const string& basefilename, unsigned char_spacing)
 {
-	if (init_count == 0 && shader.get() == 0) {
+	if (init_count == 0 && shader.get() == nullptr) {
 		static const char* vs =
 			"varying vec2 texcoord;\n"
 			"void main(){\n"

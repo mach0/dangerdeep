@@ -91,10 +91,10 @@ class ocean_wave_generator
 		if (fft_out2) FFT_FREE(fft_out2);
 	}
 	void allocmem() {
-		fft_in = 0;
-		fft_in2 = 0;
-		fft_out = 0;
-		fft_out2 = 0;
+		fft_in = nullptr;
+		fft_in2 = nullptr;
+		fft_out = nullptr;
+		fft_out2 = nullptr;
 		fft_in = (FFT_COMPLEX_TYPE*) FFT_ALLOC(sizeof(FFT_COMPLEX_TYPE) * (N*(N/2+1)));
 		if (!fft_in) { freemem(); throw std::bad_alloc(); }
 		fft_in2 = (FFT_COMPLEX_TYPE*) FFT_ALLOC(sizeof(FFT_COMPLEX_TYPE) * (N*(N/2+1)));

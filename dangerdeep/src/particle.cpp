@@ -47,14 +47,14 @@ using std::string;
 
 unsigned particle::init_count = 0;
 vector<texture*> particle::tex_smoke;
-texture* particle::tex_spray = 0;
+texture* particle::tex_spray = nullptr;
 vector<texture*> particle::tex_fire;
 vector<texture*> particle::explosionbig;
 vector<texture*> particle::explosionsml;
 vector<texture*> particle::watersplashes;
-texture* particle::tex_fireworks = 0;
-texture* particle::tex_fireworks_flare = 0;
-texture* particle::tex_marker = 0;
+texture* particle::tex_fireworks = nullptr;
+texture* particle::tex_fireworks_flare = nullptr;
+texture* particle::tex_marker = nullptr;
 
 #define NR_OF_SMOKE_TEXTURES 16
 #define NR_OF_FIRE_TEXTURES 64

@@ -62,8 +62,8 @@ global_data::~global_data()
 = default;
 
 
-font *font_arial = 0, *font_jphsl = 0, *font_vtremington10 = 0, *font_vtremington12 = 0, 
-     *font_typenr16 = 0;
+font *font_arial = nullptr, *font_jphsl = nullptr, *font_vtremington10 = nullptr, *font_vtremington12 = nullptr, 
+     *font_typenr16 = nullptr;
 
 // display loading progress
 list<string> loading_screen_messages;

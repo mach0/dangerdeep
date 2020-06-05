@@ -29,8 +29,8 @@ bzip_streambuf::bzip_streambuf(std::ostream* os, int blocksize, int _workfactor,
     bzstream.next_out = &out_buffer[0];
     bzstream.avail_in = 0;
     bzstream.avail_out = 0;
-    bzstream.bzalloc = NULL;
-    bzstream.bzfree = NULL;
+    bzstream.bzalloc = nullptr;
+    bzstream.bzfree = nullptr;
 
     setp(&in_buffer.front(), &in_buffer[0] + buffer_size - 1);
     state = BZ2_bzCompressInit(&bzstream, blocksize, 0, workfactor);
@@ -47,8 +47,8 @@ bzip_streambuf::bzip_streambuf(std::istream* is, int _buffer_size, int _put_back
     bzstream.next_out = &out_buffer[0];
     bzstream.avail_in = 0;
     bzstream.avail_out = 0;
-    bzstream.bzalloc = NULL;
-    bzstream.bzfree = NULL;
+    bzstream.bzalloc = nullptr;
+    bzstream.bzfree = nullptr;
 
     state = BZ2_bzDecompressInit(&bzstream, 0, small);
     if (state < 0) throw bzip_failure(state);

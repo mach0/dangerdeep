@@ -65,7 +65,7 @@ int mymain(list<string>& args)
 	install_segfault_handler();
 
 	// randomize
-	srand(time(0));
+	srand(time(nullptr));
 
 	// command line argument parsing
 	res_x = 1024;
@@ -118,7 +118,7 @@ int mymain(list<string>& args)
 	glEnable(GL_LIGHT0);
 
  	font_arial = new font(get_font_dir() + "font_arial");
- 	sys().draw_console_with(font_arial, 0);
+ 	sys().draw_console_with(font_arial, nullptr);
 
 	run();
 

@@ -105,8 +105,8 @@ system::parameters::parameters(double near_z_, double far_z_, unsigned res_x, un
 system::system(const parameters& params_) :
 	params(params_),
 	show_console(false),
-	console_font(0),
-	console_background(0),
+	console_font(nullptr),
+	console_background(nullptr),
 	draw_2d(false),
 	time_passed_while_sleeping(0),
 	sleep_time(0),
@@ -120,11 +120,11 @@ system::system(const parameters& params_) :
 		throw sdl_error("video init failed");
 
 	if (params.window_caption.length() > 0) {
-		SDL_WM_SetCaption(params.window_caption.c_str(), NULL);
+		SDL_WM_SetCaption(params.window_caption.c_str(), nullptr);
 	}
 
 	// request available SDL video modes
-	SDL_Rect** modes = SDL_ListModes(NULL, SDL_FULLSCREEN|SDL_HWSURFACE);
+	SDL_Rect** modes = SDL_ListModes(nullptr, SDL_FULLSCREEN|SDL_HWSURFACE);
 	for (unsigned i = 0; modes[i]; ++i) {
 		available_resolutions.emplace_back(modes[i]->w, modes[i]->h);
 	}
@@ -681,7 +681,7 @@ bool system::extension_supported(const string& s) const
 
 font& system::register_font(const std::string& basedir, const std::string& basefilename, unsigned char_spacing)
 {
-	std::pair<std::map<std::string, font*>::iterator, bool> ir = fonts.insert(std::make_pair(basefilename, (font*)0));
+	std::pair<std::map<std::string, font*>::iterator, bool> ir = fonts.insert(std::make_pair(basefilename, (font*)nullptr));
 	if (!ir.second)
 		throw std::runtime_error("tried to register font twice!");
 	ir.first->second = new font(basedir + basefilename, char_spacing);

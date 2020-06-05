@@ -331,7 +331,7 @@ model::mesh* heightfield(unsigned resx, unsigned resy, const vector<Uint8>& heig
 			     float xnoise, float ynoise, float znoise,
 			     const string& name)
 {
-	if (resx < 2 || resy < 2 || heights.size() != resx*resy) return 0;
+	if (resx < 2 || resy < 2 || heights.size() != resx*resy) return nullptr;
 	model::mesh* m = new model::mesh("heightfield");
 	m->name = name;
 	unsigned nrvert = resx*resy;

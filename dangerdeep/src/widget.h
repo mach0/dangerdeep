@@ -207,7 +207,7 @@ public:
 	virtual const texture* get_background_tex() const { return background_tex; }
 	//Note! such a function is a bad idea, as image is not unref'd then at the cache!
 	//virtual void set_background(const image* b) { background = b; background_tex = 0; }
-	virtual void set_background(const texture* t) { background_tex = t; background = 0; }
+	virtual void set_background(const texture* t) { background_tex = t; background = nullptr; }
 	virtual void set_return_value(int rv) { retval = rv; }
 	virtual int get_return_value() const { return retval; }
 	virtual bool was_closed() const { return closeme; }
@@ -247,7 +247,7 @@ public:
 	// show & exec. widget, automatically disable widgets below
 	// run() runs for "time" milliseconds (or forever if time == 0), then returns
 	// if do_stacking is false only this widget is drawn, but none of its parents
-	virtual int run(unsigned timeout = 0, bool do_stacking = true, widget* focussed_at_begin = 0);
+	virtual int run(unsigned timeout = 0, bool do_stacking = true, widget* focussed_at_begin = nullptr);
 	virtual void close(int val);	// close this widget (stops run() on next turn, returns val)
 	virtual void open();	// "open" this widget (reverts what close() did)
 	
@@ -265,9 +265,9 @@ protected:
 	widget_text(const widget_text& );
 	widget_text& operator= (const widget_text& );
 public:
-	widget_text(int x, int y, int w, int h, const std::string& text_, widget* parent_ = 0, bool sunken_ = false)
+	widget_text(int x, int y, int w, int h, const std::string& text_, widget* parent_ = nullptr, bool sunken_ = false)
 		: widget(x, y, w, h, text_, parent_), sunken(sunken_) {}
-	widget_text(xml_elem& elem, widget* _parent = 0);
+	widget_text(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
 	virtual void set_text_and_resize(const std::string& s);
 };
@@ -281,9 +281,9 @@ protected:
 	widget_checkbox(const widget_checkbox& );
 	widget_checkbox& operator= (const widget_checkbox& );
 public:
-	widget_checkbox(int x, int y, int w, int h, bool checked_, const std::string& text_, widget* parent_ = 0)
+	widget_checkbox(int x, int y, int w, int h, bool checked_, const std::string& text_, widget* parent_ = nullptr)
 		: widget(x, y, w, h, text_, parent_), checked(checked_) {}
-	widget_checkbox(xml_elem& elem, widget* _parent = 0);
+	widget_checkbox(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
 	void on_click(int mx, int my, int mb) override;
 	bool is_checked() const { return checked; }
@@ -300,8 +300,8 @@ protected:
 	widget_button& operator= (const widget_button& );
 public:
 	widget_button(int x, int y, int w, int h, const std::string& text_,
-		      widget* parent_ = 0, const std::string& backgrimg = std::string()) : widget(x, y, w, h, text_, parent_, backgrimg), pressed(false) {}
-	widget_button(xml_elem& elem, widget* _parent = 0);
+		      widget* parent_ = nullptr, const std::string& backgrimg = std::string()) : widget(x, y, w, h, text_, parent_, backgrimg), pressed(false) {}
+	widget_button(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
 	void on_click(int mx, int my, int mb) override;
 	void on_release() override;
@@ -316,7 +316,7 @@ class widget_caller_button : public widget_button
 	Func func;
 public:
 	widget_caller_button(Obj* obj_, Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = 0)
+		const std::string& text = "", widget* parent = nullptr)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_) {}
 	void on_release() override { widget_button::on_release(); (obj->*func)(); }
 };
@@ -329,7 +329,7 @@ class widget_caller_arg_button : public widget_button
 	Arg arg;
 public:
 	widget_caller_arg_button(Obj* obj_, Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = 0)
+		const std::string& text = "", widget* parent = nullptr)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_), arg(arg_) {}
 	void on_release() override { widget_button::on_release(); (obj->*func)(arg); }
 };
@@ -340,7 +340,7 @@ class widget_func_button : public widget_button
 	Func func;
 public:
 	widget_func_button(Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = 0)
+		const std::string& text = "", widget* parent = nullptr)
 		: widget_button(x, y, w, h, text, parent), func(func_) {}
 	void on_release() override { widget_button::on_release(); func(); }
 };
@@ -352,7 +352,7 @@ class widget_func_arg_button : public widget_button
 	Arg arg;
 public:
 	widget_func_arg_button(Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = 0)
+		const std::string& text = "", widget* parent = nullptr)
 		: widget_button(x, y, w, h, text, parent), func(func_), arg(arg_) {}
 	void on_release() override { widget_button::on_release(); func(arg); }
 };
@@ -364,7 +364,7 @@ class widget_set_button : public widget_button
 	Obj value;
 public:
 	widget_set_button(Obj& obj_, const Obj& val, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = 0)
+		const std::string& text = "", widget* parent = nullptr)
 		: widget_button(x, y, w, h, text, parent), obj(obj_), value(val) {}
 	void on_release() override { widget_button::on_release(); obj = value; }
 };
@@ -377,7 +377,7 @@ class widget_caller_checkbox : public widget_checkbox
 public:
 	widget_caller_checkbox(Obj* obj_, Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
 			       bool checked = false,
-			       const std::string& text = "", widget* parent = 0)
+			       const std::string& text = "", widget* parent = nullptr)
 		: widget_checkbox(x, y, w, h, checked, text, parent), obj(obj_), func(func_) {}
 	void on_change() override { widget_checkbox::on_change(); (obj->*func)(); }
 };
@@ -397,11 +397,11 @@ protected:
 	
 public:
 	widget_menu(int x, int y, int w, int h, const std::string& text_, bool horizontal_ = false,
-		    widget* parent_ = 0);
-	widget_menu(xml_elem& elem, widget* _parent = 0);
+		    widget* parent_ = nullptr);
+	widget_menu(xml_elem& elem, widget* _parent = nullptr);
 	void set_entry_spacing(int spc) { entryspacing = spc; }
 	void adjust_buttons(unsigned totalsize);	// width or height
-	widget_button* add_entry(const std::string& s, widget_button* wb = 0); // wb's text is always set to s
+	widget_button* add_entry(const std::string& s, widget_button* wb = nullptr); // wb's text is always set to s
 	int get_selected() const;
 	void draw() const override;
 };
@@ -423,8 +423,8 @@ protected:
 	widget_scrollbar(const widget_scrollbar& );
 	widget_scrollbar& operator= (const widget_scrollbar& );
 public:
-	widget_scrollbar(int x, int y, int w, int h, widget* parent_ = 0);
-	widget_scrollbar(xml_elem& elem, widget* _parent = 0);
+	widget_scrollbar(int x, int y, int w, int h, widget* parent_ = nullptr);
+	widget_scrollbar(xml_elem& elem, widget* _parent = nullptr);
 	void set_nr_of_positions(unsigned s);
 	unsigned get_current_position() const;
 	void set_current_position(unsigned p);
@@ -451,8 +451,8 @@ protected:
 	widget_list(const widget_list& );
 	widget_list& operator= (const widget_list& );
 public:
-	widget_list(int x, int y, int w, int h, widget* parent_ = 0);
-	widget_list(xml_elem& elem, widget* _parent = 0);
+	widget_list(int x, int y, int w, int h, widget* parent_ = nullptr);
+	widget_list(xml_elem& elem, widget* _parent = nullptr);
 	void delete_entry(unsigned n);
 	void insert_entry(unsigned n, const std::string& s);
 	void append_entry(const std::string& s);
@@ -486,9 +486,9 @@ protected:
 	widget_edit(const widget_edit& );
 	widget_edit& operator= (const widget_edit& );
 public:
-	widget_edit(int x, int y, int w, int h, const std::string& text_, widget* parent_ = 0)
+	widget_edit(int x, int y, int w, int h, const std::string& text_, widget* parent_ = nullptr)
 		: widget(x, y, w, h, text_, parent_), cursorpos(text_.length()) {}
-	widget_edit(xml_elem& elem, widget* _parent = 0);
+	widget_edit(xml_elem& elem, widget* _parent = nullptr);
 	void set_text(const std::string& s) override { widget::set_text(s); cursorpos = s.length(); }
 	void draw() const override;
 	void on_char(const SDL_keysym& ks) override;
@@ -520,8 +520,8 @@ protected:
 	widget_fileselector(const widget_fileselector& );
 	widget_fileselector& operator= (const widget_fileselector& );
 public:
-	widget_fileselector(int x, int y, int w, int h, const std::string& text_, widget* parent_ = 0);
-	widget_fileselector(xml_elem& elem, widget* _parent = 0);
+	widget_fileselector(int x, int y, int w, int h, const std::string& text_, widget* parent_ = nullptr);
+	widget_fileselector(xml_elem& elem, widget* _parent = nullptr);
 	std::string get_filename() const { return current_path->get_text() + current_filename->get_text(); }
 	void listclick();
 };
@@ -544,8 +544,8 @@ protected:
 	widget_3dview(const widget_3dview& );
 	widget_3dview& operator= (const widget_3dview& );
 public:
-	widget_3dview(int x, int y, int w, int h, std::unique_ptr<model> mdl, color bgcol, widget* parent_ = 0);
-	widget_3dview(xml_elem& elem, widget* _parent = 0);
+	widget_3dview(int x, int y, int w, int h, std::unique_ptr<model> mdl, color bgcol, widget* parent_ = nullptr);
+	widget_3dview(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
 	void set_model(std::unique_ptr<model> mdl_);
 	model* get_model() { return mdl.get(); }
@@ -570,8 +570,8 @@ public:
 	/// Note: height is for full widget, so give enough space for descriptions + text + slider bar
 	widget_slider(int x, int y, int w, int h, const std::string& text_,
 		      int minv, int maxv, int currv, int descrstep,
-		      widget* parent_ = 0);
-	widget_slider(xml_elem& elem, widget* _parent = 0);
+		      widget* parent_ = nullptr);
+	widget_slider(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
 	void on_char(const SDL_keysym& ks) override;
 	void on_click(int mx, int my, int mb) override;

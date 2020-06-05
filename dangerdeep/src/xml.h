@@ -100,14 +100,14 @@ class xml_elem
 		const xml_elem& parent;
 		TiXmlElement* e;
 		bool samename;	// iterate over any children or only over children with same name
-		iterator(const xml_elem& parent_, TiXmlElement* elem_ = 0, bool samename_ = true)
+		iterator(const xml_elem& parent_, TiXmlElement* elem_ = nullptr, bool samename_ = true)
 			: parent(parent_), e(elem_), samename(samename_) {}
 
 		friend class xml_elem;
 	public:
 		xml_elem elem() const;
 		void next();
-		bool end() const { return e == 0; }
+		bool end() const { return e == nullptr; }
 	};
 	friend class iterator;
 

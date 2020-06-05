@@ -71,7 +71,7 @@ public:
 				texture* mytexture;
 				unsigned ref_count;
 				std::string filename;
-				skin() : mytexture(0), ref_count(0) {}
+				skin() : mytexture(nullptr), ref_count(0) {}
 			};
 
 			// layout-name to skin mapping
@@ -108,13 +108,13 @@ public:
 		
 		material(const std::string& nm = "Unnamed material");
 		virtual ~material() = default;
-		virtual void set_gl_values(const texture *caustic_map = 0) const;
+		virtual void set_gl_values(const texture *caustic_map = nullptr) const;
 		virtual void set_gl_values_mirror_clip() const;
 		virtual void register_layout(const std::string& name, const std::string& basepath);
 		virtual void unregister_layout(const std::string& name);
 		virtual void set_layout(const std::string& layout);
 		virtual void get_all_layout_names(std::set<std::string>& result) const;
-		virtual bool needs_texcoords() const { return colormap.get() != 0; }
+		virtual bool needs_texcoords() const { return colormap.get() != nullptr; }
 		virtual bool use_default_shader() const { return true; }
 	};
 
@@ -125,7 +125,7 @@ public:
 		glsl_shader_setup shadersetup;
 	public:
 		material_glsl(const std::string& nm, const std::string& vsfn, const std::string& fsfn);
-		void set_gl_values(const texture *caustic_map = 0) const override;
+		void set_gl_values(const texture *caustic_map = nullptr) const override;
 		void set_gl_values_mirror_clip() const override;
 		void register_layout(const std::string& name, const std::string& basepath) override;
 		void unregister_layout(const std::string& name) override;
@@ -213,7 +213,7 @@ public:
 		unsigned get_nr_of_triangles() const;
 		void get_triangle(unsigned triangle, Uint32 indices[3]) const { ((*this).*(get_triangle_ptr))(triangle, indices); }
 
-		void display(const texture *caustic_map = 0) const;
+		void display(const texture *caustic_map = nullptr) const;
 		void display_mirror_clip() const;
 		void compute_vertex_bounds();
 		void compute_bounds(vector3f& totmin, vector3f& totmax, const matrix4f& transmat);
@@ -332,7 +332,7 @@ protected:
 		float rotat_angle_min;	// in degrees
 		float rotat_angle_max;	// in degrees
 		std::vector<object> children;
-		object(unsigned id_ = 0, const std::string& nm = "???", mesh* m = 0)
+		object(unsigned id_ = 0, const std::string& nm = "???", mesh* m = nullptr)
 			: id(id_), name(nm), mymesh(m), rotat_angle(0), rotat_angle_min(0),
 			  rotat_angle_max(0) { rotat_axis.z = 1; }
 		bool set_angle(float ang);
@@ -341,7 +341,7 @@ protected:
 		object* find(const std::string& name);
 		const object* find(unsigned id) const;
 		const object* find(const std::string& name) const;
-		void display(const texture *caustic_map = 0) const;
+		void display(const texture *caustic_map = nullptr) const;
 		void display_mirror_clip() const;
 		void compute_bounds(vector3f& min, vector3f& max, const matrix4f& transmat) const;
 		matrix4f get_transformation() const;
@@ -440,7 +440,7 @@ public:
 	void set_layout(const std::string& layout = default_layout);
 	// extend method by matrix4(f) for additional transformation, to avoid
 	// that the user has to du glPushMatrix/manipulate/glPopMatrix
-	void display(const texture *caustic_map = 0) const;
+	void display(const texture *caustic_map = nullptr) const;
 	/** display model but clip away coords with z < 0 in world space.
 	    @note! set up texture matrix for unit 1 so that it contains
 	    object to world-space transformation, and set up modelview
@@ -521,7 +521,7 @@ public:
 	/// get voxel data by position, may return 0 for not existing voxels
 	const voxel* get_voxel_by_pos(const vector3i& v) const {
 		int i = voxel_index_by_pos[(v.z * voxel_resolution.y + v.y) * voxel_resolution.x + v.x];
-		return (i >= 0) ? &voxel_data[i] : (const voxel*)0;
+		return (i >= 0) ? &voxel_data[i] : (const voxel*)nullptr;
 	}
 
 	/// get transformation of root node (object tree translation + mesh transformation)

@@ -38,7 +38,7 @@ protected:
 		int direction;
 		int& page;
 	public:
-		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =0);
+		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =nullptr);
 		void draw() const override;
 		void on_release () override;		
 	};

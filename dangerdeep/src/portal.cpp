@@ -135,7 +135,7 @@ int mymain(list<string>& args)
 	install_segfault_handler();
 
 	// randomize
-	srand(time(0));
+	srand(time(nullptr));
 
 	// command line argument parsing
 	res_x = 1024;
@@ -199,7 +199,7 @@ int mymain(list<string>& args)
 	glEnable(GL_LIGHT0);
 
  	font_arial = new font(get_font_dir() + "font_arial");
- 	sys().draw_console_with(font_arial, 0);
+ 	sys().draw_console_with(font_arial, nullptr);
 
 	run();
 
@@ -431,7 +431,7 @@ bool sector::check_movement(const vector3& currpos, const vector3& nextpos, sect
 	// corner points of the near rectangle of the viewing frustum. assume sqrt(3*znear^2) or so...
 	// znear=0.1 -> dist2wall = 0.173...
 	const double DIST2WALL = 0.175;
-	nextseg = 0;
+	nextseg = nullptr;
 	if (nextpos.x < basepos.x + DIST2WALL && (walls & 4)) return false;
 	if (nextpos.x > basepos.x + 1 - DIST2WALL && (walls & 8)) return false;
 	if (nextpos.y < basepos.y + DIST2WALL && (walls & 2)) return false;
@@ -640,7 +640,7 @@ void run()
 			+ upward * mv_upward * delta_t * move_speed;
 
 		// check for sector switch by movement
-		sector* seg = 0;
+		sector* seg = nullptr;
 		bool movementok = currsector->check_movement(oldpos, pos, seg);
 		if (!movementok) {
 			if (seg) {

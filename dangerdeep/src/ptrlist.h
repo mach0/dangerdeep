@@ -52,7 +52,7 @@ class ptrlist
 
 	// exception safe, so first create space, then store
 	void push_back(std::unique_ptr<T> ptr) {
-		data.push_back(0);
+		data.push_back(nullptr);
 		data.back() = ptr.release();
 	}
 	void push_front(std::unique_ptr<T> ptr) {

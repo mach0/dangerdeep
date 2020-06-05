@@ -45,7 +45,7 @@ to get ASM source.
 bool glsl_shader::enable_hqsfx = false;
 bool glsl_shader::is_nvidia_card = false;
 
-const glsl_program* glsl_program::used_program = 0;
+const glsl_program* glsl_program::used_program = nullptr;
 
 
 std::unique_ptr<glsl_shader_setup> glsl_shader_setup::default_opaque;
@@ -211,7 +211,7 @@ glsl_shader::glsl_shader(const string& filename, type stype, const glsl_shader::
 		}
 
 		const char* prg_cstr = prg.c_str();
-		glShaderSource(id, 1, &prg_cstr, 0);
+		glShaderSource(id, 1, &prg_cstr, nullptr);
 
 		glCompileShader(id);
 
@@ -448,14 +448,14 @@ unsigned glsl_program::get_vertex_attrib_index(const std::string& name) const
 void glsl_program::use_fixed()
 {
 	glUseProgram(0);
-	used_program = 0;
+	used_program = nullptr;
 }
 
 
 
 bool glsl_program::is_fixed_in_use()
 {
-	return used_program == 0;
+	return used_program == nullptr;
 }
 
 

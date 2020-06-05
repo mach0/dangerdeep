@@ -103,7 +103,7 @@ static GLuint clampmodes[texture::NR_OF_CLAMPING_MODES] = {
 
 
 sdl_image::sdl_image(const std::string& filename)
-	: img(0)
+	: img(nullptr)
 {
 	// get extension
 	string::size_type st = filename.rfind(".");
@@ -131,7 +131,7 @@ sdl_image::sdl_image(const std::string& filename)
 			throw texture::texerror(fnrgb, ".jpg: no 3 byte/pixel RGB image!");
 
 		if (teximagea->format->BytesPerPixel != 1
-		    || teximagea->format->palette == 0
+		    || teximagea->format->palette == nullptr
 		    || teximagea->format->palette->ncolors != 256
 		    || ((teximagea->flags & SDL_SRCCOLORKEY) != 0))
 			throw texture::texerror(fna, ".png: no 8bit greyscale non-alpha-channel image!");
@@ -270,7 +270,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 */
 
 	vector<Uint8> data;
-	if (fmt.palette != 0) {
+	if (fmt.palette != nullptr) {
 		//old color table code, does not work
 		//glEnable(GL_COLOR_TABLE);
 		if (bpp != 1)
@@ -860,7 +860,7 @@ texture::texture(unsigned w, unsigned h, int format_,
 	
 	// initialize texel data with empty pixels
 	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, w, h, 0, GL_RGB,
-		     GL_UNSIGNED_BYTE, (void*)0);
+		     GL_UNSIGNED_BYTE, (void*)nullptr);
 }
 
 texture::texture(const std::string& filename, bool dummy, mapping_mode mapping_, clamping_mode clamp)
@@ -909,7 +909,7 @@ texture::texture(const std::string& filename, bool dummy, mapping_mode mapping_,
 
 		m_size = ((m_width+3)/4) * ((m_height+3)/4) * block_size;
 
-		glTexImage2D(GL_TEXTURE_2D, i,  image_data.format, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, i,  image_data.format, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 		glCompressedTexSubImage2DARB(GL_TEXTURE_2D,i, 0, 0, m_width, m_height, image_data.format, m_size, &image_data.pixels[m_offset]);
 
 		m_offset += m_size;
@@ -956,7 +956,7 @@ void texture::sub_image(const sdl_image& sdlimage, int xoff, int yoff, unsigned 
 	unsigned bpp = fmt.BytesPerPixel;
 
 	vector<Uint8> data;
-	if (fmt.palette != 0) {
+	if (fmt.palette != nullptr) {
 		// no color tables, fixme
 		return;
 	}
@@ -1228,7 +1228,7 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 		glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
 	
 	glTexImage3D(GL_TEXTURE_3D, 0, format, w, h, d, 0, GL_RGB,
-		     GL_UNSIGNED_BYTE, (void*)0);
+		     GL_UNSIGNED_BYTE, (void*)nullptr);
 	glBindTexture(GL_TEXTURE_3D, 0);
 }
 

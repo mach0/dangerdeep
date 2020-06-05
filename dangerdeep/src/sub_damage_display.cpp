@@ -123,7 +123,7 @@ void sub_damage_display::display ( class game& gm ) const
 			if (r.x == 0) continue;	// display test hack fixme
 		int x = r.x + r.w/2 - 16, y = r.y + r.h/2 - 16 + ydrawdiff;
 		if (parts[i].status > 0.0) {
-			const texture* t = 0;
+			const texture* t = nullptr;
 			if (parts[i].status <= 0.25) t = repairlight.get();
 			else if (parts[i].status <= 0.50) t = repairmedium.get();
 			else if (parts[i].status <= 0.75) t = repairheavy.get();

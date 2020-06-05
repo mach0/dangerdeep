@@ -135,7 +135,7 @@ model::object* model::object::find(unsigned id_)
 		object* obj = it->find(id_);
 		if (obj) return obj;
 	}
-	return 0;
+	return nullptr;
 }
 
 
@@ -147,7 +147,7 @@ model::object* model::object::find(const std::string& name_)
 		object* obj = it->find(name_);
 		if (obj) return obj;
 	}
-	return 0;
+	return nullptr;
 }
 
 
@@ -159,7 +159,7 @@ const model::object* model::object::find(unsigned id_) const
 		const object* obj = it->find(id_);
 		if (obj) return obj;
 	}
-	return 0;
+	return nullptr;
 }
 
 
@@ -171,7 +171,7 @@ const model::object* model::object::find(const std::string& name_) const
 		const object* obj = it->find(name_);
 		if (obj) return obj;
 	}
-	return 0;
+	return nullptr;
 }
 
 
@@ -302,7 +302,7 @@ model::model()
 
 model::model(const string& filename_, bool use_material)
 	: filename(filename_),
-	  scene(0xffffffff, "<scene>", 0)
+	  scene(0xffffffff, "<scene>", nullptr)
 {
 	if (init_count == 0) render_init();
 	++init_count;
@@ -340,7 +340,7 @@ model::model(const string& filename_, bool use_material)
 	// clear material info if requested
 	if (!use_material) {
 		for (vector<mesh*>::iterator it = meshes.begin(); it != meshes.end(); ++it)
-			(*it)->mymaterial = 0;
+			(*it)->mymaterial = nullptr;
 		for (vector<material*>::iterator it = materials.begin(); it != materials.end(); ++it)
 			delete *it;
 		materials.clear();
@@ -651,7 +651,7 @@ bool model::mesh::compute_tangentx(unsigned i0, unsigned i1, unsigned i2)
 
 model::mesh::mesh(const string& nm)
 	: name(nm),
-	  mymaterial(0),
+	  mymaterial(nullptr),
 	  vbo_positions(false),
 	  vbo_normals(false),
 	  vbo_texcoords(false),
@@ -671,7 +671,7 @@ model::mesh::mesh(unsigned w, unsigned h, const std::vector<float>& heights, con
 		  const vector3f& trans,
 		  const std::string& nm)
 	: name(nm),
-	  mymaterial(0),
+	  mymaterial(nullptr),
 	  vbo_positions(false),
 	  vbo_normals(false),
 	  vbo_texcoords(false),
@@ -856,7 +856,7 @@ bool model::mesh::is_degenerated(const vector3f& v0, const vector3f& v1, const v
 void model::mesh::compile()
 {
 	bool has_texture_u0 = false, has_texture_u1 = false;
-	if (mymaterial != 0) {
+	if (mymaterial != nullptr) {
 		has_texture_u0 = mymaterial->needs_texcoords();
 		if (mymaterial->normalmap.get())
 			has_texture_u1 = true;
@@ -875,7 +875,7 @@ void model::mesh::compile()
 	// give tangents as texture coordinates for unit 1.
 	if (has_texture_u0 && tangentsx.size() == vs) {
 		if (mymaterial->use_default_shader()) {
-			vbo_tangents_righthanded.init_data(4 * sizeof(float) * vs, 0, GL_STATIC_DRAW);
+			vbo_tangents_righthanded.init_data(4 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
 			float* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
 			for (unsigned i = 0; i < vs; ++i) {
 				xdata[4*i+0] = tangentsx[i].x;
@@ -889,7 +889,7 @@ void model::mesh::compile()
 			gss.use();
 			vertex_attrib_index = gss.get_vertex_attrib_index("tangentx_righthanded");
 		} else {
-			vbo_tangents_righthanded.init_data(3 * sizeof(float) * vs, 0, GL_STATIC_DRAW);
+			vbo_tangents_righthanded.init_data(3 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
 			float* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
 			for (unsigned i = 0; i < vs; ++i) {
 				xdata[3*i+0] = tangentsx[i].x;
@@ -1356,7 +1356,7 @@ const bv_tree& model::mesh::get_bv_tree() const
 
 
 model::material::map::map()
-	: tex(0), ref_count(0)
+	: tex(nullptr), ref_count(0)
 {
 }
 
@@ -1414,7 +1414,7 @@ void model::material::map::unregister_layout(const std::string& name)
 		--(it->second.ref_count);
 		if (it->second.ref_count == 0) {
 			delete it->second.mytexture;
-			it->second.mytexture = 0;
+			it->second.mytexture = nullptr;
 		}
 	} else {
 		if (ref_count == 0)
@@ -1451,7 +1451,7 @@ int model::get_object_id_by_name(const std::string& name) const
 bool model::object_exists(unsigned objid) const
 {
 	const object* obj = scene.find(objid);
-	return 0 != obj;
+	return nullptr != obj;
 }
 
 
@@ -1721,7 +1721,7 @@ void model::material_glsl::get_all_layout_names(std::set<std::string>& result) c
 void model::mesh::display(const texture *caustic_map) const
 {
 	// set up material
-	if (mymaterial != 0) {
+	if (mymaterial != nullptr) {
 		mymaterial->set_gl_values(caustic_map);
 		if (mymaterial->two_sided) {
 			glDisable(GL_CULL_FACE);
@@ -1733,7 +1733,7 @@ void model::mesh::display(const texture *caustic_map) const
 	}
 
 	bool has_texture_u0 = false, has_texture_u1 = false;
-	if (mymaterial != 0) {
+	if (mymaterial != nullptr) {
 		has_texture_u0 = mymaterial->needs_texcoords();
 		if (mymaterial->normalmap.get())
 			has_texture_u1 = true;
@@ -1741,17 +1741,17 @@ void model::mesh::display(const texture *caustic_map) const
 
 	// set up vertex data.
 	vbo_positions.bind();
-	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), 0);
+	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), nullptr);
 
 	// set up normals (only used with shaders or for plain rendering without normal maps).
 	vbo_normals.bind();
-	glNormalPointer(GL_FLOAT, sizeof(vector3f), 0);
+	glNormalPointer(GL_FLOAT, sizeof(vector3f), nullptr);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
 	// without pixel shaders texture coordinates must be set for both texture units and are the same.
 	if (has_texture_u0 && texcoords.size() == vertices.size()) {
 		vbo_texcoords.bind();
-		glTexCoordPointer(2, GL_FLOAT, sizeof(vector2f), 0);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(vector2f), nullptr);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
@@ -1761,12 +1761,12 @@ void model::mesh::display(const texture *caustic_map) const
 		if (mymaterial->use_default_shader()) {
 			vbo_tangents_righthanded.bind();
 			glVertexAttribPointer(vertex_attrib_index, 4, GL_FLOAT, GL_FALSE,
-					      0, 0);
+					      0, nullptr);
 			glEnableVertexAttribArray(vertex_attrib_index);
 		} else {
 			vbo_tangents_righthanded.bind();
 			glVertexAttribPointer(vertex_attrib_index, 3, GL_FLOAT, GL_FALSE,
-					      0, 0);
+					      0, nullptr);
 			glEnableVertexAttribArray(vertex_attrib_index);
 		}
 	}
@@ -1776,7 +1776,7 @@ void model::mesh::display(const texture *caustic_map) const
 
 	// render geometry, glDrawRangeElements is faster than glDrawElements.
 	index_data.bind();
-	glDrawRangeElements(gl_primitive_type(), 0, vertices.size()-1, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(gl_primitive_type(), 0, vertices.size()-1, indices.size(), GL_UNSIGNED_INT, nullptr);
 	index_data.unbind();
 
 	// maybe: add code to show normals as Lines
@@ -1786,7 +1786,7 @@ void model::mesh::display(const texture *caustic_map) const
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);	// disable tex0
-	if (mymaterial != 0 && mymaterial->two_sided) {
+	if (mymaterial != nullptr && mymaterial->two_sided) {
 		glEnable(GL_CULL_FACE);
 	}
 	
@@ -1800,7 +1800,7 @@ void model::mesh::display_mirror_clip() const
 {
 	// matrix mode is GL_MODELVIEW and active texture is GL_TEXTURE1 here
 	bool has_texture_u0 = false;
-	if (mymaterial != 0) {
+	if (mymaterial != nullptr) {
 		has_texture_u0 = mymaterial->needs_texcoords();
 		mymaterial->set_gl_values_mirror_clip();
 	} else {
@@ -1808,17 +1808,17 @@ void model::mesh::display_mirror_clip() const
 	}
 
 	vbo_positions.bind();
-	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), 0);
+	glVertexPointer(3, GL_FLOAT, sizeof(vector3f), nullptr);
 
 	// basic lighting, we need normals
 	vbo_normals.bind();
-	glNormalPointer(GL_FLOAT, sizeof(vector3f), 0);
+	glNormalPointer(GL_FLOAT, sizeof(vector3f), nullptr);
 	glEnableClientState(GL_NORMAL_ARRAY);
 
 	// and texture coordinates
 	if (has_texture_u0 && texcoords.size() == vertices.size()) {
 		vbo_texcoords.bind();
-		glTexCoordPointer(2, GL_FLOAT, sizeof(vector2f), 0);
+		glTexCoordPointer(2, GL_FLOAT, sizeof(vector2f), nullptr);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
 
@@ -1827,7 +1827,7 @@ void model::mesh::display_mirror_clip() const
 
 	// render geometry
 	index_data.bind();
-	glDrawRangeElements(gl_primitive_type(), 0, vertices.size()-1, indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(gl_primitive_type(), 0, vertices.size()-1, indices.size(), GL_UNSIGNED_INT, nullptr);
 	index_data.unbind();
 
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -2276,7 +2276,7 @@ void model::material::map::write_to_dftd_model_file(xml_elem& parent,
 
 
 model::material::map::map(const xml_elem& parent)
-	: tex(0), ref_count(0)
+	: tex(nullptr), ref_count(0)
 {
 	if (!parent.has_attr("filename"))
 		throw xml_error("no filename given for materialmap!", parent.doc_name());
@@ -2379,7 +2379,7 @@ void model::read_dftd_model_file(const std::string& filename)
 			// materials.
 			bool is_shader_material = e.has_child("shader");
 			std::unique_ptr<material> mat;
-			material_glsl* matglsl = 0;
+			material_glsl* matglsl = nullptr;
 			if (is_shader_material) {
 				xml_elem es = e.child("shader");
 				matglsl = new material_glsl(e.attr("name"),
@@ -2427,7 +2427,7 @@ void model::read_dftd_model_file(const std::string& filename)
 			if (is_shader_material)
 				matglsl->compute_texloc();
 
-			materials.push_back(0); // exception safe
+			materials.push_back(nullptr); // exception safe
 			materials.back() = mat.release();
 		} else if (etype == "mesh") {
 			// meshes.
@@ -2541,7 +2541,7 @@ void model::read_objects(const xml_elem& parent, object& parentobj)
 {
 	for (xml_elem::iterator it = parent.iterate("object"); !it.end(); it.next()) {
 		xml_elem e = it.elem();
-		mesh* msh = 0;
+		mesh* msh = nullptr;
 		if (e.has_attr("mesh")) {
 			unsigned meshid = e.attru("mesh");
 			if (meshid >= meshes.size())

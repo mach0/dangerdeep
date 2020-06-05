@@ -244,7 +244,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	(below surface, passive sonar) or even detected by their smell (smoke)!
 ***********************************************************************/	
 	networktype = 0;
-	servercon = 0;
+	servercon = nullptr;
 
 #if 0
 	if (cfg::instance().geti("cpucores") > 1) {
@@ -283,7 +283,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 
 	lookout_sensor tmpsensor;
 	vector<angle> subangles;
-	submarine* psub = 0;
+	submarine* psub = nullptr;
 	for (unsigned i = 0; i < nr_of_players; ++i) {
 		xml_doc doc(data_file().get_filename(subtype));
 		doc.load();
@@ -360,8 +360,8 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 //                        LOAD GAME (SAVEGAME OR MISSION)
 // --------------------------------------------------------------------------------
 game::game(const string& filename)
-	: my_run_state(running), player(0),
-	  time(0), last_trail_time(0), max_view_dist(0), networktype(0), servercon(0),
+	: my_run_state(running), player(nullptr),
+	  time(0), last_trail_time(0), max_view_dist(0), networktype(0), servercon(nullptr),
 	  freezetime(0), freezetime_start(0)
 {
 	xml_doc doc(filename);
@@ -1138,7 +1138,7 @@ vector<particle*> game::visible_particles(const sea_object* o ) const
 	if (!ls) return result;
 	result.reserve(particles.size());
 	for (unsigned i = 0; i < particles.size(); ++i) {
-		if (particles[i] == 0) // obsolete test? should be so...
+		if (particles[i] == nullptr) // obsolete test? should be so...
 			throw error("particles[i] is 0!");
 		if (ls->is_detected(this, o, particles[i]))
 			result.push_back(particles[i]);
@@ -1157,7 +1157,7 @@ vector<sonar_contact> game::sonar_ships (const sea_object* o ) const
 	result.reserve(ships.size());
 
 	// collect the nearest contacts, limited to some value!
-	vector<pair<double, ship*> > contacts ( MAX_ACUSTIC_CONTACTS, make_pair ( 1e30, (ship*) 0 ) );
+	vector<pair<double, ship*> > contacts ( MAX_ACUSTIC_CONTACTS, make_pair ( 1e30, (ship*) nullptr ) );
 	for (unsigned k = 0; k < ships.size(); ++k) {
 		// do not handle dead/defunct objects
 		if (!ships[k]->is_reference_ok()) continue;
@@ -1184,7 +1184,7 @@ vector<sonar_contact> game::sonar_ships (const sea_object* o ) const
 	unsigned size = contacts.size ();
 	for (unsigned i = 0; i < size; i++ ) {
 		ship* sh = contacts[i].second;
-		if ( sh == 0 )
+		if ( sh == nullptr )
 			break;
 
 		if ( pss->is_detected ( this, o, sh ) )
@@ -1506,7 +1506,7 @@ void game::ping_ASDIC ( list<vector3>& contacts, sea_object* d,
 	const bool& move_sensor, const angle& dir )
 {
 	sensor* s = d->get_sensor ( d->active_sonar_system );
-	active_sonar_sensor* ass = 0;
+	active_sonar_sensor* ass = nullptr;
 	if ( s )
 		ass = dynamic_cast<active_sonar_sensor*> ( s );
 
@@ -1583,7 +1583,7 @@ ship* game::check_units ( torpedo* t, const ptrvector<C>& units )
 		//	return units[k];
 	}
 
-	return 0;
+	return nullptr;
 }
 
 bool game::check_torpedo_hit(torpedo* t, bool runlengthfailure)
@@ -1626,7 +1626,7 @@ bool game::check_torpedo_hit(torpedo* t, bool runlengthfailure)
 
 sea_object* game::contact_in_direction(const sea_object* o, const angle& direction) const
 {
-	sea_object* result = 0;
+	sea_object* result = nullptr;
 
 	// Try ship first.
 	result = ship_in_direction_from_pos ( o, direction );
@@ -1641,8 +1641,8 @@ sea_object* game::contact_in_direction(const sea_object* o, const angle& directi
 ship* game::ship_in_direction_from_pos(const sea_object* o, const angle& direction) const
 {
 	const sensor* s = o->get_sensor( o->lookout_system );
-	const lookout_sensor* ls = 0;
-	ship* result = 0;
+	const lookout_sensor* ls = nullptr;
+	ship* result = nullptr;
 
 	if ( s )
 		ls = dynamic_cast<const lookout_sensor*> ( s );
@@ -1671,8 +1671,8 @@ ship* game::ship_in_direction_from_pos(const sea_object* o, const angle& directi
 submarine* game::sub_in_direction_from_pos(const sea_object* o, const angle& direction) const
 {
 	const sensor* s = o->get_sensor( o->lookout_system );
-	const lookout_sensor* ls = 0;
-	submarine* result = 0;
+	const lookout_sensor* ls = nullptr;
+	submarine* result = nullptr;
 
 	if ( s )
 		ls = dynamic_cast<const lookout_sensor*> ( s );
@@ -1703,7 +1703,7 @@ const torpedo* game::get_torpedo_for_camera_track(unsigned nr) const
 {
 	if (nr < torpedoes.size() && torpedoes[nr]->is_reference_ok())
 		return torpedoes[nr];
-	return 0;
+	return nullptr;
 }
 
 
@@ -1833,10 +1833,10 @@ vector<sea_object*> game::visible_sea_objects(const sea_object* o) const
 
 ship* game::sonar_acoustical_torpedo_target ( const torpedo* o ) const
 {
-	ship* loudest_object = 0;
+	ship* loudest_object = nullptr;
 	double loudest_object_sf = 0.0f;
 	const sensor* s = o->get_sensor ( o->passive_sonar_system );
-	const passive_sonar_sensor* pss = 0;
+	const passive_sonar_sensor* pss = nullptr;
 
 	if ( s )
 		pss = dynamic_cast<const passive_sonar_sensor*> ( s );
@@ -2196,7 +2196,7 @@ double game::compute_water_height(const vector2& pos) const
 sea_object* game::load_ptr(unsigned nr) const
 {
 	if (nr == 0)
-		return 0;
+		return nullptr;
 	if (nr <= submarines.size()) {
 		return submarines[nr-1];
 	} else if (nr <= submarines.size() + ships.size()) {
@@ -2223,7 +2223,7 @@ ship* game::load_ship_ptr(unsigned nr) const
 convoy* game::load_convoy_ptr(unsigned nr) const
 {
 	if (nr == 0)
-		return 0;
+		return nullptr;
 	if (nr > convoys.size())
 		throw error("could not translate nr to convoy ptr");
 	return convoys[nr-1];

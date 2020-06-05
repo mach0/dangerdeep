@@ -48,7 +48,7 @@ class ptrvector
 				delete data[i];
 				// set to zero, because if resize throws an exception,
 				// objects could get destructed twice
-				data[i] = NULL;
+				data[i] = nullptr;
 			}
 		}
 		data.resize(newsize);
@@ -60,28 +60,28 @@ class ptrvector
 			delete data[i];
 			// set to zero, because if clear throws an exception,
 			// objects could get destructed twice
-			data[i] = NULL;
+			data[i] = nullptr;
 		}
 		data.clear();
 	}
 
 	/// push_back element. exception safe, so first create space, then store
 	void push_back(std::unique_ptr<T> ptr) {
-		data.push_back(NULL);
+		data.push_back(nullptr);
 		data.back() = ptr.release();
 	}
 
 	/// push_back a pointer exception safe.
 	void push_back(T* ptr) {
 		std::unique_ptr<T> p(ptr);
-		data.push_back(NULL);
+		data.push_back(nullptr);
 		data.back() = p.release();
 	}
 
 	T* const& operator[](size_t n) const { return data[n]; }
 	T* const& at(size_t n) const { return data.at(n); }
 
-	void reset(size_t n, T* ptr = NULL) { delete data[n]; data[n] = ptr; }
+	void reset(size_t n, T* ptr = nullptr) { delete data[n]; data[n] = ptr; }
 	bool empty() const { return data.empty(); }
 
 	T* release(unsigned n) {
@@ -95,7 +95,7 @@ class ptrvector
 		for (unsigned i = 0; i < data.size(); ++i) {
 			if (data[i]) {
 				T* tmp = data[i];
-				data[i] = NULL;
+				data[i] = nullptr;
 				data[j] = tmp;
 				++j;
 			}

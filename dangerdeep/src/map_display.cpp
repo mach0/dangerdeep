@@ -287,24 +287,24 @@ void map_display::draw_square_mark_special ( class game& gm,
 
 map_display::map_display(user_interface& ui_) :
 	user_display(ui_), mapzoom(0.1), mx(0), my(0), mapmode(0),
-	edit_btn_del(0),
-	edit_btn_chgmot(0),
-	edit_btn_copy(0),
-	edit_btn_cvmenu(0),
-	edit_panel_fg(0),
-	edit_shiplist(0),
-	edit_heading(0),
-	edit_speed(0),
-	edit_throttle(0),
- 	edit_timeyear(0),
- 	edit_timemonth(0),
- 	edit_timeday(0),
- 	edit_timehour(0),
- 	edit_timeminute(0),
- 	edit_timesecond(0),
-	edit_cvname(0),
-	edit_cvspeed(0),
-	edit_cvlist(0),
+	edit_btn_del(nullptr),
+	edit_btn_chgmot(nullptr),
+	edit_btn_copy(nullptr),
+	edit_btn_cvmenu(nullptr),
+	edit_panel_fg(nullptr),
+	edit_shiplist(nullptr),
+	edit_heading(nullptr),
+	edit_speed(nullptr),
+	edit_throttle(nullptr),
+ 	edit_timeyear(nullptr),
+ 	edit_timemonth(nullptr),
+ 	edit_timeday(nullptr),
+ 	edit_timehour(nullptr),
+ 	edit_timeminute(nullptr),
+ 	edit_timesecond(nullptr),
+	edit_cvname(nullptr),
+	edit_cvspeed(nullptr),
+	edit_cvlist(nullptr),
 	mx_down(-1), my_down(-1), shift_key_pressed(0), ctrl_key_pressed(0),
 	notepadsheet(texturecache(), "notepadsheet.png")
 {
@@ -316,7 +316,7 @@ map_display::map_display(user_interface& ui_) :
 
 		// create editor main panel
 		edit_panel = std::make_unique<widget>(0, 0, 1024, 32, "");
-		edit_panel->set_background(0);
+		edit_panel->set_background(nullptr);
 		edit_panel->add_child(new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_add_obj, gme, 0, 0, 128, 32, texts::get(224)));
 		edit_btn_del = new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_del_obj, gme, 128, 0, 128, 32, texts::get(225));
 		edit_panel->add_child(edit_btn_del);
@@ -332,7 +332,7 @@ map_display::map_display(user_interface& ui_) :
 
 		// create "add ship" window
 		edit_panel_add = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(224));
-		edit_panel_add->set_background(0);
+		edit_panel_add->set_background(nullptr);
 		edit_shiplist = new widget_list(20, 32, 1024-2*20, 768-2*32-2*32-8);
 		edit_panel_add->add_child(edit_shiplist);
 		edit_panel_add->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_add.get(), &widget::close, EPFG_SHIPADDED,  20, 768-3*32-8, 512-20, 32, texts::get(224)));
@@ -344,7 +344,7 @@ map_display::map_display(user_interface& ui_) :
 		// create "motion edit" window
 		// open widget with text edits: course, speed, throttle
 		edit_panel_chgmot = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(226));
-		edit_panel_chgmot->set_background(0);
+		edit_panel_chgmot->set_background(nullptr);
 		edit_heading = new widget_slider(20, 128, 1024-40, 80, texts::get(1), 0, 360, 0, 15);
 		edit_panel_chgmot->add_child(edit_heading);
 		edit_speed = new widget_slider(20, 220, 1024-40, 80, texts::get(4), 0/*minspeed*/, 34/*maxspeed*/, 0, 1);
@@ -358,13 +358,13 @@ map_display::map_display(user_interface& ui_) :
 
 		// create help window
 		edit_panel_help = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(230));
-		edit_panel_help->set_background(0);
-		edit_panel_help->add_child(new widget_text(20, 32, 1024-2*20, 768-2*32-2*32-8, texts::get(231), 0, true));
+		edit_panel_help->set_background(nullptr);
+		edit_panel_help->add_child(new widget_text(20, 32, 1024-2*20, 768-2*32-2*32-8, texts::get(231), nullptr, true));
 		edit_panel_help->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_help.get(), &widget::close, EPFG_CANCEL, 20, 768-3*32-8, 1024-20, 32, texts::get(105)));
 
 		// create edit time window
 		edit_panel_time = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(229));
-		edit_panel_time->set_background(0);
+		edit_panel_time->set_background(nullptr);
 		edit_panel_time->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_time.get(), &widget::close, EPFG_CHANGETIME,  20, 768-3*32-8, 512-20, 32, texts::get(229)));
 		edit_panel_time->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_time.get(), &widget::close, EPFG_CANCEL, 512, 768-3*32-8, 512-20, 32, texts::get(117)));
 		edit_timeyear = new widget_slider(20, 128, 1024-40, 80, texts::get(234), 1939, 1945, 0, 1);
@@ -382,7 +382,7 @@ map_display::map_display(user_interface& ui_) :
 
 		// create convoy menu
 		edit_panel_convoy = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(228));
-		edit_panel_convoy->set_background(0);
+		edit_panel_convoy->set_background(nullptr);
 		edit_panel_convoy->add_child(new widget_text(20, 32, 256, 32, texts::get(244)));
 		edit_cvname = new widget_edit(256+20, 32, 1024-256-2*20, 32, "-not usable yet, fixme-");
 		edit_panel_convoy->add_child(edit_cvname);
@@ -462,7 +462,7 @@ void map_display::edit_copy_obj(game_editor& gm)
 	for (std::set<sea_object*>::iterator it = selection.begin(); it != selection.end(); ++it) {
 		ship* s = dynamic_cast<ship*>(*it);
 		submarine* su = dynamic_cast<submarine*>(*it);
-		if (s && su == 0) {
+		if (s && su == nullptr) {
 			xml_doc spec(data_file().get_filename(s->get_specfilename()));
 			spec.load();
 			ship* s2 = new ship(gm, spec.first_child());
@@ -822,7 +822,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 		if (edit_panel->check_for_mouse_event(event))
 			return;
 		// check if foreground window is open and event should go to it
-		if (edit_panel_fg != 0/* && edit_panel_fg->check_for_mouse_event(event)*/) {
+		if (edit_panel_fg != nullptr/* && edit_panel_fg->check_for_mouse_event(event)*/) {
 			edit_panel_fg->process_input(event);
 			// we could compare edit_panel_fg to the pointers of the various panels
 			// here instead of using a global enum for all possible return values...
@@ -890,7 +890,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					}
 				}
 				edit_panel->enable();
-				edit_panel_fg = 0;
+				edit_panel_fg = nullptr;
 			}
 			return;
 		}
@@ -966,7 +966,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 					// fixme: later all objects!
 					vector<sea_object*> objs = gm.visible_surface_objects(player);
 					double mapclickdist = 1e30;
-					sea_object* target = 0;
+					sea_object* target = nullptr;
 					if (mode == 0) selection.clear();
 					for (vector<sea_object*>::iterator it = objs.begin(); it != objs.end(); ++it) {
 						vector2 p = ((*it)->get_pos().xy() -
@@ -1017,7 +1017,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 			vector2 mapclick(sys().translate_position_x(event), sys().translate_position_y(event));
 			vector<sea_object*> objs = gm.visible_surface_objects(player);
 			double mapclickdist = 1e30;
-			sea_object* target = 0;
+			sea_object* target = nullptr;
 			for (vector<sea_object*>::iterator it = objs.begin(); it != objs.end(); ++it) {
 				if (!(*it)->is_alive()) continue;
 				vector2 p = ((*it)->get_pos().xy() -

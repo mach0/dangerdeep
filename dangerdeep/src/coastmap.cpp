@@ -1006,7 +1006,7 @@ coastmap::coastmap(const string& filename)
 		themap.resize(mapw*maph);
 
 		surf.lock();
-		if (surf->format->BytesPerPixel != 1 || surf->format->palette == 0 || surf->format->palette->ncolors != 2)
+		if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 2)
 			throw error(string("coastmap: image is no black/white 1bpp paletted image, in ") + filename);
 
 		Uint8* offset = (Uint8*)(surf->pixels);

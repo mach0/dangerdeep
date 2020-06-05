@@ -370,7 +370,7 @@ public:
 	virtual double get_noise_factor () const { return 0; }
 	virtual vector2 get_engine_noise_source () const;
 
-	virtual void display(const texture *caustic_map=NULL) const;
+	virtual void display(const texture *caustic_map=nullptr) const;
 	virtual void display_mirror_clip() const;
 	double get_bounding_radius() const { return size3d.x+size3d.y; }	// fixme: could be computed more exact
 	virtual void set_skin_layout(const std::string& layout);

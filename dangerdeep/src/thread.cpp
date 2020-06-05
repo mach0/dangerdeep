@@ -51,7 +51,7 @@ int thread::thread_entry(void* arg)
 
 
 thread::thread(const char* name)
-	: thread_id(0),
+	: thread_id(nullptr),
 	  thread_abort_request(false),
 	  thread_state(THRSTAT_NONE),
 	  myname(name)

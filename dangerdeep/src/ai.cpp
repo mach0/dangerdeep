@@ -60,8 +60,8 @@ using std::string;
 // time consumption peeks every AI_THINK_CYCLE_TIME seconds
 ai::ai(ship* parent_, types type_) : type(type_), state(followpath),
 	zigzagstate(1/*0 fixme*/), attackrun(false), evasive_manouver(false),
-	rem_manouver_time(0), parent(parent_), followme(0),
-	myconvoy(0), has_contact(false),
+	rem_manouver_time(0), parent(parent_), followme(nullptr),
+	myconvoy(nullptr), has_contact(false),
 	remaining_time(rnd() * AI_THINK_CYCLE_TIME),
 	cyclewaypoints(false)
 {	
@@ -204,7 +204,7 @@ void ai::act_escort(game& gm, double delta_time)
 	}
 
 	double dist = 1e12;
-	submarine* nearest_contact = 0;
+	submarine* nearest_contact = nullptr;
 	// any subs in visual range to attack?
 	vector<submarine*> subs = gm.visible_submarines(parent);
 	for (vector<submarine*>::iterator it = subs.begin(); it != subs.end(); ++it) {

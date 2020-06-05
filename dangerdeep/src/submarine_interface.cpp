@@ -758,6 +758,6 @@ void submarine_interface::display() const
 			torpedo_cam_track_nr = 0;
 		}
 	} else {
-		torpedo_cam_view->set_tracker(0);
+		torpedo_cam_view->set_tracker(nullptr);
 	}
 }

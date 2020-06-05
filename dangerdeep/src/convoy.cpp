@@ -66,7 +66,7 @@ ship_probability escortships[] = {
 	{ 0.5, "flowercorvette_hcn" },
 	{ 0.5, "flowercorvette_hrcn" },
 	{ 0.5, "FlowerCorvette_RN" },
-	{ 0.0, 0 }
+	{ 0.0, nullptr }
 };
 
 
@@ -90,7 +90,7 @@ ship_probability civilships[] = {
 	{ 0.1, "empirefaithcam" },
 	{ 0.1, "empirelawrencecam" },
 	{ 0.1, "empiredabchick" },
-	{ 0.0, 0 }
+	{ 0.0, nullptr }
 };
 
 
@@ -100,7 +100,7 @@ string get_random_ship(ship_probability* p)
 	// count how many ships we have, sum of probabilities
 	double psum = 0;
 	unsigned k = 0;
-	for ( ; p[k].name != 0; ++k)
+	for ( ; p[k].name != nullptr; ++k)
 		psum += p[k].prob;
 	//printf("psum %f k %u\n", psum, k);
 	// now compute one random ship

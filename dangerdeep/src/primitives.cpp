@@ -55,7 +55,7 @@ void primitives_plain::render()
 primitives::primitives(int type_, unsigned size, const colorf& col_)
 	: primitives_plain(type_, size, false, false),
 	  col(col_),
-	  tex(0)
+	  tex(nullptr)
 {
 }
 
@@ -63,7 +63,7 @@ primitives::primitives(int type_, unsigned size, const colorf& col_)
 
 primitives::primitives(int type_, unsigned size)
 	: primitives_plain(type_, size, true, false),
-	  tex(0)
+	  tex(nullptr)
 {
 }
 

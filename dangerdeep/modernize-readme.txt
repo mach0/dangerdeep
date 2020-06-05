@@ -39,13 +39,13 @@ DONE
     modernize-use-equals-delete
     modernize-use-using
     modernize-make-unique
+    modernize-use-nullptr
 TODO
     modernize-use-default-member-init
     modernize-return-braced-init-list
-    modernize-loop-convert
     modernize-pass-by-value
+    modernize-loop-convert
     modernize-use-auto
-    modernize-use-nullptr
 DO NOT USE    
     modernize-use-trailing-return-type
 

@@ -138,7 +138,7 @@ void stars::display(const float max_view_dist) const
 	glScalef(max_view_dist * 0.95, max_view_dist * 0.95, max_view_dist * 0.95);
 
 	star_positions.bind();
-	glVertexPointer(3, GL_FLOAT, 0, 0);
+	glVertexPointer(3, GL_FLOAT, 0, nullptr);
 	// update alpha values for twinkle stars
 	colorf *color = (colorf *) &star_colors[star_count_static];
 	for(unsigned int i = star_count_static; i < star_count; i++)	
@@ -149,7 +149,7 @@ void stars::display(const float max_view_dist) const
 	star_colors_VBO.init_data(star_colors.size() * sizeof(colorf), &star_colors[0], GL_STREAM_DRAW);
 	star_colors_VBO.bind();
 	glsl_shader_setup::default_col->use();
-	glVertexAttribPointer(glsl_shader_setup::idx_c_color, 4, GL_FLOAT, GL_FALSE, sizeof(float)*4, 0);
+	glVertexAttribPointer(glsl_shader_setup::idx_c_color, 4, GL_FLOAT, GL_FALSE, sizeof(float)*4, nullptr);
 	glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
 	glDrawArrays(GL_POINTS, 0, star_count);
 	

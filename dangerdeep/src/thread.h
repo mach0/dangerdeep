@@ -122,15 +122,15 @@ class thread
 	public:
 		/// construct thread auto pointer with thread pointer
 		///@note will throw error when t is not a thread
-		auto_ptr(T* t = 0) : p(0) { reset(t); }
+		auto_ptr(T* t = nullptr) : p(nullptr) { reset(t); }
 		/// destruct thread auto pointer (will destruct thread)
-		~auto_ptr() { reset(0); }
+		~auto_ptr() { reset(nullptr); }
 		/// reset pointer (destructs current thread)
 		///@note will throw error when t is not a thread
 		///@note seems bizarre, use with care!
-		void reset(T* t = 0) {
+		void reset(T* t = nullptr) {
 			// extra paranoia test to ensure we handly only thread objects here
-			if (t && (dynamic_cast<thread*>(t) == 0))
+			if (t && (dynamic_cast<thread*>(t) == nullptr))
 				throw std::invalid_argument("invalid pointer given to thread::auto_ptr!");
 			if (p) p->destruct();
 			p = t;

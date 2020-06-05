@@ -69,14 +69,14 @@ const unsigned GAMETYPE = 0;//fixme, 0-mission , 1-patrol etc.
 game_editor::game_editor(const date& start_date)
 {
 	networktype = 0;
-	servercon = 0;
+	servercon = nullptr;
 	time = start_date.get_time() + 86400/2;	// 12.00 o'clock
 	equipment_date = start_date;
 
 	// standard sub type, can be changed later
 	string subtype = "submarine_VIIc";
 
-	submarine* psub = 0;
+	submarine* psub = nullptr;
 	for (unsigned i = 0; i < 1/*nr_of_players*/; ++i) {
 		xml_doc doc(data_file().get_filename(subtype));
 		doc.load();

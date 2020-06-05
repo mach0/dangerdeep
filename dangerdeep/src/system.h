@@ -99,7 +99,7 @@ public:
 	int translate_position_y(const SDL_Event& event);
 	vector2i translate_position(const SDL_Event& event);
 
-	void draw_console_with(const font* fnt, const texture* background = 0);
+	void draw_console_with(const font* fnt, const texture* background = nullptr);
 	void prepare_2d_drawing();	// must be called as pair!
 	void unprepare_2d_drawing();
 
