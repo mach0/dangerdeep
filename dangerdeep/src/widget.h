@@ -171,7 +171,7 @@ public:
 	static void set_theme(std::unique_ptr<theme> t) { globaltheme = std::move(t); }
 	static const theme* get_theme() { return globaltheme.get(); }
 	static std::unique_ptr<theme> replace_theme(std::unique_ptr<theme> t);
-	widget(int x, int y, int w, int h, const std::string& text_, widget* parent_ = nullptr, const std::string& backgrimg = std::string());
+	widget(int x, int y, int w, int h, std::string  text_, widget* parent_ = nullptr, const std::string& backgrimg = std::string());
 	widget(xml_elem&, widget* parent = nullptr);
 	void add_action_listener(const action_listener* listener, bool recursive = true);
 	virtual ~widget();

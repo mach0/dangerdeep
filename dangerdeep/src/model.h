@@ -23,14 +23,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef MODEL_H
 #define MODEL_H
 
-#include "vector3.h"
+#include "bv_tree.h"
+#include "color.h"
 #include "matrix3.h"
 #include "matrix4.h"
-#include "texture.h"
-#include "color.h"
 #include "shader.h"
+#include "texture.h"
+#include "vector3.h"
 #include "vertexbufferobject.h"
-#include "bv_tree.h"
+#include <utility>
+
 #include <vector>
 #include <fstream>
 #include <memory>
@@ -106,7 +108,7 @@ public:
 		std::unique_ptr<map> specularmap; // should be of type LUMINANCE to work properly.
 		bool two_sided{false};
 		
-		material(const std::string& nm = "Unnamed material");
+		material(std::string  nm = "Unnamed material");
 		virtual ~material() = default;
 		virtual void set_gl_values(const texture *caustic_map = nullptr) const;
 		virtual void set_gl_values_mirror_clip() const;
@@ -220,7 +222,7 @@ public:
 		void compute_normals();
 		bool compute_tangentx(unsigned i0, unsigned i1, unsigned i2);
 
-		mesh(const std::string& nm);
+		mesh(std::string  nm);
 
 		/// create mesh from height map - around world origin
 		///@param w - width of 2d field's data values
@@ -231,7 +233,7 @@ public:
 		///@nm - name
 		mesh(unsigned w, unsigned h, const std::vector<float>& heights, const vector3f& scales,
 		     const vector3f& trans = vector3f(),
-		     const std::string& nm = "Heightfield");
+		     std::string  nm = "Heightfield");
 
 		// make display list if possible
 		void compile();
@@ -332,8 +334,8 @@ protected:
 		float rotat_angle_min{0};	// in degrees
 		float rotat_angle_max{0};	// in degrees
 		std::vector<object> children;
-		object(unsigned id_ = 0, const std::string& nm = "???", mesh* m = nullptr)
-			: id(id_), name(nm), mymesh(m)
+		object(unsigned id_ = 0, std::string  nm = "???", mesh* m = nullptr)
+			: id(id_), name(std::move(nm)), mymesh(m)
 			  { rotat_axis.z = 1; }
 		bool set_angle(float ang);
 		bool set_translation(float value);
@@ -434,7 +436,7 @@ public:
 
 	static texture::mapping_mode mapping;	// GL_* mapping constants (default GL_LINEAR_MIPMAP_LINEAR)
 
-	model(const std::string& filename, bool use_material = true);
+	model(std::string  filename, bool use_material = true);
 	~model();
 	static const std::string default_layout;
 	void set_layout(const std::string& layout = default_layout);

@@ -22,13 +22,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "texts.h"
 
-#include "parser.h"
-#include "global_data.h"
-#include "error.h"
-#include "date.h"
 #include "datadirs.h"
-#include <sstream>
+#include "date.h"
+#include "error.h"
+#include "global_data.h"
+#include "parser.h"
 #include <memory>
+#include <sstream>
+#include <utility>
+
 using namespace std;
 
 #define TEXTS_DIR "texts/"
@@ -54,7 +56,7 @@ const texts& texts::obj()
 
 
 
-texts::texts(const string& langcode) : language_code(langcode)
+texts::texts(string  langcode) : language_code(std::move(langcode))
 {
 	if (available_language_codes.empty())
 		read_available_language_codes();

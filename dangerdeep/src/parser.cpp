@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "parser.h"
 #include "error.h"
 #include <sstream>
+#include <utility>
+
 
 using std::string;
 using std::ifstream;
@@ -31,8 +33,8 @@ using std::ostringstream;
 
 
 
-parser::parser(const string& filename_, char separator_)
-	: filename(filename_),
+parser::parser(string  filename_, char separator_)
+	: filename(std::move(filename_)),
 	  separator(separator_),
 	  file(filename.c_str(), std::ios::in),
 	  line(0),

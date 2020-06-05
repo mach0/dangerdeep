@@ -42,8 +42,8 @@ DONE
     modernize-use-nullptr
     modernize-use-default-member-init
     modernize-return-braced-init-list
-TODO
     modernize-pass-by-value
+TODO
     modernize-loop-convert
     modernize-use-auto
 DO NOT USE    

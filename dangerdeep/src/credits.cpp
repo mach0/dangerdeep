@@ -140,8 +140,8 @@ class heightmap
 	vector2f min_coord, max_coord, area;
 
 public:
-	heightmap(const std::vector<float>& data2, unsigned rx, unsigned ry, const vector2f& s, const vector2f& t) :
-		data(data2),//(rx*ry),
+	heightmap(std::vector<float> data2, unsigned rx, unsigned ry, const vector2f& s, const vector2f& t) :
+		data(std::move(data2)),//(rx*ry),
 		xres(rx),
 		yres(ry),
 		scal(s),

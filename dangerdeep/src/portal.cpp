@@ -47,6 +47,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "cfg.h"
 
 #include <ctime>
+#include <utility>
+
 
 int res_x, res_y;
 
@@ -218,7 +220,7 @@ public:
 	polygon shape;
 	class sector* adj_sector;
 	// bool mirror;
-	portal(polygon shp, class sector* adsc)	: shape(shp), adj_sector(adsc) {}
+	portal(polygon shp, class sector* adsc)	: shape(std::move(shp)), adj_sector(adsc) {}
 };
 
 

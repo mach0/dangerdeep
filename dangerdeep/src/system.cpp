@@ -38,12 +38,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 #include "shader.h"
 
-#include <iostream>
-#include <sstream>
 #include <cmath>
 #include <cstdarg>
-#include <stdexcept>
 #include <fstream>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <utility>
+
 using namespace std;
 
 /*
@@ -91,8 +93,8 @@ system::parameters::parameters(double near_z_, double far_z_, unsigned res_x, un
 
 
 
-system::system(const parameters& params_) :
-	params(params_),
+system::system(parameters  params_) :
+	params(std::move(params_)),
 	show_console(false),
 	console_font(nullptr),
 	console_background(nullptr),

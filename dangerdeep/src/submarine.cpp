@@ -119,8 +119,8 @@ submarine::stored_torpedo::stored_torpedo()
 
 
 
-submarine::stored_torpedo::stored_torpedo(game& gm, const std::string& type)
-	: specfilename(type), temperature(15.0), status(st_loaded), associated(0), remaining_time(0)
+submarine::stored_torpedo::stored_torpedo(game& gm, std::string  type)
+	: specfilename(std::move(type)), temperature(15.0), status(st_loaded), associated(0), remaining_time(0)
 {
 }
 

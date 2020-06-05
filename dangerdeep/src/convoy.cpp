@@ -238,8 +238,8 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 
 
 
-convoy::convoy(class game& gm_, const vector2& pos, const std::string& name_)
-	: gm(gm_), position(pos), name(name_)
+convoy::convoy(class game& gm_, const vector2& pos, std::string  name_)
+	: gm(gm_), position(pos), name(std::move(name_))
 {
 }
 

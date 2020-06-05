@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <map>
 #include <string>
+#include <utility>
 #include <SDL.h>
 #include "singleton.h"
 
@@ -42,8 +43,8 @@ public:
 		bool ctrl{false}, alt{false}, shift{false};
 		key()  {}
 		~key() = default;
-		key(const std::string& ac, SDLKey ks, bool c, bool a, bool s) :
-			action(ac), keysym(ks), ctrl(c), alt(a), shift(s) {}
+		key(std::string ac, SDLKey ks, bool c, bool a, bool s) :
+			action(std::move(std::move(ac))), keysym(ks), ctrl(c), alt(a), shift(s) {}
 		key(const key& k)  = default;
 		key& operator= (const key& k) = default;
 		std::string get_name() const; // uses SDLK_GetKeyName

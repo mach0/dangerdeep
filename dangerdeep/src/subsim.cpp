@@ -595,11 +595,11 @@ class widget_image_select : public widget
 	std::string extension;
 	std::list<std::string>::iterator current;
 public:
-	widget_image_select(int x, int y, int w, int h, const std::string& ext_,
-			    const std::list<std::string>& imagenames_,
+	widget_image_select(int x, int y, int w, int h, std::string  ext_,
+			    std::list<std::string> imagenames_,
 			    widget* parent_ = nullptr)
-		: widget(x, y, w, h, "", parent_), imagenames(imagenames_),
-		  extension(ext_), current(imagenames.begin())
+		: widget(x, y, w, h, "", parent_), imagenames(std::move(imagenames_)),
+		  extension(std::move(ext_)), current(imagenames.begin())
 	{
 		if (imagenames.empty()) throw error("can't use widget_image_select with empty list");
 		background = imagecache().ref(*current + extension);

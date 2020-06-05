@@ -31,7 +31,7 @@ class parser
 {
  public:
 	/// open file with given separator
-	parser(const std::string& filename_, char separator_ = ';');
+	parser(std::string  filename_, char separator_ = ';');
 
 	/// advance to next line
 	///@returns true when next line could be read, false on end of file

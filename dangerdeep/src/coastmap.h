@@ -23,11 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef COASTMAP_H
 #define COASTMAP_H
 
-#include "vector2.h"
-#include "vector3.h"
 #include "bspline.h"
 #include "texture.h"
 #include "thread.h"
+#include "vector2.h"
+#include "vector3.h"
+#include <utility>
+
 #include <vector>
 #include <string>
 #include <list>
@@ -122,7 +124,7 @@ class coastmap
 		std::string modelname;
 		vector2 pos;
 		double dir;
-		prop(const std::string& s, const vector2& p, double d) : modelname(s), pos(p), dir(d) {}
+		prop(std::string  s, const vector2& p, double d) : modelname(std::move(s)), pos(p), dir(d) {}
 	};
 	std::list<prop> props;
 

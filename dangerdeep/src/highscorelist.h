@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define HIGHSCORELIST_H
 
 #include <iostream>
+#include <utility>
+
 #include <vector>
 #include <string>
 
@@ -38,7 +40,7 @@ public:
 		std::string name;
 		// missing: maybe start & end date, realism factor, rank/merits, submarine number
 		entry() :  name("--------") {}
-		entry(unsigned p, const std::string& n) : points(p), name(n) {}
+		entry(unsigned p, std::string  n) : points(p), name(std::move(n)) {}
 		entry(std::istream& in);
 		~entry() = default;
 		entry(const entry& e)  = default;

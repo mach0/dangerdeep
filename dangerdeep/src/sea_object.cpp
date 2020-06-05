@@ -288,9 +288,9 @@ void sea_object::set_skin_layout(const std::string& layout)
 
 
 
-sea_object::sea_object(game& gm_, const string& modelname_)
+sea_object::sea_object(game& gm_, string  modelname_)
 	: gm(gm_),
-	  modelname(modelname_),
+	  modelname(std::move(modelname_)),
 	  mymodel(nullptr),
 	  skin_country(UNKNOWNCOUNTRY),
 	  mass(1.0),//fixme

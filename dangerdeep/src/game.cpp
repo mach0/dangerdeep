@@ -214,8 +214,8 @@ game::game()
 
 
 game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned timeofday,
-	   const date& timeperioddate, const player_info& pi, unsigned nr_of_players)
-	: playerinfo(pi)
+	   const date& timeperioddate, player_info  pi, unsigned nr_of_players)
+	: playerinfo(std::move(pi))
 {
 /****************************************************************
 	custom mission generation:
@@ -2105,7 +2105,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
 	double lg = lbrit * (1 - pow( cos(color_elevation+.39), 20));
 	double lb = lbrit * (1 - pow( cos(color_elevation+.22), 15));
    
-	return {lr, lg, lb};
+	return {static_cast<float>(lr), static_cast<float>(lg), static_cast<float>(lb)};
 }
 
 

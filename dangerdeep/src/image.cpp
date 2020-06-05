@@ -21,18 +21,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
 #include "image.h"
-#include "texture.h"
-#include "system.h"
 #include "oglext/OglExt.h"
+#include "system.h"
+#include "texture.h"
 #include <SDL_image.h>
 #include <sstream>
+#include <utility>
+
 #include <vector>
 using std::string;
 
 
 
-image::image(const string& s) :
-	name(s), width(0), height(0), gltx(0), glty(0)
+image::image(string  s) :
+	name(std::move(s)), width(0), height(0), gltx(0), glty(0)
 {
 	sdl_image img(name);
 	width = img->w;
