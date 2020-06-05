@@ -1,6 +1,6 @@
 /*
 Danger from the Deep - Open source submarine simulation
-Copyright (C) 2003-2016  Thorsten Jordan, Luis Barrancos and others.
+Copyright (C) 2003-2020  Thorsten Jordan, Luis Barrancos and others.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 //
-//  A 2d rectangle (C)+(W) 2016 Thorsten Jordan
+//  A 2d rectangle (C)+(W) 2020 Thorsten Jordan
 //
 
 #ifndef RECTANGLE_H

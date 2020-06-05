@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstring>
 
 /// a 3x3 matrix, reimplemented for 3x3 case for speed issues
-template<class D>
+template<typename D>
 class matrix3t
 {
 	D values[3*3];
@@ -38,13 +38,11 @@ class matrix3t
  public:
 	/// empty matrix
 	matrix3t() {
-		memset(values, 0, sizeof(D)*3*3);
+		for (int i = 0; i < 3*3; ++i) values[i] = (D)(0);
 	}
 
 	/// create full matrix
-	matrix3t(const D& e0, const D& e1, const D& e2, const D& e3,
-		const D& e4, const D& e5, const D& e6, const D& e7,
-		const D& e8) {
+	matrix3t(D e0, D e1, D e2, D e3, D e4, D e5, D e6, D e7, D e8) {
 		values[0] = e0;
 		values[1] = e1;
 		values[2] = e2;
@@ -54,6 +52,20 @@ class matrix3t
 		values[6] = e6;
 		values[7] = e7;
 		values[8] = e8;
+	}
+
+	/// create matrix from column vectors
+	matrix3t(const vector3t<D>& v0, const vector3t<D>& v1, const vector3t<D>& v2)
+	{
+		values[0] = v0.x;
+		values[3] = v0.y;
+		values[6] = v0.z;
+		values[1] = v1.x;
+		values[4] = v1.y;
+		values[7] = v1.z;
+		values[2] = v2.x;
+		values[5] = v2.y;
+		values[8] = v2.z;
 	}
 
 	/// return pointer to array of elements
@@ -66,27 +78,33 @@ class matrix3t
 	}
 
 	/// construct 3x3 matrix from one with different template type but same dimension
-	template<class E> matrix3t(const matrix3t<E>& other) {
+	template<typename E> matrix3t(const matrix3t<E>& other) {
 		const E* ea = other.elemarray();
 		for (unsigned i = 0; i < 3*3; ++i)
 			values[i] = D(ea[i]);
 	}
 
 	/// construct from stream
-        matrix3t(std::istream& is) {
-		for (auto & value : values)
-			is >> value;
+	matrix3t(std::istream& is) {
+		for (auto & elem : values)
+			is >> elem;
 	}
 
 	/// print to stream
 	void to_stream(std::ostream& os) const {
-		os << values[0];
-		for (unsigned i = 1; i < 3 * 3; ++i)
-			os << " " << values[i];
+		os << "/----\n";
+		for (unsigned y = 0; y < 3; ++y) {
+			os << "(\t";
+			for (unsigned x = 0; x < 3; ++x) {
+				os << values[y*3+x] << "\t";
+			}
+			os << ")\n";
+		}
+		os << "\\----\n";
 	}
 
 	/// multiply by scalar
-	matrix3t<D> operator* (const D& s) const {
+	matrix3t<D> operator* (D s) const {
 		matrix3t<D> r(int(0));
 		for (unsigned i = 0; i < 3*3; ++i) r.values[i] = values[i] * s;
 		return r;
@@ -133,18 +151,10 @@ class matrix3t
 	static matrix3t<D> one() { matrix3t<D> r; r.values[0] = r.values[4] = r.values[8] = D(1.0); return r; }
 
 	/// get transposed matrix
-	matrix3t<D> transpose() const {
-		matrix3t<D> r(int(0));
-		r.values[0] = values[0];
-		r.values[1] = values[3];
-		r.values[2] = values[6];
-		r.values[3] = values[1];
-		r.values[4] = values[4];
-		r.values[5] = values[7];
-		r.values[6] = values[2];
-		r.values[7] = values[5];
-		r.values[8] = values[8];
-		return r;
+	matrix3t<D> transposed() const {
+		return matrix3t<D>(values[0], values[3], values[6],
+				   values[1], values[4], values[7],
+				   values[2], values[5], values[8]);
 	}
 
 	/// get inverse of matrix
@@ -180,9 +190,23 @@ class matrix3t
 
 	D& elem(unsigned col, unsigned row) { return values[col + row * 3]; }
 	const D& elem(unsigned col, unsigned row) const { return values[col + row * 3]; }
+
+	vector3t<D> row(unsigned i) const {
+		return vector3t<D>(values[3 * i], values[3 * i + 1], values[3 * i + 2]);
+	}
+	vector3t<D> column(unsigned i) const {
+		return vector3t<D>(values[i], values[i + 3], values[i + 6]);
+	}
 };
 
 using matrix3 = matrix3t<double>;
 using matrix3f = matrix3t<float>;
+
+template<typename D>
+std::ostream& operator<< (std::ostream& os, const matrix3t<D>& m)
+{
+	m.to_stream(os);
+	return os;
+}
 
 #endif

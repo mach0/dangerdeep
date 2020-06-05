@@ -48,7 +48,7 @@ class parser
 	bool get_cell_number(unsigned& n) const;
 
 	/// report error at current position (throws error)
-	void error(const std::string& text);
+	void report_error(const std::string& text);
 
  protected:
 	std::string filename;

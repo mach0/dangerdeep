@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SINGLETON_H
 #define SINGLETON_H
 
+/// Implementation of the singleton pattern
 template<typename D>
 class singleton
 {
@@ -30,8 +31,8 @@ class singleton
 	static D*& instance_ptr() { static D* myinstanceptr = nullptr; return myinstanceptr; }
 
  public:
-	// since D is constructed not before first call, it avoids
-	// the static initialization order fiasco.
+ 	/// get the one and only instance
+	/// @remarks since D is constructed not before first call, it avoids the static initialization order fiasco.
 	static D& instance() { D*& p = instance_ptr(); if (!p) p = new D(); return *p; }
 
 	static void create_instance(D* ptr) { D*& p = instance_ptr(); delete p; p = ptr; }
@@ -45,7 +46,9 @@ class singleton
 
  private:
 	singleton(const singleton& ) = delete;
+	singleton(singleton&& ) = delete;
 	singleton& operator= (const singleton& ) = delete;
+	singleton& operator= (singleton&& ) = delete;
 };
 
 #endif
