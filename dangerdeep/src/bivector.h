@@ -116,7 +116,7 @@ class bivector
 	// algebraic operations, omponent-wise add, sub, multiply (of same datasize)
 	// sum of square of differences etc.
 
-	bivector<T>& add_gauss_noise(const T& scal, random_generator& rg);
+	bivector<T>& add_gauss_noise(const T& scal, random_generator_deprecated& rg);
 	///@note other bivector must have power of two dimensions for this!
 	bivector<T>& add_tiled(const bivector<T>& other, const T& scal);
 	///@note other bivector must have power of two dimensions for this!
@@ -466,7 +466,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
 #endif
 
 template <class T>
-bivector<T>& bivector<T>::add_gauss_noise(const T& scal, random_generator& rg)
+bivector<T>& bivector<T>::add_gauss_noise(const T& scal, random_generator_deprecated& rg)
 {
 	for (int z=0; z < int(data.size()); ++z) {
 		double r, q, s;

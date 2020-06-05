@@ -24,12 +24,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef OCEAN_WAVE_GENERATOR
 #define OCEAN_WAVE_GENERATOR
 
-#include "vector3.h"
 #include <fftw3.h>
-#include "global_constants.h"
 #include <complex>
 #include <vector>
-#include <cstdlib>
+#include "constant.h"
+#include "random_generator.h"
+#include "vector3.h"
 
 // use float fftw (faster) or double (default) ?
 #ifdef WITH_FLOAT_FFTW
@@ -65,21 +65,21 @@ class ocean_wave_generator
 	int N;		// grid size
 	vector2t<T> W;	// wind direction
 	T v;		// wind speed m/s
-	T a;		// wave height scalar
+	T wave_height_scale;		// wave height scalar
 	T Lm;		// tile size in m
 	T w0;		// cycle time, 0.0 if no cycling needed
 	std::vector<std::complex<T> > h0tilde;
 	std::vector<std::complex<T> > htilde;	// holds values for one fix time.
-	
-	ocean_wave_generator& operator= (const ocean_wave_generator& ) = delete;
-	static T myrnd();
-	static std::complex<T> gaussrand();
+	mutable random_generator rndgen;
+
+	ocean_wave_generator& operator= (const ocean_wave_generator& );
+	std::complex<T> gaussrand() const;
 	T phillips(const vector2t<T>& K) const;
 	std::complex<T> h0_tilde(const vector2t<T>& K) const;
 	void compute_h0tilde();
 	std::complex<T> h_tilde(const vector2t<T>& K, int kx, int ky, T time) const;
 	void compute_htilde(T time);
-	
+
 	FFT_COMPLEX_TYPE *fft_in, *fft_in2;	// can't be a vector, since the type is an array
 	FFT_REAL_TYPE *fft_out, *fft_out2;	// for sake of uniformity
 	FFT_PLAN_TYPE plan, plan2, plan3;
@@ -104,7 +104,7 @@ class ocean_wave_generator
 		fft_out2 = (FFT_REAL_TYPE*) FFT_ALLOC(sizeof(FFT_REAL_TYPE) * (N*N));
 		if (!fft_out2) { freemem(); throw std::bad_alloc(); }
 	}
-	
+
 public:
 	ocean_wave_generator(
 		int gridsize = 64,
@@ -131,18 +131,12 @@ public:
 };
 
 template <class T>
-T ocean_wave_generator<T>::myrnd()
-{
-	return T(rand())/RAND_MAX;
-}
-
-template <class T>
-std::complex<T> ocean_wave_generator<T>::gaussrand()
+std::complex<T> ocean_wave_generator<T>::gaussrand() const
 {
 	T x1, x2, w;
 	do {
-		x1 = T(2.0) * myrnd() - T(1.0);
-		x2 = T(2.0) * myrnd() - T(1.0);
+		x1 = T(2.0) * T(rndgen.get()) - T(1.0);
+		x2 = T(2.0) * T(rndgen.get()) - T(1.0);
 		w = x1 * x1 + x2 * x2;
 	} while ( w >= T(1.0) );
 	w = sqrt( (T(-2.0) * log( w ) ) / w );
@@ -157,7 +151,7 @@ T ocean_wave_generator<T>::phillips(const vector2t<T>& K) const
 	if (k2 == T(0)) return T(0);
 	T v4 = v2 * v2;
 	T k4 = k2 * k2;
-	T g2 = GRAVITY * GRAVITY;
+	T g2 = T(constant::GRAVITY * constant::GRAVITY);
 	// note: Khat = K.normal() * W should be taken, but we use K
 	// and divide |K * W|^2 by |K|^2 = k2 later.
 	// note: a greater exponent could be used (e.g. 6) to align waves even more to the wind
@@ -166,7 +160,8 @@ T ocean_wave_generator<T>::phillips(const vector2t<T>& K) const
 	T eterm = exp(-g2 / (k2 * v4)) / k4;
 	T dampfac = T(1.0/100);
 	T l2 = v4/g2 * dampfac*dampfac;	// damping of very small waves
-	T result = a * eterm * KdotWhat * exp(-k2*l2);	// only here the term "a" (wave height scalar) is used
+	T result = wave_height_scale * eterm * KdotWhat * exp(-k2*l2);	// only here the term "a" (wave height scalar) is used - fixme is this dependend on the resolution? some fft scalar or so? it depends on the scale of the result! in tessendorf paper its just a numerical constant
+	//fixme research how that constant correlates to fft resolution. maybe we just miss some fft scale factor!
 	if (KdotW < T(0))	// filter out waves moving against the wind
 		result *= T(0.25);
 	return result;
@@ -178,7 +173,7 @@ std::complex<T> ocean_wave_generator<T>::h0_tilde(const vector2t<T>& K) const
 	//in comparison to the water engine by ??? here some randomization is missing.
 	//there this complex number is multiplied with a random sinus value
 	//that means a random phase. But it doesn't seem to change the appearance much.
-	// T f = sin(2*M_PI*T(rand())/RAND_MAX);
+	// T f = sin(2*constant::PI*T(rndgen.get());
 	std::complex<T> g = gaussrand();	// split in two expressions to make it compileable under VC6
 	T p = sqrt(T(0.5) * phillips(K));
 	return g * p;	// * f;
@@ -187,7 +182,7 @@ std::complex<T> ocean_wave_generator<T>::h0_tilde(const vector2t<T>& K) const
 template <class T>
 void ocean_wave_generator<T>::compute_h0tilde()
 {
-	const T pi2 = T(2.0*M_PI);
+	const T pi2 = T(2.0*constant::PI);
 	// outer parts of arrays (x2,y2 away from zero) hold higher frequencies.
 	// the significant frequencies are very close to zero, anything above
 	// +-N/4 or so is only very high frequency
@@ -205,10 +200,16 @@ std::complex<T> ocean_wave_generator<T>::h_tilde(const vector2t<T>& K, int kx, i
 {
 	std::complex<T> h0_tildeK = h0tilde[ky*(N+1)+kx];
 	std::complex<T> h0_tildemKconj = conj(h0tilde[(N-ky)*(N+1)+(N-kx)]);
-	// all frequencies should be multiples of one base frequency (see paper).
-	T wK = sqrt(GRAVITY * K.length());
+	// all frequencies should be multiples of one base frequency (see paper), if we want a looping animation
+	T wK = T(sqrt(constant::GRAVITY * K.length()));
 	T wK2 = (w0 == T(0.0)) ? wK : T(floor(wK/w0)*w0);
 	T xp = wK2 * time;
+	// formula deduction
+	// e^i*y = cos(y)+i*sin(y)
+	// h0*e^i*wK*t + h0conjMinusK * e^-i*wK*t
+	// h0*(cos(wK*t),sin(wK*t)) + h0conjMinusK*(cos(-wK*t),sin(-wK*t))
+	// -sin(a)=sin(-a),cos(-a)=cos(a)
+	// h0*(cos(wK*t),sin(wK*t)) + h0conjMinusK*(cos(wK*t),-sin(wK*t))
 	T cxp = cos(xp);
 	T sxp = sin(xp);
 	return h0_tildeK * std::complex<T>(cxp, sxp) + h0_tildemKconj * std::complex<T>(cxp, -sxp);
@@ -217,8 +218,8 @@ std::complex<T> ocean_wave_generator<T>::h_tilde(const vector2t<T>& K, int kx, i
 template <class T>
 void ocean_wave_generator<T>::compute_htilde(T time)
 {
-	const T pi2 = T(2.0*M_PI);
-	for (int y = 0; y <= N/2; ++y) {
+	const T pi2 = T(2.0*constant::PI);
+	for (int y = 0; y <= N/2; ++y) {	// this means one sin/cos per value for every fft, so maybe this should go to GPU as well!
 		for (int x = 0; x < N; ++x) {
 			vector2t<T> K(pi2*(x-N/2)/Lm, pi2*(y-N/2)/Lm);
 			htilde[y*N+x] = h_tilde(K, x, y, time);
@@ -234,8 +235,8 @@ ocean_wave_generator<T>::ocean_wave_generator(
 		T waveheight,
 		T tilesize,
 		T cycletime )
-	: N(int(gridsize)), W(winddir.normal()), v(windspeed), a(waveheight), Lm(tilesize),
-	w0(cycletime < T(0.0) ? T(0.0) : T(2.0*M_PI)/cycletime)
+	: N(int(gridsize)), W(winddir.normal()), v(windspeed), wave_height_scale(waveheight), Lm(tilesize),
+	w0(cycletime < T(0.0) ? T(0.0) : T(2.0*constant::PI)/cycletime), rndgen(12345)
 {
 	h0tilde.resize((N+1)*(N+1));
 	compute_h0tilde();
@@ -247,7 +248,7 @@ ocean_wave_generator<T>::ocean_wave_generator(
 
 template <class T>
 ocean_wave_generator<T>::ocean_wave_generator(const ocean_wave_generator<T>& owg)
-	: N(owg.N), W(owg.W), v(owg.v), a(owg.a), Lm(owg.Lm), w0(owg.w0), h0tilde(owg.h0tilde)
+	: N(owg.N), W(owg.W), v(owg.v), wave_height_scale(owg.wave_height_scale), Lm(owg.Lm), w0(owg.w0), h0tilde(owg.h0tilde), rndgen(12345)
 {
 	// clear htilde, create new fftw plans.
 	htilde.resize(N*(N/2+1));
@@ -259,7 +260,7 @@ ocean_wave_generator<T>::ocean_wave_generator(const ocean_wave_generator<T>& owg
 template <class T>
 ocean_wave_generator<T>::ocean_wave_generator(const ocean_wave_generator<T>& owg, int gridsize,
 					      int clearlowfreq)
-	: N(gridsize <= owg.N ? gridsize : owg.N), W(owg.W), v(owg.v), a(owg.a), Lm(owg.Lm), w0(owg.w0)
+	: N(gridsize <= owg.N ? gridsize : owg.N), W(owg.W), v(owg.v), wave_height_scale(owg.wave_height_scale), Lm(owg.Lm), w0(owg.w0), rndgen(12345)
 {
 	h0tilde.resize((N+1)*(N+1));
 	//copy h0 tilde instead of computing it
@@ -331,7 +332,7 @@ void ocean_wave_generator<T>::compute_heights(std::vector<T>& waveheights) const
 	}
 
 	FFT_EXECUTE_PLAN(plan);
-	
+
 	// our kx,ky are in {-N/2...N/2}, but fft goes from {0...N-1}
 	// so we have to add N/2 in the formulas, a term that can be seperated as exponential
 	// term: exp(I*pi*(x+y)) that is equal to (-1)^(x+y), so we have to adjust
@@ -352,7 +353,7 @@ void ocean_wave_generator<T>::compute_finite_normals(const std::vector<T>& heigh
 	if (normals.size() != N*N)
 		normals.resize(N*N);
 
-	typename std::vector<vector3t<T> >::iterator it = normals.begin();
+	auto it = normals.begin();
 	T sf = Lm/T(N);
 	for (int y = 0; y < N; ++y) {
 		int y1 = (y+N-1)%N;
@@ -377,7 +378,7 @@ void ocean_wave_generator<T>::compute_finite_normals(const std::vector<T>& heigh
 template <class T>
 void ocean_wave_generator<T>::compute_normals(std::vector<vector3t<T> >& wavenormals) const
 {
-	const T pi2 = T(2.0)*T(M_PI);
+	const T pi2 = T(2.0)*T(constant::PI);
 	for (int y = 0; y <= N/2; ++y) {
 		for (int x = 0; x < N; ++x) {
 			const std::complex<T>& c = htilde[y*N+x];
@@ -392,7 +393,7 @@ void ocean_wave_generator<T>::compute_normals(std::vector<vector3t<T> >& wavenor
 
 	FFT_EXECUTE_PLAN(plan);
 	FFT_EXECUTE_PLAN(plan2);
-	
+
 	if (wavenormals.size() != N*N)
 		wavenormals.resize(N*N);
 	T signs[2] = { T(1), T(-1) };
@@ -413,7 +414,7 @@ void ocean_wave_generator<T>::compute_displacements(const T& scalefac,
 	for (int y = 0; y <= N/2; ++y) {
 		for (int x = 0; x < N; ++x) {
 			const std::complex<T>& c = htilde[y*N+x];
-			vector2t<T> K((x-N/2), (y-N/2));	// the factor 2*PI/Lm gets divided out later, so we don't need to multiply it.
+			vector2t<T> K(T(x-N/2), T(y-N/2));	// the factor 2*PI/Lm gets divided out later, so we don't need to multiply it.
 			T k = K.length();
 			vector2t<T> Kh;
 			if (k != 0)
@@ -430,7 +431,7 @@ void ocean_wave_generator<T>::compute_displacements(const T& scalefac,
 
 	FFT_EXECUTE_PLAN(plan);
 	FFT_EXECUTE_PLAN(plan2);
-	
+
 	if (wavedisplacements.size() != unsigned(N*N))
 		wavedisplacements.resize(N*N);
 	T signs[2] = { T(1), T(-1) };

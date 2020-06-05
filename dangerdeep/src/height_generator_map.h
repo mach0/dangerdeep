@@ -34,7 +34,7 @@ class height_generator_map : public height_generator
 	unsigned mapw, maph;
 	double pixelw_real;
 	vector2i mapoff;
-	random_generator rndgen;
+	random_generator_deprecated rndgen;
 	std::vector<uint8_t> ct[8];
 	unsigned cw, ch;
 	bivector<float> noisemaps[7+3];

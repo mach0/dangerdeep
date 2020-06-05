@@ -30,8 +30,8 @@
 	#include <mach-o/dyld.h>
 #endif
 
-#include	<cstdlib>
-#include	<cstring>
+#include	<stdlib.h>
+#include	<string.h>
 
 #include	"glext.h"
 
@@ -2180,7 +2180,7 @@ inline void CRenderingContext::InitExtensionString()
 {
 	// 1: initialize first pointer and get the opengl extension string...
 
-	m_pFirstExtensionName = nullptr;
+	m_pFirstExtensionName = NULL;
 
 	char const * szExtensions = (char const *) ::glGetString(GL_EXTENSIONS);
 	if(!szExtensions) {
@@ -2194,7 +2194,7 @@ inline void CRenderingContext::InitExtensionString()
 
 		// 2.1: create a new node and connect to the existing list...
 
-		auto * pNewExtensionName	= new SExtensionName;
+		SExtensionName * pNewExtensionName	= new SExtensionName;
 
 		pNewExtensionName->pNext				= m_pFirstExtensionName;
 		pNewExtensionName->szExtension		= szExtensions;

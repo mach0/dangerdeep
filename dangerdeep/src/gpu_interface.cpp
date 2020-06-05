@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <GL/glcorearb.h>
 #include <GL/glext.h>	// for compressed texture definitions and anisotropy definitions
 #endif
+#include "helper.h"
 using namespace gpu;
 
 // Note! OpenGL 4.5 offers direct state access that makes many glBind* obsolete.
@@ -458,7 +459,7 @@ static uint64_t texture_mem_freed = 0;
 
 
 
-texture::texture()
+gpu::texture::texture()
  :	gpu_format(0),
 	width(0),
 	height(0),
@@ -624,7 +625,7 @@ struct dds_header
 
 
 
-texture::texture(const std::string& filename, data_type dt, bool use_mipmap, bool use_compression, float bump_height)
+gpu::texture::texture(const std::string& filename, data_type dt, bool use_mipmap, bool use_compression, float bump_height)
  :	gpu_format(0),
 	width(0),
 	height(0),
@@ -767,7 +768,7 @@ texture::texture(const std::string& filename, data_type dt, bool use_mipmap, boo
 
 
 
-texture::texture(const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned nc, bool use_mipmap, bool use_compression, data_type dt)
+gpu::texture::texture(const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned nc, bool use_mipmap, bool use_compression, data_type dt)
  :	gpu_format(0),
 	width(w),
 	height(h),
@@ -779,7 +780,7 @@ texture::texture(const std::vector<uint8_t>& pixels, unsigned w, unsigned h, uns
 
 
 
-texture::texture(unsigned w, unsigned h, unsigned nc, data_type dt, bool use_mipmap)
+gpu::texture::texture(unsigned w, unsigned h, unsigned nc, data_type dt, bool use_mipmap)
  :	gpu_format(make_internal_format(nc, dt, false /* no compression */)),
 	width(w),
 	height(h),
@@ -805,7 +806,7 @@ texture::texture(unsigned w, unsigned h, unsigned nc, data_type dt, bool use_mip
 
 
 
-texture::texture(texture&& source)
+gpu::texture::texture(texture&& source)
  :	object(std::move(source)),
 	gpu_format(source.gpu_format),
 	width(source.width),
@@ -824,7 +825,7 @@ texture::texture(texture&& source)
 
 
 
-texture& texture::operator=(texture&& source)
+gpu::texture& gpu::texture::operator=(texture&& source)
 {
 	if (&source != this) {
 		reset();
@@ -847,14 +848,14 @@ texture& texture::operator=(texture&& source)
 
 
 
-texture::~texture()
+gpu::texture::~texture()
 {
 	reset();
 }
 
 
 
-void texture::reset()
+void gpu::texture::reset()
 {
 	texture_mem_used -= used_memory;
 	texture_mem_freed += used_memory;
@@ -866,7 +867,7 @@ void texture::reset()
 
 
 
-void texture::set_data_generic(const void* pixels, unsigned count, data_type dt, unsigned mipmap_level, bool update_mipmap_)
+void gpu::texture::set_data_generic(const void* pixels, unsigned count, data_type dt, unsigned mipmap_level, bool update_mipmap_)
 {
 	const auto work_width = width >> mipmap_level;
 	const auto work_height = height >> mipmap_level;
@@ -896,7 +897,7 @@ void texture::update_mipmap()
 
 
 
-void texture::swap(texture& other)
+void gpu::texture::swap(texture& other)
 {
 	std::swap(gpu_id, other.gpu_id);
 	std::swap(gpu_format, other.gpu_format);
@@ -909,7 +910,7 @@ void texture::swap(texture& other)
 
 
 
-void texture::init(const void* data, data_type dt, bool use_compression, const std::string* name)
+void gpu::texture::init(const void* data, data_type dt, bool use_compression, const std::string* name)
 {
 	auto& g = GPU();
 	if (width > g.get_max_texture_size() || height > g.get_max_texture_size()) {
@@ -943,7 +944,7 @@ void texture::init(const void* data, data_type dt, bool use_compression, const s
 
 
 
-void texture::init(const std::vector<const void*> data, data_type dt, bool use_compression, const std::string* name)
+void gpu::texture::init(const std::vector<const void*> data, data_type dt, bool use_compression, const std::string* name)
 {
 	auto& g = GPU();
 	if (width > g.get_max_texture_size() || height > g.get_max_texture_size()) {
@@ -984,7 +985,7 @@ void texture::init(const std::vector<const void*> data, data_type dt, bool use_c
 
 
 
-void texture::sub_image(const area& ar, data_type dt, const void* pixels, unsigned stride, bool update_mipmap_)
+void gpu::texture::sub_image(const area& ar, data_type dt, const void* pixels, unsigned stride, bool update_mipmap_)
 {
 	unsigned line_width_in_bytes = nr_of_channels * to_data_size(dt);
 	// stride is in pixels.

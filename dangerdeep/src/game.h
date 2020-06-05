@@ -240,7 +240,7 @@ protected:
 	void check_collisions();
 	void collision_response(sea_object& a, sea_object& b, const vector3& collision_pos);
 
-	random_generator random_gen;
+	random_generator_deprecated random_gen;
 
 	game();	
 	game& operator= (const game& other);

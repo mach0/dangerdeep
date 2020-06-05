@@ -71,14 +71,11 @@ target_link_libraries(dftdbasic ${LIBS} ${CMAKE_DL_LIBS} tinyxml)
 add_library ( dftdall SHARED
 	#airplane_interface.cpp
 	#airplane_interface.h
-	#modelmeasure.cpp
 	#mymain.cpp
 	#network.cpp
 	#network.h
-	#portal.cpp
 	#ship_interface.cpp
 	#ship_interface.h
-	#viewmodel.cpp
 	ai.cpp
 	ai.h
 	airplane.cpp
@@ -272,6 +269,55 @@ add_library ( dftdall SHARED
 )
 target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
 
+# needs updated model classes etc., so this won't work
+add_library(dftdmedia	SHARED
+#	color.h
+#	daysky.cpp
+#	daysky.h
+#	font.cpp
+#	font.h
+#	fpsmeasure.cpp
+#	fpsmeasure.h
+#	geoclipmap.cpp
+#	geoclipmap.h
+#	global_data.cpp
+#	global_data.h
+#	gpu_helper.cpp
+#	gpu_helper.h
+#	gpu_interface.cpp
+#	gpu_interface.h
+#	gpu_mesh.cpp
+#	gpu_mesh.h
+#	gpu_model.cpp
+#	gpu_model.h
+	input_event_handler.h
+#	image.cpp
+#	image.h
+#	log.cpp
+#	log.h
+#	moon.cpp
+#	moon.h
+#	music.cpp
+#	music.h
+#	mymain.cpp
+#	ocean_wave_generator.h
+#	sky.cpp
+#	sky.h
+	system_interface.cpp
+	system_interface.h
+#	stars.cpp
+#	stars.h
+#	terrain_generator.h
+#	#terrain.cpp
+#	#terrain.h
+#	tone_reproductor.cpp
+#	tone_reproductor.h
+#	water.cpp
+#	water.h
+)
+target_link_libraries(dftdmedia dftdbasic)
+
+
 add_executable ( dangerdeep subsim.cpp )
 
 target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdall dftdbasic tinyxml oglext )
@@ -316,4 +362,3 @@ if ( DFTD_BUILD_TOOLS )
 	endif ()
 
 endif ()
-

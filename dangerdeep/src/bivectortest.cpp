@@ -60,7 +60,7 @@ int main(int, char**)
 	save(load("test.pgm").convert<float>().smooth_upsampled(true).smooth_upsampled(true).smooth_upsampled(true).convert<uint8_t>(0,255), "test5sw.pgm");
 	*/
 
-	random_generator rg;
+	random_generator_deprecated rg;
 	bivector<float> y(vector2i(256,256));
 	y.add_gauss_noise(1.0, rg);
 	y *= 128;

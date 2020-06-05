@@ -156,7 +156,7 @@ public:
 	// algebraic operations, omponent-wise add, sub, multiply (of same datasize)
 	// sum of square of differences etc.
 
-	morton_bivector<T>& add_gauss_noise(const T& scal, random_generator& rg);
+	morton_bivector<T>& add_gauss_noise(const T& scal, random_generator_deprecated& rg);
 	morton_bivector<T>& add_tiled(const bivector<T>& other, const T& scal);
 	morton_bivector<T>& add_shifted(const bivector<T>& other, const vector2i& offset);
 
@@ -533,7 +533,7 @@ morton_bivector<T> morton_bivector<T>::smooth_upsampled(bool wrap) const
 }
 
 template <class T>
-morton_bivector<T>& morton_bivector<T>::add_gauss_noise(const T& scal, random_generator& rg)
+morton_bivector<T>& morton_bivector<T>::add_gauss_noise(const T& scal, random_generator_deprecated& rg)
 {
 	for (int z=0; z < int(data.size()); ++z) {
 		double r, q, s;
