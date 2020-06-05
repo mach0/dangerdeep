@@ -20,16 +20,16 @@ DONE
     modernize-avoid-bind
     modernize-concat-nested-namespaces
     modernize-deprecated-headers
+    modernize-deprecated-ios-base-aliases
+    modernize-replace-random-shuffle
+    modernize-raw-string-literal
 TODO
     modernize-avoid-c-arrays
-    modernize-deprecated-ios-base-aliases
     modernize-loop-convert
     modernize-make-shared
     modernize-make-unique
     modernize-pass-by-value
-    modernize-raw-string-literal
     modernize-redundant-void-arg
-    modernize-replace-random-shuffle
     modernize-return-braced-init-list
     modernize-shrink-to-fit
     modernize-unary-static-assert
