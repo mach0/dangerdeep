@@ -29,20 +29,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <glu.h>
 #include <SDL.h>
 
-#include "water.h"
-#include "texture.h"
-#include "global_data.h"
-#include "matrix4.h"
 #include "cfg.h"
-#include "system.h"
-#include "game.h"
 #include "datadirs.h"
-#include "polygon.h"
 #include "frustum.h"
+#include "game.h"
+#include "global_data.h"
 #include "log.h"
+#include "matrix4.h"
+#include "polygon.h"
+#include "system.h"
+#include "texture.h"
+#include "water.h"
 #include <fstream>
-#include <sstream>
 #include <iomanip>
+#include <sstream>
+#include <utility>
+
 
 using std::ofstream;
 using std::ostringstream;

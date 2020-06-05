@@ -20,18 +20,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's tdc
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
-#include "image.h"
-#include "texture.h"
-#include "game.h"
 #include "sub_tdc_display.h"
-#include "submarine_interface.h"
-#include "submarine.h"
-#include "keys.h"
 #include "cfg.h"
+#include "game.h"
 #include "global_data.h"
+#include "image.h"
+#include "keys.h"
 #include "log.h"
+#include "submarine.h"
+#include "submarine_interface.h"
+#include "system.h"
+#include "texture.h"
 #include <sstream>
+#include <utility>
+
 
 using std::vector;
 using std::list;

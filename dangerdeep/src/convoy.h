@@ -46,7 +46,7 @@ class convoy
 	std::list<std::pair<ship*, vector2> > merchants, warships, escorts;
 	std::list<vector2> waypoints;
 
-	std::auto_ptr<ai> myai;	// fixme: maybe one ship should act for the convoy,
+	std::unique_ptr<ai> myai;	// fixme: maybe one ship should act for the convoy,
 	                        // the ship with the convoy commander.
 	                        // when it is sunk, convoy is desorganized etc.
 

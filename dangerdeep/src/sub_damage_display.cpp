@@ -20,9 +20,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to display the damage status of a submarine.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include <string>
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <utility>
+
 using namespace std;
 #include "system.h"
 #include "texts.h"

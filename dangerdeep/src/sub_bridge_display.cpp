@@ -25,6 +25,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "game.h"
 #include "sub_bridge_display.h"
+
+
+#include <utility>
+
 #include "user_interface.h"
 #include "keys.h"
 #include "cfg.h"

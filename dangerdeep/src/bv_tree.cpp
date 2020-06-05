@@ -22,17 +22,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
 #include "bv_tree.h"
+
+
+#include <utility>
+
 #include "triangle_intersection.h"
 
 //#define PRINT(x) std::cout << x
 #define PRINT(x) do { } while (0)
 
-std::auto_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, std::list<leaf_data>& nodes)
+std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, std::list<leaf_data>& nodes)
 {
-	std::auto_ptr<bv_tree> result;
+	std::unique_ptr<bv_tree> result;
 	// if list has zero entries, return empty pointer
 	if (nodes.empty())
-		return result;
+		return std::move(result);
 	// compute bounding box for leaves
 	vector3f bbox_min = nodes.front().get_pos(vertices, 0);
 	vector3f bbox_max = bbox_min;
@@ -55,7 +59,7 @@ std::auto_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, st
 	// if list has one entry, return that
 	if (nodes.size() == 1) {
 		result.reset(new bv_tree(bound_sphere, nodes.front()));
-		return result;
+		return std::move(result);
 	}
 	//
 	// split leaf node list in two parts
@@ -99,16 +103,16 @@ std::auto_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, st
 	PRINT("left " << left_nodes.size() << " right " << right_nodes.size() << "\n");
 	result.reset(new bv_tree(bound_sphere, create(vertices, left_nodes), create(vertices, right_nodes)));
 	PRINT("final volume " << result->volume.center << "|" << result->volume.radius << "\n");
-	return result;
+	return std::move(result);
 }
 
 
 
-bv_tree::bv_tree(const spheref& sph, std::auto_ptr<bv_tree> left_tree, std::auto_ptr<bv_tree> right_tree)
+bv_tree::bv_tree(const spheref& sph, std::unique_ptr<bv_tree> left_tree, std::unique_ptr<bv_tree> right_tree)
 	: volume(sph)
 {
-	children[0] = left_tree;
-	children[1] = right_tree;
+	children[0] = std::move(left_tree);
+	children[1] = std::move(right_tree);
 }
 
 

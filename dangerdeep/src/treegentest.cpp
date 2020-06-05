@@ -29,12 +29,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <glu.h>
 #include <SDL.h>
 
-#include "system.h"
-#include "vector3.h"
 #include "model.h"
+#include "system.h"
 #include "texture.h"
+#include "vector3.h"
 #include <iostream>
 #include <sstream>
+#include <utility>
+
 #include "image.h"
 #include "faulthandler.h"
 #include "datadirs.h"
@@ -149,7 +151,7 @@ void run()
 	fpsmeasure fpsm(1.0f);
 
 	tree_generator tgn;
-	std::auto_ptr<model> treemdl = tgn.generate();
+	std::unique_ptr<model> treemdl = tgn.generate();
 
 	vector3f wind_movement;
 

@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "frustum.h"
 
 #include <algorithm>
+#include <utility>
+
 
 using namespace std;
 
@@ -221,15 +223,15 @@ void camera::set_gl_trans() const
 
 class canyon
 {
-	std::auto_ptr<model::mesh> mymesh;
+	std::unique_ptr<model::mesh> mymesh;
 	std::vector<float> heightdata;
 	glsl_shader_setup myshader;
 	unsigned loc_texsandrock;
 	unsigned loc_texnoise;
 	unsigned loc_texgrass;
-	std::auto_ptr<texture> sandrocktex;
-	std::auto_ptr<texture> noisetex;
-	std::auto_ptr<texture> grasstex;
+	std::unique_ptr<texture> sandrocktex;
+	std::unique_ptr<texture> noisetex;
+	std::unique_ptr<texture> grasstex;
 
 	struct canyon_material : public model::material
 	{
@@ -374,7 +376,7 @@ class plant_set
 	std::vector<plant> plants;
  	mutable vertexbufferobject plantvertexdata;
  	mutable vertexbufferobject plantindexdata;
-	std::auto_ptr<texture> planttex;
+	std::unique_ptr<texture> planttex;
 	glsl_shader_setup myshader;
 	unsigned loc_textrees;
 	unsigned loc_viewpos;
@@ -645,10 +647,10 @@ void add_tree(const vector3f& pos, float ang,
 
 
 
-auto_ptr<model::mesh> generate_trees(vector<float>& heightdata, unsigned nr = 20000, unsigned w = 256, unsigned h = 256, const vector2f& scal = vector2f(2.0f, 2.0f))
+unique_ptr<model::mesh> generate_trees(vector<float>& heightdata, unsigned nr = 20000, unsigned w = 256, unsigned h = 256, const vector2f& scal = vector2f(2.0f, 2.0f))
 {
 	float areaw = w * scal.x, areah = h * scal.y;
-	auto_ptr<model::mesh> m(new model::mesh("trees"));
+	unique_ptr<model::mesh> m(new model::mesh("trees"));
 	for (unsigned t = 0; t < nr; ) {
 		float x = (rnd() - 0.5) * areaw;
 		float y = (rnd() - 0.5) * areah;
@@ -675,7 +677,7 @@ auto_ptr<model::mesh> generate_trees(vector<float>& heightdata, unsigned nr = 20
 //	m->mymaterial->colormap->set_texture(new texture(get_texture_dir() + "tree1.png", texture::LINEAR_MIPMAP_LINEAR, texture::CLAMP));
 	m->mymaterial->specular = color(0, 0, 0);
 	m->compile();
-	return m;
+	return std::move(m);
 }
 
 
@@ -740,9 +742,9 @@ void show_credits()
 	vector<float> heightdata;
 	canyon cyn(256, 256);
 	heightmap chm(cyn.get_heightdata(), 256, 256, vector2f(2.0f, 2.0f), vector2f(-256, -256));
-	auto_ptr<model::mesh> trees = generate_trees(cyn.get_heightdata());
+	unique_ptr<model::mesh> trees = generate_trees(cyn.get_heightdata());
 	plant_set ps(cyn.get_heightdata());
-	auto_ptr<sky> mysky(new sky(8*3600.0)); // 10 o'clock
+	unique_ptr<sky> mysky(new sky(8*3600.0)); // 10 o'clock
 	vector3 sunpos(0, 3000, 4000);
 	mysky->rebuild_colors(sunpos, vector3(-500, -3000, 1000), viewpos);
 
@@ -776,8 +778,8 @@ void show_credits()
 // 	flight_coords.push_back(vector3f(0, -flight_wh*0.75));
 // fly an 8 like figure
 
-	auto_ptr<texture> bkg;
-	auto_ptr<glsl_shader_setup> glss;
+	unique_ptr<texture> bkg;
+	unique_ptr<glsl_shader_setup> glss;
 
 	int lineheight = font_arial->get_height();
 	int lines_per_page = (768+lineheight-1)/lineheight;
@@ -789,7 +791,7 @@ void show_credits()
 
 	//float lposition[4] = {200, 0, 0, 1};
 
-	std::auto_ptr<texture> fadein_tex;
+	std::unique_ptr<texture> fadein_tex;
 	std::vector<Uint8> fadein_pixels(8*8*2);
 	generate_fadein_pixels(fadein_pixels, 0, 8);
 	fadein_tex.reset(new texture(fadein_pixels, 8, 8, GL_LUMINANCE_ALPHA,

@@ -20,22 +20,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // logbook display
 // subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
 
-#include "vector2.h"
+#include "logbook_display.h"
 #include "angle.h"
 #include "date.h"
-#include "system.h"
+#include "font.h"
 #include "game.h"
 #include "global_data.h"
-#include "user_display.h"
-#include "logbook_display.h"
-#include "font.h"
-#include "texts.h"
 #include "image.h"
+#include "system.h"
+#include "texts.h"
 #include "texture.h"
+#include "user_display.h"
 #include "user_interface.h"
-#include <map>
+#include "vector2.h"
 #include <iostream>
+#include <map>
 #include <sstream>
+#include <utility>
+
 using namespace std;
 
 

@@ -21,16 +21,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_ghg_display.h"
-#include "system.h"
-#include "image.h"
-#include "texture.h"
-#include "game.h"
-#include "submarine_interface.h"
-#include "submarine.h"
-#include "keys.h"
 #include "cfg.h"
+#include "game.h"
 #include "global_data.h"
+#include "image.h"
+#include "keys.h"
+#include "submarine.h"
+#include "submarine_interface.h"
+#include "system.h"
+#include "texture.h"
 #include <sstream>
+#include <utility>
+
 using namespace std;
 
 static const double TK_ANGFAC = 360.0/512.0;

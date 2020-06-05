@@ -20,19 +20,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to create and display the number and tonnage of sunk ships.
 // subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
-#include "model.h"
-#include "texts.h"
-#include "game.h"
-#include "font.h"
-#include "global_data.h"
 #include "ships_sunk_display.h"
-#include "user_interface.h"
+#include "font.h"
+#include "game.h"
+#include "global_data.h"
 #include "log.h"
+#include "model.h"
 #include "primitives.h"
-#include <string>
+#include "system.h"
+#include "texts.h"
+#include "user_interface.h"
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <utility>
+
 using namespace std;
 
 #define FONT_SCALE_FACTOR 0.7f

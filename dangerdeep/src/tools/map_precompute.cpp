@@ -21,10 +21,12 @@
 
 #include <SDL.h>
 #include <fstream>
+#include <list>
 #include <sstream>
 #include <stdlib.h>
 #include <string>
-#include <list>
+#include <utility>
+
 
 #include "../vector2.h"
 #include "../morton_bivector.h"

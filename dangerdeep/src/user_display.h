@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL.h>
 #include "texture.h"
 #include "datadirs.h"
+class image;
 
 ///\defgroup displays In-game user interface screens
 ///\brief Base class for a single screen of the ingame user interface.
@@ -51,7 +52,7 @@ protected:
 	class rotat_tex {
 	public:
 		rotat_tex() : left(0), top(0), centerx(0), centery(0) {}
-		std::auto_ptr<texture> tex;
+		std::unique_ptr<texture> tex;
 		int left, top, centerx, centery;
 		void draw(double angle) const {
 			// fixme: maybe rotate around pixel center (x/y + 0.5)
@@ -80,7 +81,7 @@ protected:
 	class fix_tex {
 	public:
 		fix_tex() : left(0), top(0) {}
-		std::auto_ptr<texture> tex;
+		std::unique_ptr<texture> tex;
 		int left, top;
 		void draw() const {
 			tex->draw(left, top);

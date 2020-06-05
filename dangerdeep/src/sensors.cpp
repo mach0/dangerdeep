@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sea_object.h"
 #include "submarine.h"
 #include "sensors.h"
+
+
+#include <utility>
+
 #include "game.h"
 #include "vector2.h"
 #include "particle.h"

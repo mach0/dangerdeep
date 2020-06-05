@@ -20,29 +20,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: free 3d view
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
-#include "image.h"
-#include "texture.h"
-#include "game.h"
-#include "user_interface.h"
 #include "freeview_display.h"
-#include "ship.h"
-#include "submarine.h"
 #include "airplane.h"
-#include "torpedo.h"
 #include "depth_charge.h"
-#include "gun_shell.h"
-#include "water_splash.h"
-#include "particle.h"
-#include "sky.h"
-#include "water.h"
-#include "global_data.h"
-#include "model.h"
 #include "frustum.h"
-#include "primitives.h"
+#include "game.h"
+#include "global_data.h"
+#include "gun_shell.h"
+#include "image.h"
+#include "model.h"
+#include "particle.h"
 #include "postprocessor.h"
-#include <fstream>
+#include "primitives.h"
+#include "ship.h"
+#include "sky.h"
+#include "submarine.h"
+#include "system.h"
+#include "texture.h"
+#include "torpedo.h"
+#include "user_interface.h"
+#include "water.h"
+#include "water_splash.h"
 #include <algorithm>
+#include <fstream>
+#include <utility>
+
 using std::vector;
 
 
@@ -133,7 +135,7 @@ freeview_display::freeview_display(user_interface& ui_) :
 	conning_tower->set_layout();
 	add_loading_screen("conning tower model loaded");
 	// valgrind reports lost memory in the following line, but why?!
-	std::auto_ptr<texture> uwbt(new texture(get_texture_dir() + "underwater_background.png", texture::LINEAR, texture::CLAMP));
+	std::unique_ptr<texture> uwbt(new texture(get_texture_dir() + "underwater_background.png", texture::LINEAR, texture::CLAMP));
 	texturecache().ref("underwater_background.png", uwbt.get());
 	underwater_background = uwbt.release();
 }

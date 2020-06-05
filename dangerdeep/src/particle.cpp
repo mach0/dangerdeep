@@ -204,6 +204,8 @@ vector<Uint8> particle::compute_fire_frame(unsigned wh, const vector<Uint8>& old
 
 #include <fstream>
 #include <sstream>
+#include <utility>
+
 
 void particle::init()
 {
