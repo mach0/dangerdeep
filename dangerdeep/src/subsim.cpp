@@ -1285,7 +1285,7 @@ void configure_key(widget_list* wkeys)
 {
 	struct confkey_widget : public widget {
 		widget_text* keyname;
-		unsigned keynr;
+		key_command keynr;
 		void on_char(const SDL_keysym& ks) override {
 			if (ks.sym == SDLK_ESCAPE) {
 				close(0);
@@ -1300,7 +1300,7 @@ void configure_key(widget_list* wkeys)
 		}
 		confkey_widget(int x, int y, int w, int h, const string& text_, widget* parent_,
 			       const std::string& backgrimg, unsigned sel) :
-			widget(x, y, w, h, text_, parent_, backgrimg), keynr(sel)
+			widget(x, y, w, h, text_, parent_, backgrimg), keynr(key_command(sel)) // fixme later use key_command in widget directly!
 			{
 				keyname = new widget_text(40, 80, 432, 40, cfg::instance().getkey(keynr).get_name());
 				add_child(keyname);
@@ -1314,7 +1314,7 @@ void configure_key(widget_list* wkeys)
 	wks = wks.substr(0, wks.find("\t"));
 	w.add_child(new widget_text(40, 40, 432, 32, wks));
 	w.run(0, true);
-	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + cfg::instance().getkey(sel).get_name());
+	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + cfg::instance().getkey(key_command(sel)).get_name());
 }
 
 
@@ -1326,8 +1326,8 @@ void menu_configure_keys()
 	wkeys->set_column_width(700);
 	w.add_child(wkeys);
 	
-	for (unsigned i = 600; i < 600 + NR_OF_KEY_IDS; ++i) {
-		cfg::key k = cfg::instance().getkey(i-600);
+	for (unsigned i = 600; i < 600 + unsigned(key_command::number); ++i) {
+		cfg::key k = cfg::instance().getkey(key_command(i-600));
 		wkeys->append_entry(texts::get(i) + string("\t") + k.get_name());
 	}
 
@@ -1843,68 +1843,68 @@ int mymain(list<string>& args)
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 	mycfg.register_option("terrain_detail", 1);
 	
-	mycfg.register_key(key_names[KEY_ZOOM_MAP].name, SDLK_PLUS, false, false, false);
-	mycfg.register_key(key_names[KEY_UNZOOM_MAP].name, SDLK_MINUS, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_GAUGES_SCREEN].name, SDLK_F1, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_PERISCOPE_SCREEN].name, SDLK_F2, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_UZO_SCREEN].name, SDLK_F3, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_BRIDGE_SCREEN].name, SDLK_F4, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_MAP_SCREEN].name, SDLK_F5, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_TORPEDO_SCREEN].name, SDLK_F6, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_DAMAGE_CONTROL_SCREEN].name, SDLK_F7, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_LOGBOOK_SCREEN].name, SDLK_F8, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_SUCCESS_RECORDS_SCREEN].name, SDLK_F9, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_FREEVIEW_SCREEN].name, SDLK_F10, false, false, false);
-	mycfg.register_key(key_names[KEY_RUDDER_LEFT].name, SDLK_LEFT, false, false, false);
-	mycfg.register_key(key_names[KEY_RUDDER_HARD_LEFT].name, SDLK_LEFT, false, false, true);
-	mycfg.register_key(key_names[KEY_RUDDER_RIGHT].name, SDLK_RIGHT, false, false, false);
-	mycfg.register_key(key_names[KEY_RUDDER_HARD_RIGHT].name, SDLK_RIGHT, false, false, true);
-	mycfg.register_key(key_names[KEY_RUDDER_UP].name, SDLK_UP, false, false, false);
-	mycfg.register_key(key_names[KEY_RUDDER_HARD_UP].name, SDLK_UP, false, false, true);
-	mycfg.register_key(key_names[KEY_RUDDER_DOWN].name, SDLK_DOWN, false, false, false);
-	mycfg.register_key(key_names[KEY_RUDDER_HARD_DOWN].name, SDLK_DOWN, false, false, true);
-	mycfg.register_key(key_names[KEY_CENTER_RUDDERS].name, SDLK_RETURN, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_LISTEN].name, SDLK_1, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_SLOW].name, SDLK_2, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_HALF].name, SDLK_3, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_FULL].name, SDLK_4, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_FLANK].name, SDLK_5, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_STOP].name, SDLK_6, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_REVERSE].name, SDLK_7, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_REVERSEHALF].name, SDLK_8, false, false, false);
-	mycfg.register_key(key_names[KEY_THROTTLE_REVERSEFULL].name, SDLK_9, false, false, false);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_1].name, SDLK_1, false, false, true);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_2].name, SDLK_2, false, false, true);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_3].name, SDLK_3, false, false, true);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_4].name, SDLK_4, false, false, true);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_5].name, SDLK_5, false, false, true);
-	mycfg.register_key(key_names[KEY_FIRE_TUBE_6].name, SDLK_6, false, false, true);
-	mycfg.register_key(key_names[KEY_SELECT_TARGET].name, SDLK_SPACE, false, false, false);
-	mycfg.register_key(key_names[KEY_SCOPE_UP_DOWN].name, SDLK_0, false, false, false);
-	mycfg.register_key(key_names[KEY_CRASH_DIVE].name, SDLK_c, false, false, false);
-	mycfg.register_key(key_names[KEY_GO_TO_SNORKEL_DEPTH].name, SDLK_d, false, false, false);
-	mycfg.register_key(key_names[KEY_TOGGLE_SNORKEL].name, SDLK_f, false, false, false);
-	mycfg.register_key(key_names[KEY_SET_HEADING_TO_VIEW].name, SDLK_h, false, false, false);
-	mycfg.register_key(key_names[KEY_IDENTIFY_TARGET].name, SDLK_i, false, false, false);
-	mycfg.register_key(key_names[KEY_GO_TO_PERISCOPE_DEPTH].name, SDLK_p, false, false, false);
-	mycfg.register_key(key_names[KEY_GO_TO_SURFACE].name, SDLK_s, false, false, false);
-	mycfg.register_key(key_names[KEY_FIRE_TORPEDO].name, SDLK_t, false, false, false);
-	mycfg.register_key(key_names[KEY_SET_VIEW_TO_HEADING].name, SDLK_v, false, false, false);
-	mycfg.register_key(key_names[KEY_TOGGLE_ZOOM_OF_VIEW].name, SDLK_y, false, false, false);
-	mycfg.register_key(key_names[KEY_TURN_VIEW_LEFT].name, SDLK_COMMA, false, false, false);
-	mycfg.register_key(key_names[KEY_TURN_VIEW_LEFT_FAST].name, SDLK_COMMA, false, false, true);
-	mycfg.register_key(key_names[KEY_TURN_VIEW_RIGHT].name, SDLK_PERIOD, false, false, false);
-	mycfg.register_key(key_names[KEY_TURN_VIEW_RIGHT_FAST].name, SDLK_PERIOD, false, false, true);
-	mycfg.register_key(key_names[KEY_TIME_SCALE_UP].name, SDLK_KP_PLUS, false, false, false);
-	mycfg.register_key(key_names[KEY_TIME_SCALE_DOWN].name, SDLK_KP_MINUS, false, false, false);
-	mycfg.register_key(key_names[KEY_FIRE_DECK_GUN].name, SDLK_g, false, false, false);
-	mycfg.register_key(key_names[KEY_TOGGLE_RELATIVE_BEARING].name, SDLK_r, false, false, false);
-	mycfg.register_key(key_names[KEY_TOGGLE_MAN_DECK_GUN].name, SDLK_g, false, false, true);
-	mycfg.register_key(key_names[KEY_SHOW_TDC_SCREEN].name, SDLK_F11, false, false, false);
-	mycfg.register_key(key_names[KEY_TOGGLE_POPUP].name, SDLK_TAB, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_TORPSETUP_SCREEN].name, SDLK_F12, false, false, false);
-	mycfg.register_key(key_names[KEY_SHOW_TORPEDO_CAMERA].name, SDLK_k, false, false, false);
-	mycfg.register_key(key_names[KEY_TAKE_SCREENSHOT].name,  SDLK_PRINT, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::ZOOM_MAP)].name, SDLK_PLUS, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::UNZOOM_MAP)].name, SDLK_MINUS, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_GAUGES_SCREEN)].name, SDLK_F1, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_PERISCOPE_SCREEN)].name, SDLK_F2, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_UZO_SCREEN)].name, SDLK_F3, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_BRIDGE_SCREEN)].name, SDLK_F4, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_MAP_SCREEN)].name, SDLK_F5, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_SCREEN)].name, SDLK_F6, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_DAMAGE_CONTROL_SCREEN)].name, SDLK_F7, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_LOGBOOK_SCREEN)].name, SDLK_F8, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_SUCCESS_RECORDS_SCREEN)].name, SDLK_F9, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_FREEVIEW_SCREEN)].name, SDLK_F10, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_LEFT)].name, SDLK_LEFT, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_LEFT)].name, SDLK_LEFT, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_RIGHT)].name, SDLK_RIGHT, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_RIGHT)].name, SDLK_RIGHT, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_UP)].name, SDLK_UP, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_UP)].name, SDLK_UP, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_DOWN)].name, SDLK_DOWN, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_DOWN)].name, SDLK_DOWN, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::CENTER_RUDDERS)].name, SDLK_RETURN, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_LISTEN)].name, SDLK_1, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_SLOW)].name, SDLK_2, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_HALF)].name, SDLK_3, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FULL)].name, SDLK_4, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FLANK)].name, SDLK_5, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_STOP)].name, SDLK_6, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSE)].name, SDLK_7, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEHALF)].name, SDLK_8, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEFULL)].name, SDLK_9, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_1)].name, SDLK_1, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_2)].name, SDLK_2, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_3)].name, SDLK_3, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_4)].name, SDLK_4, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_5)].name, SDLK_5, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_6)].name, SDLK_6, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::SELECT_TARGET)].name, SDLK_SPACE, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SCOPE_UP_DOWN)].name, SDLK_0, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::CRASH_DIVE)].name, SDLK_c, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SNORKEL_DEPTH)].name, SDLK_d, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_SNORKEL)].name, SDLK_f, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SET_HEADING_TO_VIEW)].name, SDLK_h, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::IDENTIFY_TARGET)].name, SDLK_i, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_PERISCOPE_DEPTH)].name, SDLK_p, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SURFACE)].name, SDLK_s, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TORPEDO)].name, SDLK_t, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SET_VIEW_TO_HEADING)].name, SDLK_v, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_ZOOM_OF_VIEW)].name, SDLK_y, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT)].name, SDLK_COMMA, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT_FAST)].name, SDLK_COMMA, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT)].name, SDLK_PERIOD, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT_FAST)].name, SDLK_PERIOD, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_UP)].name, SDLK_KP_PLUS, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_DOWN)].name, SDLK_KP_MINUS, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_DECK_GUN)].name, SDLK_g, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_RELATIVE_BEARING)].name, SDLK_r, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_MAN_DECK_GUN)].name, SDLK_g, false, false, true);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC_SCREEN)].name, SDLK_F11, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_POPUP)].name, SDLK_TAB, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPSETUP_SCREEN)].name, SDLK_F12, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_CAMERA)].name, SDLK_k, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::TAKE_SCREENSHOT)].name,  SDLK_PRINT, false, false, false);
 
 	//mycfg.register_option("invert_mouse", false);
 	//mycfg.register_option("ocean_res_x", 128);

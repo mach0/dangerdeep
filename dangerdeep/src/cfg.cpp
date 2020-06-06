@@ -104,13 +104,13 @@ void cfg::load(const string& filename)
 			for (auto keyelem : elem.iterate("key")) {
 				std::string keyname = keyelem.attr("action");
 				// get key number for this action from table
-				unsigned nr = NR_OF_KEY_IDS;
-				for (unsigned i = 0; i < NR_OF_KEY_IDS; ++i) {
+				auto nr = key_command::number;
+				for (unsigned i = 0; i < unsigned(key_command::number); ++i) {
 					if (string(key_names[i].name) == keyname) {
-						nr = i;
+						nr = key_command(i);
 					}
 				}
-				if (nr == NR_OF_KEY_IDS) {
+				if (nr == key_command::number) {
 					log_warning("found key with invalid name " << keyname << " in config file");
 					continue;
 				}
@@ -190,13 +190,13 @@ void cfg::register_option(const string& name, const string& value)
 
 void cfg::register_key(const string& name, SDLKey keysym, bool ctrl, bool alt, bool shift)
 {
-	unsigned nr = NR_OF_KEY_IDS;
-	for (unsigned i = 0; i < NR_OF_KEY_IDS; ++i) {
+	auto nr = key_command::number;
+	for (unsigned i = 0; i < unsigned(key_command::number); ++i) {
 		if (string(key_names[i].name) == name) {
-			nr = i;
+			nr = key_command(i);
 		}
 	}
-	if (nr == NR_OF_KEY_IDS)
+	if (nr == key_command::number)
 		THROW(error, string("register_key with invalid name ")+ name);
 	valk[nr] = key(name, keysym, ctrl, alt, shift);
 }
@@ -247,7 +247,7 @@ void cfg::set(const string& name, const string& value)
 
 
 	
-void cfg::set_key(unsigned nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
+void cfg::set_key(key_command nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
 {
 	auto it = valk.find(nr);
 	if (it != valk.end())
@@ -306,7 +306,7 @@ string cfg::gets(const string& name) const
 
 
 
-cfg::key cfg::getkey(unsigned nr) const
+cfg::key cfg::getkey(key_command nr) const
 {
 	auto it = valk.find(nr);
 	if (it != valk.end())
