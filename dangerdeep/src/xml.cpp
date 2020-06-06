@@ -252,35 +252,36 @@ const std::string& xml_elem::child_text() const
 
 
 
-xml_elem::iterator xml_elem::iterate(const std::string& childname) const
-{
-	return iterator(*this, elem->FirstChildElement(childname), true);
-}
-
-
-
-xml_elem::iterator xml_elem::iterate() const
+xml_elem::iterator xml_elem::begin() const
 {
 	return iterator(*this, elem->FirstChildElement(), false);
 }
 
 
 
-xml_elem xml_elem::iterator::elem() const
+xml_elem::iterator xml_elem::iterator_range_samename::begin() const
 {
-	if (!e) THROW(xml_error, "elem() on empty iterator", parent.doc_name());
-	return {e};
+	return iterator(parent, parent.elem->FirstChildElement(childname), true);
 }
 
 
 
-void xml_elem::iterator::next()
+xml_elem xml_elem::iterator::operator*() const
+{
+	if (!e) THROW(xml_error, "elem() on empty iterator", parent.doc_name());
+	return xml_elem(e);
+}
+
+
+
+xml_elem::iterator& xml_elem::iterator::operator++()
 {
 	if (!e) THROW(xml_error, "next() on empty iterator", parent.doc_name());
 	if (samename)
-		e = e->NextSiblingElement(e->Value());
+		e = e->NextSiblingElement(e->ValueStr());
 	else
 		e = e->NextSiblingElement();
+	return *this;
 }
 
 

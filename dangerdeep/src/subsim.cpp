@@ -727,19 +727,16 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 	xml_elem eflotillas = flotilladb.child("flotillas");
 	// compute which flotillas are available by time and submarine type
 	// for every flotilla present a list of submarine IDs
-	for (xml_elem::iterator it = eflotillas.iterate("flotilla"); !it.end(); it.next()) {
-		xml_elem flot = it.elem();
+	for (auto flot : eflotillas.iterate("flotilla")) {
 		bool avail = false;
 		std::string base = flot.attr("base");
 		flotilla ft;
-		for (xml_elem::iterator itt = flot.iterate("timeperiod"); !itt.end(); itt.next()) {
-			xml_elem tp = itt.elem();
+		for (auto tp : flot.iterate("timeperiod")) {
 			date dfr = date(tp.attr("from"));
 			date dut = date(tp.attr("until"));
 			if (dfr <= gamedate && gamedate <= dut) {
 				// flotilla is available by date
-				for (xml_elem::iterator its = tp.iterate("subs"); !its.end(); its.next()) {
-					xml_elem subs = its.elem();
+				for (auto subs : tp.iterate("subs")) {
 					if (subtype.substr(std::string("submarine_").length()) == subs.attr("type")) {
 						// submarines are available
 						std::istringstream iss(subs.child_text());
@@ -759,7 +756,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 					if (tp.has_attr("base"))
 						base = tp.attr("base");
 					break;
-                                }
+				}
 			}
 		}
 		if (avail) {
@@ -767,9 +764,9 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 			ft.insignia = flot.attr("sign");
 			ft.base = base;
 			ft.description = "not available, fix me";
-			for (xml_elem::iterator itt = flot.iterate("description"); !itt.end(); itt.next()) {
-				if (itt.elem().attr("lang") == texts::get_language_code()) {
-					ft.description = itt.elem().child_text();
+			for (auto desc : flot.iterate("description")) {
+				if (desc.attr("lang") == texts::get_language_code()) {
+					ft.description = desc.child_text();
 					break;
 				}
 			}
@@ -782,8 +779,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 	}
 	// remove dummy flotilla if we have others
 	if (availableflotillas.size() > 1) {
-		for (auto it = availableflotillas.begin();
-		     it != availableflotillas.end(); ++it) {
+		for (auto it = availableflotillas.begin(); it != availableflotillas.end(); ++it) {
 			if (it->nr == 99) {
 				availableflotillas.erase(it);
 				break;
@@ -1059,11 +1055,11 @@ void choose_historical_mission()
 		doc.load();
 		xml_elem edftdmission = doc.child("dftd-mission");
 		xml_elem edescription = edftdmission.child("description");
-		for (xml_elem::iterator it = edescription.iterate("short"); !it.end(); it.next()) {
-			if (it.elem().attr("lang") == texts::get_language_code()) {
+		for (auto elem : edescription.iterate("short")) {
+			if (elem.attr("lang") == texts::get_language_code()) {
 				string desc;
 				try {
-					desc = it.elem().child_text();
+					desc = elem.child_text();
 				}
 				catch (xml_error& e) {
 					desc = "NO DESCRIPTION???";
@@ -1072,11 +1068,11 @@ void choose_historical_mission()
 				break;
 			}
 		}
-		for (xml_elem::iterator it = edescription.iterate("long"); !it.end(); it.next()) {
-			if (it.elem().attr("lang") == texts::get_language_code()) {
+		for (auto elem : edescription.iterate("long")) {
+			if (elem.attr("lang") == texts::get_language_code()) {
 				string desc;
 				try {
-					desc = it.elem().child_text();
+					desc = elem.child_text();
 				}
 				catch (xml_error& e) {
 					desc = "NO DESCRIPTION???";
@@ -1523,11 +1519,10 @@ class vessel_view
 		xml_doc doc(data_file().get_filename(*current));
 		doc.load();
 		string mdlname = doc.first_child().child("classification").attr("modelname");
-		for (xml_elem::iterator it = doc.first_child().child("description")
-			     .iterate("near"); !it.end(); it.next()) {
-			if (it.elem().attr("lang") == texts::get_language_code()) {
+		for (auto elem : doc.first_child().child("description").iterate("near")) {
+			if (elem.attr("lang") == texts::get_language_code()) {
 				if (wdesc) {
-					wdesc->set_text_and_resize(it.elem().child_text());
+					wdesc->set_text_and_resize(elem.child_text());
 					int y = wdesc->get_pos().y;
 					wdesc->align(0, -1);
 					wdesc->move_pos(vector2i(0, y));

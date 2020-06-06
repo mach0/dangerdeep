@@ -346,24 +346,24 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 	modelname = cl.attr("modelname");
 
 	// read skin data
-	for (xml_elem::iterator it = cl.iterate("skin"); !it.end(); it.next()) {
+	for (auto elem : cl.iterate("skin")) {
 		skin_variant sv;
-		sv.name = it.elem().attr("name");
-		if (it.elem().has_attr("regions")) {
+		sv.name = elem.attr("name");
+		if (elem.has_attr("regions")) {
 			// empty list means all/any...
-			sv.regions = string_split(it.elem().attr("regions"));
+			sv.regions = string_split(elem.attr("regions"));
 		}
-		if (it.elem().has_attr("countries")) {
+		if (elem.has_attr("countries")) {
 			// empty list means all/any...
-			sv.countries = string_split(it.elem().attr("countries"));
+			sv.countries = string_split(elem.attr("countries"));
 		}
-		if (it.elem().has_attr("from")) {
-			sv.from = date(it.elem().attr("from"));
+		if (elem.has_attr("from")) {
+			sv.from = date(elem.attr("from"));
 		} else {
 			sv.from = date(1939, 1, 1);
 		}
-		if (it.elem().has_attr("until")) {
-			sv.until = date(it.elem().attr("until"));
+		if (elem.has_attr("until")) {
+			sv.until = date(elem.attr("until"));
 		} else {
 			sv.until = date(1945, 12, 31);
 		}
@@ -400,30 +400,30 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 		}
 	}
 	xml_elem ds = parent.child("description");
-	for (xml_elem::iterator it = ds.iterate("far"); !it.end(); it.next()) {
-		if (it.elem().attr("lang") == texts::get_language_code()) {
-			descr_far = it.elem().child_text();
+	for (auto elem : ds.iterate("far")) {
+		if (elem.attr("lang") == texts::get_language_code()) {
+			descr_far = elem.child_text();
 		}
 	}
-	for (xml_elem::iterator it = ds.iterate("medium"); !it.end(); it.next()) {
-		if (it.elem().attr("lang") == texts::get_language_code()) {
-			descr_medium = it.elem().child_text();
+	for (auto elem : ds.iterate("medium")) {
+		if (elem.attr("lang") == texts::get_language_code()) {
+			descr_medium = elem.child_text();
 		}
 	}
-	for (xml_elem::iterator it = ds.iterate("near"); !it.end(); it.next()) {
-		if (it.elem().attr("lang") == texts::get_language_code()) {
-			descr_near = it.elem().child_text();
+	for (auto elem : ds.iterate("near")) {
+		if (elem.attr("lang") == texts::get_language_code()) {
+			descr_near = elem.child_text();
 		}
 	}
 	xml_elem sn = parent.child("sensors");
-	for (xml_elem::iterator it = sn.iterate("sensor"); !it.end(); it.next()) {
-		string typestr = it.elem().attr("type");
+	for (auto elem : sn.iterate("sensor")) {
+		string typestr = elem.attr("type");
 		if (typestr == "lookout") set_sensor(lookout_system, new lookout_sensor());
 		else if (typestr == "passivesonar") set_sensor(passive_sonar_system, new passive_sonar_sensor());
 		else if (typestr == "activesonar") set_sensor(active_sonar_system, new active_sonar_sensor());
 		else if (typestr == "radar") {
 			radar_sensor::radar_type type = radar_sensor::radar_type_default;
-			string radar_model = it.elem().attr("model");
+			string radar_model = elem.attr("model");
 			if ("British Type 271" == radar_model)
 				type = radar_sensor::radar_british_type_271;
 			else if ("British Type 272" == radar_model)

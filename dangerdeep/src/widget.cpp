@@ -77,12 +77,10 @@ widget::widget(xml_elem& elem, widget* _parent)
 	if(elem.has_attr("enabled"))
 		enabled = elem.attrb("enabled");
 	else enabled = true;
-	
-	for (xml_elem::iterator it = elem.iterate("widget"); !it.end(); it.next()) {
-		xml_elem e = it.elem();
+
+	for (auto e : elem.iterate("widget")) {
 		std::string type = e.attr("type");
-		
-		if(elem.attr("type") != "menu") {
+		if(type != "menu") {
 			if(type == "text") {
 				add_child(new widget_text(e));
 			} else if(type == "checkbox") {
@@ -146,11 +144,9 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent
 		size.x = entryw;
 		size.y = entryh;
 	}
-	
-	for (xml_elem::iterator it = elem.iterate("widget"); !it.end(); it.next()) {
-		xml_elem e = it.elem();
-		
-		if(e.attr("type") != "button") 
+
+	for (auto e : elem.iterate("widget")) {
+		if(e.attr("type") != "button")
 			THROW(error, "widget_menu only accepts widget_button as entry");
 		else {
 			add_entry(texts::get(e.attri("text")), new widget_button(e));

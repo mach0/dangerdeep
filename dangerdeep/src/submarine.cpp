@@ -298,8 +298,8 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 
 	if (parent.has_child("tanks")) { // fixme: later all subs should have it!!
 		xml_elem etanks = parent.child("tanks");
-		for (xml_elem::iterator it = etanks.iterate("tank"); !it.end(); it.next()) {
-			tanks.emplace_back(it.elem());
+		for (auto elem : etanks.iterate("tank")) {
+			tanks.emplace_back(elem);
 			ballast_tank_capacity += tanks.back().get_volume();
 		}
 	}
@@ -324,9 +324,9 @@ void submarine::load(const xml_elem& parent)
 	xml_elem tp = parent.child("stored_torpedoes");
 	torpedoes.clear();
 	torpedoes.reserve(tp.attru("nr"));
-	for (xml_elem::iterator it = tp.iterate("stored_torpedo"); !it.end(); it.next()) {
+	for (auto elem : tp.iterate("stored_torpedo")) {
 		torpedoes.emplace_back();
-		torpedoes.back().load(gm, it.elem());
+		torpedoes.back().load(gm, elem);
 	}
 
 	xml_elem sst = parent.child("sub_state");
@@ -340,14 +340,13 @@ void submarine::load(const xml_elem& parent)
 	xml_elem dm = parent.child("parts");
 	parts.clear();
 	parts.reserve(dm.attru("nr"));
-	for (xml_elem::iterator it = tp.iterate("part"); !it.end(); it.next()) {
-		//parts.push_back(part(it.elem()));
+	for (auto elem : tp.iterate("part")) {
+		//parts.push_back(part(elem));
 	}
 #endif
 
 	xml_elem tk = parent.child("tanks");
-	for (xml_elem::iterator it = tp.iterate("tank"); !it.end(); it.next()) {
-		xml_elem e = it.elem();
+	for (auto e : tk.iterate("tank")) {
 		unsigned id = e.attru("nr");
 		if (id >= tanks.size()) THROW(error, std::string("invalid tank nr in ") + e.doc_name());
 		tanks[id].load(e);

@@ -274,26 +274,26 @@ void convoy::load(const xml_elem& parent)
 	xml_elem mc = parent.child("merchants");
 	merchants.clear();
 	//merchants.reserve(mc.attru("nr"));
-	for (xml_elem::iterator it = mc.iterate("merchant"); !it.end(); it.next()) {
-		merchants.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
+	for (auto elem : mc.iterate("merchant")) {
+		merchants.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
 	}
 	xml_elem ws = parent.child("warships");
 	warships.clear();
 	//warships.reserve(ws.attru("nr"));
-	for (xml_elem::iterator it = ws.iterate("warship"); !it.end(); it.next()) {
-		warships.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
+	for (auto elem : ws.iterate("warship")) {
+		warships.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
 	}
 	xml_elem es = parent.child("escorts");
 	escorts.clear();
 	//escorts.reserve(es.attru("nr"));
-	for (xml_elem::iterator it = es.iterate("escort"); !it.end(); it.next()) {
-		escorts.emplace_back(gm.load_ship_ptr(it.elem().attru("ref")), it.elem().attrv2());
+	for (auto elem : es.iterate("escort")) {
+		escorts.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
 	}
 	xml_elem wp = parent.child("waypoints");
 	waypoints.clear();
 	//waypoints.reserve(wp.attru("nr"));
-	for (xml_elem::iterator it = wp.iterate("waypoint"); !it.end(); it.next()) {
-		waypoints.push_back(it.elem().attrv2());
+	for (auto elem : wp.iterate("waypoint")) {
+		waypoints.push_back(elem.attrv2());
 	}
 }
 
