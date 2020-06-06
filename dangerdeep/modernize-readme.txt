@@ -35,6 +35,33 @@ After each step check functionality.
 15. Turn on -Wall
 
 
+Changes that have been started in code comparison:
+- Whole new GPU interface and rendering
+- References to game objects via ID instead of pointers
+- generic_rudder, should be used by airplane as well
+- Change to SDL2, no more SDL includes, new input event handler classes
+- New idea about coastmap/coastline rendering with ETopo data
+- use std::vector everywhere instead of std::list
+- unify all sensors, GHG etc. are also sensors and clean up that class mess
+- do not track pointers but sensor contacts
+- use lambdas for widgets or std::func so no mor templates or pointers to objects
+- introduce damageable_part
+- More documentation (Doxygen)
+- Less warnings due to type specifiers
+- Loading/Saving more generic (not bound to xml)
+- model with state, class mesh separated
+- rework event class as std::variant
+- remove macros
+- remove game::job
+- use own key enum class instead of SDL (keys.cpp and .h)
+- mymain transition list to vector
+- break inheritance, torpodo is NO ship, maybe we don't need inheritance at all
+- if we could make use of system interface etc. we could at least convert the standalone apps. However the name collision of
+  model/mesh/image inhibit this.
+
+
+
+
 Notes
 ===================================================================================================
 
@@ -104,12 +131,16 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	countrycodes.h
 	date.cpp	use std::chrono??
 	date.h
+	daysky.cpp
+	daysky.h
 	dmath.h
 	error.cpp
 	faulthandler.h
 	filehelper.cpp
 	filehelper.h
 	fpsmeasure.h
+	game_editor.cpp
+	game_editor.h
 	generic_rudder.cpp
 	generic_rudder.h
 	gpu_helper.cpp
@@ -152,10 +183,14 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	sphere.h
 	system_interface.cpp
 	system_interface.h
+	tdc.cpp
+	tdc.h
 	texts.cpp
 	texts.h
 	thread.cpp
 	thread.h
+	tone_reproductor.cpp
+	tone_reproductor.h
 	triangle_intersection.h
 	triangulate.cpp
 	triangulate.h
@@ -179,3 +214,16 @@ OPEN TOPICS
 	random_generator.h	old code kept additionally yet
 	xml.cpp		Different syntax...
 	xml.h
+	
+10.)
+====
+
+Rendering: what needs to be changed
+- model rendering	DONE (mostly)
+- sky			DONE
+- moon			DONE
+- water		DONE but visual bugs
+- geoclipmap terrain	DONE
+- widgets		
+- 2d drawing		DONE
+- displays		

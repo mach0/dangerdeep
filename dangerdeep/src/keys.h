@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #ifndef KEYS_H
 #define KEYS_H
+#include <cstddef>
 
 enum KEY_NAMES {
 	KEY_ZOOM_MAP,
