@@ -60,7 +60,7 @@ struct log_msg
 		case log::level::SYSINFO:
 			oss << "\033[1;33m";
 			break;
-		case log::level::DEBUG:
+		case log::level::DEBUGGING:
 			oss << "\033[1;32m";
 			break;
 		default:
@@ -83,7 +83,7 @@ struct log_msg
 		case log::level::SYSINFO:
 			oss << "$ffff00";
 			break;
-		case log::level::DEBUG:
+		case log::level::DEBUGGING:
 			oss << "$b0ffb0";
 			break;
 		default:
