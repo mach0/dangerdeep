@@ -19,10 +19,11 @@
 #include <cstdio>
 
 #include "tone_reproductor.h"
+#include "constant.h"
 
-#ifndef pow10
-#define pow10(x) pow(10.0, double(x))
-#endif
+namespace {
+	auto mypow10(double x) { return pow(10.0, x); }
+}
 
 // Set some values to prevent bugs in case of bad use
 tone_reproductor::tone_reproductor()  
@@ -52,7 +53,7 @@ void tone_reproductor::set_display_adaptation_luminance(float _Lda)
 
 	// Update terms
 	alpha_wa_over_alpha_da = alpha_wa/alpha_da;
-	term2 = pow10((beta_wa-beta_da)/alpha_da) / (M_PI*0.0001f);
+	term2 = float(mypow10((beta_wa-beta_da)/alpha_da) / (constant::PI*0.0001f));
 }
 
 // Set the eye adaptation luminance for the world and precompute what can be
@@ -67,7 +68,7 @@ void tone_reproductor::set_world_adaptation_luminance(float _Lwa)
 
 	// Update terms
 	alpha_wa_over_alpha_da = alpha_wa/alpha_da;
-	term2 = pow10((beta_wa-beta_da)/alpha_da) / (M_PI*0.0001f);
+	term2 = float(mypow10((beta_wa-beta_da)/alpha_da) / (constant::PI*0.0001f));
 
 }
 

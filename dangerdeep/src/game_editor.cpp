@@ -25,9 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #endif
 
-#include "oglext/OglExt.h"
-#include <SDL.h>
-
 #include "system.h"
 #include <sstream>
 #include <utility>

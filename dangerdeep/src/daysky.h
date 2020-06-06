@@ -23,19 +23,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "color.h"
 #include "tone_reproductor.h"
 
-class daysky {
+/// Create the colormap of sky colors
+class daysky
+{
  public:
-	//! Constructor.
+	/// Constructor. Create with default turbidity and default sun position
 	daysky();
+	/// Constructor with sun position and turbidity
 	daysky(float azimuth, float elevation, float turbidity);
 	//! Set turbidity.
-	void set_turbidity( float pT );
+	void set_turbidity(float pT);
 	//! Get turbidity.
-	inline float get_turbidity() const { return m_T; }
+	float get_turbidity() const { return m_T; }
 	//! Set sun position.
-	void set_sun_position( float azimuth, float elevation );
-	//! Get color.
-	colorf get_color( float theta, float phi, float elevation ) const;
+	void set_sun_position(float azimuth, float elevation);
+	//! Get color. theta is angle in XY plane, phi is elevation angle.
+	colorf get_color(float theta, float phi) const;
 
  private:
 	struct alphabet {
@@ -45,20 +48,18 @@ class daysky {
 	//! Calculate distribution
 	inline float distribution( const alphabet &ABCDE, float Theta, float Gamma ) const;
 	//! Calc the actual color/chromaticity
-	inline float chromaticity( const float ZC[3][4] ) const;
+	float chromaticity(const float ZC[3][4], float sun_phi2, float sun_phi3) const;
 
 	inline void recalculate_chroma();
 	inline void recalculate_alphabet();
 
 	float m_T, m_T2;    // Turbidity T and T^2
 	float m_sun_theta;
-	float m_sun_phi, m_sun_phi2, m_sun_phi3;
+	float m_sun_phi;
 	float m_chroma_xZC, m_chroma_yZC;
 	alphabet m_luminance, m_x, m_y;
 
 	mutable tone_reproductor tonerepro;
-};  //DaySky
-
-// class DaySky is used to create the colormap used for sky in dd
+};
 
 #endif
