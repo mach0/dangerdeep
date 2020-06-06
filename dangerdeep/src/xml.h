@@ -87,6 +87,15 @@ class xml_elem
 	void set_attr(const quaternion& q);
 	void set_attr(angle a);
 	void set_attr(bool b, const std::string& name = "value");
+	void get_attr(std::string& val, const std::string& name = "value") const { val = attr(name); }
+	void get_attr(unsigned& val, const std::string& name = "value") const { val = attru(name); }
+	void get_attr(int& val, const std::string& name = "value") const { val = attri(name); }
+	void get_attr(double& val, const std::string& name = "value") const { val = attrf(name); }
+	void get_attr(vector3& val) const { val = attrv3(); }
+	void get_attr(vector2& val) const { val = attrv2(); }
+	void get_attr(quaternion& val) const { val = attrq(); }
+	void get_attr(angle& val) const { val = attra(); }
+	void get_attr(bool& val, const std::string& name = "value") const { val = attrb(name); }
 	const std::string& get_name() const;
 	void add_child_text(const std::string& txt); // add text child
 	const std::string& child_text() const;	// returns value of text child, throws error if there is none
@@ -102,21 +111,33 @@ class xml_elem
 		const xml_elem& parent;
 		TiXmlElement* e;
 		bool samename;	// iterate over any children or only over children with same name
+	public:
 		iterator(const xml_elem& parent_, TiXmlElement* elem_ = nullptr, bool samename_ = true)
 			: parent(parent_), e(elem_), samename(samename_) {}
-
-		friend class xml_elem;
-	public:
-		xml_elem elem() const;
-		void next();
-		bool end() const { return e == nullptr; }
+		xml_elem operator*() const;
+		iterator& operator++();
+		bool operator!= (const iterator& it) const { return e != it.e; }
 	};
-	friend class iterator;
 
-	// iterate this way: for (iterator it = e.iterate("name"); !it.end(); it.next()) { ... }
-	iterator iterate(const std::string& childname) const;
-	// iterate over any child
-	iterator iterate() const;
+	/// Matching iterator range class. Note that the childname MUST NOT be std::string& because when giving const char* strings, the std::string would be a temporary and get lost, iteration will then fail later!
+	class iterator_range_samename
+	{
+	public:
+		iterator_range_samename(const xml_elem& parent_, const char* childname_) : parent(parent_), childname(childname_) {}
+		iterator begin() const;
+		iterator end() const { return parent.end(); }
+	protected:
+		const xml_elem& parent;
+		const char* childname;
+	};
+
+	friend class iterator_range_samename;
+
+	iterator begin() const;
+	iterator end() const { return iterator(*this, nullptr, false); }
+	iterator_range_samename iterate(const char* childname) const {
+		return iterator_range_samename(*this, childname);
+	}
 };
 
 

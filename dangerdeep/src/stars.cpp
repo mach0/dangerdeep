@@ -51,10 +51,7 @@ stars::stars(const float max_magnitude)
 	star_pos.reserve(3000);
 	star_colors.reserve(3000);
 	
-	for(xml_elem::iterator it=root.iterate(); !it.end(); it.next())
-	{
-		xml_elem star_node = it.elem();
-		
+	for(auto star_node : root) {
 		float mag = star_node.attrf("mag");
 		
 		if(mag > max_magnitude) break;	//	skip star if its magnitude > max (input sorted by mag)

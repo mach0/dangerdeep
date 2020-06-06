@@ -220,8 +220,8 @@ ship::ship(game& gm_, const xml_elem& parent)
 	max_accel_forward = emotion.attrf("acceleration");
 	turn_rate = emotion.attrf("turnrate");
 
-	for (xml_elem::iterator it = parent.iterate("smoke"); !it.end(); it.next()) {
-		smoke.emplace_back(it.elem().attru("type"), it.elem().attrv3());
+	for (auto esmoke : parent.iterate("smoke")) {
+		smoke.emplace_back(esmoke.attru("type"), esmoke.attrv3());
 	}
 
 	if (parent.has_child("ai")) {
@@ -241,27 +241,27 @@ ship::ship(game& gm_, const xml_elem& parent)
 
 	if (parent.has_child("gun_turrets")) {
 		xml_elem eturrets = parent.child("gun_turrets");
-		for (xml_elem::iterator it = eturrets.iterate("turret"); !it.end(); it.next()) {
-			unsigned num_barrels = it.elem().attru("barrels");
+		for (auto eturret : eturrets.iterate("turret")) {
+			unsigned num_barrels = eturret.attru("barrels");
 			gun_turret new_turret;
-			new_turret.shell_capacity = it.elem().attru("shell_capacity");
+			new_turret.shell_capacity = eturret.attru("shell_capacity");
 			new_turret.num_shells_remaining = new_turret.shell_capacity;
-			new_turret.initial_velocity = it.elem().attrf("initial_velocity");
-			new_turret.max_declination = it.elem().attri("max_declination");
-			new_turret.max_inclination = it.elem().attri("max_inclination");
-			new_turret.time_to_man = it.elem().attrf("time_to_man");
-			new_turret.time_to_unman = it.elem().attrf("time_to_unman");
-			new_turret.shell_damage = it.elem().attrf("shell_damage");
-			new_turret.start_of_exclusion_radius = it.elem().attri("exclusion_radius_start");
-			new_turret.end_of_exclusion_radius = it.elem().attri("exclusion_radius_end");
-			new_turret.calibre = it.elem().attrf("calibre");
+			new_turret.initial_velocity = eturret.attrf("initial_velocity");
+			new_turret.max_declination = eturret.attri("max_declination");
+			new_turret.max_inclination = eturret.attri("max_inclination");
+			new_turret.time_to_man = eturret.attrf("time_to_man");
+			new_turret.time_to_unman = eturret.attrf("time_to_unman");
+			new_turret.shell_damage = eturret.attrf("shell_damage");
+			new_turret.start_of_exclusion_radius = eturret.attri("exclusion_radius_start");
+			new_turret.end_of_exclusion_radius = eturret.attri("exclusion_radius_end");
+			new_turret.calibre = eturret.attrf("calibre");
 			new_turret.gun_barrels.resize(num_barrels);
-			
+
 			// setup angles map for this initial velocity
 			fill_dist_angle_relation_map(new_turret.initial_velocity);
 			calc_max_gun_range(new_turret.initial_velocity);
-			
-			gun_turrets.push_back(new_turret);		
+
+			gun_turrets.push_back(new_turret);
 		}
 	}
 
@@ -717,7 +717,7 @@ void ship::steering_logic()
 	if (head_to_fixed == HEAD_TO_UNDEFINED)
 		return;
 
-	// if angle to target course is > 180° with set steering direction, just set
+	// if angle to target course is > 180 with set steering direction, just set
 	// rudder to full angle and turn. But only if demanded by special head_to_fixed value.
 	if (head_to_fixed & HEAD_TO_FORCE_DIRECTION) {
 		if (heading.diff_in_direction(head_to_fixed & HEAD_TO_LEFT, head_to) >= 180.0) {
@@ -752,7 +752,7 @@ void ship::steering_logic()
 	double clamp = head_to_fixed & HEAD_TO_ALLOW_HARD_RUDDER ? 1.0 : 0.5;
 	double rd = myclamp(error / 5.0, -clamp, clamp);
 	rudder.set_to(rd);
-	// set desired direction, so the 180° degree check code above doesn't abort
+	// set desired direction, so the 180 degree check code above doesn't abort
 	head_to_fixed = head_to_param((head_to_fixed & HEAD_TO_ALLOW_HARD_RUDDER) | (rd < 0 ? HEAD_TO_LEFT : HEAD_TO_RIGHT));
 	// when error below a certain limit, set head_to_fixed=false, rudder_to=ruddermidships
 	if (fabs(anglediff) <= 0.25 && fabs(rudder.angle) < 1.0) {
@@ -770,7 +770,7 @@ void ship::head_to_course(const angle& a, int direction, bool hard_rudder)
 	bool turn_left = false;
 	log_debug("HEAD TO "<<a<<" hdg="<<get_heading()<<" dir="<<direction<<" hard="<<hard_rudder);
 	if (direction != 0) {
-		// if we have to turn more than 180° to the target course,
+		// if we have to turn more than 180 to the target course,
 		// a helmsman would normally turn in opposite direction,
 		// because target course can be reached faster that way.
 		// But in case of set direction, we have to turn in

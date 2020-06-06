@@ -2283,14 +2283,14 @@ model::material::map::map(const xml_elem& parent)
 	filename = parent.attr("filename");
 
 	// skins
-	for (xml_elem::iterator it = parent.iterate("skin"); !it.end(); it.next()) {
-		string layoutname = it.elem().attr("layout");
+	for (auto elem : parent.iterate("skin")) {
+		string layoutname = elem.attr("layout");
 		pair<std::map<string, skin>::iterator, bool> insok =
 			skins.insert(make_pair(layoutname, skin()));
 		if (!insok.second)
-			THROW(xml_error, "layout names not unique", it.elem().doc_name());
+			THROW(xml_error, "layout names not unique", elem.doc_name());
 		skin& s = insok.first->second;
-		s.filename = it.elem().attr("filename");
+		s.filename = elem.attr("filename");
 		// load textures in init() function.
 // 		new texture(basepath + filename, mapping, texture::CLAMP,
 // 			    makenormalmap, detailh, rgb2grey));
@@ -2372,8 +2372,7 @@ void model::read_dftd_model_file(const std::string& filename)
 	// read elements.
 	map<unsigned, material* > mat_id_mapping;
 	unsigned nr_of_objecttrees = 0;
-	for (xml_elem::iterator it = root.iterate(); !it.end(); it.next()) {
-		xml_elem e = it.elem();
+	for (auto e : root) {
 		string etype = e.get_name();
 		if (etype == "material") {
 			// materials.
@@ -2396,8 +2395,7 @@ void model::read_dftd_model_file(const std::string& filename)
 				mat->specular = read_color_from_dftd_model_file(e, "specular");
 			}
 
-			for (xml_elem::iterator it2 = e.iterate("map"); !it2.end(); it2.next()) {
-				xml_elem emap = it2.elem();
+			for (auto emap : e.iterate("map")) {
 				// check here for possible children of type "skin", fixme
 				string type = emap.attr("type");
 				if (is_shader_material) {
@@ -2539,8 +2537,7 @@ void model::read_dftd_model_file(const std::string& filename)
 
 void model::read_objects(const xml_elem& parent, object& parentobj)
 {
-	for (xml_elem::iterator it = parent.iterate("object"); !it.end(); it.next()) {
-		xml_elem e = it.elem();
+	for (auto e : parent.iterate("object")) {
 		mesh* msh = nullptr;
 		if (e.has_attr("mesh")) {
 			unsigned meshid = e.attru("mesh");

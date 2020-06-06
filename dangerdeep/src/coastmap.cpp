@@ -966,23 +966,23 @@ coastmap::coastmap(const string& filename)
 	realoffset.x = et.attrf("realoffsetx");
 	realoffset.y = et.attrf("realoffsety");
 	if (er.has_child("cities")) {
-		for (xml_elem::iterator it = er.child("cities").iterate("city"); !it.end(); it.next()) {
-			cities.emplace_back(vector2(transform_nautic_posx_to_real(it.elem().attr("posx")),
-							   transform_nautic_posy_to_real(it.elem().attr("posy"))),
-						   it.elem().attr("name"));
+		for (auto elem : er.child("cities").iterate("city")) {
+			cities.emplace_back(vector2(transform_nautic_posx_to_real(elem.attr("posx")),
+							   transform_nautic_posy_to_real(elem.attr("posy"))),
+						   elem.attr("name"));
 		}
 	}
 
 	if (er.has_child("props")) {
-		for (xml_elem::iterator it = er.child("props").iterate("prop"); !it.end(); it.next()) {
-			std::string mdlname = it.elem().attr("model");
+		for (auto elem : er.child("props").iterate("prop")) {
+			std::string mdlname = elem.attr("model");
 			std::string path = data_file().get_rel_path(mdlname) + mdlname + ".xml";//fixme: later ddxml!
 			model* m = modelcache().ref(path);
 			m->register_layout();
 			m->set_layout();
 			props.emplace_back(path,
-					     vector2(it.elem().attrf("posx"), it.elem().attrf("posy")),
-					     it.elem().attrf("angle"));
+					     vector2(elem.attrf("posx"), elem.attrf("posy")),
+					     elem.attrf("angle"));
 		}
 	}
 

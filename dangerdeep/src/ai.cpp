@@ -92,8 +92,8 @@ void ai::load(game& gm, const xml_elem& parentnode)
 	main_course = parentnode.child("main_course").attra();
 	xml_elem wp = parentnode.child("waypoints");
 	waypoints.clear();
-	for (xml_elem::iterator it = wp.iterate("waypoint"); !it.end(); it.next()) {
-		waypoints.push_back(it.elem().attrv2());
+	for (auto elem : wp.iterate("waypoint")) {
+		waypoints.push_back(elem.attrv2());
 	}
 	cyclewaypoints = wp.attrb("cyclewaypoints");
 }

@@ -99,10 +99,10 @@ void cfg::load(const string& filename)
 	xml_doc doc(filename);
 	doc.load();
 	xml_elem root = doc.child("dftd-cfg");
-	for (xml_elem::iterator it = root.iterate(); !it.end(); it.next()) {
-		if (it.elem().get_name() == "keys") {
-			for (xml_elem::iterator it2 = it.elem().iterate("key"); !it2.end(); it2.next()) {
-				string keyname = it2.elem().attr("action");
+	for (auto elem : root) {
+		if (elem.get_name() == "keys") {
+			for (auto keyelem : elem.iterate("key")) {
+				std::string keyname = keyelem.attr("action");
 				// get key number for this action from table
 				unsigned nr = NR_OF_KEY_IDS;
 				for (unsigned i = 0; i < NR_OF_KEY_IDS; ++i) {
@@ -114,16 +114,16 @@ void cfg::load(const string& filename)
 					log_warning("found key with invalid name " << keyname << " in config file");
 					continue;
 				}
-				SDLKey keysym = SDLKey(it2.elem().attri("keysym"));
-				bool ctrl = it2.elem().attrb("ctrl");
-				bool alt = it2.elem().attrb("alt");
-				bool shift = it2.elem().attrb("shift");
+				SDLKey keysym = SDLKey(keyelem.attri("keysym"));
+				bool ctrl = keyelem.attrb("ctrl");
+				bool alt = keyelem.attrb("alt");
+				bool shift = keyelem.attrb("shift");
 				set_key(nr, keysym, ctrl, alt, shift);
 			}
 		} else {
-			bool found = set_str(it.elem().get_name(), it.elem().attr());
+			bool found = set_str(elem.get_name(), elem.attr());
 			if (!found)
-				log_warning("config option not registered: " << it.elem().get_name());
+				log_warning("config option not registered: " << elem.get_name());
 		}
 	}
 }

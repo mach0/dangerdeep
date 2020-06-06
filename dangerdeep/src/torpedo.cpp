@@ -155,15 +155,15 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	arming_distance = -1;
 	double latest_arming_distance = -1;	// just in case today's date is after
 	date latest = date("1/1/1");		// the latest available period specified
-	for (xml_elem::iterator it = earming.iterate("period"); !it.end(); it.next()) {
-		date from = it.elem().attr("from");
-		date until = it.elem().attr("until");
+	for (auto eperiod : earming.iterate("period")) {
+		date from = eperiod.attr("from");
+		date until = eperiod.attr("until");
 		if (until >= latest) {
 			latest = until;
-			latest_arming_distance = it.elem().attrf("runlength");
+			latest_arming_distance = eperiod.attrf("runlength");
 		}
 		if (from <= dt && dt <= until) {
-			arming_distance = it.elem().attrf("runlength");
+			arming_distance = eperiod.attrf("runlength");
 			break;
 		}
 	}
@@ -177,15 +177,15 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	xml_elem efuse = parent.child("fuse");
 	fuse latest_fuse;
 	latest = date("1/1/1");
-	for (xml_elem::iterator it = efuse.iterate("period"); !it.end(); it.next()) {
-		date from = it.elem().attr("from");
-		date until = it.elem().attr("until");
+	for (auto eperiod : efuse.iterate("period")) {
+		date from = eperiod.attr("from");
+		date until = eperiod.attr("until");
 		if (until >= latest) {
 			latest = until;
-			latest_fuse = fuse(it.elem(), dt);
+			latest_fuse = fuse(eperiod, dt);
 		}
 		if (from <= dt && dt <= until) {
-			fuse f(it.elem(), dt);
+			fuse f(eperiod, dt);
 			if (f.type == fuse::IMPACT || f.type == fuse::INERTIAL)
 				contact_fuse = f;
 			else
@@ -236,21 +236,21 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	xml_elem eranges = parent.child("ranges");
 	range[SLOW] = range[MEDIUM] = range[FAST] = 0.0;
 	speed[SLOW] = speed[MEDIUM] = speed[FAST] = 0.0;
-	for (xml_elem::iterator it = eranges.iterate("range"); !it.end(); it.next()) {
+	for (auto erange : eranges.iterate("range")) {
 		speedrange_types srt = NORMAL;
 		//fixme: handle from/until tags and check against gm.get_date!
-		if (it.elem().has_attr("preheated")) {
-			if (it.elem().attrb("preheated")) {
+		if (erange.has_attr("preheated")) {
+			if (erange.attrb("preheated")) {
 				srt = PREHEATED;
 			} else {
 				srt = NORMAL;
 			}
-		} else if (it.elem().has_attr("throttle")) {
-			if (it.elem().attr("throttle") == "slow") {
+		} else if (erange.has_attr("throttle")) {
+			if (erange.attr("throttle") == "slow") {
 				srt = SLOW;
-			} else if (it.elem().attr("throttle") == "medium") {
+			} else if (erange.attr("throttle") == "medium") {
 				srt = MEDIUM;
-			} else if (it.elem().attr("throttle") == "fast") {
+			} else if (erange.attr("throttle") == "fast") {
 				srt = FAST;
 			} else {
 				THROW(xml_error, "illegal throttle attribute!", parent.doc_name());
@@ -258,8 +258,8 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 		} else {
 			THROW(xml_error, "illegal speed/range type attributes!", parent.doc_name());
 		}
-		range[srt] = it.elem().attrf("distance");
-		speed[srt] = kts2ms(it.elem().attrf("speed"));
+		range[srt] = erange.attrf("distance");
+		speed[srt] = kts2ms(erange.attrf("speed"));
 	}
 
 	// ------------ set ship turning values, fixme: read from files, more a hack...
@@ -551,7 +551,7 @@ double torpedo::get_range() const
 		return range[mysetup.torpspeed];
 	case ELECTRIC:
 		{
-			// varies between 15° and 30°
+			// varies between 15 and 30
 			double s = myclamp((temperature - 15) / 15, 0.0, 1.0);
 			return myinterpolate(range[NORMAL], range[PREHEATED], s);
 		}
@@ -570,7 +570,7 @@ double torpedo::get_torp_speed() const
 		return speed[mysetup.torpspeed];
 	case ELECTRIC:
 		{
-			// varies between 15° and 30°
+			// varies between 15 and 30
 			double s = myclamp((temperature - 15) / 15, 0.0, 1.0);
 			return myinterpolate(speed[NORMAL], speed[PREHEATED], s);
 		}

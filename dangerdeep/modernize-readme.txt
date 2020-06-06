@@ -11,7 +11,8 @@ After each step check functionality.
 4. Compare basic classes between branches for differences!
 	use meld with directories to compare.
 	See below for more details.
-	PARTLY DONE
+	DONE - remaining topics are GL related
+-------------WE ARE HERE-----------------	
 5. make use of new C++ features for widgets etc.
 	no more templates with object and method etc., just use lambda!
 6. Introduce newer system input handling (needs SDL2?)
@@ -200,6 +201,8 @@ FILES TAKEN FROM CODEMODERNIZATION BRANCH / SYNCHRONIZED
 	vector4.h
 	voxel.cpp
 	voxel.h
+	xml.cpp
+	xml.h
 
 OPEN TOPICS
 	color.h		ambigious double ctor
@@ -212,8 +215,6 @@ OPEN TOPICS
 	matrix4.h	opengl only in old code
 	random_generator.cpp	old code kept additionally yet
 	random_generator.h	old code kept additionally yet
-	xml.cpp		Different syntax...
-	xml.h
 	
 10.)
 ====
