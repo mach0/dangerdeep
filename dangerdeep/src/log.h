@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #ifdef DEBUG
 #define log_template(x, y) do { std::ostringstream oss; oss << __FILE__ << ":" << __LINE__ << " " << x; log::instance().append(log::y, oss.str()); } while(0)
-#define log_debug(x) log_template(x, level::DEBUG)
+#define log_debug(x) log_template(x, level::DEBUGGING)
 #define log_info(x) log_template(x, level::INFO)
 // use this only internally for special events
 #define log_sysinfo(x) log_template(x, level::SYSINFO)
@@ -52,7 +52,7 @@ class log : public singleton<class log>
 		WARNING,
 		INFO,
 		SYSINFO,
-		DEBUG,
+		DEBUGGING,
 		NR_LEVELS
 	};
 
