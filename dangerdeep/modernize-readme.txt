@@ -11,45 +11,61 @@ After each step check functionality.
 4. Compare basic classes between branches for differences!
 	use meld with directories to compare.
 	See below for more details.
-	DONE - remaining topics are GL related
-5. use key enum class!
+	DONE - remaining topics are GL related, except bivector
+5. use new C++ features for XML reader etc.
+	DONE
+6. use key enum class!
 	DONE - except in widget class
 -------------WE ARE HERE-----------------	
-6. make use of new C++ features for widgets etc.
+7. make use of new C++ features for widgets etc. (no plain new/delete)
 	no more templates with object and method etc., just use lambda!
-6. Introduce newer system input handling (needs SDL2?)
+	widget children as list of raw pointers is evil, vector<unique_ptr> would be better!
+	add_child should also consume a unique_ptr ! use make_unique everywhere!
+	but lambda can't transport arguments! so we can't change everything to lambda.
+	Better syntax when instantiating these widgets would be helpful though.
+	TODO: new add_child_with_ptr function to use in user_interface and
+	widget class!
+	changes in subsim.cpp and viewmodel.cpp!
+	VERY OFTEN we have a unique_ptr to widget but temporarily or longer need an additional pointer to it...
+	When constructing menues, we often have to move in created children and mix this, bad!
+	shared_ptr/weak_ptr is no good solution to this. maybe add_child should return a ref?
+	replace add_child_with_ptr to return a ref?
+	change all add_child_with_ptr to assign the ref to a pointer!
+	then check all changes, i.e. menu construction to work,
+	use add_child and keep the ref for later use!
+	tons of work in class subsim.cpp!
+8. Introduce newer system input handling (needs SDL2?)
 	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
 	This means no more SDL includes in headers!!!
-7. use new C++ features for XML reader etc.
-8. add new sensors (test if they work!!!)
-9. update internal game classes (storage of sea_object, reference to them via ID!)
+9. add new sensors (test if they work!!!)
+10. update internal game classes (storage of sea_object, reference to them via ID!)
 	later usage of rigid_body etc.
-10. Copy new classes like gpu interface to master branch so they can be
+11. Copy new classes like gpu interface to master branch so they can be
 	tested and used by standalone apps (copy DONE)
-11. Divide code into separate libraries better (partly done)
-12. Migrate to SDL2
-13. Finally adjust rendering
+12. Divide code into separate libraries better (partly done)
+13. Migrate to SDL2
+14. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
 	problem is a name conflict! model/mesh/texture are already used
 	THIS IS THE TOUGHEST CHANGE, A CHANGE ALL OR NOTHING WILL WORK
 	PROJECT!
-14. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
-15. Turn on -Wall
+15. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
+16. Turn on -Wall
 
 
 Changes that have been started in code comparison:
+- use std::vector everywhere instead of std::list
+- do not use new/delete but make_unique/unique_ptr
+- unify all sensors, GHG etc. are also sensors and clean up that class mess
+- do not track pointers but sensor contacts
+- More documentation (Doxygen)
 - Whole new GPU interface and rendering
 - References to game objects via ID instead of pointers
 - generic_rudder, should be used by airplane as well
 - Change to SDL2, no more SDL includes, new input event handler classes
 - New idea about coastmap/coastline rendering with ETopo data
-- use std::vector everywhere instead of std::list
-- unify all sensors, GHG etc. are also sensors and clean up that class mess
-- do not track pointers but sensor contacts
-- use lambdas for widgets or std::func so no mor templates or pointers to objects
 - introduce damageable_part
-- More documentation (Doxygen)
 - Less warnings due to type specifiers
 - Loading/Saving more generic (not bound to xml)
 - model with state, class mesh separated
@@ -60,7 +76,11 @@ Changes that have been started in code comparison:
 - break inheritance, torpodo is NO ship, maybe we don't need inheritance at all
 - if we could make use of system interface etc. we could at least convert the standalone apps. However the name collision of
   model/mesh/image inhibit this.
-
+- maybe we can rename the image class so we can have the old and new one. Or use a new name for the new one.
+- maybe we can use SDL2 with old OpenGL as possible transition!
+- translate bivector
+- remove obsolete classes like morton_bivector etc. (what doesn't exist in codemodernization branch)
+- using namespace std in cpp should be avoided?
 
 
 
@@ -216,6 +236,7 @@ OPEN TOPICS
 	matrix4.h	opengl only in old code
 	random_generator.cpp	old code kept additionally yet
 	random_generator.h	old code kept additionally yet
+	bivector.h
 	
 10.)
 ====
