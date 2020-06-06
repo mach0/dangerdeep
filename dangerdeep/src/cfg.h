@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <utility>
 #include <SDL.h>
+#include "keys.h"
 #include "singleton.h"
 
 ///\brief This class stores and manages the global game configuration.
@@ -58,7 +59,7 @@ private:
 	std::map<std::string, int> vali;
 	std::map<std::string, float> valf;
 	std::map<std::string, std::string> vals;
-	std::map<unsigned, key> valk;
+	std::map<key_command, key> valk;
 	
 	static cfg* myinst;
 	
@@ -86,13 +87,13 @@ public:
 	void set(const std::string& name, int value);
 	void set(const std::string& name, float value);
 	void set(const std::string& name, const std::string& value);
-	void set_key(unsigned nr, SDLKey keysym, bool ctrl, bool alt, bool shift);
+	void set_key(key_command nr, SDLKey keysym, bool ctrl, bool alt, bool shift);
 	
 	bool getb(const std::string& name) const;
 	int geti(const std::string& name) const;
 	float getf(const std::string& name) const;
 	std::string gets(const std::string& name) const;
-	key getkey(unsigned nr) const;
+	key getkey(key_command nr) const;
 	
 	void parse_value(const std::string& s);	// give elements of command line array to it!
 };

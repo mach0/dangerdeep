@@ -495,11 +495,11 @@ void user_interface::process_input(const SDL_Event& event)
 	}
 
 	if (event.type == SDL_KEYDOWN) {
-		if (cfg::instance().getkey(KEY_TOGGLE_RELATIVE_BEARING).equal(event.key.keysym)) {
+		if (cfg::instance().getkey(key_command::TOGGLE_RELATIVE_BEARING).equal(event.key.keysym)) {
 			bearing_is_relative = !bearing_is_relative;
 			add_message(texts::get(bearing_is_relative ? 220 : 221));
 			return;
-		} else if (cfg::instance().getkey(KEY_TOGGLE_POPUP).equal(event.key.keysym)) {
+		} else if (cfg::instance().getkey(key_command::TOGGLE_POPUP).equal(event.key.keysym)) {
 			toggle_popup();
 			return;
 		}

@@ -12,8 +12,10 @@ After each step check functionality.
 	use meld with directories to compare.
 	See below for more details.
 	DONE - remaining topics are GL related
+5. use key enum class!
+	DONE - except in widget class
 -------------WE ARE HERE-----------------	
-5. make use of new C++ features for widgets etc.
+6. make use of new C++ features for widgets etc.
 	no more templates with object and method etc., just use lambda!
 6. Introduce newer system input handling (needs SDL2?)
 	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
@@ -54,7 +56,6 @@ Changes that have been started in code comparison:
 - rework event class as std::variant
 - remove macros
 - remove game::job
-- use own key enum class instead of SDL (keys.cpp and .h)
 - mymain transition list to vector
 - break inheritance, torpodo is NO ship, maybe we don't need inheritance at all
 - if we could make use of system interface etc. we could at least convert the standalone apps. However the name collision of
