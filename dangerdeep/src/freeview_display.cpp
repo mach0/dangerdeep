@@ -500,7 +500,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
 #if 0
 	unsigned vps=512;
-	vector<Uint8> scrn(vps*vps*3);
+	vector<uint8_t> scrn(vps*vps*3);
 	//unsigned t0 = SDL_GetTicks();
 	glReadPixels(0, 0, vps, vps, GL_RGB, GL_UNSIGNED_BYTE, &scrn[0]);
 	//unsigned t1 = SDL_GetTicks();
@@ -557,7 +557,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
 #if 0
 	unsigned vps=512;
-	vector<Uint8> scrn(vps*vps*3);
+	vector<uint8_t> scrn(vps*vps*3);
 	//unsigned t0 = SDL_GetTicks();
 	glReadPixels(0, 0, vps, vps, GL_RGB, GL_UNSIGNED_BYTE, &scrn[0]);
 	//unsigned t1 = SDL_GetTicks();

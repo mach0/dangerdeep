@@ -303,7 +303,7 @@ key_code get_key_code(SDL_Keycode sym)
 
 
 
-key_mod get_key_mod(Uint16 mod)
+key_mod get_key_mod(uint16_t mod)
 {
 	int km = int(key_mod::none);
 	switch (mod) {

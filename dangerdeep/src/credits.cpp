@@ -254,7 +254,7 @@ canyon::canyon(unsigned w, unsigned h)
 	  myshader(get_shader_dir() + "sandrock.vshader",
 		   get_shader_dir() + "sandrock.fshader")
 {
-	vector<Uint8> pn = perlinnoise(w, 4, w/2).generate(); // generate_sqr(); // also looks good
+	vector<uint8_t> pn = perlinnoise(w, 4, w/2).generate(); // generate_sqr(); // also looks good
 	//save_pgm("canyon.pgm", w, w, &pn[0]);
 	//heightdata = heightmap(w, h, vector2f(2.0f, 2.0f), vector2f(-128, -128));
 	heightdata.resize(w * h);
@@ -285,7 +285,7 @@ canyon::canyon(unsigned w, unsigned h)
 				     vector3f(0.0f, 0.0f, 0.0f));
 	//fixme: only color here!
 	sandrocktex = std::make_unique<texture>(get_texture_dir() + "sandrock.png", texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT);
-	vector<Uint8> noisevalues = perlinnoise(256, 2, 128).generate();
+	vector<uint8_t> noisevalues = perlinnoise(256, 2, 128).generate();
 	noisetex = std::make_unique<texture>(noisevalues, 256, 256, GL_LUMINANCE, texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT);
 	grasstex = std::make_unique<texture>(get_texture_dir() + "grass.png", texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT);
 	mymesh->mymaterial = new canyon_material(*this);
@@ -559,7 +559,7 @@ void add_tree(const vector3f& pos, float ang,
 	      vector<vector3f>& vertices,
 	      vector<vector2f>& texcoords,
 	      vector<vector3f>& normals,
-	      vector<Uint32>& indices)
+	      vector<uint32_t>& indices)
 {
 	const float treeheight = 4.0;
 	const float treewidth = 2.0;
@@ -684,7 +684,7 @@ unique_ptr<model::mesh> generate_trees(vector<float>& heightdata, unsigned nr = 
 
 
 
-void generate_fadein_pixels(vector<Uint8>& pix, unsigned ctr, unsigned s)
+void generate_fadein_pixels(vector<uint8_t>& pix, unsigned ctr, unsigned s)
 {
 	// draw spiral
 	unsigned x = 0, y = 0;
@@ -794,7 +794,7 @@ void show_credits()
 	//float lposition[4] = {200, 0, 0, 1};
 
 	std::unique_ptr<texture> fadein_tex;
-	std::vector<Uint8> fadein_pixels(8*8*2);
+	std::vector<uint8_t> fadein_pixels(8*8*2);
 	generate_fadein_pixels(fadein_pixels, 0, 8);
 	fadein_tex = std::make_unique<texture>(fadein_pixels, 8, 8, GL_LUMINANCE_ALPHA,
 				     texture::NEAREST, texture::REPEAT);
@@ -803,7 +803,7 @@ void show_credits()
 #undef  TEX3DTEST
 #ifdef TEX3DTEST
 #define TEX3DRES 32
-	std::vector<Uint8> pix3d(TEX3DRES*TEX3DRES*TEX3DRES*3);
+	std::vector<uint8_t> pix3d(TEX3DRES*TEX3DRES*TEX3DRES*3);
 	for (unsigned z = 0; z < TEX3DRES; ++z) {
 		for (unsigned y = 0; y < TEX3DRES; ++y) {
 			for (unsigned x = 0; x < TEX3DRES; ++x) {

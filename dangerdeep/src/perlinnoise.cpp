@@ -33,7 +33,7 @@ perlinnoise::noise_func::noise_func(unsigned s, unsigned f, float px, float py)
 	data.resize(size*size);
 	unsigned base = rand();
 	for (unsigned i = 0; i < size * size; ++i) {
-		data[i] = Uint8(base >> 24);
+		data[i] = uint8_t(base >> 24);
 		base = base * (base * 15731 + 789221) + 1376312589;
 	}
 #if 0
@@ -62,7 +62,7 @@ void perlinnoise::noise_func::set_line_for_interpolation(const vector<fixed32>& 
 }
 
 
-Uint8 perlinnoise::noise_func::interpolate(const vector<fixed32>& interpolation_func, fixed32 x) const
+uint8_t perlinnoise::noise_func::interpolate(const vector<fixed32>& interpolation_func, fixed32 x) const
 {
 	fixed32 bx = (phasex + x).frac();
 	// remap to value/subvalue coordinates
@@ -75,12 +75,12 @@ Uint8 perlinnoise::noise_func::interpolate(const vector<fixed32>& interpolation_
 	fixed32 v1 = a1 * unsigned(data[offsetline1+x1]) + a2 * unsigned(data[offsetline1+x2]);
 	fixed32 v2 = a1 * unsigned(data[offsetline2+x1]) + a2 * unsigned(data[offsetline2+x2]);
 	unsigned res = (linefac1 * v1 + linefac2 * v2).intpart();
-	return Uint8(res);
+	return uint8_t(res);
 }
 
 
 
-Uint8 perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
+uint8_t perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
 {
 	fixed32 bx = (phasex + x).frac();
 	fixed32 by = (phasey + y).frac();
@@ -92,10 +92,10 @@ Uint8 perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
 	unsigned y1 = by.intpart() & sz1;
 	unsigned x2 = (x1 + 1) & sz1;
 	unsigned y2 = (y1 + 1) & sz1;
-	Uint8 a = data[y1 * size + x1];
-	Uint8 b = data[y1 * size + x2];
-	Uint8 c = data[y2 * size + x1];
-	Uint8 d = data[y2 * size + x2];
+	uint8_t a = data[y1 * size + x1];
+	uint8_t b = data[y1 * size + x2];
+	uint8_t c = data[y2 * size + x1];
+	uint8_t d = data[y2 * size + x2];
 	// if next value is greater than this value, use ascending function f(x)=x^2
 	// if next value is less than this value, use descending function f(x)=1-(1-x)^2
 	// = 1-(1-2x+x^2) = 2x-x^2
@@ -111,7 +111,7 @@ Uint8 perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
 	fixed32 r2 = f * d + (fixed32::one() - f) * c;
 	f = (r2 < r1) ? by.frac() + by.frac() - by2 : by2;
 	unsigned res = (f * r2 + (fixed32::one() - f) * r1).intpart();
-	return Uint8(res);
+	return uint8_t(res);
 }
 
 
@@ -174,11 +174,11 @@ void perlinnoise::set_phase(unsigned func, float px, float py)
 }
 
 
-static inline Sint32 clamp_zero(Sint32 x) { return x & ~(x >> 31); }
-static inline Sint32 clamp_value(Sint32 x, Sint32 val) { return val - clamp_zero(val - x); }
-vector<Uint8> perlinnoise::generate() const
+static inline int32_t clamp_zero(int32_t x) { return x & ~(x >> 31); }
+static inline int32_t clamp_value(int32_t x, int32_t val) { return val - clamp_zero(val - x); }
+vector<uint8_t> perlinnoise::generate() const
 {
-	vector<Uint8> result(resultsize * resultsize);
+	vector<uint8_t> result(resultsize * resultsize);
 	fixed32 dxy = fixed32::one()/resultsize;
 	unsigned ptr = 0;
 	fixed32 fy;
@@ -195,7 +195,7 @@ vector<Uint8> perlinnoise::generate() const
 			// sum is at most around +- 207, so we multiply with 19/32, to get in in +-127 range
 			// to be sure we clamp it also.
 			sum = clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255);
-			result[ptr++] = Uint8(sum);
+			result[ptr++] = uint8_t(sum);
 			fx += dxy;
 		}
 		fy += dxy;
@@ -206,9 +206,9 @@ vector<Uint8> perlinnoise::generate() const
 
 
 
-vector<Uint8> perlinnoise::generate_sqr() const
+vector<uint8_t> perlinnoise::generate_sqr() const
 {
-	vector<Uint8> result(resultsize * resultsize);
+	vector<uint8_t> result(resultsize * resultsize);
 	fixed32 dxy = fixed32::one()/resultsize;
 	unsigned ptr = 0;
 	fixed32 fy;
@@ -222,7 +222,7 @@ vector<Uint8> perlinnoise::generate_sqr() const
 			// sum is at most around +- 207, so we multiply with 19/32, to get in in +-127 range
 			// to be sure we clamp it also.
 			sum = clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255);
-			result[ptr++] = Uint8(sum);
+			result[ptr++] = uint8_t(sum);
 			fx += dxy;
 		}
 		fy += dxy;
@@ -257,7 +257,7 @@ perlinnoise::perlinnoise(unsigned levelsize, unsigned sizeminfreq, unsigned leve
 
 
 
-Uint8 perlinnoise::value(unsigned x, unsigned y, unsigned depth) const
+uint8_t perlinnoise::value(unsigned x, unsigned y, unsigned depth) const
 {
 	fixed32 dxy = fixed32::one()/resultsize;
  	x = x & (resultsize - 1);
@@ -274,7 +274,7 @@ Uint8 perlinnoise::value(unsigned x, unsigned y, unsigned depth) const
 		sum += (int(noise_functions[i].interpolate(interpolation_func, fx))-128) >> i;
 	}
 	// rescale sum here
-	return Uint8(clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255));
+	return uint8_t(clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255));
 }
 
 
@@ -301,9 +301,9 @@ float perlinnoise::valuef(unsigned x, unsigned y, unsigned depth) const
 
 
 
-std::vector<Uint8> perlinnoise::values(unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth) const
+std::vector<uint8_t> perlinnoise::values(unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth) const
 {
-	std::vector<Uint8> result(w * h);
+	std::vector<uint8_t> result(w * h);
 	fixed32 dxy = fixed32::one()/resultsize;
  	x = x & (resultsize - 1);
  	y = y & (resultsize - 1);
@@ -324,7 +324,7 @@ std::vector<Uint8> perlinnoise::values(unsigned x, unsigned y, unsigned w, unsig
 				sum += (int(noise_functions[i].interpolate(interpolation_func, fx))-128) >> i;
 			}
 			// rescale sum here
-			result[y2*w+x2] = Uint8(clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255));
+			result[y2*w+x2] = uint8_t(clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255));
 		}
 	}
 	return result;

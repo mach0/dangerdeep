@@ -288,17 +288,17 @@ water::water(double tm) :
 
 	const unsigned perimetertexs = 256;
 	const unsigned perimetertexborder = 32;
-	vector<Uint8> perimetertex(perimetertexs * perimetertexs * 2);
+	vector<uint8_t> perimetertex(perimetertexs * perimetertexs * 2);
 	unsigned perimetertexptr = 0;
 	for (unsigned y = 0; y < perimetertexs; ++y) {
 		float fy = y - 127.5f;
 		for (unsigned x = 0; x < perimetertexs; ++x) {
 			float fx = x - 127.5f;
 			auto d = unsigned(sqrt(fy*fy + fx*fx));
-			Uint8 a = 0;
+			uint8_t a = 0;
 			if (d < perimetertexs/2) {
 				if (d >= perimetertexs/2 - perimetertexborder) {
-					a = Uint8(255*(perimetertexs/2 - d)/perimetertexborder);
+					a = uint8_t(255*(perimetertexs/2 - d)/perimetertexborder);
 				} else {
 					a = 255;
 				}
@@ -317,7 +317,7 @@ water::water(double tm) :
 		//maybe reduce reflections by using 192 or 224 instead of 255 here
 		//looks better! sea water shows less reflections in reality
 		//because it is so rough.
-		auto a = Uint8(255 /*192*/ * exact_fresnel(ff)+0.5f);
+		auto a = uint8_t(255 /*192*/ * exact_fresnel(ff)+0.5f);
 		for (unsigned s = 0; s < REFRAC_COLOR_RES; ++s) {
 			fresnelcolortexd[(s*FRESNEL_FCT_RES+f)*4+3] = a;
 		}
@@ -566,7 +566,7 @@ void water::draw_foam_for_ship(const game& gm, const ship* shp, const vector3& v
 		// move p to viewer space
 		vector2 pl = p - nrml * foamwidth;
 		vector2 pr = p + nrml * foamwidth;
-		col.a = Uint8(foamamount*255);
+		col.a = uint8_t(foamamount*255);
 		foamtrail.colors[pitc] = col;
 		foamtrail.colors[pitc+1] = col;
 		//y-coord depends on total length somehow, rather on distance between two points.
@@ -629,14 +629,14 @@ void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpo
 	//maybe with a texture of grey/black lines or mix to simulate screw foam/hull foam/randomness etc.
 /*
 	glRasterPos2i(50, 50);
-	vector<Uint8> tmp(8*8);
+	vector<uint8_t> tmp(8*8);
 	for (int i = 0; i < 8*8; ++i) if (((i/8)+(i%8))&1) tmp[i] = 4*i;
 	glDrawPixels(8, 8, GL_LUMINANCE, GL_UNSIGNED_BYTE, &tmp[0]);
 	glRasterPos2i(0, 0);
 */
 	
 #if 0
-	vector<Uint8> data(afs*afs*3);
+	vector<uint8_t> data(afs*afs*3);
 	glReadPixels(0, 0, afs, afs, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
         ostringstream osgname;
         osgname << "foamamount" << setw(2) << setfill('0') << nrfm++ << ".ppm";
@@ -1046,7 +1046,7 @@ void water::generate_wavetile(ocean_wave_generator<float>& myowg, double tiletim
 	osg << "P5\n";
 	osg <<wave_resolution<<" "<<wave_resolution<<"\n255\n";
 	for (vector<float>::const_iterator it = heights.begin(); it != heights.end(); ++it) {
-		Uint8 h = Uint8((*it - wtp.minh)*255.9/(wtp.maxh - wtp.minh));
+		uint8_t h = uint8_t((*it - wtp.minh)*255.9/(wtp.maxh - wtp.minh));
 		osg.write((const char*)&h, 1);
 	}
 #endif
@@ -1100,7 +1100,7 @@ void water::generate_wavetile(ocean_wave_generator<float>& myowg, double tiletim
 			//       x,y, Jxx,Jyy, Jxy,Jyx, J);
 			double fa = (J - 0.3) / -1.0 * 255;
 			if (fa < 0) fa = 0; else if (fa > 255) fa = 255;
-			Uint8 x = Uint8(fa);
+			uint8_t x = uint8_t(fa);
 			osg2.write((const char*)&x, 1);
 		}
 	}
@@ -1229,7 +1229,7 @@ void water::compute_amount_of_foam()
 		ptr = 0;
 		for (unsigned y = 0; y < wave_resolution; ++y) {
 			for (unsigned x = 0; x < wave_resolution; ++x) {
-				Uint8 x = Uint8(std::min(std::max(aof[ptr++], 0.0f), 1.0f) * 255.9);
+				uint8_t x = uint8_t(std::min(std::max(aof[ptr++], 0.0f), 1.0f) * 255.9);
 				ofs.write((const char*)&x, 1);
 			}
 		}
@@ -1496,9 +1496,9 @@ void water::wavetile_phase::mipmap_level::compute_normals()
 	for (unsigned y = 0; y < resolution; ++y) {
 		for (unsigned x = 0; x < resolution; ++x) {
 			const vector3f& v = normals[ptr];
-			normals_tex[3*ptr+0] = Uint8(v.x*127+128);
-			normals_tex[3*ptr+1] = Uint8(v.y*127+128);
-			normals_tex[3*ptr+2] = Uint8(v.z*127+128);
+			normals_tex[3*ptr+0] = uint8_t(v.x*127+128);
+			normals_tex[3*ptr+1] = uint8_t(v.y*127+128);
+			normals_tex[3*ptr+2] = uint8_t(v.z*127+128);
 			++ptr;
 		}
 	}

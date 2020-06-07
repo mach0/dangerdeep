@@ -242,7 +242,7 @@ std::list<std::string> string_split(const std::string& src, char splitter)
 }
 
 
-void save_pgm(const char* fn, unsigned w, unsigned h, const Uint8* d, unsigned stride)
+void save_pgm(const char* fn, unsigned w, unsigned h, const uint8_t* d, unsigned stride)
 {
 	std::ofstream osg(fn);
 	if (!osg.good()) THROW(error, std::string("Can't open output file ") + fn);

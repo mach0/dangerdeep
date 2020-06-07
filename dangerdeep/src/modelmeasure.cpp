@@ -97,7 +97,7 @@ void measure_model(double angle, ostringstream& osscs)
 	draw_model(angle);
 	unsigned filledpixels = 0;
 	unsigned screen_pixels = res_x*res_y;
-	vector<Uint8> pic(screen_pixels*3);
+	vector<uint8_t> pic(screen_pixels*3);
 	glReadPixels(0, 0, res_x, res_y, GL_RGB, GL_UNSIGNED_BYTE, &pic[0]);
 	for (unsigned i = 0; i < screen_pixels*3; i += 3) {
 		// faster counting, uses no conditional jumps.
@@ -121,7 +121,7 @@ void measure_mass_distribution(const std::string& massmapfn, const vector3i& res
 	sys().unprepare_2d_drawing();
 	glDisable(GL_TEXTURE_2D);
 	unsigned screen_pixels = res_x*res_y;
-	vector<Uint8> pic(screen_pixels*3);
+	vector<uint8_t> pic(screen_pixels*3);
 	glReadPixels(0, 0, res_x, res_y, GL_RGB, GL_UNSIGNED_BYTE, &pic[0]);
 	sys().swap_buffers();
 	float allmass = 0;

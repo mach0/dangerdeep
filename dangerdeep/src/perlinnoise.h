@@ -38,7 +38,7 @@ public:
 	// quadratic noise
 	struct noise_func
 	{
-		std::vector<Uint8> data;
+		std::vector<uint8_t> data;
 		unsigned size;		// in powers of two
 		unsigned frequency;	// 1-x
 		fixed32 phasex;
@@ -51,8 +51,8 @@ public:
 		mutable fixed32 linefac1;
 		mutable fixed32 linefac2;
 		void set_line_for_interpolation(const std::vector<fixed32>& interpolation_func, fixed32 y) const;
-		Uint8 interpolate(const std::vector<fixed32>& interpolation_func, fixed32 x) const;
-		Uint8 interpolate_sqr(fixed32 x, fixed32 y) const;
+		uint8_t interpolate(const std::vector<fixed32>& interpolation_func, fixed32 x) const;
+		uint8_t interpolate_sqr(fixed32 x, fixed32 y) const;
 	};
 
 protected:
@@ -74,10 +74,10 @@ public:
 	void set_phase(unsigned level, float px, float py);
 
 	// generate a composition of the noise functions
-	std::vector<Uint8> generate() const;
+	std::vector<uint8_t> generate() const;
 
 	// generate a composition of the noise functions with x^2 interpolation
-	std::vector<Uint8> generate_sqr() const;
+	std::vector<uint8_t> generate_sqr() const;
 
 	/// generate noise data for potentially very large noise maps
 	///@param levelsize - size of a level (power of two)
@@ -88,9 +88,9 @@ public:
 	///@note do not call generate() on objects constructed with this constructor
 	perlinnoise(unsigned levelsize, unsigned sizeminfreq, unsigned levels, bool dummy);
 
-	Uint8 value(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
+	uint8_t value(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
 	float valuef(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
-	std::vector<Uint8> values(unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth = 0xffffffff) const;
+	std::vector<uint8_t> values(unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth = 0xffffffff) const;
 	std::vector<float> valuesf(unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth = 0xffffffff) const;
 };
 

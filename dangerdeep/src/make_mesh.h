@@ -70,7 +70,7 @@ model::mesh part_of_torus(float outerr, float innerr,
 			       const std::string& name = "subtorus");
 */
 
-model::mesh* heightfield(unsigned resx, unsigned resy, const std::vector<Uint8>& heights,
+model::mesh* heightfield(unsigned resx, unsigned resy, const std::vector<uint8_t>& heights,
 			     float xscal, float yscal, float zscal,
 			     float xnoise = 0.0f, float ynoise = 0.0f, float znoise = 0.0f,
 			     const std::string& name = "heightfield");

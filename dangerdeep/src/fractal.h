@@ -163,11 +163,11 @@ public:
 		return result;
 	}
 
-	std::vector<Uint8> get_map_fbm(const vector2i& sz) {
+	std::vector<uint8_t> get_map_fbm(const vector2i& sz) {
 
 		double min = 1.0, max = 0.0, scale = 0.0;;
 		std::vector<double> values(sz.x*sz.y);
-		std::vector<Uint8> map(sz.x*sz.y);
+		std::vector<uint8_t> map(sz.x*sz.y);
 		
 		
 		for(int y=0; y<sz.y; y++) {

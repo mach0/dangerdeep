@@ -32,7 +32,7 @@ class texture;
 // particles: smoke, water splashes, fire, explosions, spray caused by ship's bow
 // fire particles can produce smoke particles!
 
-using Uint8 = unsigned char;
+using uint8_t = unsigned char;
 
 ///\brief Simulates and displays particles that are rendered as billboard images.
 class particle
@@ -75,12 +75,12 @@ protected:
 
 	// wh must be power of two (returns a square). 1 <= 2^low <= 2^high <= wh
 	static std::vector<float> interpolate_func;
-	static std::vector<Uint8> make_2d_smoothed_noise_map(unsigned wh);
-	static unsigned interpolate_2d_map(const std::vector<Uint8>& mp, unsigned res, unsigned x, unsigned y, unsigned res2);
+	static std::vector<uint8_t> make_2d_smoothed_noise_map(unsigned wh);
+	static unsigned interpolate_2d_map(const std::vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y, unsigned res2);
 
 	// 1 <= highest_level <= log2(wh)
-	static std::vector<Uint8> make_2d_perlin_noise(unsigned wh, unsigned highestlevel);
-	static std::vector<Uint8> compute_fire_frame(unsigned wh, const std::vector<Uint8>& oldframe);
+	static std::vector<uint8_t> make_2d_perlin_noise(unsigned wh, unsigned highestlevel);
+	static std::vector<uint8_t> compute_fire_frame(unsigned wh, const std::vector<uint8_t>& oldframe);
 
 	virtual vector3 get_acceleration() const { return {}; }
 

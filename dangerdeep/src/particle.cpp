@@ -61,11 +61,11 @@ texture* particle::tex_marker = nullptr;
 
 vector<float> particle::interpolate_func;
 
-vector<Uint8> particle::make_2d_smoothed_noise_map(unsigned wh)
+vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
 {
-	vector<Uint8> tmp(wh * wh);
+	vector<uint8_t> tmp(wh * wh);
 	for (unsigned i = 0; i < wh * wh; ++i)
-		tmp[i] = (Uint8)(rand() % 256);
+		tmp[i] = (uint8_t)(rand() % 256);
 	for (unsigned i = 0; i < wh; ++i) {
 		tmp[i] = 0;
 		if (rand() % 2 == 0)
@@ -80,7 +80,7 @@ vector<Uint8> particle::make_2d_smoothed_noise_map(unsigned wh)
 		if (rand() % 2 == 0)
 			tmp[(wh - 2) * wh + i] = 0;
 	}
-	vector<Uint8> tmp2(wh * wh);
+	vector<uint8_t> tmp2(wh * wh);
 	unsigned rmin = 255, rmax = 0;
 	for (unsigned y = 0; y < wh; ++y) {
 		unsigned y1 = (y + wh - 1) & (wh - 1);
@@ -97,7 +97,7 @@ vector<Uint8> particle::make_2d_smoothed_noise_map(unsigned wh)
 				   + unsigned(tmp[y1 * wh + x])
 				   + unsigned(tmp[y2 * wh + x])) / 8
 				+ unsigned(tmp[y * wh +x]) / 4;
-			auto r2 = (Uint8)(r);
+			auto r2 = (uint8_t)(r);
 			tmp2[y * wh + x] = r2;
 			if (r2 > rmax) rmax = r2;
 			if (r2 < rmin) rmin = r2;
@@ -106,13 +106,13 @@ vector<Uint8> particle::make_2d_smoothed_noise_map(unsigned wh)
 	for (unsigned y = 0; y < wh; ++y) {
 		for (unsigned x = 0; x < wh; ++x) {
 			unsigned r = tmp2[y * wh + x];
-			tmp[y * wh + x] = (Uint8)((r - rmin) * 256 / (rmax - rmin + 1));
+			tmp[y * wh + x] = (uint8_t)((r - rmin) * 256 / (rmax - rmin + 1));
 		}
 	}
 	return tmp;
 }
 
-unsigned particle::interpolate_2d_map(const vector<Uint8>& mp, unsigned res, unsigned x, unsigned y, unsigned res2)
+unsigned particle::interpolate_2d_map(const vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y, unsigned res2)
 {
 	unsigned fac = res2 / res;
 	unsigned xi = x / fac;
@@ -133,14 +133,14 @@ unsigned particle::interpolate_2d_map(const vector<Uint8>& mp, unsigned res, uns
 }
 
 //fixme: replace by perlinnoise generator class!
-vector<Uint8> particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
+vector<uint8_t> particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
 {
 	unsigned whlevel = 0;
 	while (wh > unsigned(1 << whlevel))
 		++whlevel;
 	// prepare lookup maps
 	unsigned levels = whlevel - highestlevel + 1;
-	vector<vector<Uint8> > lookup_maps;
+	vector<vector<uint8_t> > lookup_maps;
 	lookup_maps.reserve(levels);
 	for (unsigned i = 0; i < levels; ++i) {
 		unsigned res = 1<<(highestlevel + i);
@@ -148,7 +148,7 @@ vector<Uint8> particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
 	}
 
 	// generate result
-	vector<Uint8> result(wh * wh);
+	vector<uint8_t> result(wh * wh);
 	for (unsigned y = 0; y < wh; ++y) {
 		for (unsigned x = 0; x < wh; ++x) {
 			unsigned r = 0;
@@ -158,7 +158,7 @@ vector<Uint8> particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
 			}
 			r /= 65536;
 			if (r > 255) r = 510 - r;
-			result[y * wh + x] = (Uint8)(r);
+			result[y * wh + x] = (uint8_t)(r);
 		}
 	}
 	return result;
@@ -166,9 +166,9 @@ vector<Uint8> particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
 
 
 
-vector<Uint8> particle::compute_fire_frame(unsigned wh, const vector<Uint8>& oldframe)
+vector<uint8_t> particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
 {
-	vector<Uint8> result = oldframe;
+	vector<uint8_t> result = oldframe;
 	for (unsigned y = 0; y < wh-2; ++y) {
 		for (unsigned x = 1; x < wh-1; ++x) {
 			unsigned sum = 0;
@@ -181,14 +181,14 @@ vector<Uint8> particle::compute_fire_frame(unsigned wh, const vector<Uint8>& old
 			sum = (r > sum) ? 0 : sum - r;
 			sum = (sum * 28) / 256;
 			if (sum > 255) sum = 511 - sum;
-			result[y * wh + x] = Uint8(sum);
+			result[y * wh + x] = uint8_t(sum);
 		}
 	}
 
 	for (unsigned k = 0; k < 2; ++k) {
 		for (unsigned j = 0; j < wh/4; ++j) {
 			unsigned x = (j < wh*7/32) ? (rand() % (wh/2) + wh/4) : (rand() % (wh-2)) + 1;
-			Uint8 c;
+			uint8_t c;
 			if (rand() % 4 == 0)
 				c = 0;
 			else
@@ -219,9 +219,9 @@ void particle::init()
 	// just random noise with smoke color gradients and irregular outline
 	// resolution 64x64, outline 8x8 scaled, smoke structure 8x8 or 16x16
 	tex_smoke.resize(NR_OF_SMOKE_TEXTURES);
-	vector<Uint8> smoketmp(64*64*2);
+	vector<uint8_t> smoketmp(64*64*2);
 	for (unsigned i = 0; i < NR_OF_SMOKE_TEXTURES; ++i) {
-		vector<Uint8> noise = make_2d_perlin_noise(64, 2);
+		vector<uint8_t> noise = make_2d_perlin_noise(64, 2);
 
 /*
 		ostringstream oss;
@@ -234,7 +234,7 @@ void particle::init()
 		for (unsigned y = 0; y < 64; ++y) {
 			for (unsigned x = 0; x < 64; ++x) {
 				unsigned r = noise[y*64+x];
-				smoketmp[2*(y*64+x)+0] = (Uint8)r;
+				smoketmp[2*(y*64+x)+0] = (uint8_t)r;
 				smoketmp[2*(y*64+x)+1] = (r < 64) ? 0 : r - 64;
 			}
 		}
@@ -271,11 +271,11 @@ void particle::init()
 		firepal[i] = color(firepal_p[j], firepal_p[j+1], float(i%32)/32);
 	}
 	firepal[0] = firepal_p[0];
-	vector<Uint8> firetmp(FIRE_RES*FIRE_RES);
+	vector<uint8_t> firetmp(FIRE_RES*FIRE_RES);
 	for (unsigned i = 0; i < NR_OF_FIRE_TEXTURES * 2; ++i) {
 		firetmp = compute_fire_frame(FIRE_RES, firetmp);
 /*
-		vector<Uint8> tmp2(firetmp.size() * 3);
+		vector<uint8_t> tmp2(firetmp.size() * 3);
 		for (unsigned j = 0; j < firetmp.size(); ++j) {
 			firepal[firetmp[j]].store_rgb(&tmp2[3*j]);
 		}
@@ -287,7 +287,7 @@ void particle::init()
 */
 	}
 	for (unsigned i = 0; i < NR_OF_FIRE_TEXTURES; ++i) {
-		vector<Uint8> tmp(firetmp.size() * 4);
+		vector<uint8_t> tmp(firetmp.size() * 4);
 		for (unsigned j = 0; j < firetmp.size() - 2 * FIRE_RES; ++j) {
 			firepal[firetmp[j]].store_rgba(&tmp[4*(j + 2*FIRE_RES)]);
 		}
@@ -295,7 +295,7 @@ void particle::init()
 					  texture::LINEAR, texture::CLAMP);
 
 /*
-		vector<Uint8> tmp2(firetmp.size() * 3);
+		vector<uint8_t> tmp2(firetmp.size() * 3);
 		for (unsigned j = 0; j < firetmp.size(); ++j) {
 			firepal[firetmp[j]].store_rgb(&tmp2[3*j]);
 		}

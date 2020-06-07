@@ -110,7 +110,7 @@ public:
 	static bool is_first_byte_of_threebyte_char(unsigned char c) { return (c & 0xF0) == 0xE0; }
 	static bool is_first_byte_of_fourbyte_char(unsigned char c) { return (c & 0xF8) == 0xF0; }
 	static unsigned read_character(const std::string& text, unsigned cp);
-	static std::string to_utf8(Uint16 unicode);
+	static std::string to_utf8(uint16_t unicode);
 	static const unsigned invalid_utf8_char = 0xffffffff;
 };
 

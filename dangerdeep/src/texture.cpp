@@ -136,7 +136,7 @@ sdl_image::sdl_image(const std::string& filename)
 		    || ((teximagea->flags & SDL_SRCCOLORKEY) != 0))
 			THROW(texture::texerror, fna, ".png: no 8bit greyscale non-alpha-channel image!");
 
-		Uint32 rmask, gmask, bmask, amask;
+		uint32_t rmask, gmask, bmask, amask;
 
 		/* SDL interprets each pixel as a 32-bit number, so our masks must depend
 		   on the endianness (byte order) of the machine */
@@ -269,7 +269,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 	     << "\n";
 */
 
-	vector<Uint8> data;
+	vector<uint8_t> data;
 	if (fmt.palette != nullptr) {
 		//old color table code, does not work
 		//glEnable(GL_COLOR_TABLE);
@@ -320,7 +320,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 			for (unsigned y = 0; y < sh; y++) {
 				unsigned char* ptr2 = ptr;
 				for (unsigned x = 0; x < sw; ++x) {
-					Uint8 pixindex = *(offset+x);
+					uint8_t pixindex = *(offset+x);
 					const SDL_Color& pixcolor = fmt.palette->colors[pixindex];
 					*ptr2++ = pixcolor.r;
 					*ptr2++ = pixcolor.g;
@@ -374,31 +374,31 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 				// new code, that uses the RGB-masks of SDL to load/transform
 				// colors.
 				if (bpp == 3) {
-					Uint8* linedst = (Uint8*)ptr;
-					Uint8* linesrc = (Uint8*)offset;
+					uint8_t* linedst = (uint8_t*)ptr;
+					uint8_t* linesrc = (uint8_t*)offset;
 					for (unsigned x = 0; x < sw; ++x) {
 						// be careful! with bpp=3 this could lead to
 						// an off by one segfault error, if pitch is
 						// not a multiple of four...we just hope the best.
 						// could be done quicker with mmx, but this performance
 						// is not that critical here
-						Uint32 pv = *(Uint32*)linesrc; // fixme: is that right for Big-Endian machines? SDL Docu suggests yes...
-						linedst[0] = Uint8(((pv & fmt.Rmask) >> fmt.Rshift) << fmt.Rloss);
-						linedst[1] = Uint8(((pv & fmt.Gmask) >> fmt.Gshift) << fmt.Gloss);
-						linedst[2] = Uint8(((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
+						uint32_t pv = *(uint32_t*)linesrc; // fixme: is that right for Big-Endian machines? SDL Docu suggests yes...
+						linedst[0] = uint8_t(((pv & fmt.Rmask) >> fmt.Rshift) << fmt.Rloss);
+						linedst[1] = uint8_t(((pv & fmt.Gmask) >> fmt.Gshift) << fmt.Gloss);
+						linedst[2] = uint8_t(((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
 						linesrc += bpp;
 						linedst += bpp;
 					}
 				} else {
 					// bpp = 4 here
-					Uint32* linedst = (Uint32*)ptr;
-					Uint32* linesrc = (Uint32*)offset;
+					uint32_t* linedst = (uint32_t*)ptr;
+					uint32_t* linesrc = (uint32_t*)offset;
 					for (unsigned x = 0; x < sw; ++x) {
-						Uint32 pv = linesrc[x];
-						Uint32 r = (((pv & fmt.Rmask) >> fmt.Rshift) << fmt.Rloss);
-						Uint32 g = (((pv & fmt.Gmask) >> fmt.Gshift) << fmt.Gloss);
-						Uint32 b = (((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
-						Uint32 a = (((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
+						uint32_t pv = linesrc[x];
+						uint32_t r = (((pv & fmt.Rmask) >> fmt.Rshift) << fmt.Rloss);
+						uint32_t g = (((pv & fmt.Gmask) >> fmt.Gshift) << fmt.Gloss);
+						uint32_t b = (((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
+						uint32_t a = (((pv & fmt.Bmask) >> fmt.Bshift) << fmt.Bloss);
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 						pv = a | (b << 8) | (g << 16) | (r << 24);
 #else
@@ -421,7 +421,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 	
 
 
-void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
+void texture::init(const vector<uint8_t>& data, bool makenormalmap, float detailh)
 {
 	// error checks.
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
@@ -446,7 +446,7 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 		// give increasing levels with decreasing w/h down to 1x1
 		// e.g. 64x16 -> 32x8, 16x4, 8x2, 4x1, 2x1, 1x1
 		format = GL_RGB;
-		vector<Uint8> nmpix = make_normals(data, gl_width, gl_height, detailh);
+		vector<uint8_t> nmpix = make_normals(data, gl_width, gl_height, detailh);
 		int internalformat = format;
 
 		if(use_compressed_textures)
@@ -479,15 +479,15 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 			// RGB=0.5 -> normal of (0,0,0) (rare...)!
 			// fixme: mipmapping for textures with non-power-of-two resolution is
 			// untested!
-			vector<Uint8> curlvl;
-			const vector<Uint8>* gdat = &data;
+			vector<uint8_t> curlvl;
+			const vector<uint8_t>* gdat = &data;
 			for (unsigned level = 1, w = gl_width/2, h = gl_height/2;
 			     w > 0 && h > 0; w /= 2, h /= 2) {
 				cout << "level " << level << " w " << w << " h " << h << "\n";
 				curlvl = scale_half(*gdat, w, h, 1);
 				gdat = &curlvl;
 				//fixme: must detailh also get halfed here? yes...
-				vector<Uint8> nmpix = make_normals(*gdat, w, h, detailh);
+				vector<uint8_t> nmpix = make_normals(*gdat, w, h, detailh);
 				int internalformat = GL_RGB;
 					 
 				if(use_compressed_textures)
@@ -502,7 +502,7 @@ void texture::init(const vector<Uint8>& data, bool makenormalmap, float detailh)
 		}
 	} else if (makenormalmap && format == GL_LUMINANCE_ALPHA) {
 		format = GL_RGBA;
-		vector<Uint8> nmpix = make_normals_with_alpha(data, gl_width, gl_height, detailh);
+		vector<uint8_t> nmpix = make_normals_with_alpha(data, gl_width, gl_height, detailh);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, gl_width, gl_height, 0, format,
 			     GL_UNSIGNED_BYTE, &nmpix[0]);
 #ifdef MEMMEASURE
@@ -647,7 +647,7 @@ void texture::load_dds(const std::string& filename, dds_data& target)
 }
 #undef MAKEFOURCC
 
-vector<Uint8> texture::scale_half(const vector<Uint8>& src, unsigned w, unsigned h, unsigned bpp)
+vector<uint8_t> texture::scale_half(const vector<uint8_t>& src, unsigned w, unsigned h, unsigned bpp)
 {
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
@@ -656,13 +656,13 @@ vector<Uint8> texture::scale_half(const vector<Uint8>& src, unsigned w, unsigned
 			THROW(texerror, "[scale_half]", "texture height is no power of two!");
 	}
 
-	vector<Uint8> dst(w*h*bpp/4);
+	vector<uint8_t> dst(w*h*bpp/4);
 	unsigned ptr = 0;
 	for (unsigned y = 0; y < h; y += 2) {
 		for (unsigned x = 0; x < w; x += 2) {
 			for (unsigned b = 0; b < bpp; ++b) {
 				dst[ptr++] =
-					Uint8((unsigned(src[(y*w+x)*bpp+b]) +
+					uint8_t((unsigned(src[(y*w+x)*bpp+b]) +
 					       unsigned(src[(y*w+x+1)*bpp+b]) +
 					       unsigned(src[((y+1)*w+x)*bpp+b]) +
 					       unsigned(src[((y+1)*w+x+1)*bpp+b])) / 4);
@@ -674,11 +674,11 @@ vector<Uint8> texture::scale_half(const vector<Uint8>& src, unsigned w, unsigned
 	
 
 
-vector<Uint8> texture::make_normals(const vector<Uint8>& src, unsigned w, unsigned h,
+vector<uint8_t> texture::make_normals(const vector<uint8_t>& src, unsigned w, unsigned h,
 				    float detailh)
 {
 	// src size must be w*h
-	vector<Uint8> dst(3*w*h);
+	vector<uint8_t> dst(3*w*h);
 	// Note! zh must be multiplied with 2*sample_distance!
 	// sample_distance is real distance between texels, we assume 1 for it...
 	// This depends on the size of the face the normal map is mapped onto.
@@ -697,9 +697,9 @@ vector<Uint8> texture::make_normals(const vector<Uint8>& src, unsigned w, unsign
 			float hl = src[yy*w+x1];
 			float hd = src[y2*w+xx];
 			vector3f nm = vector3f(hl-hr, hd-hu, zh).normal();
-			dst[ptr + 0] = Uint8(nm.x*127 + 128);
-			dst[ptr + 1] = Uint8(nm.y*127 + 128);
-			dst[ptr + 2] = Uint8(nm.z*127 + 128);
+			dst[ptr + 0] = uint8_t(nm.x*127 + 128);
+			dst[ptr + 1] = uint8_t(nm.y*127 + 128);
+			dst[ptr + 2] = uint8_t(nm.z*127 + 128);
 			ptr += 3;
 		}
 	}
@@ -708,11 +708,11 @@ vector<Uint8> texture::make_normals(const vector<Uint8>& src, unsigned w, unsign
 
 
 
-vector<Uint8> texture::make_normals_with_alpha(const vector<Uint8>& src, unsigned w, unsigned h,
+vector<uint8_t> texture::make_normals_with_alpha(const vector<uint8_t>& src, unsigned w, unsigned h,
 					       float detailh)
 {
 	// src size must be w*h
-	vector<Uint8> dst(4*w*h);
+	vector<uint8_t> dst(4*w*h);
 	// Note! zh must be multiplied with 2*sample_distance!
 	// sample_distance is real distance between texels, we assume 1 for it...
 	// This depends on the size of the face the normal map is mapped onto.
@@ -731,9 +731,9 @@ vector<Uint8> texture::make_normals_with_alpha(const vector<Uint8>& src, unsigne
 			float hl = src[2*(yy*w+x1)+0];
 			float hd = src[2*(y2*w+xx)+0];
 			vector3f nm = vector3f(hl-hr, hd-hu, zh).normal();
-			dst[ptr + 0] = Uint8(nm.x*127 + 128);
-			dst[ptr + 1] = Uint8(nm.y*127 + 128);
-			dst[ptr + 2] = Uint8(nm.z*127 + 128);
+			dst[ptr + 0] = uint8_t(nm.x*127 + 128);
+			dst[ptr + 1] = uint8_t(nm.y*127 + 128);
+			dst[ptr + 2] = uint8_t(nm.z*127 + 128);
 			dst[ptr + 3] = src[2*(yy*w+xx)+1];
 			ptr += 4;
 		}
@@ -781,7 +781,7 @@ texture::texture(const sdl_image& teximage, unsigned sx, unsigned sy, unsigned s
 
 
 
-texture::texture(const vector<Uint8>& pixels, unsigned w, unsigned h, int format_,
+texture::texture(const vector<uint8_t>& pixels, unsigned w, unsigned h, int format_,
 		 mapping_mode mapping_, clamping_mode clamp, bool makenormalmap, float detailh, GLenum _dimension)
 {
 	dimension = _dimension;
@@ -937,7 +937,7 @@ texture::~texture()
 
 
 void texture::sub_image(int xoff, int yoff, unsigned w, unsigned h,
-			const std::vector<Uint8>& pixels, int format_)
+			const std::vector<uint8_t>& pixels, int format_)
 {
 	glBindTexture(GL_TEXTURE_2D, opengl_name);
 	glTexSubImage2D(GL_TEXTURE_2D, 0 /* mipmap level */,
@@ -955,7 +955,7 @@ void texture::sub_image(const sdl_image& sdlimage, int xoff, int yoff, unsigned 
 	const SDL_PixelFormat& fmt = *(teximage->format);
 	unsigned bpp = fmt.BytesPerPixel;
 
-	vector<Uint8> data;
+	vector<uint8_t> data;
 	if (fmt.palette != nullptr) {
 		// no color tables, fixme
 		return;
@@ -1102,7 +1102,7 @@ unsigned texture::get_max_size()
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-texture3d::texture3d(const std::vector<Uint8>& pixels, unsigned w, unsigned h, unsigned d,
+texture3d::texture3d(const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned d,
 		     int format_, mapping_mode mapping_, clamping_mode clamp)
 {
 	mapping = mapping_;
@@ -1235,7 +1235,7 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 
 
 void texture3d::sub_image(int xoff, int yoff, int zoff, unsigned w, unsigned h, unsigned d,
-			  const std::vector<Uint8>& pixels, int format_)
+			  const std::vector<uint8_t>& pixels, int format_)
 {
 	glBindTexture(GL_TEXTURE_3D, opengl_name);
 	glTexSubImage3D(GL_TEXTURE_3D, 0 /* mipmap level */,
@@ -1267,7 +1267,7 @@ void texture3d::draw(int x, int y, int w, int h,
 	glVertexPointer(2, GL_FLOAT, 4*5, &data[0]);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(3, GL_FLOAT, 4*5, &data[2]);
-	Uint8 idx[4] = { 0, 1, 2, 3 };
+	uint8_t idx[4] = { 0, 1, 2, 3 };
 	glDrawRangeElements(GL_QUADS, 0, 3, 4, GL_UNSIGNED_BYTE, &idx[0]);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glBindTexture(GL_TEXTURE_3D, 0);

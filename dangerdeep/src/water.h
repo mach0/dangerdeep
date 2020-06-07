@@ -65,7 +65,7 @@ protected:
 
 	std::unique_ptr<texture> waterspecularlookup;	// lookup 1d texture map for water specular term
 
-	std::vector<Uint8> fresnelcolortexd;	// stored for updates of water color
+	std::vector<uint8_t> fresnelcolortexd;	// stored for updates of water color
 
 	colorf last_light_color;	// used to determine when new refraction color tex must get computed
 
@@ -82,7 +82,7 @@ protected:
 			std::vector<vector3f> wavedata;
 			std::vector<vector3f> normals;
 			std::vector<float> amount_of_foam;
-			std::vector<Uint8> normals_tex;
+			std::vector<uint8_t> normals_tex;
 			///> generate data from downsampled version of wd
 			mipmap_level(const std::vector<vector3f>& wd, unsigned res_shift,
 				     double sampledist);

@@ -115,8 +115,8 @@ inline double rnd() { return double(rand())/RAND_MAX; }
 inline unsigned rnd(unsigned b) { return unsigned(b*rnd()); }
 
 // fast clamping
-inline Sint32 clamp_zero(Sint32 x) { return x & ~(x >> 31); }
-inline Sint32 clamp_value(Sint32 x, Sint32 val) { return val - clamp_zero(val - x); }
+inline int32_t clamp_zero(int32_t x) { return x & ~(x >> 31); }
+inline int32_t clamp_value(int32_t x, int32_t val) { return val - clamp_zero(val - x); }
 
 inline unsigned ulog2(unsigned x) {
     unsigned i = 0;
@@ -141,7 +141,7 @@ vector2f transform_real_to_geo(vector2f& pos);
 std::list<std::string> string_split(const std::string& src, char splitter = ',');
 
 // save a PGM (for debugging mostly)
-void save_pgm(const char* fn, unsigned w, unsigned h, const Uint8* d, unsigned stride = 0);
+void save_pgm(const char* fn, unsigned w, unsigned h, const uint8_t* d, unsigned stride = 0);
 
 ///> transform any data type to a string for easier error reporting etc.
 template<typename T> std::string str(const T& x) { std::ostringstream oss; oss << x; return oss.str(); }

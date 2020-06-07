@@ -595,7 +595,7 @@ void map_display::display(class game& gm) const
 		}
 
 		bivector<float> heights(size);
-		std::vector<Uint8> colors(size.x*size.y*3);
+		std::vector<uint8_t> colors(size.x*size.y*3);
 		hg.compute_heights(level, bl, size, heights.data_ptr(), 0, 0, true);
 
 		for(int y=0; y<size.y; y++) {

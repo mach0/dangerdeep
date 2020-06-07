@@ -116,7 +116,7 @@ void music::init()
 	}
 
 	int audio_rate = int(sample_rate);
-	Uint16 audio_format = AUDIO_S16SYS;
+	uint16_t audio_format = AUDIO_S16SYS;
 	int audio_channels = 2;
 	int audio_buffers = 4096;
 

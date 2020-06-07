@@ -181,7 +181,7 @@ user_interface::user_interface(game& gm) :
 #define RAIN_TEX_W 256
 #define RAIN_TEX_H 256
 	raintex.resize(NR_OF_RAIN_FRAMES);
-	vector<Uint8> raintmptex(RAIN_TEX_W * RAIN_TEX_H * 2);
+	vector<uint8_t> raintmptex(RAIN_TEX_W * RAIN_TEX_H * 2);
 
 	for (unsigned j = 0; j < NR_OF_RAIN_FRAMES; ++j) {
 		for (unsigned k = 0; k < RAIN_TEX_W * RAIN_TEX_H * 2; k += 2) {
@@ -190,7 +190,7 @@ user_interface::user_interface(game& gm) :
 		}
 		for (unsigned i = 0; i < NR_OF_RAIN_DROPS; ++i) {
 			vector2i pos(rnd(RAIN_TEX_W-2)+2, rnd(RAIN_TEX_H-2));
-			Uint8 c = rnd(64)+128;
+			uint8_t c = rnd(64)+128;
 			raintmptex[(RAIN_TEX_W*pos.y + pos.x) * 2 + 0] = c;
 			raintmptex[(RAIN_TEX_W*pos.y + pos.x) * 2 + 1] = 128;
 			pos.x -= 1; pos.y += 1;
@@ -210,7 +210,7 @@ user_interface::user_interface(game& gm) :
 #define SNOW_TEX_W 256
 #define SNOW_TEX_H 256
 	snowtex.resize(NR_OF_SNOW_FRAMES);
-	vector<Uint8> snowtmptex(SNOW_TEX_W * SNOW_TEX_H * 2, 255);
+	vector<uint8_t> snowtmptex(SNOW_TEX_W * SNOW_TEX_H * 2, 255);
 	vector<vector2i> snowflakepos(NR_OF_SNOW_FLAKES);
 	vector<int> snowxrand(NR_OF_SNOW_FRAMES);
 
@@ -677,7 +677,7 @@ void user_interface::draw_infopanel(bool onlytexts) const
 		if (it->first < vanish_time)
 			break;
 		double alpha = std::min(1.0, (it->first - vanish_time)/message_fadeout_time);
-		font_vtremington12->print(0, y, it->second, color(255,255,255,Uint8(255*alpha)), true);
+		font_vtremington12->print(0, y, it->second, color(255,255,255,uint8_t(255*alpha)), true);
 		y -= font_vtremington12->get_height();
 	}
 }

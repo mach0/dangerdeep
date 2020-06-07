@@ -326,7 +326,7 @@ model::mesh part_of_torus(float outerr, float innerr,
 */
 
 
-model::mesh* heightfield(unsigned resx, unsigned resy, const vector<Uint8>& heights,
+model::mesh* heightfield(unsigned resx, unsigned resy, const vector<uint8_t>& heights,
 			     float xscal, float yscal, float zscal,
 			     float xnoise, float ynoise, float znoise,
 			     const string& name)

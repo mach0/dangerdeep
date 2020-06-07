@@ -348,7 +348,7 @@ void coastsegment::push_back_segcl(const segcl& scl)
 // coastmap functions
 //
 
-Uint8& coastmap::mapf(int cx, int cy)
+uint8_t& coastmap::mapf(int cx, int cy)
 {
 	cx = clamp_zero(cx);
 	cy = clamp_zero(cy);
@@ -370,7 +370,7 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
 		// compute next x,y
 		int dir = -1;
 
-		Uint8 pattern = 0;
+		uint8_t pattern = 0;
 		for (int j = 0; j < 4; ++j) {
 			pattern |= (mapf(x+dmx[j], y+dmy[j]) & 0x7f) << j;
 		}
@@ -452,9 +452,9 @@ bool coastmap::find_coastline(int x, int y, vector<vector2i>& points, bool& cycl
 		// compute next x,y
 		int dir = -1;
 
-		Uint8 pattern = 0;
+		uint8_t pattern = 0;
 		for (int j = 0; j < 4; ++j) {
-			Uint8& c = mapf(x+dmx[j], y+dmy[j]);
+			uint8_t& c = mapf(x+dmx[j], y+dmy[j]);
 			pattern |= (c & 0x7f) << j;
 			// mark land as handled
 			c |= ((c & 0x7f) << 7);
@@ -1009,12 +1009,12 @@ coastmap::coastmap(const string& filename)
 		if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr || surf->format->palette->ncolors != 2)
 			THROW(error, string("coastmap: image is no black/white 1bpp paletted image, in ") + filename);
 
-		auto* offset = (Uint8*)(surf->pixels);
+		auto* offset = (uint8_t*)(surf->pixels);
 		int mapoffy = maph*mapw;
 		for (int yy = 0; yy < int(maph); yy++) {
 			mapoffy -= mapw;
 			for (int xx = 0; xx < int(mapw); ++xx) {
-				Uint8 c = (*offset++);
+				uint8_t c = (*offset++);
 				themap[mapoffy+xx] = (c > 0) ? 1 : 0;
 			}
 			offset += surf->pitch - mapw;
@@ -1051,10 +1051,10 @@ void coastmap::construction_threaded()
 	for (int yy = 0; yy < int(maph); ++yy) {
 		for (int xx = 0; xx < int(mapw); ++xx) {
 			if (mapf(xx, yy) & 0x80) continue;
-			Uint8 pattern = 0;
-			Uint8 marker = 0;
+			uint8_t pattern = 0;
+			uint8_t marker = 0;
 			for (int j = 0; j < 4; ++j) {
-				Uint8 c = mapf(xx+dmx[j], yy+dmy[j]);
+				uint8_t c = mapf(xx+dmx[j], yy+dmy[j]);
 				pattern |= (c & 0x7f) << j;
 				marker |= c;
 				

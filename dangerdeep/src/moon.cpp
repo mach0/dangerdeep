@@ -45,7 +45,7 @@ moon::moon()
 	map_diffuse = std::make_unique<texture>(get_texture_dir()+"moon_d.png", texture::LINEAR);
 	// compute moon normal map
 	const unsigned mns = 256; // moon normal map size
-	std::vector<Uint8> mnp(3*mns*mns);
+	std::vector<uint8_t> mnp(3*mns*mns);
 	const double mid = (mns-1) * 0.5;
 	unsigned mnpc = 0;
 	for (unsigned k = 0; k < mns; ++k) {
@@ -62,9 +62,9 @@ moon::moon()
 			double cosbetha2 = std::max(1.0 - y2*y2, 0.0);
 			double sinalpha2 = std::max(1.0 - x*x / cosbetha2, 0.0);
 			double z = sqrt(sinalpha2 * cosbetha2);
-			mnp[mnpc+0] = Uint8(x * 127 + 127.5);
-			mnp[mnpc+1] = Uint8(y2 * 127 + 127.5);
-			mnp[mnpc+2] = Uint8(z * 127 + 127.5);
+			mnp[mnpc+0] = uint8_t(x * 127 + 127.5);
+			mnp[mnpc+1] = uint8_t(y2 * 127 + 127.5);
+			mnp[mnpc+2] = uint8_t(z * 127 + 127.5);
 			mnpc += 3;
 		}
 	}

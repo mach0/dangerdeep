@@ -445,7 +445,7 @@ std::unique_ptr<model::mesh::triangle_iterator> model::mesh::get_tri_iterator() 
 
 
 
-model::mesh::triangle_iterator::triangle_iterator(const std::vector<Uint32>& indices)
+model::mesh::triangle_iterator::triangle_iterator(const std::vector<uint32_t>& indices)
 	: _i0(0), _i1(0), _i2(0), idx(indices), ptr(0)
 {
 	if (idx.size() < 3)
@@ -470,7 +470,7 @@ bool model::mesh::triangle_iterator::next()
 
 
 
-model::mesh::triangle_strip_iterator::triangle_strip_iterator(const std::vector<Uint32>& indices)
+model::mesh::triangle_strip_iterator::triangle_strip_iterator(const std::vector<uint32_t>& indices)
 	: triangle_iterator(indices)
 {
 	if (idx.size() < 3)
@@ -770,7 +770,7 @@ unsigned model::mesh::get_nr_of_triangles() const
 
 
 
-void model::mesh::get_plain_triangle(unsigned triangle, Uint32 idx[3]) const
+void model::mesh::get_plain_triangle(unsigned triangle, uint32_t idx[3]) const
 {
 	unsigned t = triangle * 3;
 	idx[0] = indices[t];
@@ -780,7 +780,7 @@ void model::mesh::get_plain_triangle(unsigned triangle, Uint32 idx[3]) const
 
 
 
-void model::mesh::get_strip_triangle(unsigned triangle, Uint32 idx[3]) const
+void model::mesh::get_strip_triangle(unsigned triangle, uint32_t idx[3]) const
 {
 	unsigned x = triangle & 1;
 	idx[0] = indices[triangle  +x];
@@ -910,7 +910,7 @@ void model::mesh::compile()
 	// use uint16 as data type for indices, but it doesn't bring more
 	// performance. OpenGL can do it for use, when we use glDrawRangeElements()
 	// later.
-	index_data.init_data(indices.size() * 4 /* index type is Uint32! */, &indices[0], GL_STATIC_DRAW);
+	index_data.init_data(indices.size() * 4 /* index type is uint32_t! */, &indices[0], GL_STATIC_DRAW);
 }
 
 
@@ -936,7 +936,7 @@ void model::mesh::write_off_file(const string& fn) const
 		out << vertice.x << " " << vertice.y << " " << vertice.z << "\n";
 	}
 	for (unsigned j = 0; j < get_nr_of_triangles(); ++j) {
-		Uint32 idx[3];
+		uint32_t idx[3];
 		get_triangle(j, idx);
 		out << "3 " << idx[0] << " " << idx[1] << " " << idx[2] << "\n";
 	}
@@ -1221,7 +1221,7 @@ void model::mesh::compute_adjacency()
 	// build/use auxiliary data while building adjacency data
 	std::vector<std::set<adjacency_edge_aux_data> > tri_of_vertex(vertices.size());
 	for (unsigned i = 0; i < nr_tri; ++i) {
-		Uint32 idx[3];
+		uint32_t idx[3];
 		get_triangle(i, idx);
 		unsigned degenerated_edges = 0;
 		degenerated_edges += (idx[0] == idx[1]) ? 1 : 0;
@@ -2254,7 +2254,7 @@ color model::read_color_from_dftd_model_file(const xml_elem& parent, const std::
 	istringstream iss(tmp);
 	float r, g, b;
 	iss >> r >> g >> b;
-	return {Uint8(r*255), Uint8(g*255), Uint8(b*255)};
+	return {uint8_t(r*255), uint8_t(g*255), uint8_t(b*255)};
 }
 
 

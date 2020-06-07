@@ -313,9 +313,9 @@ void view_model(const string& modelfilename, const string& datafilename)
 	bool lightmove = true;
 	bool coordinatesystem = false;
 
-	vector<Uint8> pixels(32*32*3, 64);
+	vector<uint8_t> pixels(32*32*3, 64);
 	for (unsigned i = 0; i < 32*32; ++i) { pixels[3*i+2] = (((i/32) + (i % 32)) & 1) * 127 + 128; }
-	vector<Uint8> bumps(32*32);
+	vector<uint8_t> bumps(32*32);
 	for (unsigned i = 0; i < 32*32; ++i) { bumps[i] = 0; } //(((i/32)%8)<7 && ((i%32)%8)<7)?255:0; }
 	auto* dmap = new model::material::map();
 	auto* bmap = new model::material::map();
@@ -581,7 +581,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
 				// Check if x,,y,z are pressed and if so mouse wheel moves smoke position by delta.
 				// delta is either 1.0 if a shift key is pressed or 0.1 otherwise.
-				Uint8 *keys = SDL_GetKeyState(nullptr);
+				uint8_t *keys = SDL_GetKeyState(nullptr);
 				float delta = (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT))? 1.000 : 0.100;
 
 				if (event.button.button == SDL_BUTTON_WHEELUP) {

@@ -536,7 +536,7 @@ unsigned font::read_character(const std::string& text, unsigned cp)
 
 
 
-std::string font::to_utf8(Uint16 unicode)
+std::string font::to_utf8(uint16_t unicode)
 {
 	// input can have at max. 16bits, so range 0x0000-0xffff
 	// that matches utf-8 1-byte characters until utf-8 3-byte characters.
