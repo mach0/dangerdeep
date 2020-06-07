@@ -19,10 +19,13 @@ After each step check functionality.
 7. make use of new C++ features for widgets etc. (no plain new/delete)
 	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
+8. Removed SDL types and obsolete SDL.h includes
 -------------WE ARE HERE-----------------	
-8. Introduce newer system input handling (needs SDL2?)
+9. Introduce newer system input handling (needs SDL2?)
 	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
 	This means no more SDL includes in headers!!!
+	Rather introduce own input_event classes from codemodernization
+	branch with SDL and replace SDL usage everywhere! (900 lines)
 9. add new sensors (test if they work!!!)
 10. update internal game classes (storage of sea_object, reference to them via ID!)
 	later usage of rigid_body etc.
