@@ -225,36 +225,36 @@ void map_display::draw_visual_contacts(class game& gm,
 	// draw vessel trails and symbols (since player is submerged, he is drawn too)
 	const vector<sea_object*>& objs = player->get_visible_objects();
 
-   	// draw trails
-   	for (auto obj : objs)
-   		draw_trail(obj, offset);
+	// draw trails
+	for (auto obj : objs)
+		draw_trail(obj, offset);
 
-   	// draw vessel symbols
-   	for (auto obj : objs) {
+	// draw vessel symbols
+	for (auto obj : objs) {
 		color c;
 		if (dynamic_cast<const submarine*>(obj)) c = color(255,255,128);
 		else if (dynamic_cast<const torpedo*>(obj)) c = color(255,0,0);
 		else if (dynamic_cast<const ship*>(obj)) c = color(192,255,192);
 		else if (dynamic_cast<const airplane*>(obj)) c = color(0,0,64);
-   		draw_vessel_symbol(offset, obj, c);
+		draw_vessel_symbol(offset, obj, c);
 	}
 }
 
-void map_display::draw_radar_contacts(class game& gm, 
+void map_display::draw_radar_contacts(class game& gm,
 				      const sea_object* player, const vector2& offset) const
 {
 	const vector<sea_object*>& objs = player->get_radar_objects();
 
-   	// draw trails
-   	for (auto obj : objs)
-   		draw_trail(obj, offset);
+	// draw trails
+	for (auto obj : objs)
+		draw_trail(obj, offset);
 
-   	// draw vessel symbols
-   	for (auto obj : objs) {
+	// draw vessel symbols
+	for (auto obj : objs) {
 		color c;
 		if (dynamic_cast<const submarine*>(obj)) c = color(255,255,128);
 		else if (dynamic_cast<const ship*>(obj)) c = color(192,255,192);
-   		draw_vessel_symbol(offset, obj, c);
+		draw_vessel_symbol(offset, obj, c);
 	}
 }
 
@@ -294,12 +294,12 @@ map_display::map_display(user_interface& ui_) :
 	edit_heading(nullptr),
 	edit_speed(nullptr),
 	edit_throttle(nullptr),
- 	edit_timeyear(nullptr),
- 	edit_timemonth(nullptr),
- 	edit_timeday(nullptr),
- 	edit_timehour(nullptr),
- 	edit_timeminute(nullptr),
- 	edit_timesecond(nullptr),
+	edit_timeyear(nullptr),
+	edit_timemonth(nullptr),
+	edit_timeday(nullptr),
+	edit_timehour(nullptr),
+	edit_timeminute(nullptr),
+	edit_timesecond(nullptr),
 	edit_cvname(nullptr),
 	edit_cvspeed(nullptr),
 	edit_cvlist(nullptr),
@@ -315,26 +315,22 @@ map_display::map_display(user_interface& ui_) :
 		// create editor main panel
 		edit_panel = std::make_unique<widget>(0, 0, 1024, 32, "");
 		edit_panel->set_background(nullptr);
-		edit_panel->add_child(new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_add_obj, gme, 0, 0, 128, 32, texts::get(224)));
-		edit_btn_del = new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_del_obj, gme, 128, 0, 128, 32, texts::get(225));
-		edit_panel->add_child(edit_btn_del);
-		edit_btn_chgmot = new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_change_motion, gme, 256, 0, 128, 32, texts::get(226));
-		edit_panel->add_child(edit_btn_chgmot);
-		edit_btn_copy = new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_copy_obj, gme, 384, 0, 128, 32, texts::get(227));
-		edit_panel->add_child(edit_btn_copy);
-		edit_btn_cvmenu = new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_convoy_menu, gme, 512, 0, 128, 32, texts::get(228));
-		edit_panel->add_child(edit_btn_cvmenu);
-		edit_panel->add_child(new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_time, gme, 640, 0, 128, 32, texts::get(229)));
-		edit_panel->add_child(new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_description, gme, 768, 0, 128, 32, texts::get(233)));
-		edit_panel->add_child(new widget_caller_arg_button<map_display, void (map_display::*)(game_editor&), game_editor&>(this, &map_display::edit_help, gme, 896, 0, 128, 32, texts::get(230)));
+		edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(0, 0, 128, 32, texts::get(224), nullptr, [](auto& md, auto& gme) { md.edit_add_obj(gme); }, *this, gme));
+		edit_btn_del = &edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(128, 0, 128, 32, texts::get(225), nullptr, [](auto& md, auto& gme) { md.edit_del_obj(gme); }, *this, gme));
+		edit_btn_chgmot = &edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(256, 0, 128, 32, texts::get(226), nullptr, [](auto& md, auto& gme) { md.edit_change_motion(gme); }, *this, gme));
+		edit_btn_copy = &edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(384, 0, 128, 32, texts::get(227), nullptr, [](auto& md, auto& gme) { md.edit_copy_obj(gme); }, *this, gme));
+		edit_btn_cvmenu = &edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(512, 0, 128, 32, texts::get(228), nullptr, [](auto& md, auto& gme) { md.edit_convoy_menu(gme); }, *this, gme));
+		edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(640, 0, 128, 32, texts::get(229), nullptr, [](auto& md, auto& gme) { md.edit_time(gme); }, *this, gme));
+		edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(768, 0, 128, 32, texts::get(233), nullptr, [](auto& md, auto& gme) { md.edit_description(gme); }, *this, gme));
+		edit_panel->add_child(std::make_unique<widget_caller_button<map_display&, game_editor&>>(896, 0, 128, 32, texts::get(230), nullptr, [](auto& md, auto& gme) { md.edit_help(gme); }, *this, gme));
 
 		// create "add ship" window
+
 		edit_panel_add = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(224));
 		edit_panel_add->set_background(nullptr);
-		edit_shiplist = new widget_list(20, 32, 1024-2*20, 768-2*32-2*32-8);
-		edit_panel_add->add_child(edit_shiplist);
-		edit_panel_add->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_add.get(), &widget::close, EPFG_SHIPADDED,  20, 768-3*32-8, 512-20, 32, texts::get(224)));
-		edit_panel_add->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_add.get(), &widget::close, EPFG_CANCEL, 512, 768-3*32-8, 512-20, 32, texts::get(117)));
+		edit_shiplist = &edit_panel_add->add_child(std::make_unique<widget_list>(20, 32, 1024-2*20, 768-2*32-2*32-8));
+		edit_panel_add->add_child(std::make_unique<widget_caller_button<widget&>>(20, 768-3*32-8, 512-20, 32, texts::get(224), nullptr, [](auto& w) { w.close(EPFG_SHIPADDED); }, *edit_panel_add));
+		edit_panel_add->add_child(std::make_unique<widget_caller_button<widget&>>(512, 768-3*32-8, 512-20, 32, texts::get(117), nullptr, [](auto& w) { w.close(EPFG_CANCEL); }, *edit_panel_add));
 		for (const auto & it : data_file().get_ship_list()) {
 			edit_shiplist->append_entry(it);
 		}
@@ -343,56 +339,43 @@ map_display::map_display(user_interface& ui_) :
 		// open widget with text edits: course, speed, throttle
 		edit_panel_chgmot = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(226));
 		edit_panel_chgmot->set_background(nullptr);
-		edit_heading = new widget_slider(20, 128, 1024-40, 80, texts::get(1), 0, 360, 0, 15);
-		edit_panel_chgmot->add_child(edit_heading);
-		edit_speed = new widget_slider(20, 220, 1024-40, 80, texts::get(4), 0/*minspeed*/, 34/*maxspeed*/, 0, 1);
-		edit_panel_chgmot->add_child(edit_speed);
-		edit_throttle = new widget_slider(20, 330, 1024-40, 80, texts::get(232), 0/*minspeed*/, 34/*maxspeed*/, 0, 1);
-		edit_panel_chgmot->add_child(edit_throttle);
-		edit_panel_chgmot->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_chgmot.get(), &widget::close, EPFG_CHANGEMOTION,  20, 768-3*32-8, 512-20, 32, texts::get(226)));
-		edit_panel_chgmot->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_chgmot.get(), &widget::close, EPFG_CANCEL, 512, 768-3*32-8, 512-20, 32, texts::get(117)));
+		edit_heading = &edit_panel_chgmot->add_child(std::make_unique<widget_slider>(20, 128, 1024-40, 80, texts::get(1), 0, 360, 0, 15));
+		edit_speed = &edit_panel_chgmot->add_child(std::make_unique<widget_slider>(20, 220, 1024-40, 80, texts::get(4), 0/*minspeed*/, 34/*maxspeed*/, 0, 1));
+		edit_throttle = &edit_panel_chgmot->add_child(std::make_unique<widget_slider>(20, 330, 1024-40, 80, texts::get(232), 0/*minspeed*/, 34/*maxspeed*/, 0, 1));
+		edit_panel_chgmot->add_child(std::make_unique<widget_caller_button<widget&>>(20, 768-3*32-8, 512-20, 32, texts::get(226), nullptr, [](auto& w) { w.close(EPFG_CHANGEMOTION); }, *edit_panel_chgmot));
+		edit_panel_chgmot->add_child(std::make_unique<widget_caller_button<widget&>>(512, 768-3*32-8, 512-20, 32, texts::get(117), nullptr, [](auto& w) { w.close(EPFG_CANCEL); }, *edit_panel_chgmot));
 		// also edit: target, country, damage status, fuel amount
 
 
 		// create help window
 		edit_panel_help = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(230));
 		edit_panel_help->set_background(nullptr);
-		edit_panel_help->add_child(new widget_text(20, 32, 1024-2*20, 768-2*32-2*32-8, texts::get(231), nullptr, true));
-		edit_panel_help->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_help.get(), &widget::close, EPFG_CANCEL, 20, 768-3*32-8, 1024-20, 32, texts::get(105)));
-
+		edit_panel_help->add_child(std::make_unique<widget_text>(20, 32, 1024-2*20, 768-2*32-2*32-8, texts::get(231), nullptr, true));
+		edit_panel_help->add_child(std::make_unique<widget_caller_button<widget&>>(20, 768-3*32-8, 1024-20, 32, texts::get(105), nullptr, [](auto& w) { w.close(EPFG_CANCEL); }, *edit_panel_help));
 		// create edit time window
 		edit_panel_time = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(229));
 		edit_panel_time->set_background(nullptr);
-		edit_panel_time->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_time.get(), &widget::close, EPFG_CHANGETIME,  20, 768-3*32-8, 512-20, 32, texts::get(229)));
-		edit_panel_time->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_time.get(), &widget::close, EPFG_CANCEL, 512, 768-3*32-8, 512-20, 32, texts::get(117)));
-		edit_timeyear = new widget_slider(20, 128, 1024-40, 80, texts::get(234), 1939, 1945, 0, 1);
-		edit_panel_time->add_child(edit_timeyear);
-		edit_timemonth = new widget_slider(20, 208, 1024-40, 80, texts::get(235), 1, 12, 0, 1);
-		edit_panel_time->add_child(edit_timemonth);
-		edit_timeday = new widget_slider(20, 288, 1024-40, 80, texts::get(236), 1, 31, 0, 1);
-		edit_panel_time->add_child(edit_timeday);
-		edit_timehour = new widget_slider(20, 368, 1024-40, 80, texts::get(237), 0, 23, 0, 1);
-		edit_panel_time->add_child(edit_timehour);
-		edit_timeminute = new widget_slider(20, 448, 1024-40, 80, texts::get(238), 0, 59, 0, 5);
-		edit_panel_time->add_child(edit_timeminute);
-		edit_timesecond = new widget_slider(20, 528, 1024-40, 80, texts::get(239), 0, 59, 0, 5);
-		edit_panel_time->add_child(edit_timesecond);
+		edit_panel_time->add_child(std::make_unique<widget_caller_button<widget&>>(20, 768-3*32-8, 512-20, 32, texts::get(229), nullptr, [](auto& w) { w.close(EPFG_CHANGETIME); }, *edit_panel_time));
+		edit_panel_time->add_child(std::make_unique<widget_caller_button<widget&>>(512, 768-3*32-8, 512-20, 32, texts::get(117), nullptr, [](auto& w) { w.close(EPFG_CANCEL); }, *edit_panel_time));
+		edit_timeyear = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 128, 1024-40, 80, texts::get(234), 1939, 1945, 0, 1));
+		edit_timemonth = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 208, 1024-40, 80, texts::get(235), 1, 12, 0, 1));
+		edit_timeday = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 288, 1024-40, 80, texts::get(236), 1, 31, 0, 1));
+		edit_timehour = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 368, 1024-40, 80, texts::get(237), 0, 23, 0, 1));
+		edit_timeminute = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 448, 1024-40, 80, texts::get(238), 0, 59, 0, 5));
+		edit_timesecond = &edit_panel_time->add_child(std::make_unique<widget_slider>(20, 528, 1024-40, 80, texts::get(239), 0, 59, 0, 5));
 
 		// create convoy menu
 		edit_panel_convoy = std::make_unique<widget>(0, 32, 1024, 768-2*32, texts::get(228));
 		edit_panel_convoy->set_background(nullptr);
-		edit_panel_convoy->add_child(new widget_text(20, 32, 256, 32, texts::get(244)));
-		edit_cvname = new widget_edit(256+20, 32, 1024-256-2*20, 32, "-not usable yet, fixme-");
-		edit_panel_convoy->add_child(edit_cvname);
-		edit_cvspeed = new widget_slider(20, 64, 1024-40, 80, texts::get(245), 0/*minspeed*/, 34/*maxspeed*/, 0, 1);
-		edit_panel_convoy->add_child(edit_cvspeed);
-		edit_cvlist = new widget_list(20, 144, 1024-2*20, 768-144-3*32-8);
-		edit_panel_convoy->add_child(edit_cvlist);
-		edit_panel_convoy->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_convoy.get(), &widget::close, EPFG_ADDSELTOCV,  20+0*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(240)));
-		edit_panel_convoy->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_convoy.get(), &widget::close, EPFG_MAKENEWCV,   20+1*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(241)));
-		edit_panel_convoy->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_convoy.get(), &widget::close, EPFG_DELETECV,    20+2*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(242)));
-		edit_panel_convoy->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_convoy.get(), &widget::close, EPFG_EDITROUTECV, 20+3*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(243)));
-		edit_panel_convoy->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(edit_panel_convoy.get(), &widget::close, EPFG_CANCEL,      20+4*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(117)));
+		edit_panel_convoy->add_child(std::make_unique<widget_text>(20, 32, 256, 32, texts::get(244)));
+		edit_cvname = &edit_panel_convoy->add_child(std::make_unique<widget_edit>(256+20, 32, 1024-256-2*20, 32, "-not usable yet, fixme-"));
+		edit_cvspeed = &edit_panel_convoy->add_child(std::make_unique<widget_slider>(20, 64, 1024-40, 80, texts::get(245), 0/*minspeed*/, 34/*maxspeed*/, 0, 1));
+		edit_cvlist = &edit_panel_convoy->add_child(std::make_unique<widget_list>(20, 144, 1024-2*20, 768-144-3*32-8));
+		edit_panel_convoy->add_child(std::make_unique<widget_caller_button<widget&>>(20+0*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(240), nullptr, [](auto& w) { w.close(EPFG_ADDSELTOCV); }, *edit_panel_convoy));
+		edit_panel_convoy->add_child(std::make_unique<widget_caller_button<widget&>>(20+1*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(241), nullptr, [](auto& w) { w.close(EPFG_MAKENEWCV); }, *edit_panel_convoy));
+		edit_panel_convoy->add_child(std::make_unique<widget_caller_button<widget&>>(20+2*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(242), nullptr, [](auto& w) { w.close(EPFG_DELETECV); }, *edit_panel_convoy));
+		edit_panel_convoy->add_child(std::make_unique<widget_caller_button<widget&>>(20+3*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(243), nullptr, [](auto& w) { w.close(EPFG_EDITROUTECV); }, *edit_panel_convoy));
+		edit_panel_convoy->add_child(std::make_unique<widget_caller_button<widget&>>(20+4*(1024-40)/5, 768-3*32-8, (1024-40)/5, 32, texts::get(117), nullptr, [](auto& w) { w.close(EPFG_CANCEL); }, *edit_panel_convoy));
 		//fixme: en/disable some buttons depending on wether we have a selection or not
 
 		check_edit_sel();
@@ -602,7 +585,7 @@ void map_display::display(class game& gm) const
 		unsigned level = 0;
 		vector2i size((1024.0/mapzoom)/hg.get_sample_spacing(), (768.0/mapzoom)/hg.get_sample_spacing());
 		vector2i bl((offset.x-(512.0/mapzoom))/hg.get_sample_spacing(), (offset.y-(384.0/mapzoom))/hg.get_sample_spacing());
-		
+
 		while((size.x>1024 || size.y>768) && level < 7) {
 			level++;
 			size.x = size.x>>1;
@@ -614,14 +597,14 @@ void map_display::display(class game& gm) const
 		bivector<float> heights(size);
 		std::vector<Uint8> colors(size.x*size.y*3);
 		hg.compute_heights(level, bl, size, heights.data_ptr(), 0, 0, true);
-		
+
 		for(int y=0; y<size.y; y++) {
 			for(int x=0; x<size.x; x++) {
 				float &height = heights.at(x, y);
-	
+
 				float weight = std::max(0.0, (6000.0 - abs(height - 9000.0)) / 6000.0);
 				colors[(y*size.x*3)+(x*3)+0] = weight*255;
-				
+
 				weight = std::max(0.0, ((3000.0) - abs(height - 3000.0)) / 3000.0);
 				colors[(y*size.x*3)+(x*3)+1] = weight*255;
 
@@ -703,7 +686,7 @@ void map_display::display(class game& gm) const
 					color ( 255, 0, 0 ) );
 			}
 		}
-	} 
+	}
 	else	 	// enable drawing of all object as testing hack by commenting this, fixme
 	{
 		draw_visual_contacts(gm, player, -offset);
@@ -868,7 +851,7 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 							++nrsh;
 						}
 					}
-					center = center * (1.0/nrsh);	
+					center = center * (1.0/nrsh);
 					// create convoy object
 					unique_ptr<convoy> cv(new convoy(gm, center, edit_cvname->get_text()));
 					// add all ships to convoy with relative positions
@@ -1052,12 +1035,12 @@ void map_display::process_input(class game& gm, const SDL_Event& event)
 		}
 #endif
 
-                if (event.button.button == SDL_BUTTON_WHEELUP) {
-                        if (mapzoom < 1) mapzoom *=1.25;
-                } else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-                        if (mapzoom > 1.0/16384) mapzoom /= 1.25;
-                }
-	        break;
+		if (event.button.button == SDL_BUTTON_WHEELUP) {
+			if (mapzoom < 1) mapzoom *=1.25;
+		} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
+			if (mapzoom > 1.0/16384) mapzoom /= 1.25;
+		}
+		break;
 	case SDL_MOUSEMOTION:
 		mx = sys().translate_position_x(event);
 		my = sys().translate_position_y(event);

@@ -112,9 +112,8 @@ user_interface::user_interface(game& gm) :
 		int off = 8 + i*(1024-2*8)/6;
 		string tx = texts::get(paneltextnrs[i]);
 		vector2i sz = widget::get_theme()->myfont->get_size(tx);
-		panel->add_child(new widget_text(off, 4, 0, 0, tx));
-		panel_valuetexts[i] = new widget_text(off + 8 + sz.x, 4, 0, 0, paneltexts[i]);
-		panel->add_child(panel_valuetexts[i]);
+		panel->add_child(std::make_unique<widget_text>(off, 4, 0, 0, tx));
+		panel_valuetexts[i] = &panel->add_child(std::make_unique<widget_text>(off + 8 + sz.x, 4, 0, 0, paneltexts[i]));
 	}
 
 	// create screen selector widget
@@ -135,39 +134,40 @@ user_interface::user_interface(game& gm) :
 		}
 		musiclist(int x, int y, int w, int h) : widget_list(x, y, w, h), active(false) {}
 	};
-	auto* playlist = new musiclist(0, 0, 384, 512);
-	music_playlist->add_child_near_last_child(playlist);
+	auto playlist = std::make_unique<musiclist>(0, 0, 384, 512);
+	auto& theplaylist = *playlist;
+	music_playlist->add_child_near_last_child(std::move(playlist));
 	music& m = music::instance();
 	vector<string> mpl = m.get_playlist();
 	for (const auto & it : mpl) {
-		playlist->append_entry(it);
+		theplaylist.append_entry(it);
 	}
-	typedef widget_caller_checkbox<user_interface, void (user_interface::*)()> wccui;
-	// fixme: use checkbox here...
-	playlist_repeat_checkbox = new wccui(this, &user_interface::playlist_mode_changed, 0, 0, 192, 32, false, texts::get(263));
-	music_playlist->add_child_near_last_child(playlist_repeat_checkbox);
-	playlist_shuffle_checkbox = new wccui(this, &user_interface::playlist_mode_changed, 0, 0, 192, 32, false, texts::get(264));
-	music_playlist->add_child_near_last_child(playlist_shuffle_checkbox, 0, 1);
-	playlist_mute_checkbox = new wccui(this, &user_interface::playlist_mute, 0, 0, 384, 32, false, texts::get(265));
-	music_playlist->add_child_near_last_child(playlist_mute_checkbox, 0);
+	auto prcb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(263), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this);
+	playlist_repeat_checkbox = prcb.get();
+	music_playlist->add_child_near_last_child(std::move(prcb));
+	auto pscb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(264), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this);
+	playlist_shuffle_checkbox = pscb.get();
+	music_playlist->add_child_near_last_child(std::move(pscb));
+	auto pmcb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(265), nullptr, false, [](user_interface& ui) { ui.playlist_mute(); }, *this);
+	playlist_mute_checkbox = pmcb.get();
+	music_playlist->add_child_near_last_child(std::move(pmcb));
 	playlist_mute_checkbox->move_pos(vector2i(-192, 0));
-	music_playlist->add_child_near_last_child(new widget_set_button<bool>(playlist_visible, false, 0, 0, 384, 32, texts::get(260)), 0);
+	music_playlist->add_child_near_last_child(std::make_unique<widget_caller_button<bool&>>(0, 0, 384, 32, texts::get(260), nullptr, [](auto& b) { b = false; }, playlist_visible));
 	music_playlist->clip_to_children_area();
 	music_playlist->set_pos(vector2i(0, 0));
 	// enable music switching finally, to avoid on_sel_change changing the music track,
 	// because on_sel_change is called above, when adding entries.
-	playlist->active = true;
+	theplaylist.active = true;
 
 	// create main menu widget
 	main_menu = std::make_unique<widget>(0, 0, 256, 128, texts::get(104));
 	main_menu->set_background(nullptr);
-	typedef widget_caller_button<user_interface, void (user_interface::*)()> wcbui;
-	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::show_screen_selector, 0, 0, 256, 32, texts::get(266)));
-	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::toggle_popup, 0, 0, 256, 32, texts::get(267)), 0);
-	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::show_playlist, 0, 0, 256, 32, texts::get(261)), 0);
-	main_menu->add_child_near_last_child(new wcbui(this, &user_interface::toggle_pause, 0, 0, 256, 32, texts::get(268)), 0);
-	main_menu->add_child_near_last_child(new widget_caller_arg_button<user_interface, void (user_interface::*)(bool), bool>(this, &user_interface::request_abort, true, 0, 0, 256, 32, texts::get(177)), 0);
-	main_menu->add_child_near_last_child(new widget_set_button<bool>(main_menu_visible, false, 0, 0, 256, 32, texts::get(260)), 0);
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(266), nullptr, [](auto& ui) { ui.show_screen_selector(); }, *this));
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(267), nullptr, [](auto& ui) { ui.toggle_popup(); }, *this));
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(261), nullptr, [](auto& ui) { ui.show_playlist(); }, *this));
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(268), nullptr, [](auto& ui) { ui.toggle_pause(); }, *this));
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(177), nullptr, [](auto& ui) { ui.request_abort(true); }, *this));
+	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<bool&>>(0, 0, 256, 32, texts::get(260), nullptr, [](auto& b) { b = false; }, main_menu_visible));
 	main_menu->clip_to_children_area();
 	vector2i mmp = sys().get_res_2d() - main_menu->get_size();
 	main_menu->set_pos(vector2i(mmp.x/2, mmp.y/2));
@@ -426,8 +426,8 @@ void user_interface::set_time(double tm)
 void user_interface::process_input(const SDL_Event& event)
 {
 	if (panel_visible) {
- 		if (panel->check_for_mouse_event(event))
- 			return;
+		if (panel->check_for_mouse_event(event))
+			return;
 	}
 
 	if (main_menu_visible) {
@@ -513,7 +513,7 @@ void user_interface::process_input(const SDL_Event& event)
 void user_interface::process_input(list<SDL_Event>& events)
 {
 	// if screen selector menu is open and mouse is over that window, handle mouse events there.
-	
+
 
 	if (current_popup > 0)
 		popups[current_popup-1].process_input(*mygame, events);
@@ -706,7 +706,7 @@ void user_interface::add_message(const string& s)
 
 void user_interface::play_sound_effect(const string &se,
 				       const vector3& noise_source /*, bool loop*/) const
-{	
+{
 	music::instance().play_sfx(se, mygame->get_player()->get_pos(),
 			       mygame->get_player()->get_heading(),
 			       noise_source);

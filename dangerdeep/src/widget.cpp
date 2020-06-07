@@ -54,16 +54,16 @@ int widget::oldmx = 0;
 int widget::oldmy = 0;
 int widget::oldmb = 0;
 
-list<widget*> widget::widgets;
+std::vector<widget*> widget::widgets;
 
 std::string widget::text_ok = "Ok"; // fixme: let user read them from text database and set it here!
 std::string widget::text_cancel = "Cancel";
 
-widget::widget(xml_elem& elem, widget* _parent) 
+widget::widget(xml_elem& elem, widget* _parent)
 	: parent(_parent), background_tex(nullptr), retval(-1), closeme(false), redrawme(true)
 {
 	name = elem.attr("name");
-	
+
 	pos = vector2i(elem.attri("pos_x"), elem.attri("pos_y"));
 	size = vector2i(elem.attri("width"), elem.attri("height"));
 	if(elem.has_attr("text") && elem.attri("text")>0)
@@ -82,40 +82,40 @@ widget::widget(xml_elem& elem, widget* _parent)
 		std::string type = e.attr("type");
 		if(type != "menu") {
 			if(type == "text") {
-				add_child(new widget_text(e));
+				add_child(std::make_unique<widget_text>(e));
 			} else if(type == "checkbox") {
-				add_child(new widget_checkbox(e));
+				add_child(std::make_unique<widget_checkbox>(e));
 			} else if(type == "button") {
-				add_child(new widget_button(e));
+				add_child(std::make_unique<widget_button>(e));
 			} else if(type == "menu") {
-				add_child(new widget_menu(e));
+				add_child(std::make_unique<widget_menu>(e));
 			} else if(type == "scrollbar") {
-				add_child(new widget_scrollbar(e));
+				add_child(std::make_unique<widget_scrollbar>(e));
 			} else if(type == "list") {
-				add_child(new widget_list(e));
+				add_child(std::make_unique<widget_list>(e));
 			} else if(type == "edit") {
-				add_child(new widget_edit(e));
+				add_child(std::make_unique<widget_edit>(e));
 			} else if(type == "fileselector") {
-				add_child(new widget_fileselector(e));
+				add_child(std::make_unique<widget_fileselector>(e));
 			} else if(type == "3dview") {
-				add_child(new widget_3dview(e));
+				add_child(std::make_unique<widget_3dview>(e));
 			} else if(type == "slider") {
-				add_child(new widget_slider(e));
+				add_child(std::make_unique<widget_slider>(e));
 			}
 		}
 	}
 }
 
-widget_text::widget_text(xml_elem& elem, widget* _parent) 
-	: widget(elem, parent) 
+widget_text::widget_text(xml_elem& elem, widget* _parent)
+	: widget(elem, _parent)
 {
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_checkbox::widget_checkbox(xml_elem& elem, widget* _parent) 
-	: widget(elem, parent) 
-{ 
+widget_checkbox::widget_checkbox(xml_elem& elem, widget* _parent)
+	: widget(elem, _parent)
+{
 	if(elem.has_attr("checked"))
 		checked = elem.attrb("checked");
 	else checked = false;
@@ -123,14 +123,14 @@ widget_checkbox::widget_checkbox(xml_elem& elem, widget* _parent)
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_button::widget_button(xml_elem& elem, widget* _parent) 
-	: widget(elem, parent), pressed(false) 
+widget_button::widget_button(xml_elem& elem, widget* _parent)
+	: widget(elem, _parent), pressed(false)
 {
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent) 
+widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent)
 {
 	if(elem.has_attr("horizontal"))
 		horizontal = elem.attrb("horizontal");
@@ -149,7 +149,7 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent
 		if(e.attr("type") != "button")
 			THROW(error, "widget_menu only accepts widget_button as entry");
 		else {
-			add_entry(texts::get(e.attri("text")), new widget_button(e));
+			add_entry(texts::get(e.attri("text")), std::make_unique<widget_button>(e));
 		}
 	}
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
@@ -159,7 +159,7 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) : widget(elem, _parent
 widget_scrollbar::widget_scrollbar(xml_elem& elem, widget* _parent) : widget(elem, _parent)
 {
 	scrollbarpos = 0;
-	
+
 	if(elem.has_attr("positions"))
 		set_nr_of_positions(elem.attru("positions"));
 	else scrollbarmaxpos = 0;
@@ -177,38 +177,34 @@ widget_list::widget_list(xml_elem& elem, widget* _parent) : widget(elem, _parent
 		~wls() override = default;;
 	};
 	int fw = globaltheme->frame_size();
-	myscrollbar = new wls(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this);
-	add_child(myscrollbar);
+	myscrollbar = &add_child(std::make_unique<wls>(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this));
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
 		align(elem.attri("align_x"), elem.attri("align_y"));
 	if(elem.has_attr("column_width"))
 		set_column_width(elem.attri("column_width"));
 }
 
-widget_edit::widget_edit(xml_elem& elem, widget* _parent) : widget(elem, _parent), cursorpos(text.length()) 
+widget_edit::widget_edit(xml_elem& elem, widget* _parent) : widget(elem, _parent), cursorpos(text.length())
 {
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_fileselector::widget_fileselector(xml_elem& elem, widget* _parent) : widget(elem, _parent) 
+widget_fileselector::widget_fileselector(xml_elem& elem, widget* _parent) : widget(elem, _parent)
 {
-	current_path = new widget_text(120, 40, size.x-140, 32, get_current_directory());
-	current_dir = new filelist(120, 80, size.x-140, size.y-136);
-	current_filename = new widget_edit(120, size.y - 52, size.x-140, 32, "");
-	add_child(current_path);
-	add_child(current_dir);
-	add_child(current_filename);
-	add_child(new widget_text(20, 40, 80, 32, "Path:"));
-	add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(this, &widget::close, 1, 20, 80, 80, 32, "Ok"));
-	add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(this, &widget::close, 0, 20, 120, 80, 32, "Cancel"));
-	
+	current_path = &add_child(std::make_unique<widget_text>(120, 40, size.x-140, 32, get_current_directory()));
+	current_dir = &add_child(std::make_unique<filelist>(120, 80, size.x-140, size.y-136));
+	current_filename = &add_child(std::make_unique<widget_edit>(120, size.y - 52, size.x-140, 32, ""));
+	add_child(std::make_unique<widget_text>(20, 40, 80, 32, "Path:"));
+	add_child(std::make_unique<widget_caller_button<widget&>>(20, 80, 80, 32, text_ok, nullptr, [](auto& w) { w.close(1); }, *this));
+	add_child(std::make_unique<widget_caller_button<widget&>>(20, 120, 80, 32, text_cancel, nullptr, [](auto& w) { w.close(0); }, *this));
+
 	read_current_dir();
 	if(elem.has_attr("align_x") && elem.has_attr("align_y"))
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_3dview::widget_3dview(xml_elem& elem, widget* _parent) 
+widget_3dview::widget_3dview(xml_elem& elem, widget* _parent)
 	: widget(elem, _parent), z_angle(90), x_angle(0), lightdir(0, 0, 1, 0), lightcol(color::white())
 {
 	if(elem.has_child("bg_color")) {
@@ -222,8 +218,8 @@ widget_3dview::widget_3dview(xml_elem& elem, widget* _parent)
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-widget_slider::widget_slider(xml_elem& elem, widget* _parent) : widget(elem, _parent) 
-{ 
+widget_slider::widget_slider(xml_elem& elem, widget* _parent) : widget(elem, _parent)
+{
 	minvalue = elem.attri("minvalue");
 	maxvalue = elem.attri("maxvalue");
 	currvalue = elem.attri("currvalue");
@@ -267,7 +263,7 @@ void widget::fire_mouse_scroll_event(int wd) {
 	}
 }
 
-void widget::add_action_listener(const action_listener* listener, bool recursive) { 
+void widget::add_action_listener(const action_listener* listener, bool recursive) {
 	action_listeners.push_back(listener);
 	if(recursive) {
 		for(auto & it : children) {
@@ -279,15 +275,15 @@ void widget::add_action_listener(const action_listener* listener, bool recursive
 widget* widget::get_child(const std::string& child, bool recursive)
 {
 	widget* retval = nullptr;
-	
-	for(auto & it : children) {
-		if(it->name == child) return it;
+
+	for(auto& curchild : children) {
+		if(curchild->name == child) return curchild.get();
 		else if(recursive) {
-			retval = it->get_child(child);
+			retval = curchild->get_child(child);
 			if(retval!=nullptr) return retval;
 		}
 	}
-	
+
 	return retval;
 }
 
@@ -385,24 +381,16 @@ widget::widget(int x, int y, int w, int h, string  text_, widget* parent_, const
 
 widget::~widget()
 {
- 	if (background)
- 		imagecache().unref(background);
-	for (auto & it : children)
-		delete it;
+	if (background)
+		imagecache().unref(background);
+	children.clear();
 	if (this == focussed) focussed = parent;
 	if (this == mouseover) mouseover = nullptr;
 }
 
-void widget::add_child(widget* w)
-{
-	w->set_parent(this);
-	children.push_back(w);
-	w->move_pos(pos);
-}
 
 
-
-void widget::add_child_near_last_child(widget *w, int distance, unsigned direction)
+void widget::add_child_near_last_child(std::unique_ptr<widget> w, int distance, unsigned direction)
 {
 	if (distance < 0)
 		distance = globaltheme->frame_size() * -distance;
@@ -415,10 +403,10 @@ void widget::add_child_near_last_child(widget *w, int distance, unsigned directi
 		}
 		w->move_pos(cpos);
 		w->set_parent(this);
-		children.push_back(w);
+		children.push_back(std::move(w));
 		return;
 	}
-	const widget* lc = children.back();
+	const widget* lc = children.back().get();
 	vector2i lcp = lc->get_pos();
 	switch (direction) {
 	case 0:	// above
@@ -437,7 +425,7 @@ void widget::add_child_near_last_child(widget *w, int distance, unsigned directi
 	}
 	w->move_pos(lcp);
 	w->set_parent(this);
-	children.push_back(w);
+	children.push_back(std::move(w));
 }
 
 
@@ -447,7 +435,7 @@ void widget::clip_to_children_area()
 	// no children? nothing to clip.
 	if (children.empty())
 		return;
-	list<widget*>::const_iterator it = children.begin();
+	auto it = children.begin();
 	vector2i pmin = (*it)->get_pos();
 	vector2i pmax = (*it)->get_pos() + (*it)->get_size();
 	for (++it; it != children.end(); ++it) {
@@ -473,27 +461,24 @@ void widget::clip_to_children_area()
 void widget::remove_child(widget* w)
 {
 	for (auto it = children.begin(); it != children.end(); ++it) {
-		if (*it == w) {
+		if (it->get() == w) {
 			children.erase(it);
 			break;
 		}
 	}
-	delete w;
 }
 
 void widget::remove_children()
 {
-	for (auto & it : children) {
-		delete it;
-	}
 	children.clear();
 }
 
 void widget::move_pos(const vector2i& p)
 {
 	pos += p;
-	for (auto & it : children)
+	for (auto & it : children) {
 		it->move_pos(p);
+	}
 }
 
 void widget::align(int h, int v)
@@ -526,8 +511,8 @@ void widget::draw() const
 	// fixme: if childs have the same size as parent, don't draw parent?
 	// i.e. do not use stacking then...
 	// maybe make chooseable via argument of run()
-	for (auto it : children)
-		it->draw();
+	for (auto& child : children)
+		child->draw();
 }
 
 bool widget::compute_focus(int mx, int my)
@@ -536,8 +521,9 @@ bool widget::compute_focus(int mx, int my)
 	// if the widget is disabled, it can't get the focus and neither one of its children.
 	if (!is_enabled()) return false;
 	if (is_mouse_over(mx, my)) {
-		for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it)
-			if ((*it)->compute_focus(mx, my)) return true;
+		for (auto& child : children) {
+			if (child->compute_focus(mx, my)) return true;
+		}
 		focussed = this;
 		return true;
 	}
@@ -548,8 +534,9 @@ bool widget::compute_mouseover(int mx, int my)
 {
 	mouseover = nullptr;
 	if (is_mouse_over(mx, my)) {
-		for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it)
-			if ((*it)->compute_mouseover(mx, my)) return true;
+		for (auto& child : children) {
+			if (child->compute_mouseover(mx, my)) return true;
+		}
 		mouseover = this;
 		return true;
 	}
@@ -736,12 +723,12 @@ std::unique_ptr<widget> widget::create_dialogue_ok(widget* parent_, const string
 	int y = h ? (res_y - h) / 2 : res_y/4;
 	if (!w) w = res_x/2;
 	if (!h) h = res_y/2;
-	std::unique_ptr<widget> wi(new widget(x, y, w, h, title, parent_));
-	wi->add_child(new widget_text(32, 64, w-64, h-128, text));
+	std::unique_ptr<widget> wi(std::make_unique<widget>(x, y, w, h, title, parent_));
+	wi->add_child(std::make_unique<widget_text>(32, 64, w-64, h-128, text));
 	int fw = globaltheme->frame_size();
 	int fh = int(globaltheme->myfont->get_height());
 	int butw = 4*fh+2*fw;
-	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 1, w/2-butw/2, h-64, butw, fh+4*fw, text_ok));
+	wi->add_child(std::make_unique<widget_caller_button<widget&>>(w/2-butw/2, h-64, butw, fh+4*fw, text_ok, nullptr, [](auto& w) { w.close(1); }, *wi));
 	return wi;
 }
 
@@ -754,13 +741,13 @@ std::unique_ptr<widget> widget::create_dialogue_ok_cancel(widget* parent_, const
 	int y = h ? (res_y - h) / 2 : res_y/4;
 	if (!w) w = res_x/2;
 	if (!h) h = res_y/2;
-	std::unique_ptr<widget> wi(new widget(x, y, w, h, title, parent_));
-	wi->add_child(new widget_text(32, 64, w-64, h-128, text));
+	std::unique_ptr<widget> wi(std::make_unique<widget>(x, y, w, h, title, parent_));
+	wi->add_child(std::make_unique<widget_text>(32, 64, w-64, h-128, text));
 	int fw = globaltheme->frame_size();
 	int fh = int(globaltheme->myfont->get_height());
 	int butw = 4*fh+2*fw;
-	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 1, w/4-butw/2, h-64, butw, fh+4*fw, text_ok));
-	wi->add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(wi.get(), &widget::close, 0, 3*w/4-butw/2, h-64, butw, fh+4*fw, text_cancel));
+	wi->add_child(std::make_unique<widget_caller_button<widget&>>(w/4-butw/2, h-64, butw, fh+4*fw, text_ok, nullptr, [](auto& w) { w.close(1); }, *wi));
+	wi->add_child(std::make_unique<widget_caller_button<widget&>>(3*w/4-butw/2, h-64, butw, fh+4*fw, text_cancel, nullptr, [](auto& w) { w.close(0); }, *wi));
 	return wi;
 }
 
@@ -835,7 +822,7 @@ widget_menu::widget_menu(int x, int y, int w, int h, const string& text_, bool h
 	}
 }
 
-widget_button* widget_menu::add_entry(const string& s, widget_button* wb)
+widget_button* widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
 {
 	int x, y, w, h;
 	unsigned mult = children.size();
@@ -858,24 +845,26 @@ widget_button* widget_menu::add_entry(const string& s, widget_button* wb)
 		size.y += entryh;
 		if (mult > 0) size.y += entryspacing;
 	}
-	if (wb) {
+	if (wb.get()) {
 		wb->set_size(vector2i(w, h));
 		wb->set_pos(vector2i(x, y));
 		wb->set_text(s);
 		wb->set_parent(this);
 	} else {
-		wb = new widget_button(x, y, w, h, s, this);
+		wb = std::make_unique<widget_button>(x, y, w, h, s, this);
 	}
-	add_child(wb);
-	return wb;
+	return &add_child(std::move(wb));
 }
 
 int widget_menu::get_selected() const
 {
 	int sel = 0;
-	for (auto it = children.begin(); it != children.end(); ++it, ++sel)
-		if ((dynamic_cast<widget_button*>(*it))->is_pressed())
+	for (auto& child : children) {
+		if ((dynamic_cast<widget_button*>(child.get()))->is_pressed()) {
 			return sel;
+		}
+		++sel;
+	}
 	return -1;
 }
 
@@ -889,8 +878,9 @@ void widget_menu::draw() const
 		globaltheme->myfont->print_c(p.x+entryw/2, p.y+entryh/2, text,
 					     globaltheme->textcol, true);
 	}
-	for (auto it : children)
-		it->draw();
+	for (auto& child : children) {
+		child->draw();
+	}
 }
 
 void widget_menu::adjust_buttons(unsigned totalsize)
@@ -902,8 +892,8 @@ void widget_menu::adjust_buttons(unsigned totalsize)
 		int fw = globaltheme->frame_size();
 		int nrbut = int(children.size());
 		int longest = 0;
-		for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it) {
-			int w = int(globaltheme->myfont->get_size((*it)->get_text()).x);
+		for (auto& child : children) {
+			int w = int(globaltheme->myfont->get_size(child->get_text()).x);
 			textw += w;
 			if (w > longest) longest = w;
 		}
@@ -913,10 +903,10 @@ void widget_menu::adjust_buttons(unsigned totalsize)
 			size.x = int(totalsize);
 			int spc = spaceleft / nrbut;
 			int runpos = 0;
-			for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it) {
+			for (auto& child : children) {
 				int mytextw = longest+2*fw;
-				(*it)->set_pos(pos + vector2i(runpos, 0));
-				(*it)->set_size(vector2i(mytextw+2*fw+spc, entryh));
+				child->set_pos(pos + vector2i(runpos, 0));
+				child->set_size(vector2i(mytextw+2*fw+spc, entryh));
 				runpos += mytextw+2*fw+spc + entryspacing;
 			}
 		} else {
@@ -925,10 +915,10 @@ void widget_menu::adjust_buttons(unsigned totalsize)
 				size.x = int(totalsize);
 				int spc = spaceleft / nrbut;
 				int runpos = 0;
-				for (list<widget*>::const_iterator it = children.begin(); it != children.end(); ++it) {
-					int mytextw = int(globaltheme->myfont->get_size((*it)->get_text()).x);
-					(*it)->set_pos(pos + vector2i(runpos, 0));
-					(*it)->set_size(vector2i(mytextw+2*fw+spc, entryh));
+				for (auto& child : children) {
+					int mytextw = int(globaltheme->myfont->get_size(child->get_text()).x);
+					child->set_pos(pos + vector2i(runpos, 0));
+					child->set_size(vector2i(mytextw+2*fw+spc, entryh));
 					runpos += mytextw+2*fw+spc + entryspacing;
 				}
 			}
@@ -1176,8 +1166,7 @@ widget_list::widget_list(int x, int y, int w, int h, widget* parent_)
 		~wls() override = default;;
 	};
 	int fw = globaltheme->frame_size();
-	myscrollbar = new wls(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this);
-	add_child(myscrollbar);
+	myscrollbar = &add_child(std::make_unique<wls>(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this));
 }
 
 list<string>::iterator widget_list::ith(unsigned i)
@@ -1322,7 +1311,7 @@ void widget_list::draw() const
 	unsigned maxp = get_nr_of_visible_entries();
 	bool scrollbarvisible = (entries.size() > maxp);
 	for (unsigned lp = 0; it != entries.end() && lp < maxp; ++it, ++lp) {
-        	color tcol = !is_enabled() ? globaltheme->textdisabledcol : (selected==int(lp+listpos))? globaltheme->textselectcol : globaltheme->textcol;
+		color tcol = !is_enabled() ? globaltheme->textdisabledcol : (selected==int(lp+listpos))? globaltheme->textselectcol : globaltheme->textcol;
 		if (selected == int(lp + listpos)) {
 			int width = size.x-2*fw;
 			if (scrollbarvisible)
@@ -1469,16 +1458,13 @@ void widget_edit::on_char(const SDL_keysym& ks)
 widget_fileselector::widget_fileselector(int x, int y, int w, int h, const string& text_, widget* parent_)
 	: widget(x, y, w, h, text_, parent_)
 {
-	current_path = new widget_text(120, 40, size.x-140, 32, get_current_directory());
-	current_dir = new filelist(120, 80, size.x-140, size.y-136);
-	current_filename = new widget_edit(120, size.y - 52, size.x-140, 32, "");
-	add_child(current_path);
-	add_child(current_dir);
-	add_child(current_filename);
-	add_child(new widget_text(20, 40, 80, 32, "Path:"));
-	add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(this, &widget::close, 1, 20, 80, 80, 32, "Ok"));
-	add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(this, &widget::close, 0, 20, 120, 80, 32, "Cancel"));
-	
+	current_path = &add_child(std::make_unique<widget_text>(120, 40, size.x-140, 32, get_current_directory()));
+	current_dir = &add_child(std::make_unique<filelist>(120, 80, size.x-140, size.y-136));
+	current_filename = &add_child(std::make_unique<widget_edit>(120, size.y - 52, size.x-140, 32, ""));
+	add_child(std::make_unique<widget_text>(20, 40, 80, 32, "Path:"));
+	add_child(std::make_unique<widget_caller_button<widget&>>(20, 80, 80, 32, text_ok, nullptr, [](auto& w) { w.close(1); }, *this));
+	add_child(std::make_unique<widget_caller_button<widget&>>(20, 120, 80, 32, text_cancel, nullptr, [](auto& w) { w.close(0); }, *this));
+
 	read_current_dir();
 }
 
@@ -1618,7 +1604,7 @@ void widget_3dview::draw() const
 
 	glFogf(GL_FOG_DENSITY, 0.0005);
 	glFogf(GL_FOG_START, 10000*0.75);
-	glFogf(GL_FOG_END, 10000); 
+	glFogf(GL_FOG_END, 10000);
 
 	glTranslatef(-translation.x, -translation.y, -translation.z);
 	glRotatef(-80, 1, 0, 0);
@@ -1654,7 +1640,7 @@ void widget_slider::draw() const
 	// between each value or 16 or so.
 	// draw descriptions (min...maxval) every n pixels/positions, so that there is at
 	// least n pixel space between each description
-	
+
 	// draw description if there is one
 	color tcol = is_enabled() ? globaltheme->textcol : globaltheme->textdisabledcol;
 	unsigned h2 = globaltheme->myfont->get_height();
