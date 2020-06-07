@@ -16,24 +16,10 @@ After each step check functionality.
 	DONE
 6. use key enum class!
 	DONE - except in widget class
--------------WE ARE HERE-----------------	
 7. make use of new C++ features for widgets etc. (no plain new/delete)
-	no more templates with object and method etc., just use lambda!
-	widget children as list of raw pointers is evil, vector<unique_ptr> would be better!
-	add_child should also consume a unique_ptr ! use make_unique everywhere!
-	but lambda can't transport arguments! so we can't change everything to lambda.
-	Better syntax when instantiating these widgets would be helpful though.
-	TODO: new add_child_with_ptr function to use in user_interface and
-	widget class!
-	changes in subsim.cpp and viewmodel.cpp!
-	VERY OFTEN we have a unique_ptr to widget but temporarily or longer need an additional pointer to it...
-	When constructing menues, we often have to move in created children and mix this, bad!
-	shared_ptr/weak_ptr is no good solution to this. maybe add_child should return a ref?
-	replace add_child_with_ptr to return a ref?
-	change all add_child_with_ptr to assign the ref to a pointer!
-	then check all changes, i.e. menu construction to work,
-	use add_child and keep the ref for later use!
-	tons of work in class subsim.cpp!
+	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
+	DONE in widgets, maybe there are more ways to modernize the widget classes
+-------------WE ARE HERE-----------------	
 8. Introduce newer system input handling (needs SDL2?)
 	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
 	This means no more SDL includes in headers!!!
@@ -61,7 +47,7 @@ Changes that have been started in code comparison:
 - do not track pointers but sensor contacts
 - More documentation (Doxygen)
 - Whole new GPU interface and rendering
-- References to game objects via ID instead of pointers
+- References to game objects via ID instead of pointers (torpedo_camera, convoy, ai)
 - generic_rudder, should be used by airplane as well
 - Change to SDL2, no more SDL includes, new input event handler classes
 - New idea about coastmap/coastline rendering with ETopo data
@@ -250,3 +236,4 @@ Rendering: what needs to be changed
 - widgets		
 - 2d drawing		DONE
 - displays		
+

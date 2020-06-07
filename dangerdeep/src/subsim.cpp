@@ -103,10 +103,9 @@ highscorelist hsl_mission, hsl_career;
 void menu_notimplemented()
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(110));
-	w.add_child(wm);
-	wm->add_entry(texts::get(20), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-	wm->align(0, 0);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(110)));
+	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(0, 0, 0, 0, "", nullptr, [](auto& w) { w.close(0); }, w));
+	wm.align(0, 0);
 	w.run(0, false);
 }
 
@@ -117,14 +116,14 @@ void menu_notimplemented()
 string savegamedirectory =
 #ifdef WIN32
 	"./save/";
-#else	
+#else
 	string(getenv("HOME"))+"/.dangerdeep/";
-#endif	
+#endif
 
 string get_savegame_name_for(const string& descr, map<string, string>& savegames)
 {
 	unsigned num = 1;
-	for (auto & savegame : savegames) {
+	for (auto& savegame : savegames) {
 		if (savegame.second == descr)
 			return savegamedirectory + savegame.first;
 		unsigned num2 = unsigned(atoi((savegame.first.substr(5, 4)).c_str()));
@@ -166,7 +165,7 @@ class loadsavequit_dialogue : public widget
 	void cancel() { close(0); }	// return 0 for cancel/return, 1 for quit (if saving is enabled), 2 for loaded
 	void update_list();
 
-public:	
+public:
 	string get_gamefilename_to_load() const { return gamefilename_to_load; }
 	widget_edit* get_gamename() const { return gamename; }
 	loadsavequit_dialogue(const game* g);	// give 0 to disable saving
@@ -174,19 +173,17 @@ public:
 
 loadsavequit_dialogue::loadsavequit_dialogue(const game *g) : widget(0, 0, 1024, 768, texts::get(177), nullptr, "depthcharge.jpg"), mygame(g), gamesaved(false)
 {
-	add_child(new widget_text(40, 40, 0, 0, texts::get(178)));
-	gamename = new widget_edit(200, 40, 684, 40, "");
-	add_child(gamename);
-	auto* wm = new widget_menu(40, 700, 180, 40, "", true);
-	add_child(wm);
-	btnload = wm->add_entry(texts::get(118), new widget_caller_button<loadsavequit_dialogue, void (loadsavequit_dialogue::*)()>(this, &loadsavequit_dialogue::load));
+	add_child(std::make_unique<widget_text>(40, 40, 0, 0, texts::get(178)));
+	gamename = &add_child(std::make_unique<widget_edit>(200, 40, 684, 40, "", nullptr));
+	auto& wm = add_child(std::make_unique<widget_menu>(40, 700, 180, 40, "", true));
+	btnload = wm.add_entry(texts::get(118), std::make_unique<widget_caller_button<loadsavequit_dialogue&>>([](auto& ld) { ld.load(); }, *this));
 	if (mygame)
-		btnsave = wm->add_entry(texts::get(119), new widget_caller_button<loadsavequit_dialogue, void (loadsavequit_dialogue::*)()>(this, &loadsavequit_dialogue::save));
-	btndel = wm->add_entry(texts::get(179), new widget_caller_button<loadsavequit_dialogue, void (loadsavequit_dialogue::*)()>(this, &loadsavequit_dialogue::erase));
+		btnsave = wm.add_entry(texts::get(119), std::make_unique<widget_caller_button<loadsavequit_dialogue&>>([](auto& ld) { ld.save(); }, *this));
+	btndel = wm.add_entry(texts::get(179), std::make_unique<widget_caller_button<loadsavequit_dialogue&>>([](auto& ld) { ld.erase(); }, *this));
 	if (mygame)
-		btnquit = wm->add_entry(texts::get(120), new widget_caller_button<loadsavequit_dialogue, void (loadsavequit_dialogue::*)()>(this, &loadsavequit_dialogue::quit));
-	btncancel = wm->add_entry(texts::get(mygame ? 121 : 20), new widget_caller_button<loadsavequit_dialogue, void (loadsavequit_dialogue::*)()>(this, &loadsavequit_dialogue::cancel));
-	wm->adjust_buttons(944);
+		btnquit = wm.add_entry(texts::get(120), std::make_unique<widget_caller_button<loadsavequit_dialogue&>>([](auto& ld) { ld.quit(); }, *this));
+	btncancel = wm.add_entry(texts::get(mygame ? 121 : 20), std::make_unique<widget_caller_button<loadsavequit_dialogue&>>([](auto& ld) { ld.cancel(); }, *this));
+	wm.adjust_buttons(944);
 	struct lsqlist : public widget_list
 	{
 		void on_sel_change() override {
@@ -195,11 +192,10 @@ loadsavequit_dialogue::loadsavequit_dialogue(const game *g) : widget(0, 0, 1024,
 		lsqlist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
 		~lsqlist() override = default;
 	};
-	gamelist = new lsqlist(40, 100, 944, 580);
-	add_child(gamelist);
+	gamelist = &add_child(std::make_unique<lsqlist>(40, 100, 944, 580));
 
 	update_list();
-	
+
 	gamename->set_text(gamelist->get_selected_entry());
 }
 
@@ -275,10 +271,10 @@ void loadsavequit_dialogue::update_list()
 			}
 		}
 	}
-	
+
 	gamelist->clear();
 
-	unsigned sel = 0;		
+	unsigned sel = 0;
 	for (auto & savegame : savegames) {
 		gamelist->append_entry(savegame.second);
 		if (savegame.second == gamename->get_text())
@@ -302,8 +298,8 @@ void loadsavequit_dialogue::update_list()
 void show_halloffame(const highscorelist& hsl)
 {
 	widget w(0, 0, 1024, 768, texts::get(197), nullptr, "krupp_docks.jpg");
-	w.add_child(new widget(40, 50, 944, 640, string("")));
-	w.add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, (1024-128)/2, 768-32-16, 128, 32, texts::get(105)));
+	w.add_child(std::make_unique<widget>(40, 50, 944, 640, string("")));
+	w.add_child(std::make_unique<widget_caller_button<widget&>>((1024-128)/2, 768-32-16, 128, 32, texts::get(105), nullptr, [](auto& w) { w.close(1); }, w));
 	hsl.show(&w);
 	w.run(0, false);
 }
@@ -325,19 +321,18 @@ void check_for_highscore(const game& gm)
 	unsigned points = totaltons /* compute points from tons etc here fixme */;
 
 	widget w(0, 0, 1024, 768, texts::get(197), nullptr, "krupp_docks.jpg");
-	auto* wbox = new widget(40, 50, 944, 640, string(""));
-        w.add_child(wbox);
- 	w.add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, (1024-128)/2, 768-32-16, 128, 32, texts::get(105)));
+	w.add_child(std::make_unique<widget>(40, 50, 944, 640, string(""), nullptr));
+	w.add_child(std::make_unique<widget_caller_button<widget&>>((1024-128)/2, 768-32-16, 128, 32, texts::get(105), nullptr, [](auto& w) { w.close(1); }, w));
 	unsigned pos = hsl.get_listpos_for(points);
 	if (hsl.is_good_enough(points)) {
 		std::string txt = texts::get(199);
 		if (pos == 0)
 			txt += "\n\n" + texts::get(201);
-		w.add_child(new widget_text(400, 200, 0,0, txt));
+		w.add_child(std::make_unique<widget_text>(400, 200, 0,0, txt));
 		w.run(0, false);
 		hsl.record(points, gm.get_player_info().name);
 	} else {
-		w.add_child(new widget_text(400, 200, 0,0, texts::get(198)));
+		w.add_child(std::make_unique<widget_text>(400, 200, 0,0, texts::get(198)));
 		w.run(0, false);
 	}
 	show_halloffame(hsl);
@@ -350,10 +345,9 @@ void check_for_highscore(const game& gm)
 void show_results_for_game(const game& gm)
 {
 	widget w(0, 0, 1024, 768, texts::get(124), nullptr, "sunken_destroyer.jpg");
-	auto* wl = new widget_list(64, 64, 1024-64-64, 768-64-64);
-	wl->set_column_width((1024-2*64)/4);
-	w.add_child(wl);
-	w.add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, (1024-128)/2, 768-32-16, 128, 32, texts::get(105)));
+	auto& wl = w.add_child(std::make_unique<widget_list>(64, 64, 1024-64-64, 768-64-64));
+	wl.set_column_width((1024-2*64)/4);
+	w.add_child(std::make_unique<widget_caller_button<widget&>>((1024-128)/2, 768-32-16, 128, 32, texts::get(105), nullptr, [](auto& w) { w.close(1); }, w));
 	unsigned totaltons = 0;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
 	for (const auto & sunken_ship : sunken_ships) {
@@ -362,11 +356,11 @@ void show_results_for_game(const game& gm)
 			<< sunken_ship.descr << "\t\t"
 			<< sunken_ship.tons << " BRT";
 		totaltons += sunken_ship.tons;
-		wl->append_entry(oss.str());
+		wl.append_entry(oss.str());
 	}
 	ostringstream os;
 	os << "total: " << totaltons;
-	wl->append_entry(os.str());
+	wl.append_entry(os.str());
 	w.run(0, false);
 }
 
@@ -390,12 +384,12 @@ game::run_state game__exec(game& gm, user_interface& ui)
 	double measuretime = 5;	// seconds
 
 	ui.resume_all_sound();
-	
+
 	// draw one initial frame
 	ui.display();
 
 	ui.request_abort(false);
-	
+
 	while (gm.get_run_state() == game::running && !ui.abort_requested()) {
 		list<SDL_Event> events = sys().poll_event_queue();
 
@@ -412,7 +406,7 @@ game::run_state game__exec(game& gm, user_interface& ui)
 		double delta_time = (thistime - lasttime)/1000.0; // * time_scale;
 		totaltime += (thistime - lasttime)/1000.0;
 		lasttime = thistime;
-		
+
 		// next simulation step
 		if (!ui.paused()) {
 			for (unsigned j = 0; j < time_scale; ++j) {
@@ -438,12 +432,12 @@ game::run_state game__exec(game& gm, user_interface& ui)
 			log_info("fps " << (frames - lastframes)/measuretime);
 			lastframes = frames;
 		}
-		
+
 		sys().swap_buffers();
 	}
-	
+
 	ui.pause_all_sound();
-	
+
 	return gm.get_run_state();	// if player is killed, end game (1), else show menu (0)
 }
 
@@ -456,8 +450,8 @@ void run_game(unique_ptr<game> gm)
 	// clear memory of menu widgets
 	widget::unref_all_backgrounds();
 
-	unique_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
-								 font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64)));
+	auto gametheme = std::make_unique<widget::theme>("widgetelements_game.png", "widgeticons_game.png",
+								 font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
 	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
@@ -476,10 +470,9 @@ void run_game(unique_ptr<game> gm)
 			if (state == game::player_killed) {
 				music::instance().play_track(1, 500);
 				widget w(0, 0, 1024, 768, "", nullptr, "killed.jpg");
-				auto* wm = new widget_menu(0, 0, 400, 40, texts::get(103));
-				w.add_child(wm);
-				wm->add_entry(texts::get(105), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-				wm->align(0, 0);
+				auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(103)));
+				wm.add_entry(texts::get(105), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+				wm.align(0, 0);
 				w.run(0, false);
 			}
 
@@ -537,8 +530,8 @@ void run_game_editor(unique_ptr<game> gm)
 	// clear memory of menu widgets
 	widget::unref_all_backgrounds();
 
-	unique_ptr<widget::theme> gametheme(new widget::theme("widgetelements_game.png", "widgeticons_game.png",
-							    font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64)));
+	auto gametheme = std::make_unique<widget::theme>("widgetelements_game.png", "widgeticons_game.png",
+							    font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
 	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
@@ -603,7 +596,7 @@ public:
 	{
 		if (imagenames.empty()) THROW(error, "can't use widget_image_select with empty list");
 		background = imagecache().ref(*current + extension);
-		add_child(new widget_text(20, 20, 0, 0, texts::get(117)));
+		add_child(std::make_unique<widget_text>(20, 20, 0, 0, texts::get(117)));
 	}
 	virtual const std::string& get_current_imagename() const { return *current; }
 	void next(int direction)
@@ -615,7 +608,7 @@ public:
 			if (current == imagenames.begin()) current = imagenames.end();
 			current--;
 		}
- 		imagecache().unref(background);
+		imagecache().unref(background);
 		background = nullptr;
 		background = imagecache().ref(*current + extension);
 		redraw();
@@ -658,15 +651,13 @@ public:
 class widget_button_next : public widget_button
 {
 	int direction;
-	widget_image_select* attached_widget;
+	widget_image_select& attached_widget;
 public:
-	widget_button_next(int x, int y, int w, int h, int dir, 
-			   widget_image_select* att, const std::string& text_,
+	widget_button_next(int x, int y, int w, int h, int dir,
+			   widget_image_select& att, const std::string& text_,
 			   const std::string& bg_image_, widget* parent_ = nullptr)
-		: widget_button(x, y, w, h, text_, parent_, bg_image_)
+		: widget_button(x, y, w, h, text_, parent_, bg_image_), direction(dir), attached_widget(att)
 	{
-		direction = dir;
-		attached_widget = att;
 	}
 	void draw() const override
 	{
@@ -674,17 +665,17 @@ public:
 		vector2i p = get_pos();
 		int bw = int(background->get_width());
 		int bh = int(background->get_height());
-		
+
 		colorf col = colorf(1.0, 1.0, 1.0, 1.0);
 		if (mouseover != this)
 			col = colorf(1.0, 1.0, 1.0, 0.75);
 		background->draw(p.x + size.x/2 - bw/2, p.y + size.y/2 - bh/2, col);
-		
+
 	}
 	void on_release () override
 	{
 		pressed = false;
-		attached_widget->next(direction);
+		attached_widget.next(direction);
 	}
 };
 
@@ -708,18 +699,15 @@ void show_flotilla_description(const std::string& infopopupdescr)
 	texture t(tmp, 1, 1, GL_RGB, texture::NEAREST, texture::REPEAT);
 	w->set_background(&t);
 	w->run();
-	
+
 }
 
 bool choose_player_info(game::player_info& pi, const std::string& subtype, const date& gamedate)
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "playerselection_background.jpg");
-	auto* w2 = new widget(40, 40, 500, 640, "");
-	w.add_child(w2);
-	w2->add_child(new widget_text(20, 20, 0, 0, texts::get(200)));
-	auto* wplayername = new widget_edit(20, 50, 460, 30, "Heinz Mustermann");
-	w2->add_child(wplayername);
-
+	auto& w2 = w.add_child(std::make_unique<widget>(40, 40, 500, 640, ""));
+	w2.add_child(std::make_unique<widget_text>(20, 20, 0, 0, texts::get(200)));
+	auto& wplayername = w2.add_child(std::make_unique<widget_edit>(20, 50, 460, 30, "Heinz Mustermann"));
 	std::vector<flotilla> availableflotillas;
 
 	xml_doc flotilladb(get_data_dir() + "flotillas/available.xml");
@@ -804,19 +792,19 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 	for (auto & availableflotilla : availableflotillas) {
 		emblems.push_back(availableflotilla.insignia);
 	}
-	auto* wemblem = new emblemselect(764-220/2, 572-32-300/2, 220, 300, ".png", emblems);
+	auto wemblem = std::make_unique<emblemselect>(764-220/2, 572-32-300/2, 220, 300, ".png", emblems);
 
 	struct flotlist : public widget_list
 	{
-		widget_image_select* wis;
-		widget_list* wsns;
-		widget_text* baseloc;
+		widget_image_select& wis;
+		widget_list& wsns;
+		widget_text& baseloc;
 		const std::vector<flotilla>& availableflotillas;
-		widget_button* infobut;
+		widget_button& infobut;
 		std::string& infobutdesc;
 		void on_sel_change() override {
-			wis->select_by_nr(std::max(0, get_selected()));
-			wsns->clear();
+			wis.select_by_nr(std::max(0, get_selected()));
+			wsns.clear();
 			// iterate list of available flotillas and offer sub numbers
 			int s = get_selected();
 			if (s >= 0) {
@@ -824,73 +812,66 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 				for (unsigned int i : l) {
 					std::ostringstream oss;
 					oss << "U " << i;
-					wsns->append_entry(oss.str());
+					wsns.append_entry(oss.str());
 				}
-				baseloc->set_text(availableflotillas[s].base);
-				infobut->enable();
+				baseloc.set_text(availableflotillas[s].base);
+				infobut.enable();
 				infobutdesc = availableflotillas[s].description;
 			} else {
-				infobut->disable();
+				infobut.disable();
 			}
 		}
-		flotlist(int x, int y, int w, int h, widget_image_select* w_, widget_list* ws,
-			 widget_text* bl, const std::vector<flotilla>& af,
-			 widget_button* ib, std::string& ibd)
+		flotlist(int x, int y, int w, int h, widget_image_select& w_, widget_list& ws,
+			 widget_text& bl, const std::vector<flotilla>& af,
+			 widget_button& ib, std::string& ibd)
 			: widget_list(x, y, w, h), wis(w_), wsns(ws), baseloc(bl),
 			  availableflotillas(af), infobut(ib), infobutdesc(ibd) {}
 	};
-	auto* wsubnumber = new widget_list(20, 420, 460, 200);
-	auto* baselocation = new widget_text(20, 350, 0, 0, "");
-	w2->add_child(baselocation);
+	auto wsubnumber = std::make_unique<widget_list>(20, 420, 460, 200);
+	auto* baselocation = &w2.add_child(std::make_unique<widget_text>(20, 350, 0, 0, ""));
 	std::string infopopupdescr;
-	widget_button* infobutton = new widget_func_arg_button<void (*)(const std::string& ), const std::string& >(&show_flotilla_description, infopopupdescr, 300, 320, 180, 40, texts::get(161));
-	w2->add_child(infobutton);
-	auto* wflotilla = new flotlist(20, 110, 460, 200, wemblem, wsubnumber,
-					   baselocation, availableflotillas,
-					   infobutton, infopopupdescr);
+	auto* infobutton = &w2.add_child(std::make_unique<widget_caller_button<std::string&>>(300, 320, 180, 40, texts::get(161), nullptr, show_flotilla_description, infopopupdescr));
+	auto wflotilla = std::make_unique<flotlist>(20, 110, 460, 200, *wemblem, *wsubnumber,
+					   *baselocation, availableflotillas,
+					   *infobutton, infopopupdescr);
 	std::string flotname = texts::get(164);
 	for (auto & availableflotilla : availableflotillas) {
 		std::string fn = flotname;
 		fn.replace(fn.find("#"), 1, str(availableflotilla.nr));
 		wflotilla->append_entry(fn);
 	}
-	w2->add_child(new widget_text(20, 80, 0, 0, texts::get(175)));
-	w2->add_child(wflotilla);
-	wemblem->flst = wflotilla;
-	w2->add_child(new widget_text(20, 320, 0, 0, texts::get(163)));
+	w2.add_child(std::make_unique<widget_text>(20, 80, 0, 0, texts::get(175)));
+	wemblem->flst = wflotilla.get();
+	auto& wflotilla_ = w2.add_child(std::move(wflotilla));
+	w2.add_child(std::make_unique<widget_text>(20, 320, 0, 0, texts::get(163)));
 
-	w2->add_child(new widget_text(20, 380, 0, 0, texts::get(176)));
+	w2.add_child(std::make_unique<widget_text>(20, 380, 0, 0, texts::get(176)));
 
-	w2->add_child(wsubnumber);
+	auto& wsubnumber_ = w2.add_child(std::move(wsubnumber));
 
 	std::list<std::string> playerphotos;
 	for (unsigned i = 1; i <= 11; ++i)
 		playerphotos.push_back(std::string("player_photo") + str(i));
 
-	w.add_child(new widget_text(661+20, 40+30, 0, 0, texts::get(162)));
+	w.add_child(std::make_unique<widget_text>(661+20, 40+30, 0, 0, texts::get(162)));
 
-	auto* wplayerphoto = new widget_image_select(661, 40+45, 205, 300, ".jpg|png", playerphotos);
-	w.add_child(wplayerphoto);
+	auto& wplayerphoto = w.add_child(std::make_unique<widget_image_select>(661, 40+45, 205, 300, ".jpg|png", playerphotos));
 
-	auto *widget_image_left_btn = new widget_button_next(661-35, 40+150, 25, 80, -1, wplayerphoto, "", "BG_btn_left.png");
-	w.add_child(widget_image_left_btn);
+	w.add_child(std::make_unique<widget_button_next>(661-35, 40+150, 25, 80, -1, wplayerphoto, "", "BG_btn_left.png"));
+	w.add_child(std::make_unique<widget_button_next>(661+215, 40+150, 25, 80, 1, wplayerphoto, "", "BG_btn_right.png"));
 
-	auto *widget_image_right_btn = new widget_button_next(661+215, 40+150, 25, 80, 1, wplayerphoto, "", "BG_btn_right.png");
-	w.add_child(widget_image_right_btn);
-	
-	w.add_child(wemblem);
+	w.add_child(std::move(wemblem));
 
-	auto* wm = new widget_menu(40, 700, 0, 40, "", true);
-	w.add_child(wm);
-	wm->add_entry(texts::get(20), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, 70, 700, 400, 40));
-	wm->add_entry(texts::get(19), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 2, 540, 700, 400, 40));
-	wm->adjust_buttons(944);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(40, 700, 0, 40, "", true));
+	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
+	wm.add_entry(texts::get(19), std::make_unique<widget_caller_button<widget&>>(540, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
+	wm.adjust_buttons(944);
 	int result = w.run(0, false);
 	if (result == 2) {
-		pi.name = wplayername->get_text();
-		pi.flotilla = availableflotillas[std::max(0, wflotilla->get_selected())].nr;
-		pi.submarineid = wsubnumber->get_selected_entry();
-		pi.photo = wplayerphoto->get_current_imagename().substr(std::string("player_photo").length());
+		pi.name = wplayername.get_text();
+		pi.flotilla = availableflotillas[std::max(0, wflotilla_.get_selected())].nr;
+		pi.submarineid = wsubnumber_.get_selected_entry();
+		pi.photo = wplayerphoto.get_current_imagename().substr(std::string("player_photo").length());
 		//log_debug(player_name<<","<<player_flotilla<<","<<player_subnumber<<","<<player_photo);
 		return true;
 	}
@@ -905,58 +886,54 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 void create_convoy_mission()
 {
 	widget w(0, 0, 1024, 768, texts::get(9), nullptr, "scopewatcher.jpg");
-	w.add_child(new widget_text(40, 60, 0, 0, texts::get(16)));
-	auto* wsubtype = new widget_list(40, 90, 200, 200);
-	w.add_child(wsubtype);
-	w.add_child(new widget_text(280, 60, 0, 0, texts::get(84)));
-	auto* wcvsize = new widget_list(280, 90, 200, 200);
-	w.add_child(wcvsize);
-	w.add_child(new widget_text(520, 60, 0, 0, texts::get(88)));
-	auto* wescortsize = new widget_list(520, 90, 200, 200);
-	w.add_child(wescortsize);
-	w.add_child(new widget_text(760, 60, 0, 0, texts::get(90)));
-	auto* wtimeofday = new widget_list(760, 90, 200, 200);
-	w.add_child(wtimeofday);
-	w.add_child(new widget_text(40, 310, 0, 0, texts::get(62)));
-	auto* wtimeperiod = new widget_list(40, 340, 640, 200);
-	w.add_child(wtimeperiod);
-	wsubtype->append_entry(texts::get(17));
-//	wsubtype->append_entry(texts::get(174));
-//	wsubtype->append_entry(texts::get(18));
-	wsubtype->append_entry(texts::get(800));
-	wsubtype->append_entry(texts::get(801));
-	wsubtype->append_entry(texts::get(802));
-	wsubtype->append_entry(texts::get(803));
-	wcvsize->append_entry(texts::get(85));
-	wcvsize->append_entry(texts::get(86));
-	wcvsize->append_entry(texts::get(87));
-	wescortsize->append_entry(texts::get(89));
-	wescortsize->append_entry(texts::get(85));
-	wescortsize->append_entry(texts::get(86));
-	wescortsize->append_entry(texts::get(87));
-	wtimeofday->append_entry(texts::get(91));
-	wtimeofday->append_entry(texts::get(92));
-	wtimeofday->append_entry(texts::get(93));
-	wtimeofday->append_entry(texts::get(94));
-	wtimeperiod->append_entry(texts::get(63));
-	wtimeperiod->append_entry(texts::get(64));
-	wtimeperiod->append_entry(texts::get(65));
-	wtimeperiod->append_entry(texts::get(66));
-	wtimeperiod->append_entry(texts::get(67));
-	wtimeperiod->append_entry(texts::get(68));
-	wtimeperiod->append_entry(texts::get(69));
-	wtimeperiod->append_entry(texts::get(70));
+	w.add_child(std::make_unique<widget_text>(40, 60, 0, 0, texts::get(16)));
+	auto& wsubtype = w.add_child(std::make_unique<widget_list>(40, 90, 200, 200));
+	w.add_child(std::make_unique<widget_text>(280, 60, 0, 0, texts::get(84)));
+	auto& wcvsize = w.add_child(std::make_unique<widget_list>(280, 90, 200, 200));
+	w.add_child(std::make_unique<widget_text>(520, 60, 0, 0, texts::get(88)));
+	auto& wescortsize = w.add_child(std::make_unique<widget_list>(520, 90, 200, 200));
+	w.add_child(std::make_unique<widget_text>(760, 60, 0, 0, texts::get(90)));
+	auto& wtimeofday = w.add_child(std::make_unique<widget_list>(760, 90, 200, 200));
+	w.add_child(std::make_unique<widget_text>(40, 310, 0, 0, texts::get(62)));
+	auto& wtimeperiod = w.add_child(std::make_unique<widget_list>(40, 340, 640, 200));
+	wsubtype.append_entry(texts::get(17));
+//	wsubtype.append_entry(texts::get(174));
+//	wsubtype.append_entry(texts::get(18));
+	wsubtype.append_entry(texts::get(800));
+	wsubtype.append_entry(texts::get(801));
+	wsubtype.append_entry(texts::get(802));
+	wsubtype.append_entry(texts::get(803));
+	wcvsize.append_entry(texts::get(85));
+	wcvsize.append_entry(texts::get(86));
+	wcvsize.append_entry(texts::get(87));
+	wescortsize.append_entry(texts::get(89));
+	wescortsize.append_entry(texts::get(85));
+	wescortsize.append_entry(texts::get(86));
+	wescortsize.append_entry(texts::get(87));
+	wtimeofday.append_entry(texts::get(91));
+	wtimeofday.append_entry(texts::get(92));
+	wtimeofday.append_entry(texts::get(93));
+	wtimeofday.append_entry(texts::get(94));
+	wtimeperiod.append_entry(texts::get(63));
+	wtimeperiod.append_entry(texts::get(64));
+	wtimeperiod.append_entry(texts::get(65));
+	wtimeperiod.append_entry(texts::get(66));
+	wtimeperiod.append_entry(texts::get(67));
+	wtimeperiod.append_entry(texts::get(68));
+	wtimeperiod.append_entry(texts::get(69));
+	wtimeperiod.append_entry(texts::get(70));
 
-	auto* wm = new widget_menu(40, 700, 0, 40, "", true);
-	w.add_child(wm);
-	wm->add_entry(texts::get(20), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, 70, 700, 400, 40));
-	wm->add_entry(texts::get(19), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 2, 540, 700, 400, 40));
-	wm->adjust_buttons(944);
+	{
+		auto& wm = w.add_child(std::make_unique<widget_menu>(40, 700, 0, 40, "", true));
+		wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
+		wm.add_entry(texts::get(19), std::make_unique<widget_caller_button<widget&>>(540, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
+		wm.adjust_buttons(944);
+	}
 	while (true) {
 		int result = w.run(0, false);
 		if (result == 2) {	// start game
 			string st;
-			switch (wsubtype->get_selected()) {
+			switch (wsubtype.get_selected()) {
 			case 0: st = "submarine_VIIc"; break;
 //			case 1: st = "submarine_IXc40"; break;
 //			case 2: st = "submarine_XXI"; break;
@@ -968,7 +945,7 @@ void create_convoy_mission()
 
 			// compute mission time (date)
 			date datebegin, dateend;
-			switch (wtimeperiod->get_selected()) {
+			switch (wtimeperiod.get_selected()) {
 			case 0: datebegin = date(1939, 9, 1); dateend = date(1940, 5, 31); break;
 			case 1: datebegin = date(1940, 6, 1); dateend = date(1941, 3, 31); break;
 			case 2: datebegin = date(1941, 4, 1); dateend = date(1941, 12, 31); break;
@@ -978,7 +955,7 @@ void create_convoy_mission()
 			case 6: datebegin = date(1943, 6, 1); dateend = date(1944, 6, 30); break;
 			case 7: datebegin = date(1944, 7, 1); dateend = date(1945, 5, 8); break;
 			}
-			double tpr = rnd();	
+			double tpr = rnd();
 			double time = datebegin.get_time() * (1.0-tpr) + dateend.get_time() * tpr;
 			time = floor(time/86400)*86400;		// set to begin of day
 			date gamedate = date(unsigned(time));
@@ -993,9 +970,9 @@ void create_convoy_mission()
 			//fixme: give data to game! player data. maybe combine that to a struct!
 			reset_loading_screen();
 			run_game(std::make_unique<game>(st,
-							 wcvsize->get_selected(),
-							 wescortsize->get_selected(),
-							 wtimeofday->get_selected(),
+							 wcvsize.get_selected(),
+							 wescortsize.get_selected(),
+							 wtimeofday.get_selected(),
 							 gamedate,
 							 pi));
 		} else {
@@ -1011,7 +988,7 @@ void create_convoy_mission()
 void choose_historical_mission()
 {
 	vector<string> missions;
-	
+
 	// read missions
 	unsigned nr_missions = 0;
 	{
@@ -1043,10 +1020,8 @@ void choose_historical_mission()
 		msnlist(int x, int y, int w, int h, const vector<string>& descrs_, widget_text* wdescr_) : widget_list(x, y, w, h), descrs(descrs_), wdescr(wdescr_) {}
 		~msnlist() override = default;
 	};
-	auto* wdescr = new widget_text(40, 380, 1024-80, 300, "", nullptr, true);
-	widget_list* wmission = new msnlist(40, 60, 1024-80, 300, descrs, wdescr);
-	w.add_child(wmission);
-	w.add_child(wdescr);
+	auto* wdescr = &w.add_child(std::make_unique<widget_text>(40, 380, 1024-80, 300, "", nullptr, true));
+	auto* wmission = &w.add_child(std::make_unique<msnlist>(40, 60, 1024-80, 300, descrs, wdescr));
 	// Note:
 	// Missions have the same format like savegames, except that the head xml node
 	// has an additional child node <description> with multi-lingual descriptions of the mission.
@@ -1084,11 +1059,10 @@ void choose_historical_mission()
 	}
 	wmission->on_sel_change();
 
-	auto* wm = new widget_menu(40, 700, 0, 40, "", true);
-	w.add_child(wm);
-	wm->add_entry(texts::get(20), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, 70, 700, 400, 40));
-	wm->add_entry(texts::get(19), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 2, 70, 700, 400, 40));
-	wm->adjust_buttons(944);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(40, 700, 0, 40, "", true));
+	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
+	wm.add_entry(texts::get(19), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
+	wm.adjust_buttons(944);
 	int result = w.run(0, false);
 	if (result == 2) {	// start game
 		unique_ptr<game> gm;
@@ -1127,14 +1101,13 @@ void choose_saved_game()
 void menu_single_mission()
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(21));
-	w.add_child(wm);
-//	wm->add_entry(texts::get(8), new widget_func_button<void (*)()>(&menu_notimplemented, 0, 0, 0, 0));
-	wm->add_entry(texts::get(9), new widget_func_button<void (*)()>(&create_convoy_mission, 0, 0, 0, 0));
-	wm->add_entry(texts::get(10), new widget_func_button<void (*)()>(&choose_historical_mission, 0, 0, 0, 0));
-	wm->add_entry(texts::get(118), new widget_func_button<void (*)()>(&choose_saved_game, 0, 0, 0, 0));
-	wm->add_entry(texts::get(11), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-	wm->align(0, 0);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(21)));
+//	wm.add_entry(texts::get(8), std::make_unique<widget_caller_button<>>(menu_notimplemented));
+	wm.add_entry(texts::get(9), std::make_unique<widget_caller_button<>>(create_convoy_mission));
+	wm.add_entry(texts::get(10), std::make_unique<widget_caller_button<>>(choose_historical_mission));
+	wm.add_entry(texts::get(118), std::make_unique<widget_caller_button<>>(choose_saved_game));
+	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+	wm.align(0, 0);
 	w.run(0, false);
 }
 
@@ -1143,22 +1116,20 @@ void menu_single_mission()
 void menu_mission_editor()
 {
 	widget w(0, 0, 1024, 768, texts::get(222), nullptr, "scopewatcher.jpg");
-	w.add_child(new widget_text(40, 60, 944, 0, texts::get(223)));
+	w.add_child(std::make_unique<widget_text>(40, 60, 944, 0, texts::get(223)));
 
 /*
-	w.add_child(new widget_text(40, 60, 0, 0, texts::get(16)));
-	widget_list* wsubtype = new widget_list(40, 90, 200, 200);
-	w.add_child(wsubtype);
-	wsubtype->append_entry(texts::get(17));
-	wsubtype->append_entry(texts::get(174));
-	wsubtype->append_entry(texts::get(18));
+	w.add_child(std::make_unique<widget_text>(40, 60, 0, 0, texts::get(16)));
+	auto& wsubtype = &w.add_child(std::make_unique<widget_list>(40, 90, 200, 200));
+	wsubtype.append_entry(texts::get(17));
+	wsubtype.append_entry(texts::get(174));
+	wsubtype.append_entry(texts::get(18));
 */
 
-	auto* wm = new widget_menu(40, 700, 0, 40, "", true);
-	w.add_child(wm);
-	wm->add_entry(texts::get(20), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, 540, 700, 400, 40));
-	wm->add_entry(texts::get(222), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 2, 70, 700, 400, 40));
-	wm->adjust_buttons(944);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(40, 700, 0, 40, "", true));
+	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(540, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
+	wm.add_entry(texts::get(222), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
+	wm.adjust_buttons(944);
 	int result = w.run(0, false);
 	if (result == 2) {	// start editor
 /*
@@ -1171,7 +1142,7 @@ void menu_mission_editor()
 */
 		// reset loading screen here to show user we are doing something
 		reset_loading_screen();
-		run_game_editor(unique_ptr<game>(new game_editor(date(1939, 9, 1)/*st*/)));
+		run_game_editor(std::make_unique<game_editor>(date(1939, 9, 1)/*st*/));
 	}
 }
 
@@ -1180,7 +1151,7 @@ void menu_mission_editor()
 void menu_select_language()
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(26));
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(26)));
 
 	struct lgclist : public widget_list
 	{
@@ -1191,23 +1162,20 @@ void menu_select_language()
 		lgclist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
 	};
 
-	widget_list* wlg = new lgclist(0, 0, 400, 400);
+	auto& wlg = w.add_child(std::make_unique<lgclist>(0, 0, 400, 400));
 	unsigned nl = texts::get_nr_of_available_languages();
 	for (unsigned i = 0; i < nl; ++i) {
-		wlg->append_entry(texts::get(i, texts::languages));
+		wlg.append_entry(texts::get(i, texts::languages));
 	}
-	wlg->set_selected(texts::get_current_language_nr());
+	wlg.set_selected(texts::get_current_language_nr());
 
-	widget_button* wcb = new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 400, 40, texts::get(11));
+	auto& wcb = w.add_child(std::make_unique<widget_caller_button<widget&>>(0, 0, 400, 40, texts::get(11), nullptr, [](auto& w) { w.close(0); }, w));
 
-	w.add_child(wm);
-	w.add_child(wlg);
-	w.add_child(wcb);
-	wlg->align(0, 0);
-	vector2i wlgp = wlg->get_pos();
-	vector2i wlgs = wlg->get_size();
-	wm->set_pos(vector2i(wlgp.x, wlgp.y - 60));
-	wcb->set_pos(vector2i(wlgp.x, wlgp.y + wlgs.y + 20));
+	wlg.align(0, 0);
+	vector2i wlgp = wlg.get_pos();
+	vector2i wlgs = wlg.get_size();
+	wm.set_pos(vector2i(wlgp.x, wlgp.y - 60));
+	wcb.set_pos(vector2i(wlgp.x, wlgp.y + wlgs.y + 20));
 
 	w.run(0, false);
 }
@@ -1225,12 +1193,12 @@ void menu_select_language()
 
 void apply_mode(widget_list* wlg)
 {
-	unsigned width, height; 
-    
-	string wks = wlg->get_selected_entry();  
-  
+	unsigned width, height;
+
+	string wks = wlg->get_selected_entry();
+
 	height = atoi(wks.substr(wks.rfind("x")+1).c_str());
-	width = atoi(wks.substr(0,wks.rfind("x")).c_str());  
+	width = atoi(wks.substr(0,wks.rfind("x")).c_str());
 
 	// try to set video mode BEFORE writing to config file, so that if video mode
 	// is broken, user is not forced to same mode again on restart
@@ -1252,10 +1220,10 @@ void menu_resolution()
 	const list<vector2i>& available_resolutions = sys().get_available_resolutions();
 
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(106));
-  
-	auto* wlg = new widget_list(0, 0, 400, 400);
-   
+	auto wm = std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(106));
+
+	auto wlg = std::make_unique<widget_list>(0, 0, 400, 400);
+
 	vector2i curr_res(sys().get_res_x(), sys().get_res_y());
 	unsigned curr_entry = 0;
 	unsigned i = 0;
@@ -1266,19 +1234,19 @@ void menu_resolution()
 		++i;
 	}
 	wlg->set_selected(curr_entry);
-  
-	widget_button* wcb = new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 400, 40, texts::get(20));  
-	w.add_child(new widget_func_arg_button<void (*)(widget_list*), widget_list*>(&apply_mode, wlg, 516, 604, 452, 40, texts::get(106)));  
-  
-	w.add_child(wm);
-	w.add_child(wlg);
-	w.add_child(wcb);
+
+	auto wcb = std::make_unique<widget_caller_button<widget&>>(0, 0, 400, 40, texts::get(20), nullptr, [](auto& w) { w.close(0); }, w);
+	w.add_child(std::make_unique<widget_caller_button<widget_list*>>(516, 604, 452, 40, texts::get(106), nullptr, apply_mode, wlg.get()));
+
 	wlg->align(0, 0);
 	vector2i wlgp = wlg->get_pos();
 	vector2i wlgs = wlg->get_size();
 	wm->set_pos(vector2i(wlgp.x, wlgp.y - 60));
-	wcb->set_pos(vector2i(wlgp.x - 260, wlgp.y + wlgs.y + 20));  
-	w.run(0, false);	
+	wcb->set_pos(vector2i(wlgp.x - 260, wlgp.y + wlgs.y + 20));
+	w.add_child(std::move(wm));
+	w.add_child(std::move(wlg));
+	w.add_child(std::move(wcb));
+	w.run(0, false);
 }
 
 void configure_key(widget_list* wkeys)
@@ -1302,9 +1270,8 @@ void configure_key(widget_list* wkeys)
 			       const std::string& backgrimg, unsigned sel) :
 			widget(x, y, w, h, text_, parent_, backgrimg), keynr(key_command(sel)) // fixme later use key_command in widget directly!
 			{
-				keyname = new widget_text(40, 80, 432, 40, cfg::instance().getkey(keynr).get_name());
-				add_child(keyname);
-				add_child(new widget_text(40, 120, 432, 40, texts::get(217)));
+				keyname = &add_child(std::make_unique<widget_text>(40, 80, 432, 40, cfg::instance().getkey(keynr).get_name()));
+				add_child(std::make_unique<widget_text>(40, 120, 432, 40, texts::get(217)));
 			}
 		~confkey_widget() override = default;
 	};
@@ -1312,7 +1279,7 @@ void configure_key(widget_list* wkeys)
 	confkey_widget w(256, 256, 512, 256, texts::get(216), nullptr, "", sel);
 	string wks = wkeys->get_selected_entry();
 	wks = wks.substr(0, wks.find("\t"));
-	w.add_child(new widget_text(40, 40, 432, 32, wks));
+	w.add_child(std::make_unique<widget_text>(40, 40, 432, 32, wks));
 	w.run(0, true);
 	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + cfg::instance().getkey(key_command(sel)).get_name());
 }
@@ -1322,34 +1289,32 @@ void configure_key(widget_list* wkeys)
 void menu_configure_keys()
 {
 	widget w(0, 0, 1024, 768, texts::get(214), nullptr, "titlebackgr.jpg");
-	auto* wkeys = new widget_list(40, 50, 944, 640);
-	wkeys->set_column_width(700);
-	w.add_child(wkeys);
-	
+	auto& wkeys = w.add_child(std::make_unique<widget_list>(40, 50, 944, 640));
+	wkeys.set_column_width(700);
+
 	for (unsigned i = 600; i < 600 + unsigned(key_command::number); ++i) {
 		cfg::key k = cfg::instance().getkey(key_command(i-600));
-		wkeys->append_entry(texts::get(i) + string("\t") + k.get_name());
+		wkeys.append_entry(texts::get(i) + string("\t") + k.get_name());
 	}
 
 	// fixme: handle undefined keys!
 	// fixme: check for double keys!
 
-	w.add_child(new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 40, 708, 452, 40, texts::get(20)));
-	w.add_child(new widget_func_arg_button<void (*)(widget_list*), widget_list*>(&configure_key, wkeys, 532, 708, 452, 40, texts::get(215)));
+	w.add_child(std::make_unique<widget_caller_button<widget&>>(40, 708, 452, 40, texts::get(20), nullptr, [](auto& w) { w.close(0); }, w));
+	w.add_child(std::make_unique<widget_caller_button<widget_list*>>(532, 708, 452, 40, texts::get(215), nullptr, configure_key, &wkeys));
 	w.run(0, false);
 }
 
 void menu_opt_input()
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(705));
-	w.add_child(wm);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(705)));
 
-	wm->add_entry(texts::get(214), new widget_func_button<void (*)()>(&menu_configure_keys, 0, 0, 0, 0));
-	wm->add_entry(texts::get(709), new widget_func_button<void (*)()>(&menu_notimplemented, 0, 0, 0, 0)); // TODO
+	wm.add_entry(texts::get(214), std::make_unique<widget_caller_button<>>(menu_configure_keys));
+	wm.add_entry(texts::get(709), std::make_unique<widget_caller_button<>>(menu_notimplemented)); // TODO
 
-	wm->add_entry(texts::get(11), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-	wm->align(0, 0);
+	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+	wm.align(0, 0);
 	w.run(0, false);
 }
 
@@ -1367,25 +1332,25 @@ void menu_opt_video()
 
 	// make widgets
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(x, y, wd, 40, texts::get(707));
+	auto wm = std::make_unique<widget_menu>(x, y, wd, 40, texts::get(707));
 
-	widget_button* resolution = new widget_func_button<void (*)()>(&menu_resolution, x, y + 60, wd, 40, texts::get( 106 ) );
-	auto* vsync = new widget_checkbox(right, y + 60, wd, 40, cfg::instance().getb("vsync"), texts::get(720));
+	auto resolution = std::make_unique<widget_caller_button<>>(x, y + 60, wd, 40, texts::get( 106 ), nullptr, menu_resolution);
+	auto vsync = std::make_unique<widget_checkbox>(right, y + 60, wd, 40, cfg::instance().getb("vsync"), texts::get(720), nullptr);
 
-	auto* terrain_lod = new widget_slider(x, y + 120, wd, 80, texts::get(112), 3, 9, cfg::instance().geti("terrain_detail"), 3);
-	auto* tex_compress = new widget_checkbox(right, y + 120, wd, 40, cfg::instance().getb("use_compressed_textures"), texts::get(721));
+	auto terrain_lod = std::make_unique<widget_slider>(x, y + 120, wd, 80, texts::get(112), 3, 9, cfg::instance().geti("terrain_detail"), 3);
+	auto tex_compress = std::make_unique<widget_checkbox>(right, y + 120, wd, 40, cfg::instance().getb("use_compressed_textures"), texts::get(721));
 
-	auto* wfx_quality = new widget_list(x + (wd / 2), y + 220, wd / 2, 80 );
-	auto* wfx_quality_txt = new widget_text(x, y + 220, wd / 2, 20, texts::get(713) );
-	auto* w_postprocessing = new widget_list(right + (wd / 2), y + 220, wd / 2, 80 );
-	auto* w_postprocessing_txt = new widget_text(right, y + 220, wd / 2, 20, texts::get(714) );
+	auto wfx_quality = std::make_unique<widget_list>(x + (wd / 2), y + 220, wd / 2, 80 );
+	auto wfx_quality_txt = std::make_unique<widget_text>(x, y + 220, wd / 2, 20, texts::get(713), nullptr);
+	auto w_postprocessing = std::make_unique<widget_list>(right + (wd / 2), y + 220, wd / 2, 80 );
+	auto w_postprocessing_txt = std::make_unique<widget_text>(right, y + 220, wd / 2, 20, texts::get(714), nullptr);
 
-	auto* anisotropic_level = new widget_list(x + (wd / 2), y + 320, wd / 2, 80 );
-	auto* anisotropic_level_txt = new widget_text(x, y + 320, wd / 2, 20, texts::get(722) );
-	auto* anti_aliasing_level = new widget_list(right + (wd / 2), y + 320, wd / 2, 80 );
-	auto* anti_aliasing_level_txt = new widget_text(right, y + 320, wd / 2, 20, texts::get(723) );
+	auto anisotropic_level = std::make_unique<widget_list>(x + (wd / 2), y + 320, wd / 2, 80 );
+	auto anisotropic_level_txt = std::make_unique<widget_text>(x, y + 320, wd / 2, 20, texts::get(722), nullptr);
+	auto anti_aliasing_level = std::make_unique<widget_list>(right + (wd / 2), y + 320, wd / 2, 80 );
+	auto anti_aliasing_level_txt = std::make_unique<widget_text>(right, y + 320, wd / 2, 20, texts::get(723), nullptr);
 
-	widget_button* wcb = new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, x, y + 420, wd, 40, texts::get(20));
+	auto wcb = std::make_unique<widget_caller_button<widget&>>(x, y + 420, wd, 40, texts::get(20), nullptr, [](auto& w) { w.close(0); }, w);
 
 	// insert values
 	wfx_quality->append_entry(texts::get(710));
@@ -1423,35 +1388,39 @@ void menu_opt_video()
 	anti_aliasing_level->set_selected( 0 ); // TODO: FIXME
 
 	// add to root
-	w.add_child(wm);
+	w.add_child(std::move(wm));
 
-	w.add_child(resolution);
-	w.add_child(vsync);
+	w.add_child(std::move(resolution));
+	auto& vsync_ = w.add_child(std::move(vsync));
 
-	w.add_child(terrain_lod);
-	w.add_child(tex_compress);
+	auto& terrain_lod_ = w.add_child(std::move(terrain_lod));
+	auto& tex_compress_ = w.add_child(std::move(tex_compress));
 
-	w.add_child(w_postprocessing); w.add_child(w_postprocessing_txt);
-	w.add_child(wfx_quality); w.add_child(wfx_quality_txt);
+	auto& w_postprocessing_ = w.add_child(std::move(w_postprocessing));
+	w.add_child(std::move(w_postprocessing_txt));
+	auto& wfx_quality_ = w.add_child(std::move(wfx_quality));
+	w.add_child(std::move(wfx_quality_txt));
 
-	w.add_child(anisotropic_level); w.add_child(anisotropic_level_txt);
-	w.add_child(anti_aliasing_level); w.add_child(anti_aliasing_level_txt);
+	auto& anisotropic_level_ = w.add_child(std::move(anisotropic_level));
+	w.add_child(std::move(anisotropic_level_txt));
+	auto& anti_aliasing_level_ = w.add_child(std::move(anti_aliasing_level));
+	w.add_child(std::move(anti_aliasing_level_txt));
 
-	w.add_child(wcb);
+	w.add_child(std::move(wcb));
 
 	w.run(0, false);
 
 	// save settings
-	cfg::instance().set("vsync", vsync->is_checked());
+	cfg::instance().set("vsync", vsync_.is_checked());
 
-	cfg::instance().set("terrain_detail", terrain_lod->get_curr_value());
-	cfg::instance().set("use_compressed_textures", tex_compress->is_checked());
+	cfg::instance().set("terrain_detail", terrain_lod_.get_curr_value());
+	cfg::instance().set("use_compressed_textures", tex_compress_.is_checked());
 
-	cfg::instance().set("sfx_quality", wfx_quality->get_selected());
-	cfg::instance().set("postprocessing", w_postprocessing->get_selected());
+	cfg::instance().set("sfx_quality", wfx_quality_.get_selected());
+	cfg::instance().set("postprocessing", w_postprocessing_.get_selected());
 	// TODO: need to update postproc. code to use this int instead of the previous two booleans.
 
-	if ( 0 == anisotropic_level->get_selected() )
+	if ( 0 == anisotropic_level_.get_selected() )
 	{
 		cfg::instance().set("use_ani_filtering", false);
 		cfg::instance().set("anisotropic_level", 1.0f );
@@ -1459,16 +1428,16 @@ void menu_opt_video()
 		cfg::instance().set("use_ani_filtering", true);
 
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max_ani );
-		unsigned max_list = anisotropic_level->get_listsize() - 1;
-		unsigned selected = anisotropic_level->get_selected();
+		unsigned max_list = anisotropic_level_.get_listsize() - 1;
+		unsigned selected = anisotropic_level_.get_selected();
 
 		for( unsigned ix=max_list; ix>selected; ix-- )
 			max_ani /= 2.0f;
-		
+
 		cfg::instance().set("anisotropic_level", max_ani );
 	}
 
-	if ( 0 == anti_aliasing_level->get_selected() )
+	if ( 0 == anti_aliasing_level_.get_selected() )
 	{
 		cfg::instance().set("use_multisampling", false );
 	} else {
@@ -1478,8 +1447,8 @@ void menu_opt_video()
 	}
 
 	// TODO: something about this ? we need to convert or update existing code that uses the boolean use_hqsfx
-//	cfg::instance().set("use_hqsfx", whqsfx->is_checked());
-//	glsl_shader::enable_hqsfx = whqsfx->is_checked();
+//	cfg::instance().set("use_hqsfx", whqsfx_.is_checked());
+//	glsl_shader::enable_hqsfx = whqsfx_.is_checked();
 }
 
 void menu_opt_network()
@@ -1491,16 +1460,15 @@ void menu_opt_network()
 void menu_options()
 {
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
-	auto* wm = new widget_menu(0, 0, 400, 40, texts::get(29));
-	w.add_child(wm);
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(29)));
 
-	wm->add_entry(texts::get(705), new widget_func_button<void (*)()>(&menu_opt_input, 0, 0, 0, 0));
-	wm->add_entry(texts::get(706), new widget_func_button<void (*)()>(&menu_opt_audio, 0, 0, 0, 0));
-	wm->add_entry(texts::get(707), new widget_func_button<void (*)()>(&menu_opt_video, 0, 0, 0, 0));
-	wm->add_entry(texts::get(708), new widget_func_button<void (*)()>(&menu_opt_network, 0, 0, 0, 0));
+	wm.add_entry(texts::get(705), std::make_unique<widget_caller_button<>>(menu_opt_input));
+	wm.add_entry(texts::get(706), std::make_unique<widget_caller_button<>>(menu_opt_audio));
+	wm.add_entry(texts::get(707), std::make_unique<widget_caller_button<>>(menu_opt_video));
+	wm.add_entry(texts::get(708), std::make_unique<widget_caller_button<>>(menu_opt_network));
 
-	wm->add_entry(texts::get(11), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-	wm->align(0, 0);
+	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+	wm.align(0, 0);
 	w.run(0, false);
 }
 
@@ -1512,25 +1480,21 @@ class vessel_view
 	list<string>::iterator current;
 	set<string> modellayouts;
 	set<string>::iterator currentlayout;
-	widget_text* wdesc;
-	// note! this is not destructed by this class...
-	widget_3dview* w3d{nullptr};
+	widget_text& wdesc;
 	unique_ptr<model> load_model() {
 		xml_doc doc(data_file().get_filename(*current));
 		doc.load();
 		string mdlname = doc.first_child().child("classification").attr("modelname");
 		for (auto elem : doc.first_child().child("description").iterate("near")) {
 			if (elem.attr("lang") == texts::get_language_code()) {
-				if (wdesc) {
-					wdesc->set_text_and_resize(elem.child_text());
-					int y = wdesc->get_pos().y;
-					wdesc->align(0, -1);
-					wdesc->move_pos(vector2i(0, y));
-				}
+				wdesc.set_text_and_resize(elem.child_text());
+				int y = wdesc.get_pos().y;
+				wdesc.align(0, -1);
+				wdesc.move_pos(vector2i(0, y));
 				break;
 			}
 		}
-		unique_ptr<model> mdl(new model(data_file().get_path(*current) + mdlname));
+		auto mdl = std::make_unique<model>(data_file().get_path(*current) + mdlname);
 		// register and set default layout.
 		mdl->register_layout();
 		mdl->set_layout();
@@ -1540,8 +1504,8 @@ class vessel_view
 		return mdl;
 	}
 public:
-	vessel_view(widget_text* wdesc_ = nullptr)
-		: current(shipnames.end()), wdesc(wdesc_) 
+	vessel_view(widget_text& wdesc_, std::unique_ptr<widget_3dview>& w3d)
+		: current(shipnames.end()), wdesc(wdesc_)
 	{
 		color bgcol(50, 50, 150);
 		shipnames = data_file().get_ship_list();
@@ -1550,53 +1514,50 @@ public:
 		tmp = data_file().get_airplane_list();
 		shipnames.splice(shipnames.end(), tmp);
 		current = shipnames.begin();
-		w3d = new widget_3dview(20, 0, 1024-2*20, 700-32-16, load_model(), bgcol);
-		vector3f lightdir = vector3f(angle(143).cos(), angle(143).sin(), angle(49.5).tan()).normal(); 
+		w3d = std::make_unique<widget_3dview>(20, 0, 1024-2*20, 700-32-16, load_model(), bgcol);
+		vector3f lightdir = vector3f(angle(143).cos(), angle(143).sin(), angle(49.5).tan()).normal();
 		w3d->set_light_dir(vector4f(lightdir.x, lightdir.y, lightdir.z, 0));
 		w3d->set_light_color(color(233, 221, 171));
 	}
-	widget_3dview* get_w3d() { return w3d; }
-	void next() {
+	void next(widget_3dview& w3d) {
 		++current;
 		if (current == shipnames.end())
 			current = shipnames.begin();
-		w3d->set_model(load_model());
-		w3d->redraw();
-	} 
-	void previous() {
+		w3d.set_model(load_model());
+		w3d.redraw();
+	}
+	void previous(widget_3dview& w3d) {
 		if (current == shipnames.begin())
 			current = shipnames.end();
 		--current;
-		w3d->set_model(load_model());
-		w3d->redraw();
+		w3d.set_model(load_model());
+		w3d.redraw();
 	}
-	void switchlayout() {
+	void switchlayout(widget_3dview& w3d) {
 		++currentlayout;
 		if (currentlayout == modellayouts.end())
 			currentlayout = modellayouts.begin();
 		// registering the same layout multiple times does not hurt, no problem
-		w3d->get_model()->register_layout(*currentlayout);
-		w3d->get_model()->set_layout(*currentlayout);
-		w3d->redraw();
+		w3d.get_model()->register_layout(*currentlayout);
+		w3d.get_model()->set_layout(*currentlayout);
+		w3d.redraw();
 	}
 };
 
 void menu_show_vessels()
 {
 	widget w(0, 0, 1024, 768, texts::get(24), nullptr, "threesubs.jpg");
-	auto* wt = new widget_text(0, 50, 1024, 32, "", nullptr, true);
-	w.add_child(wt);
-	auto* wm = new widget_menu(0, 700, 140, 32, ""/*texts::get(110)*/, true);
-	w.add_child(wm);
-	vessel_view vw(wt);
-	w.add_child(vw.get_w3d());
+	auto& wt = w.add_child(std::make_unique<widget_text>(0, 50, 1024, 32, "", nullptr, true));
+	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 700, 140, 32, ""/*texts::get(110)*/, true));
+	std::unique_ptr<widget_3dview> w3d;
+	vessel_view vw(wt, w3d);
 
-	wm->add_entry(texts::get(115), new widget_caller_button<vessel_view, void (vessel_view::*)()>(&vw, &vessel_view::next));
-	wm->add_entry(texts::get(116), new widget_caller_button<vessel_view, void (vessel_view::*)()>(&vw, &vessel_view::previous));
+	wm.add_entry(texts::get(115), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.next(w3d); }, vw, *w3d));
+	wm.add_entry(texts::get(116), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.previous(w3d); }, vw, *w3d));
 	// fixme: disable butten when there is only one layout
-	wm->add_entry(texts::get(246), new widget_caller_button<vessel_view, void (vessel_view::*)()>(&vw, &vessel_view::switchlayout));
-	wm->add_entry(texts::get(117), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0));
-	wm->adjust_buttons(984);
+	wm.add_entry(texts::get(246), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.switchlayout(w3d); }, vw, *w3d));
+	wm.add_entry(texts::get(117), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+	wm.adjust_buttons(984);
 
 	w.run(0, false);
 }
@@ -1842,7 +1803,7 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 	mycfg.register_option("terrain_detail", 1);
-	
+
 	mycfg.register_key(key_names[unsigned(key_command::ZOOM_MAP)].name, SDLK_PLUS, false, false, false);
 	mycfg.register_key(key_names[unsigned(key_command::UNZOOM_MAP)].name, SDLK_MINUS, false, false, false);
 	mycfg.register_key(key_names[unsigned(key_command::SHOW_GAUGES_SCREEN)].name, SDLK_F1, false, false, false);
@@ -2005,7 +1966,7 @@ int mymain(list<string>& args)
 
 				str_problems << "\nPress any key to quit.";
 				str_problems << "\n\n" << warnings;
-				
+
 				glClearColor(0, 0, 1, 0);
 				glClear(GL_COLOR_BUFFER_BIT);
 				sys().prepare_2d_drawing();
@@ -2057,7 +2018,7 @@ int mymain(list<string>& args)
 	add_loading_screen("Music list loaded");
 	//music::instance().set_playback_mode(music::PBM_SHUFFLE_TRACK);
 	music::instance().play();
-	
+
 	widget::set_theme(std::make_unique<widget::theme>("widgetelements_menu.png", "widgeticons_menu.png",
 								    font_typenr16,
 								    color(182, 146, 137),
@@ -2136,27 +2097,26 @@ int mymain(list<string>& args)
 			// opengl warnings
 			if ( 0 != warnings.length() )
 			{
-				w.add_child(new widget_text(20, 20, 0, 0, warnings));
+				w.add_child(std::make_unique<widget_text>(20, 20, 0, 0, warnings));
 			}
 #endif // WIN32
 
 			// display version #
-			w.add_child(new widget_text( 5, 768-30, 0, 0, get_program_version()));
+			w.add_child(std::make_unique<widget_text>( 5, 768-30, 0, 0, get_program_version()));
 
-			auto* wm = new widget_menu(0, 0, 400, 40, texts::get(104));
-			wm->set_entry_spacing(8);
-			w.add_child(wm);
-			wm->add_entry(texts::get(21), new widget_func_button<void (*)()>(&menu_single_mission, 0, 0, 0, 0));
-			//wm->add_entry(texts::get(23), new widget_func_button<void (*)()>(&menu_notimplemented /* career menu */, 0, 0, 0, 0));
-			wm->add_entry(texts::get(222), new widget_func_button<void (*)()>(&menu_mission_editor, 0, 0, 0, 0));
-			wm->add_entry(texts::get(24), new widget_func_button<void (*)()>(&menu_show_vessels, 0, 0, 0, 0));
-			wm->add_entry(texts::get(25), new widget_func_button<void (*)()>(&show_halloffame_mission, 0, 0, 0, 0));
-			wm->add_entry(texts::get(213), new widget_func_button<void (*)()>(&show_credits, 0, 0, 0, 0));
-			wm->add_entry(texts::get(26), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 1, 0, 0, 0, 0));
-			wm->add_entry(texts::get(29), new widget_func_button<void (*)()>(&menu_options, 0, 0, 0, 0));
+			auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(104)));
+			wm.set_entry_spacing(8);
+			wm.add_entry(texts::get(21), std::make_unique<widget_caller_button<>>(menu_single_mission));
+			//wm.add_entry(texts::get(23), std::make_unique<widget_caller_button<>>(menu_notimplemented /* career menu */));
+			wm.add_entry(texts::get(222), std::make_unique<widget_caller_button<>>(menu_mission_editor));
+			wm.add_entry(texts::get(24), std::make_unique<widget_caller_button<>>(menu_show_vessels));
+			wm.add_entry(texts::get(25), std::make_unique<widget_caller_button<>>(show_halloffame_mission));
+			wm.add_entry(texts::get(213), std::make_unique<widget_caller_button<>>(show_credits));
+			wm.add_entry(texts::get(26), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(1); }, w));
+			wm.add_entry(texts::get(29), std::make_unique<widget_caller_button<>>(menu_options));
 
-			wm->add_entry(texts::get(30), new widget_caller_arg_button<widget, void (widget::*)(int), int>(&w, &widget::close, 0, 0, 0, 0, 0));
-			wm->align(0, 0);
+			wm.add_entry(texts::get(30), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
+			wm.align(0, 0);
 			retval = w.run(0, false);
 			if (retval == 1)
 				menu_select_language();
@@ -2179,4 +2139,4 @@ int mymain(list<string>& args)
 	return 0;
 }
 
- 	  	 
+

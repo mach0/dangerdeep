@@ -72,11 +72,11 @@ protected:
 	image* background; // if this is != 0, the image is rendered in the background, centered
 	const texture* background_tex; // drawn as tiles if != 0 and no image defined
 	bool enabled;
-	std::list<widget*> children;
+	std::vector<std::unique_ptr<widget>> children;
 	int retval;
 	bool closeme;	// is set to true by close(), stops run() the next turn
 	mutable bool redrawme;	// is set to true by redraw(), cleared each time draw() is called
-	
+
 	widget();
 	widget(const widget& );
 	widget& operator= (const widget& );
@@ -108,34 +108,34 @@ public:
 		theme(const char* elements_filename, const char* icons_filename, const font* fnt,
 			color tc, color tsc, color tdc);
 	};
-	
+
 	struct key_event {
 		const widget* source;
 		const SDL_keysym ks;
-		key_event(const widget* _source, const SDL_keysym& _ks) 
+		key_event(const widget* _source, const SDL_keysym& _ks)
 			: source(_source), ks(_ks) {}
 	};
 	struct mouse_click_event {
 		const widget* source;
 		const int mx, my, mb;
-		mouse_click_event(const widget* _source, int _mx, int _my, int _mb) 
+		mouse_click_event(const widget* _source, int _mx, int _my, int _mb)
 			: source(_source), mx(_mx), my(_my), mb(_mb) {}
 	};
 	struct mouse_release_event {
 		const widget* source;
-		mouse_release_event(const widget* _source) 
+		mouse_release_event(const widget* _source)
 			: source(_source) {}
 	};
 	struct mouse_drag_event {
 		const widget* source;
 		const int mx, my, rx, ry, mb;
-		mouse_drag_event(const widget* _source, int _mx, int _my, int _rx, int _ry, int _mb) 
+		mouse_drag_event(const widget* _source, int _mx, int _my, int _rx, int _ry, int _mb)
 			: source(_source), mx(_mx), my(_my), rx(_rx), ry(_ry), mb(_mb) {}
 	};
 	struct mouse_scroll_event {
 		const widget* source;
 		const int wd;
-		mouse_scroll_event(const widget* _source, int _wd) 
+		mouse_scroll_event(const widget* _source, int _wd)
 			: source(_source), wd(_wd) {}
 	};
 	class action_listener {
@@ -146,23 +146,23 @@ public:
 			virtual void mouse_dragged(mouse_drag_event&) const {};
 			virtual void mouse_scrolled(mouse_scroll_event&) const {};
 	};
-	
+
 protected:
 	static std::unique_ptr<widget::theme> globaltheme;
 	static widget* focussed;	// which widget has the focus
 	static widget* mouseover;	// which widget the mouse is over
-	
+
 	static int oldmx, oldmy, oldmb;	// used for input calculation
-	
+
 	std::list<const action_listener*> action_listeners;
-	
+
 	void fire_key_event(const SDL_keysym& ks);
 	void fire_mouse_click_event(int mx, int my, int mb);
 	void fire_mouse_release_event();
 	void fire_mouse_drag_event(int mx, int my, int rx, int ry, int mb);
 	void fire_mouse_scroll_event(int wd);
 
-public:	
+public:
 	// Note! call this once before using images!
 	static void set_image_cache(objcachet<class image>* imagecache);
 
@@ -175,12 +175,18 @@ public:
 	widget(xml_elem&, widget* parent = nullptr);
 	void add_action_listener(const action_listener* listener, bool recursive = true);
 	virtual ~widget();
-	virtual void add_child(widget* w);
+	template<typename T> T& add_child(std::unique_ptr<T> w) {
+		auto& ref = *w;
+		w->set_parent(this);
+		w->move_pos(pos);
+		children.push_back(std::move(w));
+		return ref;
+	}
 	/** same as add_child, but place new child near last child.
 	    Give distance to last child and direction 0-3 (above, right, below, left)
 	    A distance < 0 means use theme border width * -distance (default children distance) */
 	widget* get_child(const std::string&, bool recursive = true);
-	virtual void add_child_near_last_child(widget *w, int distance = -2, unsigned direction = 2);
+	virtual void add_child_near_last_child(std::unique_ptr<widget>, int distance = -2, unsigned direction = 2);
 	const std::string& get_name() const { return name; }
 	///> recompute size so that window embraces all children exactly.
 	virtual void clip_to_children_area();
@@ -250,8 +256,8 @@ public:
 	virtual int run(unsigned timeout = 0, bool do_stacking = true, widget* focussed_at_begin = nullptr);
 	virtual void close(int val);	// close this widget (stops run() on next turn, returns val)
 	virtual void open();	// "open" this widget (reverts what close() did)
-	
-	static std::list<widget*> widgets;	// stack of dialogues, topmost is back
+
+	static std::vector<widget*> widgets;	// stack of dialogues, topmost is back
 	static void ref_all_backgrounds();	// for all stacked widgets, ref backgrounds
 	static void unref_all_backgrounds();	// for all stacked widgets, unref backgrounds
 };
@@ -309,77 +315,29 @@ public:
 	virtual void on_change() {}
 };
 
-template<class Obj, class Func>
+/// A class that can be used to call any function with any parameters, i.e. also a member function via lambda that calls the member, when the object
+/// is the first parameter. Can also be used to set values.
+template<typename ...Types>
 class widget_caller_button : public widget_button
 {
-	Obj* obj;
-	Func func;
+	std::function<void(Types...)> func;
+	std::tuple<Types...> args;
 public:
-	widget_caller_button(Obj* obj_, Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = nullptr)
-		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_) {}
-	void on_release() override { widget_button::on_release(); (obj->*func)(); }
+	widget_caller_button(int x, int y, int w, int h, const std::string& text, widget* parent,
+			      std::function<void(Types...)> func_, Types ... args_) : widget_button(x, y, w, h, text, parent), func(func_), args(args_ ...) {}
+	widget_caller_button(std::function<void(Types...)> func_, Types ... args_) : widget_button(0, 0, 0, 0, std::string{}, nullptr), func(func_), args(args_ ...) {}
+	void on_release() override { widget_button::on_release(); std::apply(func, args); }
 };
 
-template<class Obj, class Func, class Arg>
-class widget_caller_arg_button : public widget_button
-{
-	Obj* obj;
-	Func func;
-	Arg arg;
-public:
-	widget_caller_arg_button(Obj* obj_, Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = nullptr)
-		: widget_button(x, y, w, h, text, parent), obj(obj_), func(func_), arg(arg_) {}
-	void on_release() override { widget_button::on_release(); (obj->*func)(arg); }
-};
-
-template<class Func>
-class widget_func_button : public widget_button
-{
-	Func func;
-public:
-	widget_func_button(Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = nullptr)
-		: widget_button(x, y, w, h, text, parent), func(func_) {}
-	void on_release() override { widget_button::on_release(); func(); }
-};
-
-template<class Func, class Arg>
-class widget_func_arg_button : public widget_button
-{
-	Func func;
-	Arg arg;
-public:
-	widget_func_arg_button(Func func_, Arg arg_, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = nullptr)
-		: widget_button(x, y, w, h, text, parent), func(func_), arg(arg_) {}
-	void on_release() override { widget_button::on_release(); func(arg); }
-};
-
-template<class Obj>
-class widget_set_button : public widget_button
-{
-	Obj& obj;
-	Obj value;
-public:
-	widget_set_button(Obj& obj_, const Obj& val, int x = 0, int y = 0, int w = 0, int h = 0,
-		const std::string& text = "", widget* parent = nullptr)
-		: widget_button(x, y, w, h, text, parent), obj(obj_), value(val) {}
-	void on_release() override { widget_button::on_release(); obj = value; }
-};
-
-template<class Obj, class Func>
+template<typename ...Types>
 class widget_caller_checkbox : public widget_checkbox
 {
-	Obj* obj;
-	Func func;
+	std::function<void(Types...)> func;
+	std::tuple<Types...> args;
 public:
-	widget_caller_checkbox(Obj* obj_, Func func_, int x = 0, int y = 0, int w = 0, int h = 0,
-			       bool checked = false,
-			       const std::string& text = "", widget* parent = nullptr)
-		: widget_checkbox(x, y, w, h, checked, text, parent), obj(obj_), func(func_) {}
-	void on_change() override { widget_checkbox::on_change(); (obj->*func)(); }
+	widget_caller_checkbox(int x, int y, int w, int h, const std::string& text, widget* parent, bool checked,
+			       std::function<void(Types...)> func_, Types ... args_) : widget_checkbox(x, y, w, h, checked, text, parent), func(func_), args(args_ ...) {}
+	void on_change() override { widget_checkbox::on_change(); std::apply(func, args); }
 };
 
 class widget_menu : public widget
@@ -392,16 +350,16 @@ protected:
 	widget_menu() = default;
 	widget_menu(const widget_menu& );
 	widget_menu& operator= (const widget_menu& );
-	
-	void add_child(widget* w) override { widget::add_child(w); };	// clients must use add_entry
-	
+
+	// do not use add_child here!
+
 public:
 	widget_menu(int x, int y, int w, int h, const std::string& text_, bool horizontal_ = false,
 		    widget* parent_ = nullptr);
 	widget_menu(xml_elem& elem, widget* _parent = nullptr);
 	void set_entry_spacing(int spc) { entryspacing = spc; }
 	void adjust_buttons(unsigned totalsize);	// width or height
-	widget_button* add_entry(const std::string& s, widget_button* wb = nullptr); // wb's text is always set to s
+	widget_button* add_entry(const std::string& s, std::unique_ptr<widget_button> wb); // wb's text is always set to s
 	int get_selected() const;
 	void draw() const override;
 };
@@ -505,7 +463,7 @@ protected:
 
 	void read_current_dir();
 	unsigned nr_dirs, nr_files;
-	
+
 	struct filelist : public widget_list
 	{
 		void on_click(int mx, int my, int mb) override {

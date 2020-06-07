@@ -106,14 +106,14 @@ void highscorelist::show(widget* parent) const
 	unsigned lh = fnt->get_height();
 	unsigned scw = fnt->get_size("0000000").x;
 	unsigned y = 2*lh;
-	parent->add_child(new widget_text(scw/2, y, 0, 0, texts::get(202)));
-	parent->add_child(new widget_text(2*scw, y, 0, 0, texts::get(203)));
+	parent->add_child(std::make_unique<widget_text>(scw/2, y, 0, 0, texts::get(202)));
+	parent->add_child(std::make_unique<widget_text>(2*scw, y, 0, 0, texts::get(203)));
 	y += 2*lh;
 	for (const auto& elem : entries) {
 		ostringstream osp;
 		osp << elem.points;
-		parent->add_child(new widget_text(scw/2, y, 0, 0, osp.str()));
-		parent->add_child(new widget_text(2*scw, y, 0, 0, elem.name));
+		parent->add_child(std::make_unique<widget_text>(scw/2, y, 0, 0, osp.str()));
+		parent->add_child(std::make_unique<widget_text>(2*scw, y, 0, 0, elem.name));
 		y += lh*3/2;
 	}
 }
