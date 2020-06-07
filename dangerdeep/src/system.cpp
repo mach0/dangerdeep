@@ -491,7 +491,7 @@ void system::swap_buffers()
 //what he wants (if he handles events by himself, he have to flush the key queue each frame)
 list<SDL_Event> system::poll_event_queue()
 {
-	list<SDL_Event> events;
+	std::list<SDL_Event> events;
 
 	SDL_Event event;
 	do {

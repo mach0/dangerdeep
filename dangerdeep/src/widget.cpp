@@ -770,7 +770,7 @@ int widget::run(unsigned timeout, bool do_stacking, widget* focussed_at_begin)
 		unsigned time = sys().millisec();
 		if (timeout != 0 && time > endtime) break;
 
-		list<SDL_Event> events = sys().poll_event_queue();
+		auto events = sys().poll_event_queue();
 		if (!redrawme && inited && events.size() == 0) {
 			unsigned crsrstat0 = sys().millisec() / 500 & 1;
 			SDL_Delay(50);

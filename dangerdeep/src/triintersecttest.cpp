@@ -97,9 +97,8 @@ int mymain(list<string>& args)
 
 	// hier laufen lassen
 	for (bool doquit = false; !doquit; ) {
-		list<SDL_Event> events = sys().poll_event_queue();
-		for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-			SDL_Event& event = *it;
+		auto events = sys().poll_event_queue();
+		for (auto& event : events) {
 			if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
 				case SDLK_ESCAPE:

@@ -460,10 +460,10 @@ int mymain(list<string>& args)
     vpl->start();
     unsigned tm = sys().millisec();
     while (!quit) {
-        list<SDL_Event> events = sys().poll_event_queue();
-        for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-            if (it->type == SDL_KEYDOWN) {
-                switch ((*it).key.keysym.sym) {
+        auto events = sys().poll_event_queue();
+        for (auto& event : events) {
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
 			vpl.reset();
                         quit = true;
@@ -472,7 +472,7 @@ int mymain(list<string>& args)
                         break;
                 }
             }
-            if (it->type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
 		    paused = !paused;
 		    tm = sys().millisec();
             }

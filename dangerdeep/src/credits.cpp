@@ -827,7 +827,7 @@ void show_credits()
 	double totaltime = sys().millisec() / 1000.0;
 	double measuretime = 5;	// seconds
 	while (!quit) {
-		list<SDL_Event> events = sys().poll_event_queue();
+		auto events = sys().poll_event_queue();
 		for (auto & event : events) {
 			if (event.type == SDL_KEYDOWN) {
 				quit = true;
