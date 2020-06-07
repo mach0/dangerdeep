@@ -51,7 +51,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define DBGOUT8(a,b,c,d,e,f,g,h) std::cout DBGOUT(a) DBGOUT(b) DBGOUT(c) DBGOUT(d) DBGOUT(e) DBGOUT(f) DBGOUT(g) DBGOUT(h) << "\n";
 #endif
 
-#include <SDL.h>
 #include <string>
 #include <list>
 #include <cmath>

@@ -25,7 +25,6 @@
 #include "morton_bivector.h"
 #include "system.h"
 #include "vector2.h"
-#include <SDL.h>
 #include <ctime>
 #include <fstream>
 #include <string>
