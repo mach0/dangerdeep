@@ -21,17 +21,20 @@ After each step check functionality.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
 -------------WE ARE HERE-----------------	
-9. Introduce newer system input handling (needs SDL2?)
-	rename system.* to system_interface.* to compare includes (no changes between codemodernization and master!)
-	This means no more SDL includes in headers!!!
+9. Introduce newer system input event handling
+	This means no more SDL includes in headers!
 	Rather introduce own input_event classes from codemodernization
-	branch with SDL and replace SDL usage everywhere! (900 lines)
+	Needs input_event_handler heirs and handling in system class.
+	This modern way is not even included in the codemodernization branch.
+	check_for_mouse_event must be translated as well.
+------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------	
 9. add new sensors (test if they work!!!)
 10. update internal game classes (storage of sea_object, reference to them via ID!)
 	later usage of rigid_body etc.
 11. Copy new classes like gpu interface to master branch so they can be
 	tested and used by standalone apps (copy DONE)
 12. Divide code into separate libraries better (partly done)
+------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
 13. Migrate to SDL2
 14. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
@@ -68,8 +71,10 @@ Changes that have been started in code comparison:
 - maybe we can rename the image class so we can have the old and new one. Or use a new name for the new one.
 - maybe we can use SDL2 with old OpenGL as possible transition!
 - translate bivector
+- sub_captains_cabin, use std::function instead of old C/C++ functions, maybe lambda also help
 - remove obsolete classes like morton_bivector etc. (what doesn't exist in codemodernization branch)
 - using namespace std in cpp should be avoided?
+- replace myclamp with std::clamp
 
 
 
@@ -119,6 +124,8 @@ TRIED BUT NO EFFECT
 	performance-unnecessary-copy-initialization
 CALL
 	./run-clang-tidy.py -header-filter='.*' -checks='-*,FILTERNAME' -fix
+
+
 
 4.)
 ===
@@ -226,6 +233,40 @@ OPEN TOPICS
 	random_generator.cpp	old code kept additionally yet
 	random_generator.h	old code kept additionally yet
 	bivector.h
+
+
+
+9.)
+===
+
+Input event handler concept:
+Instead of putting all events in one structure (or even union as SDL does
+it) register input_event_handler classes at the system interface. The input
+event handler classes offer overloads for the various events. So when a
+certain event is triggered (i.e. a key is pressed) the event is directly
+fetched to the handlers by calling their handler methods with the data.
+This means entering a user_display registers it as handler to the system
+interface and leaving the display unregisters it.
+This makes large switch/case code blocks obsolete that iterate over all
+events and call code by event type.
+There are/were 37 ::process_input methods in the code that all need to be split.
+For TDC display with 2 screens we even can switch handlers when screen changes.
+This all can be done with SDL1 also.
+Translate_position doesn't need to be called any longer then, transformed positions
+are already provided.
+We could even provide the handler methods for all events in parallel to existing code!
+user_display and user_interface etc. need to inherit from input_event_handler then.
+But why not just use two different classes for the TDC display?
+Translate-lambdas must not use hardcoded 1024,768 values but constants!
+This means we have to look into the .cpp files what events are processed and need to
+overload the matching handler methods, then duplicate the code from process_input
+to the handler methods and adapt it.
+Input handlers are: user_interface, all *display classes, user_popup, submarine_interface
+and widget class.
+This is a huge pile of work but rather a no-brainer.
+And we can commit only changes to all of them, but we can test all changes!
+
+
 	
 10.)
 ====
