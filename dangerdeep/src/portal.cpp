@@ -588,7 +588,7 @@ void run()
 
 		vector3 oldpos = pos;
 		const double movesc = 0.25;
-		list<SDL_Event> events = sys().poll_event_queue();
+		auto events = sys().poll_event_queue();
 		vector3 forward = -invmvr.column3(2) * movesc;
 		vector3 upward = invmvr.column3(1) * movesc;
 		vector3 sideward = invmvr.column3(0) * movesc;

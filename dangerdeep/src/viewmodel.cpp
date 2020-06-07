@@ -523,7 +523,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 			glColor4f(1,1,1,1);
 		}
 
-		list<SDL_Event> events = sys().poll_event_queue();
+		auto events = sys().poll_event_queue();
 		for (auto & event : events) {
 				if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {

@@ -593,10 +593,10 @@ void run()
     unsigned tm0 = tm;
     fpsmeasure fpsm(1.0f);
     while (!quit) {
-        list<SDL_Event> events = sys().poll_event_queue();
-        for (list<SDL_Event>::iterator it = events.begin(); it != events.end(); ++it) {
-            if (it->type == SDL_KEYDOWN) {
-                switch ((*it).key.keysym.sym) {
+        auto events = sys().poll_event_queue();
+        for (auto& event : events) {
+            if (event.type == SDL_KEYDOWN) {
+                switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
                         quit = true;
                         break;
@@ -611,7 +611,7 @@ void run()
                 }
                 //gcm.set_viewerpos(campos);
             }
-            if (it->type == SDL_MOUSEBUTTONDOWN) {
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
                 gcm.wireframe = !gcm.wireframe;
             }
         }

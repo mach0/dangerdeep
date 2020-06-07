@@ -391,7 +391,7 @@ game::run_state game__exec(game& gm, user_interface& ui)
 	ui.request_abort(false);
 
 	while (gm.get_run_state() == game::running && !ui.abort_requested()) {
-		list<SDL_Event> events = sys().poll_event_queue();
+		auto events = sys().poll_event_queue();
 
 		// maybe limit input processing to 30 fps
 		ui.process_input(events);
@@ -1975,7 +1975,7 @@ int mymain(list<string>& args)
 				sys().swap_buffers();
 				bool quit = false;
 				while (!quit) {
-					list<SDL_Event> events = sys().poll_event_queue();
+					auto events = sys().poll_event_queue();
 					for (auto & event : events) {
 						if (event.type == SDL_KEYDOWN) {
 							quit = true;
