@@ -32,7 +32,6 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "xml.h"
-#include <SDL.h>
 #include <cmath>
 #include <fstream>
 #include <iostream>
