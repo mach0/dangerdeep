@@ -164,10 +164,10 @@ public:
 		{
 		protected:
 			unsigned _i0, _i1, _i2;
-			const std::vector<Uint32>& idx;
+			const std::vector<uint32_t>& idx;
 			unsigned ptr;
 		public:
-			triangle_iterator(const std::vector<Uint32>& indices);
+			triangle_iterator(const std::vector<uint32_t>& indices);
 			virtual ~triangle_iterator() = default;
 			unsigned i0() const { return _i0; }
 			unsigned i1() const { return _i1; }
@@ -178,7 +178,7 @@ public:
 		class triangle_strip_iterator : public triangle_iterator
 		{
 		public:
-			triangle_strip_iterator(const std::vector<Uint32>& indices);
+			triangle_strip_iterator(const std::vector<uint32_t>& indices);
 			bool next() override;
 		};
 
@@ -197,8 +197,8 @@ public:
 		// vector per vertex but a flag, which saves space.
 		// fixme: research if we can have a right-handed system always. This would
 		// save fetching the colors to the vertex shader and thus spare memory bandwidth.
-		std::vector<Uint8> righthanded;	// a vector of bools. takes more space than a bitvector, but faster access.
-		std::vector<Uint32> indices;	// 3 indices per face
+		std::vector<uint8_t> righthanded;	// a vector of bools. takes more space than a bitvector, but faster access.
+		std::vector<uint32_t> indices;	// 3 indices per face
 		material* mymaterial;
 		vector3f min, max;
 		// OpenGL VBOs for the data
@@ -213,7 +213,7 @@ public:
 		double volume;
 
 		unsigned get_nr_of_triangles() const;
-		void get_triangle(unsigned triangle, Uint32 indices[3]) const { ((*this).*(get_triangle_ptr))(triangle, indices); }
+		void get_triangle(unsigned triangle, uint32_t indices[3]) const { ((*this).*(get_triangle_ptr))(triangle, indices); }
 
 		void display(const texture *caustic_map = nullptr) const;
 		void display_mirror_clip() const;
@@ -254,8 +254,8 @@ public:
 		matrix3 compute_inertia_tensor(const matrix4f& transmat) const;
 
 		/// Adjacency information - computed on demand - only for triangles
-		std::vector<Uint32> triangle_adjacency;
-		std::vector<Uint32> vertex_triangle_adjacency;
+		std::vector<uint32_t> triangle_adjacency;
+		std::vector<uint32_t> vertex_triangle_adjacency;
 
 		static const unsigned no_adjacency;// = unsigned(-1);
 		bool has_adjacency_info() const;
@@ -268,8 +268,8 @@ public:
 		bool has_bv_tree() const { return bounding_volume_tree.get(); }
 		const bv_tree& get_bv_tree() const;
 
-		void get_plain_triangle(unsigned triangle, Uint32 indices[3]) const;
-		void get_strip_triangle(unsigned triangle, Uint32 indices[3]) const;
+		void get_plain_triangle(unsigned triangle, uint32_t indices[3]) const;
+		void get_strip_triangle(unsigned triangle, uint32_t indices[3]) const;
 
 		void set_indices_type(primitive_type pt);
 		primitive_type get_indices_type() const { return indices_type; }
@@ -283,7 +283,7 @@ public:
 	protected:
 		primitive_type indices_type;
 		std::unique_ptr<bv_tree> bounding_volume_tree;
-		void (model::mesh::*get_triangle_ptr) (unsigned triangle, Uint32 indices[3]) const;
+		void (model::mesh::*get_triangle_ptr) (unsigned triangle, uint32_t indices[3]) const;
 
 	private:
 		mesh() = delete;

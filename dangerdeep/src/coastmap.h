@@ -33,7 +33,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include <string>
 #include <list>
-#include <SDL.h>
 
 
 
@@ -95,7 +94,7 @@ class coastmap
 	friend class coastsegment::segcl;	// just request some values
 
 	// some attributes used for map reading/processing
-	std::vector<Uint8> themap;		// pixel data of map file, y points up, like in OpenGL
+	std::vector<uint8_t> themap;		// pixel data of map file, y points up, like in OpenGL
 	static const int dmx[4];	// some helper constants.
 	static const int dmy[4];
 	static const int dx[4];
@@ -135,8 +134,8 @@ class coastmap
 	coastmap& operator= (const coastmap& ) = delete;
 
 	// very fast integer clamping (no branch needed, only for 32bit signed integers!)
-	Sint32 clamp_zero(Sint32 x) { return x & ~(x >> 31); }
-	Uint8& mapf(int cx, int cy);
+	int32_t clamp_zero(int32_t x) { return x & ~(x >> 31); }
+	uint8_t& mapf(int cx, int cy);
 
 	// compute position on border (0...4*(2^16-1)-1) or -1 if not on border
 	// give border number (-1,0...3) and position in segment.

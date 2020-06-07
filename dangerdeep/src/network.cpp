@@ -31,7 +31,7 @@ using std::ostringstream;
 #define PACKETSIZE 65535
 #define CHANNEL 0
 
-void network_connection::init(Uint16 local_port)
+void network_connection::init(uint16_t local_port)
 {
 	// open a socket on a port
 	sock = SDLNet_UDP_Open(local_port);
@@ -44,7 +44,7 @@ void network_connection::init(Uint16 local_port)
 	//sys().myassert(out != 0, "can't alloc UDP output packet");
 }
 
-void network_connection::send_packet(const vector<Uint8>& data)
+void network_connection::send_packet(const vector<uint8_t>& data)
 {
 	unsigned ds = data.size();
 	//sys().myassert(ds <= PACKETSIZE, "packet too long");
@@ -54,11 +54,11 @@ void network_connection::send_packet(const vector<Uint8>& data)
 	//sys().myassert(error != 0, "can't send UDP packet");
 }
 
-vector<Uint8> network_connection::receive_packet(IPaddress* ip)
+vector<uint8_t> network_connection::receive_packet(IPaddress* ip)
 {
 	int rcvd = SDLNet_UDP_Recv(sock, in);
 	if (rcvd) {
-		vector<Uint8> data(in->len);
+		vector<uint8_t> data(in->len);
 		memcpy(&data[0], in->data, in->len);
 		if (ip)
 			*ip = in->address;
@@ -68,26 +68,26 @@ vector<Uint8> network_connection::receive_packet(IPaddress* ip)
 		ip->host = 0;
 		ip->port = 0;
 	}
-	return vector<Uint8>();
+	return vector<uint8_t>();
 }
 
 void network_connection::send_message(const string& msg)
 {
-	vector<Uint8> data(msg.length());
+	vector<uint8_t> data(msg.length());
 	memcpy(&data[0], &msg[0], msg.length());
 	send_packet(data);
 }
 
 string network_connection::receive_message(IPaddress* ip)
 {
-	vector<Uint8> data = receive_packet(ip);
+	vector<uint8_t> data = receive_packet(ip);
 	string msg;
 	msg.resize(data.size());
 	memcpy(&msg[0], &data[0], data.size());
 	return msg;
 }
 
-network_connection::network_connection(Uint16 local_port)
+network_connection::network_connection(uint16_t local_port)
 {
 	init(local_port);
 }
@@ -98,7 +98,7 @@ network_connection::network_connection(IPaddress serverip)
 	bind(serverip);
 }
 
-network_connection::network_connection(const string& servername, Uint16 server_port)
+network_connection::network_connection(const string& servername, uint16_t server_port)
 {
 	init(0);
 	bind(servername, server_port);
@@ -111,7 +111,7 @@ void network_connection::bind(IPaddress ip)
 	//sys().myassert(error != -1, "can't bind UDP socket");
 }
 
-void network_connection::bind(const string& servername, Uint16 server_port)
+void network_connection::bind(const string& servername, uint16_t server_port)
 {
 	IPaddress ip;
 	SDLNet_ResolveHost(&ip, servername.c_str(), server_port);
@@ -135,8 +135,8 @@ network_connection::~network_connection()
 
 string network_connection::ip2string(IPaddress ip)
 {
-	Uint32 ipnum = SDL_SwapBE32(ip.host);
-	Uint16 port = SDL_SwapBE16(ip.port);
+	uint32_t ipnum = SDL_SwapBE32(ip.host);
+	uint16_t port = SDL_SwapBE16(ip.port);
 	ostringstream os;
 	os << ((ipnum >> 24) & 0xff) << "." <<
 		((ipnum >> 16) & 0xff) << "." <<

@@ -49,10 +49,10 @@ protected:
 	texture::ptr clouds;
 	texture::ptr suntex;
 	double cloud_animphase;				// 0-1 phase of interpolation
-	std::vector<std::vector<Uint8> > noisemaps_0, noisemaps_1;// interpolate to animate clouds
+	std::vector<std::vector<uint8_t> > noisemaps_0, noisemaps_1;// interpolate to animate clouds
 	vertexbufferobject clouds_texcoords;
 	unsigned cloud_levels, cloud_coverage, cloud_sharpness;
-	std::vector<unsigned> cloud_interpolate_func;	// give fraction as Uint8
+	std::vector<unsigned> cloud_interpolate_func;	// give fraction as uint8_t
 
 	sky& operator= (const sky& other);
 	sky(const sky& other);
@@ -60,10 +60,10 @@ protected:
 	// generate new clouds, fac (0-1) gives animation phase. animation is cyclic.
 	void advance_cloud_animation(double fac);	// 0-1
 	void compute_clouds();
-	std::vector<std::vector<Uint8> > compute_noisemaps();
-	Uint8 get_value_from_bytemap(unsigned x, unsigned y, unsigned level,
-		const std::vector<Uint8>& nmap);
-	void smooth_and_equalize_bytemap(unsigned s, std::vector<Uint8>& map1);
+	std::vector<std::vector<uint8_t> > compute_noisemaps();
+	uint8_t get_value_from_bytemap(unsigned x, unsigned y, unsigned level,
+		const std::vector<uint8_t>& nmap);
+	void smooth_and_equalize_bytemap(unsigned s, std::vector<uint8_t>& map1);
 
 	stars _stars;
 	moon _moon;

@@ -118,7 +118,7 @@ geoclipmap::geoclipmap(unsigned nr_levels, unsigned resolution_exp, height_gener
 		loc_rock_brdf_texture[i] = myshader[i]->get_uniform_location("rock_brdf_texture");
 	}
 	// set a texture for normals outside coarsest level, just 0,0,1
-	std::vector<Uint8> pxl(3, 128);
+	std::vector<uint8_t> pxl(3, 128);
 	pxl[2] = 255;
 	horizon_normal = std::make_unique<texture>(pxl, 1, 1, GL_RGB, texture::LINEAR, texture::REPEAT);
 }
@@ -252,7 +252,7 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level)
 			  0, GL_STATIC_DRAW);
 #endif
 	// create space for normal texture
-	std::vector<Uint8> pxl(3*gcm.resolution_vbo*gcm.resolution_vbo*2*2);
+	std::vector<uint8_t> pxl(3*gcm.resolution_vbo*gcm.resolution_vbo*2*2);
 	normals = std::make_unique<texture>(pxl, gcm.resolution_vbo*2,
 				  gcm.resolution_vbo*2, GL_RGB, texture::LINEAR, texture::REPEAT);
 	
@@ -459,9 +459,9 @@ void geoclipmap::level::update_region(const geoclipmap::area& upar)
 	for (int y = 0; y < sz.y*2; ++y) {
 		for (int x = 0; x < sz.x*2; ++x) {
 			const vector3f& nm = gcm.texnormalscratchbuf_3f[tptr2++];
-			gcm.texnormalscratchbuf[tptr+0] = Uint8(nm.x * 127 + 128);
-			gcm.texnormalscratchbuf[tptr+1] = Uint8(nm.y * 127 + 128);
-			gcm.texnormalscratchbuf[tptr+2] = Uint8(nm.z * 127 + 128);
+			gcm.texnormalscratchbuf[tptr+0] = uint8_t(nm.x * 127 + 128);
+			gcm.texnormalscratchbuf[tptr+1] = uint8_t(nm.y * 127 + 128);
+			gcm.texnormalscratchbuf[tptr+2] = uint8_t(nm.z * 127 + 128);
 			tptr += 3;
 		}
 	}

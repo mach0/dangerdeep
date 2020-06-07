@@ -74,7 +74,7 @@ class geoclipmap
 
 	// scratch buffer for texture data, for transmission
 	std::vector<vector3f> texnormalscratchbuf_3f;
-	std::vector<Uint8> texnormalscratchbuf;
+	std::vector<uint8_t> texnormalscratchbuf;
 
 	// scratch buffer for index generation, for transmission
 	std::vector<uint32_t> idxscratchbuf;

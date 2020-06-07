@@ -1384,7 +1384,7 @@ void widget_edit::draw() const
 	color cc = is_enabled() ? (editing ? globaltheme->textcol.more_contrast(3) : globaltheme->textcol) : globaltheme->textdisabledcol;
 	globaltheme->myfont->print_vc(p.x+fw, p.y+size.y/2, text, cc, true);
 	if (editing) {
-		Uint32 tm = sys().millisec();
+		uint32_t tm = sys().millisec();
 		if (tm / 500 & 1) {
 			vector2i sz = globaltheme->myfont->get_size(text.substr(0, cursorpos));
 			vector2f xy(p.x+fw+sz.x, p.y+size.y/8);

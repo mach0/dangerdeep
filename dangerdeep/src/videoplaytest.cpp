@@ -57,7 +57,7 @@ class videoplay : public thread
 public:
 	struct framebuffer
 	{
-		std::vector<Uint8> y, uv;
+		std::vector<uint8_t> y, uv;
 		unsigned width, height;
 		bool empty;
 		float aspect_ratio;

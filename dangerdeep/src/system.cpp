@@ -607,7 +607,7 @@ vector2i system::translate_position(const SDL_Event& event)
 
 void system::screenshot(const std::string& filename)
 {
-	Uint32 rmask, gmask, bmask;
+	uint32_t rmask, gmask, bmask;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 	rmask = 0xff000000;
 	gmask = 0x00ff0000;
@@ -617,10 +617,10 @@ void system::screenshot(const std::string& filename)
 	gmask = 0x0000ff00;
 	bmask = 0x00ff0000;
 #endif
-	vector<Uint8> pic(params.resolution_x*params.resolution_y*3);
+	vector<uint8_t> pic(params.resolution_x*params.resolution_y*3);
 	glReadPixels(0, 0, params.resolution_x, params.resolution_y, GL_RGB, GL_UNSIGNED_BYTE, &pic[0]);
 	// flip image vertically
-	vector<Uint8> flip(params.resolution_x*3);
+	vector<uint8_t> flip(params.resolution_x*3);
 	for (unsigned y = 0; y < params.resolution_y/2; ++y) {
 		unsigned y2 = params.resolution_y-y-1;
 		memcpy(&flip[0], &pic[params.resolution_x*3*y], params.resolution_x*3);

@@ -370,7 +370,7 @@ public:
           for (unsigned i = 0; i <= 256; ++i)
           asin_lookup.set_value(i, asin(float(i)/256) / M_PI + 0.5);
          */
-        std::vector<Uint8> extrah2 = pn2.generate();
+        std::vector<uint8_t> extrah2 = pn2.generate();
         extrah.resize(64 * 64);
         for (unsigned y = 0; y < 64; ++y)
             for (unsigned x = 0; x < 64; ++x)
@@ -541,7 +541,7 @@ void run()
 #endif
 #else	
     float camadd = -1000.0;
-    terrain<Sint16> m_terrain(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", 8);
+    terrain<int16_t> m_terrain(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", 8);
     geoclipmap gcm(7, 7, m_terrain);
 #endif
 

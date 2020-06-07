@@ -58,7 +58,7 @@ public:
 	static double noise(vector3 coord, unsigned ocatves = 1, float persistence = 1.0);
 	static double noise(vector4 coord, unsigned ocatves = 1, float persistence = 1.0);
 	
-	static std::vector<Uint8> noise_map2D(vector2i size, unsigned ocatves = 1, float persistence = 1.0, float coord_factor = 0.01);
+	static std::vector<uint8_t> noise_map2D(vector2i size, unsigned ocatves = 1, float persistence = 1.0, float coord_factor = 0.01);
 
 };
 #endif

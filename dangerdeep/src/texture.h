@@ -139,7 +139,7 @@ protected:
 	void sdl_rgba_init(SDL_Surface* teximagergb, SDL_Surface* teximagea);
 
 	// copy data to OpenGL, set parameters
-	void init(const std::vector<Uint8>& data, bool makenormalmap = false,
+	void init(const std::vector<uint8_t>& data, bool makenormalmap = false,
 		  float detailh = 1.0f);
 
 	static int size_non_power_2;
@@ -230,7 +230,7 @@ public:
 
 	// create texture from memory values (use openGl constants for format,etc.
 	// w,h must be powers of two.
-	texture(const std::vector<Uint8>& pixels, unsigned w, unsigned h,
+	texture(const std::vector<uint8_t>& pixels, unsigned w, unsigned h,
 		int format_, mapping_mode mapping_,
 		clamping_mode clamp, bool makenormalmap = false, float detailh = 1.0f, GLenum _dimension = GL_TEXTURE_2D);
 
@@ -247,7 +247,7 @@ public:
 
 	/// change sub-area of texture from memory values (use openGL constants for format,etc.
 	void sub_image(int xoff, int yoff, unsigned w, unsigned h,
-		       const std::vector<Uint8>& pixels, int format);
+		       const std::vector<uint8_t>& pixels, int format);
 
 	/// change sub-area of texture from memory values (use openGL constants for format,etc.
 	void sub_image(const sdl_image& sdlimage, int xoff, int yoff, unsigned w, unsigned h);
@@ -288,15 +288,15 @@ public:
 
 	// will scale down the image data to half size in each direction (at least w/h=1)
 	// w,h must be > 1
-	static std::vector<Uint8> scale_half(const std::vector<Uint8>& src,
+	static std::vector<uint8_t> scale_half(const std::vector<uint8_t>& src,
 					     unsigned w, unsigned h, unsigned bpp);
 
 	// give powers of two for w,h
-	static std::vector<Uint8> make_normals(const std::vector<Uint8>& src,
+	static std::vector<uint8_t> make_normals(const std::vector<uint8_t>& src,
 					       unsigned w, unsigned h, float detailh);
 
 	// give powers of two for w,h
-	static std::vector<Uint8> make_normals_with_alpha(const std::vector<Uint8>& src,
+	static std::vector<uint8_t> make_normals_with_alpha(const std::vector<uint8_t>& src,
 							  unsigned w, unsigned h, float detailh);
 };
 
@@ -311,7 +311,7 @@ class texture3d : public texture
 
  public:
 	// create texture from memory values (use openGl constants for format,etc.
-	texture3d(const std::vector<Uint8>& pixels, unsigned w, unsigned h, unsigned d,
+	texture3d(const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned d,
 		int format_, mapping_mode mapping_, clamping_mode clamp);
 
 	// allocate a GL texture, set some values, but do not fill texel values
@@ -322,7 +322,7 @@ class texture3d : public texture
 
 	/// change sub-area of texture from memory values (use openGL constants for format,etc.
 	void sub_image(int xoff, int yoff, int zoff, unsigned w, unsigned h, unsigned d,
-		       const std::vector<Uint8>& pixels, int format);
+		       const std::vector<uint8_t>& pixels, int format);
 
 	unsigned get_depth() const { return depth; }
 	unsigned get_gl_depth() const { return gl_depth; }
@@ -334,7 +334,7 @@ class texture3d : public texture
  private:
 	// not available for 3d textures
 	void sub_image(int xoff, int yoff, unsigned w, unsigned h,
-		       const std::vector<Uint8>& pixels, int format);
+		       const std::vector<uint8_t>& pixels, int format);
 	void draw(int x, int y) const;
 	void draw_hm(int x, int y) const;
 	void draw_vm(int x, int y) const;

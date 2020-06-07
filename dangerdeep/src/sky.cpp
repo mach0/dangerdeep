@@ -160,15 +160,15 @@ void sky::compute_clouds()
 	// clouds facing away from the sun shouldn't be black though (because of
 	// bump mapping).
 	// FIXME use perlin noise generator here!
-	vector<vector<Uint8> > cmaps = noisemaps_0;
+	vector<vector<uint8_t> > cmaps = noisemaps_0;
 	float f = cloud_animphase;
 	for (unsigned i = 0; i < cloud_levels; ++i)
 		for (unsigned j = 0; j < mapsize2 * mapsize2; ++j)
-			cmaps[i][j] = Uint8(noisemaps_0[i][j]*(1-f) + noisemaps_1[i][j]*f);
+			cmaps[i][j] = uint8_t(noisemaps_0[i][j]*(1-f) + noisemaps_1[i][j]*f);
 
 	// create full map
 	const unsigned res = 256;
-	vector<Uint8> fullmap(res * res);
+	vector<uint8_t> fullmap(res * res);
 	unsigned fullmapptr = 0;
 	for (unsigned y = 0; y < res; ++y) {
 		for (unsigned x = 0; x < res; ++x) {
@@ -191,11 +191,11 @@ void sky::compute_clouds()
 
 
 
-vector<vector<Uint8> > sky::compute_noisemaps()
+vector<vector<uint8_t> > sky::compute_noisemaps()
 {
 	unsigned mapsize = 8 - cloud_levels;
 	unsigned mapsize2 = (2<<mapsize);
-	vector<vector<Uint8> > noisemaps(cloud_levels);
+	vector<vector<uint8_t> > noisemaps(cloud_levels);
 	for (unsigned i = 0; i < cloud_levels; ++i) {
 		noisemaps[i].resize(mapsize2 * mapsize2);
 		for (unsigned j = 0; j < mapsize2 * mapsize2; ++j)
@@ -207,8 +207,8 @@ vector<vector<Uint8> > sky::compute_noisemaps()
 
 
 
-Uint8 sky::get_value_from_bytemap(unsigned x, unsigned y, unsigned level,
-	const vector<Uint8>& nmap)
+uint8_t sky::get_value_from_bytemap(unsigned x, unsigned y, unsigned level,
+	const vector<uint8_t>& nmap)
 {
 	// x,y are in 0...255, shift them according to level
 	unsigned shift = cloud_levels - 1 - level;
@@ -234,14 +234,14 @@ Uint8 sky::get_value_from_bytemap(unsigned x, unsigned y, unsigned level,
 	unsigned v4 = (v0*(256-xfrac)+v1*xfrac);
 	unsigned v5 = (v2*(256-xfrac)+v3*xfrac);
 	unsigned v6 = (v4*(256-yfrac)+v5*yfrac);
-	return Uint8(v6 >> 16);
+	return uint8_t(v6 >> 16);
 }
 
 
 
-void sky::smooth_and_equalize_bytemap(unsigned s, vector<Uint8>& map1)
+void sky::smooth_and_equalize_bytemap(unsigned s, vector<uint8_t>& map1)
 {
-	vector<Uint8> map2 = map1;
+	vector<uint8_t> map2 = map1;
 	unsigned maxv = 0, minv = 255;
 	for (unsigned y = 0; y < s; ++y) {
 		unsigned y1 = (y+s-1)%s, y2 = (y+1)%s;
@@ -250,7 +250,7 @@ void sky::smooth_and_equalize_bytemap(unsigned s, vector<Uint8>& map1)
 			unsigned v = (unsigned(map2[y1*s+x1]) + unsigned(map2[y1*s+x2]) + unsigned(map2[y2*s+x1]) + unsigned(map2[y2*s+x2])) / 16
 				+ (unsigned(map2[y*s+x1]) + unsigned(map2[y*s+x2]) + unsigned(map2[y1*s+x]) + unsigned(map2[y2*s+x])) / 8
 				+ (unsigned(map2[y*s+x])) / 4;
-			map1[y*s+x] = Uint8(v);
+			map1[y*s+x] = uint8_t(v);
 			if (v < minv) minv = v;
 			if (v > maxv) maxv = v;
 		}
@@ -258,7 +258,7 @@ void sky::smooth_and_equalize_bytemap(unsigned s, vector<Uint8>& map1)
 	for (unsigned y = 0; y < s; ++y) {
 		for (unsigned x = 0; x < s; ++x) {
 			unsigned v = map1[y*s+x];
-			map1[y*s+x] = Uint8((v - minv)*255/(maxv-minv));
+			map1[y*s+x] = uint8_t((v - minv)*255/(maxv-minv));
 		}
 	}
 }

@@ -1,10 +1,10 @@
 #include "simplex_noise.h"
 
-std::vector<Uint8> simplex_noise::noise_map2D(vector2i size, unsigned ocatves, float persistence, float coord_factor)
+std::vector<uint8_t> simplex_noise::noise_map2D(vector2i size, unsigned ocatves, float persistence, float coord_factor)
 {
 	double min = 1.0, max = 0.0, scale = 0.0;
 	std::vector<double> values(size.x*size.y);
-	std::vector<Uint8> map(size.x*size.y);
+	std::vector<uint8_t> map(size.x*size.y);
 	for(int y=0; y<size.y; y++)	for(int x=0; x<size.x; x++)
 	{
 		values[y*size.x+x] = noise(vector2(x*coord_factor,y*coord_factor), ocatves, persistence);

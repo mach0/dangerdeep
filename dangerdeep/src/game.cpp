@@ -200,7 +200,7 @@ game::game()
 	mywater = std::make_unique<water>(0.0);
 	//myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
+	myheightgen = std::make_unique<terrain<int16_t>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 	
 #if 0
 	if (cfg::instance().geti("cpucores") > 1) {
@@ -273,7 +273,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	mywater = std::make_unique<water>(time);
 //myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
+	myheightgen = std::make_unique<terrain<int16_t>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 
 	// Convoy-constructor creates all the objects and spawns them in this game object.
 	// fixme: creation of convoys should be rather moved to this class, so object creation
@@ -395,7 +395,7 @@ game::game(const string& filename)
 
 	//myheightgen.reset(new height_generator_map("default.xml"));
 
-	myheightgen = std::make_unique<terrain<Sint16>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
+	myheightgen = std::make_unique<terrain<int16_t>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
 
 	// create empty objects so references can be filled.
 	// there must be ships in a mission...
