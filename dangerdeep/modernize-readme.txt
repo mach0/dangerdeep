@@ -21,15 +21,12 @@ After each step check functionality.
 	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
--------------WE ARE HERE-----------------
 9. Introduce newer system input event handling and migrate to SDL2
-	DONE but:
-	viewmodel is broken.
-	portal rendering doesn't work anymore.
-	bvtree test doesnt work, bad_alloc
+-------------WE ARE HERE-----------------
+10. Fix viewmodel app
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
-10. add new sensors (test if they work!!!) needs test program.
-11. update internal game classes (storage of sea_object, reference to them via ID!)
+11. add new sensors (test if they work!!!) needs test program.
+12. update internal game classes (storage of sea_object, reference to them via ID!)
 	later usage of rigid_body, generic_rudder etc.
 	A generic pointer to sea_object may be unnecessary, the objects can report their models for display.
 13. Divide code into separate libraries better (partly done)
@@ -43,6 +40,8 @@ After each step check functionality.
 15. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 16. Turn on -Wall
 17. Sound sfx are not loaded (wav expected, ogg provided)
+18. Fix portal rendering
+19. Check bvtree test, causes bad_alloc
 
 
 Changes that have been started in code comparison:
@@ -81,6 +80,7 @@ Changes that have been started in code comparison:
   we can't enter bridge/uzo even near the surface!
 - make every declared variable const that is not changed!
 - check clang tidy for readability-qualified-auto, readability-non-const-parameter
+- But why not just use two different classes for the TDC display?
 
 
 
@@ -256,7 +256,6 @@ This means entering a user_display registers it as handler to the system
 interface and leaving the display unregisters it.
 This makes large switch/case code blocks obsolete that iterate over all
 events and call code by event type.
-But why not just use two different classes for the TDC display?
 Event handlers dont need to be registered when display change, as user interface fetches data.
 
 
