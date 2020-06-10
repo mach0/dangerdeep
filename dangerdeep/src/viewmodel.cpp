@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 
-#include "system.h"
+#include "system_interface.h"
 #include "vector3.h"
 #include "datadirs.h"
 #include "font.h"
@@ -51,7 +51,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 #include "cfg.h"
 #include <glu.h>
-#include <SDL.h>
 
 #define VIEWMODEL
 
@@ -158,7 +157,7 @@ void model_load_dialog::load_menu()
 
 	w.add_child(std::move(wm));
 
-	w.run(0,false);
+	widget::run(w, 0, false);
 }
 
 
@@ -197,7 +196,7 @@ void model_load_dialog::message(const string& msg)
 	wm->add_entry("OK", std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 	w.add_child(std::move(wm));
 
-	w.run(0,false);
+	widget::run(w, 0, false);
 }
 
 
@@ -273,7 +272,6 @@ void view_model(const string& modelfilename, const string& datafilename)
 	// Smoke variables
 
 	bool smoke = false;
-	int smoke_type = 0;
 	vector3 smoke_pos;
 	bool smoke_display = false;
 
@@ -283,7 +281,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 		xml_doc dataxml(datafilename);
 		dataxml.load();
 		xml_elem smoke_elem = dataxml.first_child().child("smoke");
-		smoke_type = smoke_elem.attri("type");
+		//smoke_type = smoke_elem.attri("type");
 		float smokex = smoke_elem.attrf("x");
 		float smokey = smoke_elem.attrf("y");
 		float smokez = smoke_elem.attrf("z");
@@ -366,8 +364,122 @@ void view_model(const string& modelfilename, const string& datafilename)
 	}
 
 	float ang_delta = 0.0f;
+	vector3f smoke_delta;
 
-	while (true) {
+	bool doquit = false;
+	bool xyzpressed = false;
+	auto ic = std::make_shared<input_event_handler_custom>();
+	ic->set_handler([&](const input_event_handler::key_data& k) {
+		if (k.down()) {
+			switch (k.keycode) {
+			case key_code::ESCAPE:
+				doquit = true; break;
+			case key_code::KP_4: pos.x -= 1.0; break;
+			case key_code::KP_6: pos.x += 1.0; break;
+			case key_code::KP_8: pos.y -= 1.0; break;
+			case key_code::KP_2: pos.y += 1.0; break;
+			case key_code::KP_1: pos.z -= 1.0; break;
+			case key_code::KP_3: pos.z += 1.0; break;
+			case key_code::l: lightmove = !lightmove; break;
+			case key_code::s:
+				{
+					// Allow user to save smoke position
+					if (smoke && ((k.mod & key_mod::ctrl) != key_mod::none)) {
+						try {
+							xml_doc dataxml(datafilename);
+							dataxml.load();
+							xml_elem smoke_elem = dataxml.first_child().child("smoke");
+
+							smoke_elem.set_attr(smoke_pos.x, "x");
+							smoke_elem.set_attr(smoke_pos.y, "y");
+							smoke_elem.set_attr(smoke_pos.z, "z");
+
+							dataxml.save();
+						} catch (...) { std::cout << "unable to save smoke origin" << "\n"; }
+
+					} else {
+						pair<model::mesh*, model::mesh*> parts = mdl->get_mesh(0).split(vector3f(0,1,0), -1);
+						parts.first->transform(matrix4f::trans(0, 30, 50));
+						parts.second->transform(matrix4f::trans(0, -30, 50));
+						mdl->add_mesh(parts.first);
+						mdl->add_mesh(parts.second);
+					}
+				}
+				break;
+			case key_code::c: coordinatesystem = !coordinatesystem; break;
+			case key_code::p: smoke_display = !smoke_display; break;
+			case key_code::w: if (++wireframe>1) wireframe = 0; break;
+			case key_code::x:
+				smoke_delta.x = (k.mod & key_mod::shift) != key_mod::none ? 1.0f : 0.1f; xyzpressed = true; break;
+			case key_code::y:
+				smoke_delta.y = (k.mod & key_mod::shift) != key_mod::none ? 1.0f : 0.1f; xyzpressed = true; break;
+			case key_code::z:
+				smoke_delta.z = (k.mod & key_mod::shift) != key_mod::none ? 1.0f : 0.1f; xyzpressed = true; break;
+			default:
+				return false;
+				break;
+			}
+			return true;
+		} else if (k.up()) {
+			if (k.keycode == key_code::x) {
+				smoke_delta.x = 0.f;
+				xyzpressed = false;
+				return true;
+			} else if (k.keycode == key_code::y) {
+				smoke_delta.y = 0.f;
+				xyzpressed = false;
+				return true;
+			} else if (k.keycode == key_code::z) {
+				smoke_delta.z = 0.f;
+				xyzpressed = false;
+				return true;
+			}
+		}
+		return false;
+	});
+	ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
+		if (m.left()) {
+			viewangles.y += m.relative_motion.x;
+			viewangles.x += m.relative_motion.y;
+			return true;
+		} else if (m.right()) {
+			viewangles.z += m.relative_motion.x;
+			viewangles.x += m.relative_motion.y;
+			return true;
+		} else if (m.middle()) {
+			pos.x += m.relative_motion.x;
+			pos.y += m.relative_motion.y;
+			return true;
+		}
+		return false;
+	});
+	ic->set_handler([&](const input_event_handler::mouse_wheel_data& m) {
+		// Check if x,,y,z are pressed and if so mouse wheel moves smoke position by delta.
+		// delta is either 1.0 if a shift key is pressed or 0.1 otherwise.
+		if (m.up()) {
+			if (xyzpressed) {
+				smoke_pos += smoke_delta;
+			} else {
+				pos.z -= 2;
+			}
+		} else if (m.down()) {
+			if (xyzpressed) {
+				smoke_pos -= smoke_delta;
+			} else {
+				pos.z += 2;
+			}
+		}
+		if (smoke_pos.x < 0.00001 && smoke_pos.x > -0.00001)
+			smoke_pos.x = 0;
+		if (smoke_pos.y < 0.00001 && smoke_pos.y > -0.00001)
+			smoke_pos.y = 0;
+		if (smoke_pos.z < 0.00001 && smoke_pos.z > -0.00001)
+			smoke_pos.z = 0;
+		return true;
+	});
+	sys().add_input_event_handler(ic);
+
+	while (!doquit) {
 		// rotate light
 		unsigned time2 = sys().millisec();
 		if (lightmove && time2 > time1) {
@@ -421,7 +533,6 @@ void view_model(const string& modelfilename, const string& datafilename)
 
 		if (coordinatesystem) {
 			glDisable(GL_LIGHTING);
-			vector3f min = mdl->get_min();
 			vector3f max = mdl->get_max();
 			float h = max.z;
 			float w = max.x;
@@ -523,96 +634,6 @@ void view_model(const string& modelfilename, const string& datafilename)
 			glColor4f(1,1,1,1);
 		}
 
-		auto events = sys().poll_event_queue();
-		for (auto & event : events) {
-				if (event.type == SDL_KEYDOWN) {
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-					return;
-				case SDLK_KP4: pos.x -= 1.0; break;
-				case SDLK_KP6: pos.x += 1.0; break;
-				case SDLK_KP8: pos.y -= 1.0; break;
-				case SDLK_KP2: pos.y += 1.0; break;
-				case SDLK_KP1: pos.z -= 1.0; break;
-				case SDLK_KP3: pos.z += 1.0; break;
-				case SDLK_l: lightmove = !lightmove; break;
-				case SDLK_s:
-					{
-						// Allow user to save smoke position
-						if (smoke && (SDL_GetModState() & (KMOD_LCTRL | KMOD_RCTRL))) {
-							try {
-								xml_doc dataxml(datafilename);
-								dataxml.load();
-								xml_elem smoke_elem = dataxml.first_child().child("smoke");
-
-								smoke_elem.set_attr(smoke_pos.x, "x");
-								smoke_elem.set_attr(smoke_pos.y, "y");
-								smoke_elem.set_attr(smoke_pos.z, "z");
-
-								dataxml.save();
-							} catch (...) { std::cout << "unable to save smoke origin" << "\n"; }
-
-						} else {
-							pair<model::mesh*, model::mesh*> parts = mdl->get_mesh(0).split(vector3f(0,1,0), -1);
-							parts.first->transform(matrix4f::trans(0, 30, 50));
-							parts.second->transform(matrix4f::trans(0, -30, 50));
-							mdl->add_mesh(parts.first);
-							mdl->add_mesh(parts.second);
-						}
-					}
-					break;
-				case SDLK_c: coordinatesystem = !coordinatesystem; break;
-				case SDLK_p: smoke_display = !smoke_display; break;
-				case SDLK_w: if (++wireframe>1) wireframe = 0; break;
-				default: break;
-				}
-			} else if (event.type == SDL_MOUSEMOTION) {
-				vector2 motion = sys().translate_motion(event) * 0.5;
-				if (event.motion.state & SDL_BUTTON_LMASK) {
-					viewangles.y += motion.x;
-					viewangles.x += motion.y;
-				} else if (event.motion.state & SDL_BUTTON_RMASK) {
-					viewangles.z += motion.x;
-					viewangles.x += motion.y;
-				} else if (event.motion.state & SDL_BUTTON_MMASK) {
-					pos.x += motion.x;
-					pos.y += motion.y;
-				}
-			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
-				// Check if x,,y,z are pressed and if so mouse wheel moves smoke position by delta.
-				// delta is either 1.0 if a shift key is pressed or 0.1 otherwise.
-				uint8_t *keys = SDL_GetKeyState(nullptr);
-				float delta = (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT))? 1.000 : 0.100;
-
-				if (event.button.button == SDL_BUTTON_WHEELUP) {
-					if (keys[SDLK_x]) {
-						smoke_pos.x += delta;
-					} else if (keys[SDLK_y]) {
-						smoke_pos.y += delta;
-					} else if (keys[SDLK_z]) {
-						smoke_pos.z += delta;
-					} else {
-						pos.z -= 2;
-					}
-				} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-					if (keys[SDLK_x]) {
-						smoke_pos.x -= delta;
-					} else if (keys[SDLK_y]) {
-						smoke_pos.y -= delta;
-					} else if (keys[SDLK_z]) {
-						smoke_pos.z -= delta;
-					} else {
-						pos.z += 2;
-					}
-				}
-				if (smoke_pos.x < 0.00001 && smoke_pos.x > -0.00001)
-					smoke_pos.x = 0;
-				if (smoke_pos.y < 0.00001 && smoke_pos.y > -0.00001)
-					smoke_pos.y = 0;
-				if (smoke_pos.z < 0.00001 && smoke_pos.z > -0.00001)
-					smoke_pos.z = 0;
-			}
-		}
 		sys().prepare_2d_drawing();
 		vector3f minp = mdl->get_min(), maxp = mdl->get_max();
 		ostringstream os;
@@ -641,7 +662,6 @@ void view_model(const string& modelfilename, const string& datafilename)
 		// print scale descriptions
 		if (coordinatesystem) {
 			matrix4 xf = matrix4::trans(res_x/2, res_y/2, 0) * matrix4::diagonal(res_x/2, -res_y/2, 1) * mvp;
-			vector3f min = mdl->get_min();
 			vector3f max = mdl->get_max();
 			float h = max.z;
 			float w = max.x;
@@ -692,7 +712,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 			lastframes = frames;
 		}
 
-		sys().swap_buffers();
+		sys().finish_frame();
 	}
 
 	delete msh;
@@ -725,8 +745,6 @@ int mymain(list<string>& args)
 	string modelfilename;
 	string datafilename;
 	model_layout = model::default_layout;
-	/* default fps */
-	unsigned maxfps = 60;
 
 	for (auto it = args.begin(); it != args.end(); ++it) {
 		if (*it == "--help") {
@@ -734,8 +752,7 @@ int mymain(list<string>& args)
 			     << "--res n\t\tuse resolution n horizontal,\n\t\tn is 512,640,800,1024 (recommended) or 1280\n"
 			     << "--nofullscreen\tdon't use fullscreen\n"
 			     << "--layout layoutname\tuse layout with specific name for skins\n"
-			     << "--maxfps x\tset maximum fps to x frames per second (default 60). Use x=0 to disable fps limit.\n"
-				 << "--gui starts viewmodel in GUI mode, with model list.\n"
+			     << "--gui starts viewmodel in GUI mode, with model list.\n"
 			     << "MODELFILENAME\n";
 			return 0;
 		} else if (*it == "--nofullscreen") {
@@ -758,13 +775,6 @@ int mymain(list<string>& args)
 			} else --it;
 		} else if (*it == "--gui") {
 			use_gui = true;
-		} else if (*it == "--maxfps") {
-			auto it2 = it; ++it2;
-			if (it2 != args.end()) {
-				int mf = atoi(it2->c_str());
-				if (mf >= 0) maxfps = unsigned(mf);
-				++it;
-			}
 		} else {
 			modelfilename = *it;
 		}
@@ -802,10 +812,13 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 
-	system::parameters params(1.0, 1000.0, res_x, res_y, fullscreen);
-	system::create_instance(new class system(params));
-	sys().set_res_2d(1024, 768);
-	sys().set_max_fps(maxfps);
+	system_interface::parameters params;
+	params.near_z = 1.0;
+	params.far_z = 1000.0;
+	params.resolution = {res_x, res_y};
+	params.resolution2d = {1024,768};
+	params.fullscreen = fullscreen;
+	system_interface::create_instance(new class system_interface(params));
 
 	log_info("A simple model viewer for DftD-.mdl files");
 	log_info("copyright and written 2003 by Thorsten Jordan");
@@ -823,8 +836,6 @@ int mymain(list<string>& args)
 	font_arial = new font(get_font_dir() + "font_arial");
 	font_vtremington12 = new font(get_font_dir() + "font_vtremington12");
 
-	sys().draw_console_with(font_arial, nullptr);
-
 	objcachet<class image> imagecache(get_image_dir());
 	widget::set_image_cache(&imagecache);
 
@@ -837,7 +848,7 @@ int mymain(list<string>& args)
 	delete font_arial;
 	delete font_vtremington12;
 
-	system::destroy_instance();
+	system_interface::destroy_instance();
 
 	return 0;
 }

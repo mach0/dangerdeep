@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "oglext/OglExt.h"
 #include <glu.h>
-#include <SDL.h>
 
 #include "cfg.h"
 #include "datadirs.h"
@@ -38,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "matrix4.h"
 #include "polygon.h"
 #include "primitives.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include "water.h"
 #include <fstream>

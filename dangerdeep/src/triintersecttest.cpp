@@ -25,11 +25,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <vector>
 
-#include "system.h"
+#include "system_interface.h"
 #include "triangle_intersection.h"
 #include "log.h"
 #include "cfg.h"
-#include <SDL.h>
 #include "oglext/OglExt.h"
 #include "shader.h"
 #include "mymain.cpp"
@@ -71,10 +70,9 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 
-	system::parameters params(1.0, 1000.0, 1024, 768, false);
-	system::create_instance(new class system(params));
+	system_interface::parameters params(1.0, 1000.0, 1024, 768, false);
+	system_interface::create_instance(new class system(params));
 	sys().set_res_2d(1024, 768);
-	sys().set_max_fps(60);
 	
 	srand(time(0));
 	vector3f triab[6];
@@ -177,10 +175,10 @@ int mymain(list<string>& args)
 		glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(glsl_shader_setup::idx_c_color);
-		sys().swap_buffers();
+		sys().finish_frame();
 	}
 
-	system::destroy_instance();
+	system_interface::destroy_instance();
 
 	return 0;
 }

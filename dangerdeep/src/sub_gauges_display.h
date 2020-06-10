@@ -39,8 +39,8 @@ class sub_gauges_display : public user_display
 		unsigned x, y, w, h;
 		indicator(const sdl_image& s, unsigned x_, unsigned y_, unsigned w_, unsigned h_);
 		void display(double angle) const;
-		bool is_over(int mx, int my) const;
-		angle get_angle(int mx, int my) const;
+		bool is_over(vector2i pos) const;
+		angle get_angle(vector2i pos) const;
 	};
 
 	std::unique_ptr<image> controlscreen;
@@ -65,8 +65,8 @@ protected:
 public:
 	sub_gauges_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

@@ -26,9 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <map>
 #include <string>
 #include <utility>
-#include <SDL.h>
 #include "keys.h"
 #include "singleton.h"
+#include "input_event_handler.h"
 
 ///\brief This class stores and manages the global game configuration.
 ///\todo replace tinyxml code and include with own xml class.
@@ -40,16 +40,14 @@ public:
 	struct key
 	{
 		std::string action;
-		SDLKey keysym{SDLK_UNKNOWN};
-		bool ctrl{false}, alt{false}, shift{false};
+		key_code keycode{key_code::UNKNOWN};
+		key_mod keymod{key_mod::none};
 		key()  = default;
 		~key() = default;
-		key(std::string ac, SDLKey ks, bool c, bool a, bool s) :
-			action(std::move(std::move(ac))), keysym(ks), ctrl(c), alt(a), shift(s) {}
-		key(const key& k)  = default;
-		key& operator= (const key& k) = default;
-		std::string get_name() const; // uses SDLK_GetKeyName
-		bool equal(const SDL_keysym& ks) const;
+		key(std::string ac, key_code kc, key_mod km) :
+			action(std::move(ac)), keycode(kc), keymod(km & key_mod::basic) {}
+		std::string get_name() const;
+		bool equal(key_code kc, key_mod km) const;
 	};
 private:
 	cfg(const cfg& ) = delete;
@@ -60,42 +58,44 @@ private:
 	std::map<std::string, float> valf;
 	std::map<std::string, std::string> vals;
 	std::map<key_command, key> valk;
-	
+
 	static cfg* myinst;
-	
+
 	cfg();
-	
+
 	// set dependent on registered type, used by load() and parse(), returns false if name
 	// is unknown
 	bool set_str(const std::string& name, const std::string& value);
 
 public:
 	~cfg();
-	
+
 	// load the values from a config file. Note! register() calls must be happen
 	// *before* loading the values!
 	void load(const std::string& filename);
 	void save(const std::string& filename) const;
-	
+
 	void register_option(const std::string& name, bool value);
 	void register_option(const std::string& name, int value);
 	void register_option(const std::string& name, float value);
 	void register_option(const std::string& name, const std::string& value);
-	void register_key(const std::string& name, SDLKey keysym, bool ctrl, bool alt, bool shift);
+	void register_key(const std::string& name, key_code kc, key_mod km);
 
 	void set(const std::string& name, bool value);
 	void set(const std::string& name, int value);
 	void set(const std::string& name, float value);
 	void set(const std::string& name, const std::string& value);
-	void set_key(key_command nr, SDLKey keysym, bool ctrl, bool alt, bool shift);
-	
+	void set_key(key_command nr, key_code kc, key_mod km);
+
 	bool getb(const std::string& name) const;
 	int geti(const std::string& name) const;
 	float getf(const std::string& name) const;
 	std::string gets(const std::string& name) const;
 	key getkey(key_command nr) const;
-	
+
 	void parse_value(const std::string& s);	// give elements of command line array to it!
 };
+
+bool is_configured_key(key_command kc, const input_event_handler::key_data& kd);
 
 #endif

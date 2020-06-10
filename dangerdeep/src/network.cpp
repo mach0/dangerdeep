@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // danger from the deep (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "network.h"
-#include "system.h"
+#include "system_interface.h"
 #include <cstring>
 #include <sstream>
 using std::vector;

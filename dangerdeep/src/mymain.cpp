@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "log.h"
 #include "faulthandler.h"
-#include "system.h"
+#include "system_interface.h"
 #include <list>
 #include <string>
 #include <exception>
@@ -60,7 +60,7 @@ int call_mymain(list<string>& args)
 		print_stack_trace();
 		result = -1;
 	}
-	catch (system::quit_exception& e) {
+	catch (system_interface::quit_exception& e) {
 		return e.retval;
 	}
 	catch (...) {

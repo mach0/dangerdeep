@@ -102,7 +102,7 @@ static  LONG WINAPI DangerdeepCrashDump(struct _EXCEPTION_POINTERS *pexceptionin
 
 	m_hdll = LoadLibrary(TEXT("DBGHELP.DLL"));
 
-        m_dump = (MINIDUMPWRITEDUMP)::GetProcAddress(m_hdll, "MiniDumpWriteDump");
+	m_dump = (MINIDUMPWRITEDUMP)::GetProcAddress(m_hdll, "MiniDumpWriteDump");
 
 	ok = m_dump(GetCurrentProcess(), GetCurrentProcessId(), m_hfile, MiniDumpNormal, &exinfo, nullptr, nullptr );
 

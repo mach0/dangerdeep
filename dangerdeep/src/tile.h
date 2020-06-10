@@ -23,7 +23,7 @@
 #include "bzip.h"
 #include "log.h"
 #include "morton_bivector.h"
-#include "system.h"
+#include "system_interface.h"
 #include "vector2.h"
 #include <ctime>
 #include <fstream>

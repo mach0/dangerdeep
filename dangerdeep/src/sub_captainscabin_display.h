@@ -48,7 +48,7 @@ class sub_captainscabin_display : public user_display
 			       int descr,
 			       void (sub_captainscabin_display::*func)(),
 			       color dc);
-		bool is_mouse_over(int mx, int my) const;
+		bool is_mouse_over(vector2i pos) const;
 		int get_description() const { return description; }
 		void do_action(sub_captainscabin_display& obj);
 		color get_description_color() const { return desc_color; }
@@ -61,13 +61,14 @@ class sub_captainscabin_display : public user_display
 	void goto_torpedoes();
 	void goto_recogmanual();
 
-	int mx, my;
+	vector2i mouse_position;
 
 public:
 	sub_captainscabin_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

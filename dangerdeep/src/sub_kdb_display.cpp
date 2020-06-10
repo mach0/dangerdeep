@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "keys.h"
 #include "submarine.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include <memory>
 
@@ -63,57 +63,53 @@ sub_kdb_display::sub_kdb_display(user_interface& ui_)
 
 
 
-void sub_kdb_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
 {
-	int mx, my, mb;
-
-	if (!myscheme.get()) THROW(error, "sub_kdb_display::process_input without scheme!");
-	const scheme& s = *myscheme;
-
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	if (m.down()) {
+		// check if mouse is over turn knobs
+		if (!myscheme.get()) THROW(error, "sub_bg_display without scheme!");
+		const scheme& s = *myscheme;
 		// check if mouse is over turn knobs
 		turnknobdrag = TK_NONE;
-		if (s.volume_knob[0].is_mouse_over(mx, my)) {
+		if (s.volume_knob[0].is_mouse_over(m.position_2d)) {
 			turnknobdrag = TK_VOLUME;
-		} else if (s.turn_wheel[0].is_mouse_over(mx, my, 128)) {
+			return true;
+		} else if (s.turn_wheel[0].is_mouse_over(m.position_2d, 128)) {
 			turnknobdrag = TK_DIRECTION;
+			return true;
 		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_motion_x(event);
-		my = sys().translate_motion_y(event);
-		mb = event.motion.state;
-		if (event.motion.state & SDL_BUTTON_LMASK) {
-			if (turnknobdrag != TK_NONE) {
-				float& ang = turnknobang[unsigned(turnknobdrag)];
-				ang += mx * TK_ANGFAC;
-				switch (turnknobdrag) {
-				case TK_DIRECTION:
-					// bring to 0...360 degree value
-					ang = myfmod(ang, 720.0f);
-					//sub->set_kdb_direction(ang); // fixme: set angle of player
-					break;
-				case TK_VOLUME:
-					// 0-360 degrees possible
-					ang = myclamp(ang, 0.0f, 360.0f);
-					break;
-				default:	// can never happen
-					break;
-				}
-			}
-		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	} else if (m.up()) {
 		turnknobdrag = TK_NONE;
-		break;
-	default:
-		break;
+		return true;
 	}
+	return false;
+}
+
+
+
+bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (m.left()) {
+		if (turnknobdrag != TK_NONE) {
+			float& ang = turnknobang[unsigned(turnknobdrag)];
+			ang += m.position_2d.x * TK_ANGFAC;
+			switch (turnknobdrag) {
+			case TK_DIRECTION:
+				// bring to 0...360 degree value
+				ang = myfmod(ang, 720.0f);
+				//sub->set_kdb_direction(ang); // fixme: set angle of player
+				break;
+			case TK_VOLUME:
+				// 0-360 degrees possible
+				ang = myclamp(ang, 0.0f, 360.0f);
+				break;
+			default:	// can never happen
+				break;
+			}
+			return true;
+		}
+	}
+	return false;
 }
 
 
@@ -122,7 +118,7 @@ void sub_kdb_display::process_input(class game& gm, const SDL_Event& event)
 // fixme: if noise source has same signal for angles a1...a2, return roughly (a1+a2)/2 as result
 // fixme2: if there is no signal, report that somehow, do not report false, random peak
 // fixme3: we can't find ONE global peek, but one for each side now...
-/* 
+/*
    the sonarman should report all signals he hears around the compass.
    But the simulation or action takes time, so he can't report all signals at once.
    He takes his time to search the whole compass around, say, 1 minute.
@@ -188,9 +184,10 @@ pair<angle, double> find_peak_noise(angle startangle, double step, double maxste
 
 
 
-void sub_kdb_display::display(game& gm) const
+void sub_kdb_display::display() const
 {
-	auto* player = dynamic_cast<submarine*>(gm.get_player());
+	auto& gm = ui.get_game();
+//	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();
 
@@ -207,8 +204,8 @@ void sub_kdb_display::display(game& gm) const
 	// fixme: some/most of this code should be moved to sonar.cpp
 
 	// test hack: test signal strengths
-	angle app_ang = angle(turnknobang[TK_DIRECTION]*0.5);
-	pair<double, noise> nstr = gm.sonar_listen_ships(player, app_ang);
+//	angle app_ang = angle(turnknobang[TK_DIRECTION]*0.5);
+//	pair<double, noise> nstr = gm.sonar_listen_ships(player, app_ang);
 // 	printf("noise strengths, rel ang=%f, L=%f M=%f H=%f U=%f TTL=%f\n",
 // 	       app_ang.value(), nstr.second.frequencies[0], nstr.second.frequencies[1], nstr.second.frequencies[2], nstr.second.frequencies[3],
 // 	       nstr.first);

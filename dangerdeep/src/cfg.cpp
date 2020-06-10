@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "cfg.h"
 #include "keys.h"
 #include "global_data.h"
-#include "system.h"
+#include "system_interface.h"
 #include "log.h"
 #include <sstream>
 #include "xml.h"
@@ -35,21 +35,7 @@ cfg* cfg::myinst = nullptr;
 
 string cfg::key::get_name() const
 {
-	string result = SDL_GetKeyName(SDLKey(keysym));
-	if (shift) result = string("Shift + ") + result;
-	if (alt) result = string("Alt + ") + result;
-	if (ctrl) result = string("Ctrl + ") + result;
-	return result;
-}
-
-
-
-bool cfg::key::equal(const SDL_keysym& ks) const
-{
-	return (ks.sym == keysym
-		&& ctrl == ((ks.mod & (KMOD_LCTRL | KMOD_RCTRL)) != 0)
-		&& alt == ((ks.mod & (KMOD_LALT | KMOD_RALT | KMOD_MODE)) != 0)
-		&& shift == ((ks.mod & (KMOD_LSHIFT | KMOD_RSHIFT)) != 0));
+	return sys().get_key_name(keycode, keymod);
 }
 
 
@@ -114,11 +100,16 @@ void cfg::load(const string& filename)
 					log_warning("found key with invalid name " << keyname << " in config file");
 					continue;
 				}
-				SDLKey keysym = SDLKey(keyelem.attri("keysym"));
+				auto keycode = key_code(keyelem.attri("keycode"));
 				bool ctrl = keyelem.attrb("ctrl");
 				bool alt = keyelem.attrb("alt");
 				bool shift = keyelem.attrb("shift");
-				set_key(nr, keysym, ctrl, alt, shift);
+				//fixme build modifier here
+				key_mod mod{key_mod::none};
+				if (ctrl) mod = mod | key_mod::ctrl;
+				if (alt) mod = mod | key_mod::alt;
+				if (shift) mod = mod | key_mod::shift;
+				set_key(nr, keycode, mod);
 			}
 		} else {
 			bool found = set_str(elem.get_name(), elem.attr());
@@ -150,10 +141,10 @@ void cfg::save(const string& filename) const
 	for (const auto & it : valk) {
 		xml_elem key = keys.add_child("key");
 		key.set_attr(it.second.action, "action");
-		key.set_attr(int(it.second.keysym), "keysym");
-		key.set_attr(it.second.ctrl, "ctrl");
-		key.set_attr(it.second.alt, "alt");
-		key.set_attr(it.second.shift, "shift");
+		key.set_attr(int(it.second.keycode), "keycode");
+		key.set_attr((it.second.keymod & key_mod::ctrl) != key_mod::none, "ctrl");
+		key.set_attr((it.second.keymod & key_mod::alt) != key_mod::none, "alt");
+		key.set_attr((it.second.keymod & key_mod::shift) != key_mod::none, "shift");
 	}
 	doc.save();
 }
@@ -188,7 +179,7 @@ void cfg::register_option(const string& name, const string& value)
 
 
 
-void cfg::register_key(const string& name, SDLKey keysym, bool ctrl, bool alt, bool shift)
+void cfg::register_key(const string& name, key_code kc, key_mod km)
 {
 	auto nr = key_command::number;
 	for (unsigned i = 0; i < unsigned(key_command::number); ++i) {
@@ -198,7 +189,7 @@ void cfg::register_key(const string& name, SDLKey keysym, bool ctrl, bool alt, b
 	}
 	if (nr == key_command::number)
 		THROW(error, string("register_key with invalid name ")+ name);
-	valk[nr] = key(name, keysym, ctrl, alt, shift);
+	valk[nr] = key(name, kc, km);
 }
 
 
@@ -246,12 +237,12 @@ void cfg::set(const string& name, const string& value)
 }
 
 
-	
-void cfg::set_key(key_command nr, SDLKey keysym, bool ctrl, bool alt, bool shift)
+
+void cfg::set_key(key_command nr, key_code kc, key_mod km)
 {
 	auto it = valk.find(nr);
 	if (it != valk.end())
-		it->second = key(it->second.action, keysym, ctrl, alt, shift);
+		it->second = key(it->second.action, kc, km);
 	else
 		THROW(error, string("cfg: set_key(), key number not registered: "));
 }
@@ -338,4 +329,12 @@ void cfg::parse_value(const string& s)
 		s1 = s.substr(st+1);
 	}
 	set_str(s0, s1);	// ignore value if name is unkown
+}
+
+
+
+bool is_configured_key(key_command kc, const input_event_handler::key_data& kd)
+{
+	const auto& configured_key = cfg::instance().getkey(kc);
+	return configured_key.keycode == kd.keycode && configured_key.keymod == (kd.mod & key_mod::basic);
 }

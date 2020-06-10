@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "submarine.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include <memory>
 
@@ -101,115 +101,98 @@ sub_tdc_display::sub_tdc_display(user_interface& ui_)
 
 
 
-void sub_tdc_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
 {
+	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	int mx, my;
 	auto& si = dynamic_cast<submarine_interface&>(ui);
 	tdc& TDC = sub->get_tdc();
 
 	if (show_screen1) {
-		if (!myscheme1.get()) THROW(error, "sub_tdc_display::process_input without scheme!");
-		const scheme_screen1& s = *myscheme1;
-
-		switch (event.type) {
-		case SDL_MOUSEBUTTONDOWN:
-			{
-				mx = sys().translate_position_x(event);
-				my = sys().translate_position_y(event);
-				// check if mouse is over parallax display
-				int parasz = s.parallax_ptr.centery - s.parallax_ptr.top + 20;
-				if (mx >= s.parallax_ptr.centerx - parasz
-				    && mx <= s.parallax_ptr.centerx + parasz
-				    && my >= s.parallax_ptr.centery - parasz
-				    && my <= s.parallax_ptr.centery + parasz) {
-					angle userang(vector2(mx - s.parallax_ptr.centerx, -my + s.parallax_ptr.centery));
-					double usera = userang.value_pm180() / 6;
-					if (usera < -25) usera = -25;
-					if (usera > 25) usera = 25;
-					TDC.set_additional_parallaxangle(usera);
-				}
-
+		if (m.down() && m.left()) {
+			if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
+			const scheme_screen1& s = *myscheme1;
+			// check if mouse is over parallax display
+			int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
+			if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
+			    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
+			    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
+			    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
+				auto v = vector2(m.position_2d - s.parallax_ptr.center);
+				v.y = -v.y;
+				angle userang(v);
+				double usera = userang.value_pm180() / 6;
+				if (usera < -25) usera = -25;
+				if (usera > 25) usera = 25;
+				TDC.set_additional_parallaxangle(usera);
 			}
-			break;
-		case SDL_MOUSEMOTION:
-			if (event.motion.state & SDL_BUTTON_LMASK) {
-				mx = sys().translate_position_x(event);
-				my = sys().translate_position_y(event);
-				// check if mouse is over parallax display, fixme: same code as above, group it!
-				int parasz = s.parallax_ptr.centery - s.parallax_ptr.top + 20;
-				if (mx >= s.parallax_ptr.centerx - parasz
-				    && mx <= s.parallax_ptr.centerx + parasz
-				    && my >= s.parallax_ptr.centery - parasz
-				    && my <= s.parallax_ptr.centery + parasz) {
-					angle userang(vector2(mx - s.parallax_ptr.centerx, -my + s.parallax_ptr.centery));
-					double usera = userang.value_pm180() / 6;
-					if (usera < -25) usera = -25;
-					if (usera > 25) usera = 25;
-					TDC.set_additional_parallaxangle(usera);
-				}
-			}
-			break;
-		default:
-			break;
 		}
-
 	} else {
-		if (!myscheme2.get()) THROW(error, "sub_tdc_display::process_input without scheme!");
-		const scheme_screen2& s = *myscheme2;
+		if (m.down() && m.left()) {
+			if (!myscheme2.get()) THROW(error, "sub_tdc_display without scheme!");
+			const scheme_screen2& s = *myscheme2;
 
-		switch (event.type) {
-		case SDL_MOUSEBUTTONDOWN:
-			{
-				mx = sys().translate_position_x(event);
-				my = sys().translate_position_y(event);
-				// check if mouse is over tube indicators
-				unsigned nrtubes = sub->get_nr_of_bow_tubes() + sub->get_nr_of_stern_tubes();
-				for (unsigned i = 0; i < nrtubes; ++i) {
-					if (s.tubelight[i].is_mouse_over(mx, my)) {
-						si.select_tube(i);
-						log_debug("Torpedo tube selected: #" << i+1);
-						tubeselected_time = gm.get_time();
-					}
-				}
-
-				// fire button
-				if (s.firebutton.is_mouse_over(mx, my)) {
-					si.fire_tube(sub, si.get_selected_tube());
-				}
-
-				// auto mode
-				else if (s.automode[0].is_mouse_over(mx, my)) {
-					TDC.set_auto_mode(!TDC.auto_mode_enabled());
+			// check if mouse is over tube indicators
+			unsigned nrtubes = sub->get_nr_of_bow_tubes() + sub->get_nr_of_stern_tubes();
+			for (unsigned i = 0; i < nrtubes; ++i) {
+				if (s.tubelight[i].is_mouse_over(m.position_2d)) {
+					si.select_tube(i);
+					log_debug("Torpedo tube selected: #" << i+1);
+					tubeselected_time = gm.get_time();
 				}
 			}
-			break;
-		default:
-			break;
+
+			// fire button
+			if (s.firebutton.is_mouse_over(m.position_2d)) {
+				si.fire_tube(sub, si.get_selected_tube());
+			}
+
+			// auto mode
+			else if (s.automode[0].is_mouse_over(m.position_2d)) {
+				TDC.set_auto_mode(!TDC.auto_mode_enabled());
+			}
 		}
 	}
-
-/*
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		//fixme
-	default: break;
-	}
-*/
-
-	/* this keypress never arrives here, toggle_popup eats it earlier.
-	if (event.type == SDL_KEYDOWN) {
-		if (cfg::instance().getkey(key_command::TOGGLE_POPUP).equal(event.key.keysym)) {
-			next_sub_screen(gm.is_day_mode());
-		}
-	}
-	*/
+	return true;
 }
 
 
 
-void sub_tdc_display::display(class game& gm) const
+bool sub_tdc_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
+	auto& gm = ui.get_game();
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
+	tdc& TDC = sub->get_tdc();
+
+	if (show_screen1) {
+		if (m.left()) {
+			if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
+			const scheme_screen1& s = *myscheme1;
+			// check if mouse is over parallax display, fixme: same code as above, group it!
+			int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
+			if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
+			    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
+			    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
+			    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
+				auto v = vector2(m.position_2d - s.parallax_ptr.center);
+				v.y = -v.y;
+				angle userang(v);
+				double usera = userang.value_pm180() / 6;
+				if (usera < -25) usera = -25;
+				if (usera > 25) usera = 25;
+				TDC.set_additional_parallaxangle(usera);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+void sub_tdc_display::display() const
+{
+	auto& gm = ui.get_game();
 	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();
@@ -243,7 +226,7 @@ void sub_tdc_display::display(class game& gm) const
 		// fire solution quality
 		double quality = 0.333; // per cent, fixme, request from sub! depends on crew
 		s.firesolution->draw(268 - int(187*quality + 0.5), 418);
-	
+
 		// parallax angle (fixme: why should the user set an angle? extra-correction here? is like
 		// additional lead angle...)
 		// 6 pointer degrees for 1 real degree, marker - 90
@@ -261,7 +244,7 @@ void sub_tdc_display::display(class game& gm) const
 
 		// target bearing (influenced by quality!)
 		s.target_pos.draw((TDC.get_bearing() - player->get_heading()).value());
-		
+
 		// target speed
 		s.target_speed.draw(15 + sea_object::ms2kts(TDC.get_target_speed()) * 330.0/55);
 

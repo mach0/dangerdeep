@@ -18,10 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "sub_recogmanual_popup.h"
-
-
+#include "user_interface.h"
 #include <memory>
-
 #include <utility>
 
 
@@ -52,20 +50,20 @@ void sub_recogmanual_popup::widget_button_next::on_release ()
 	page+=direction;
 }
 
-sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_) 
+sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
 	: user_popup(ui_), page(0), btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"), btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
 {
 	x = 0;
 	y = 49;
 	background_daylight = std::make_unique<image>(get_image_dir() + "shiprecog_popup_daylight.png");
 	background_nightlight = std::make_unique<image>(get_image_dir() + "shiprecog_popup_redlight.png");
-	
+
 	std::list<string> ship_ids = data_file_handler::instance().get_ship_list();
 	for (auto & ship_id : ship_ids) {
 		try {
 			unique_ptr<image> img(new image(data_file_handler::instance().get_path(ship_id) + ship_id + "_silhouette.png"));
 			silhouettes.push_back(unique_ptr<image>(std::move(img)));
-			
+
 			xml_doc doc(data_file_handler::instance().get_filename(ship_id));
 			doc.load();
 			xml_elem elem = doc.child("dftd-ship");
@@ -74,25 +72,55 @@ sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
 			lengths.push_back(elem.attr("length"));
 			classes.push_back(elem.attr("class"));
 			weapons.push_back(elem.attr("weapons"));
-			countries.push_back(elem.attr("countries"));	
+			countries.push_back(elem.attr("countries"));
 		} catch (exception& e) { // fixme: remove the try..catch when all silhouette files are on place
 		}
 	}
 }
 
-bool sub_recogmanual_popup::process_input(class game& gm, const SDL_Event& event)
+
+
+bool sub_recogmanual_popup::handle_mouse_button_event(const mouse_click_data& m)
 {
-	btn_left.check_for_mouse_event(event);
-	btn_right.check_for_mouse_event(event);
+	if (btn_left.is_mouse_over(m.position_2d)) {
+		widget::handle_mouse_button_event(btn_left, m);
+	} else if (btn_right.is_mouse_over(m.position_2d)) {
+		widget::handle_mouse_button_event(btn_right, m);
+	}
 	if (page<0) page=0;
 	if (page>=(int)silhouettes.size()/3) page--;
 	return false;
 }
 
-void sub_recogmanual_popup::display(class game& gm) const
+
+
+bool sub_recogmanual_popup::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (btn_left.is_mouse_over(m.position_2d)) {
+		widget::handle_mouse_motion_event(btn_left, m);
+	} else if (btn_right.is_mouse_over(m.position_2d)) {
+		widget::handle_mouse_motion_event(btn_right, m);
+	}
+	if (page<0) page=0;
+	if (page>=(int)silhouettes.size()/3) page--;
+	return false;
+}
+
+
+
+bool sub_recogmanual_popup::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (page<0) page=0;
+	if (page>=(int)silhouettes.size()/3) page--;
+	return false;
+}
+
+
+
+void sub_recogmanual_popup::display() const
 {
 	sys().prepare_2d_drawing();
-
+	auto& gm = ui.get_game();
 	bool is_day = gm.is_day_mode();
 	if (is_day)
 		background_daylight->draw(x, y);
@@ -108,16 +136,16 @@ void sub_recogmanual_popup::display(class game& gm) const
 	for (int i=page*3; (i<page*3+3)&&(i<(int)silhouettes.size()); i++) {
 
 		silhouettes[i].draw(off_x,off_y+step_y*(i%3), colorf(1,1,1,0.75));
-		
+
 		//fixme: change this after the authentic overlay is implemented
 		font_vtremington12->print(off_text_x, off_text_y+step_y*(i%3), classes[i], color(0, 0, 0));
 		font_vtremington12->print(off_text_x, off_text_y+15+step_y*(i%3), string("Length: ")+lengths[i]+string("   Displacement:")+displacements[i], color(0, 0, 0));
 		font_vtremington12->print(off_text_x, off_text_y+30+step_y*(i%3), string("Countries: ")+countries[i], color(0, 0, 0));
 		font_vtremington12->print(off_text_x, off_text_y+45+step_y*(i%3), string("Weapons: ")+weapons[i], color(0, 0, 0));
 	}
-	
+
 	btn_left.draw();
-	btn_right.draw();	
-	
+	btn_right.draw();
+
 	sys().unprepare_2d_drawing();
 }

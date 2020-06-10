@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "game.h"
 #include "global_data.h"
 #include "image.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include "user_display.h"
@@ -72,10 +72,10 @@ void logbook_display::next_page()
 
 
 
-void logbook_display::display(class game& gm) const
+void logbook_display::display() const
 {
 	// compute size of entries (number of lines for each entry)
-	const logbook& lb = gm.get_players_logbook();
+	const logbook& lb = ui.get_game().get_players_logbook();
 	vector<unsigned> lines_per_entry;
 	unsigned total_lines = 0;
 	lines_per_entry.reserve(lb.size());
@@ -184,26 +184,32 @@ void logbook_display::display(class game& gm) const
 
 
 
-void logbook_display::process_input(class game& gm, const SDL_Event& event)
+bool logbook_display::handle_key_event(const key_data& k)
 {
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		if (event.key.keysym.sym == SDLK_LESS) {
-			if (event.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-				next_page();
-			else
-				previous_page();
-		}
-		break;
-	case SDL_MOUSEBUTTONDOWN:
-		if (sys().translate_position_x(event) < 530)
-			previous_page();
-		else
+	if (k.down() && k.keycode == key_code::LESS) {
+		if (key_mod_shift(k.mod)) {
 			next_page();
-		break;
-	default:
-		break;
+		} else {
+			previous_page();
+		}
+		return true;
 	}
+	return false;
+}
+
+
+
+bool logbook_display::handle_mouse_button_event(const mouse_click_data& m)
+{
+	if (m.down()) {
+		if (m.position_2d.x < 530) {
+			previous_page();
+		} else {
+			next_page();
+		}
+		return true;
+	}
+	return false;
 }
 
 

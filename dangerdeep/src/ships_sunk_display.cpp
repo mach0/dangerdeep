@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "model.h"
 #include "primitives.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "user_interface.h"
 #include <iostream>
@@ -65,8 +65,9 @@ ships_sunk_display::ships_sunk_display(user_interface& ui_) :
 
 
 
-void ships_sunk_display::display ( class game& gm ) const
+void ships_sunk_display::display() const
 {
+	auto& gm = ui.get_game();
 	sys().prepare_2d_drawing();
 
 	// Draw background image.
@@ -129,27 +130,34 @@ void ships_sunk_display::display ( class game& gm ) const
 
 
 
-void ships_sunk_display::process_input(class game& gm, const SDL_Event& event)
+bool ships_sunk_display::handle_key_event(const key_data& k)
 {
-	unsigned nrships = gm.get_sunken_ships().size();
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		if (event.key.keysym.sym == SDLK_LESS) {
-			if (event.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT))
-				next_page(nrships);
-			else
-				previous_page(nrships);
-		}
-		break;
-	case SDL_MOUSEBUTTONDOWN:
-		if (sys().translate_position_x(event) < 530)
-			previous_page(nrships);
-		else
+	if (k.down() && k.keycode == key_code::LESS) {
+		unsigned nrships = ui.get_game().get_sunken_ships().size();
+		if (key_mod_shift(k.mod)) {
 			next_page(nrships);
-		break;
-	default:
-		break;
+		} else {
+			previous_page(nrships);
+		}
+		return true;
 	}
+	return false;
+}
+
+
+
+bool ships_sunk_display::handle_mouse_button_event(const mouse_click_data& m)
+{
+	if (m.down()) {
+		unsigned nrships = ui.get_game().get_sunken_ships().size();
+		if (m.position_2d.x < 530) {
+			previous_page(nrships);
+		} else {
+			next_page(nrships);
+		}
+		return true;
+	}
+	return false;
 }
 
 

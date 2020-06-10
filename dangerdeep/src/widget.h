@@ -23,10 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#include <list>
 #include <string>
-#include <typeinfo>
-#include "system.h"
+#include <vector>
+#include "system_interface.h"
 #include "color.h"
 #include "image.h"
 #include "font.h"
@@ -35,6 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "objcache.h"
 #include "xml.h"
 #include "texts.h"
+#include "input_event_handler.h"
 
 // fixme: add image-widget
 
@@ -109,12 +109,14 @@ public:
 			color tc, color tsc, color tdc);
 	};
 
+	/* fixme wtf?! delete that!
 	struct key_event {
 		const widget* source;
 		const SDL_keysym ks;
 		key_event(const widget* _source, const SDL_keysym& _ks)
 			: source(_source), ks(_ks) {}
 	};
+	*/
 	struct mouse_click_event {
 		const widget* source;
 		const int mx, my, mb;
@@ -138,14 +140,6 @@ public:
 		mouse_scroll_event(const widget* _source, int _wd)
 			: source(_source), wd(_wd) {}
 	};
-	class action_listener {
-		public:
-			virtual void key_pressed(key_event&) const {};
-			virtual void mouse_clicked(mouse_click_event&) const {};
-			virtual void mouse_released(mouse_release_event&) const {};
-			virtual void mouse_dragged(mouse_drag_event&) const {};
-			virtual void mouse_scrolled(mouse_scroll_event&) const {};
-	};
 
 protected:
 	static std::unique_ptr<widget::theme> globaltheme;
@@ -153,14 +147,6 @@ protected:
 	static widget* mouseover;	// which widget the mouse is over
 
 	static int oldmx, oldmy, oldmb;	// used for input calculation
-
-	std::list<const action_listener*> action_listeners;
-
-	void fire_key_event(const SDL_keysym& ks);
-	void fire_mouse_click_event(int mx, int my, int mb);
-	void fire_mouse_release_event();
-	void fire_mouse_drag_event(int mx, int my, int rx, int ry, int mb);
-	void fire_mouse_scroll_event(int wd);
 
 public:
 	// Note! call this once before using images!
@@ -173,9 +159,8 @@ public:
 	static std::unique_ptr<theme> replace_theme(std::unique_ptr<theme> t);
 	widget(int x, int y, int w, int h, std::string  text_, widget* parent_ = nullptr, const std::string& backgrimg = std::string());
 	widget(xml_elem&, widget* parent = nullptr);
-	void add_action_listener(const action_listener* listener, bool recursive = true);
 	virtual ~widget();
-	template<typename T> T& add_child(std::unique_ptr<T> w) {
+	template<typename T> T& add_child(std::unique_ptr<T>&& w) {
 		auto& ref = *w;
 		w->set_parent(this);
 		w->move_pos(pos);
@@ -185,8 +170,13 @@ public:
 	/** same as add_child, but place new child near last child.
 	    Give distance to last child and direction 0-3 (above, right, below, left)
 	    A distance < 0 means use theme border width * -distance (default children distance) */
+	virtual void add_child_near_last_child_generic(std::unique_ptr<widget>&& , int distance = -2, unsigned direction = 2);
+	template<typename T> T& add_child_near_last_child(std::unique_ptr<T>&& w, int distance = -2, unsigned direction = 2) {
+		auto& ref = *w;
+		add_child_near_last_child_generic(std::unique_ptr<widget>(std::move(w)), distance, direction);
+		return ref;
+	}
 	widget* get_child(const std::string&, bool recursive = true);
-	virtual void add_child_near_last_child(std::unique_ptr<widget>, int distance = -2, unsigned direction = 2);
 	const std::string& get_name() const { return name; }
 	///> recompute size so that window embraces all children exactly.
 	virtual void clip_to_children_area();
@@ -223,25 +213,16 @@ public:
 	virtual void redraw();
 
 	// called for every key in queue
-	virtual void on_char(const SDL_keysym& ks);
-	// called on mouse button down (mb is one of SDL_BUTTON_LMASK, ...RMASK, ...MMASK)
-	virtual void on_click(int mx, int my, int mb) {}
-	virtual void on_click(const vector2i& m, int mb) { return on_click(m.x, m.y, mb); }
+	virtual void on_key(key_code , key_mod );
+	virtual void on_text(const std::string& );
+	// called on mouse button down
+	virtual void on_click(vector2i position, mouse_button btn) {}
 	// called on mouse wheel action, mb is 1 for up, 2 for down
-	virtual void on_wheel(int wd);
+	virtual void on_wheel(input_action wd);
 	// called on mouse button up
 	virtual void on_release() {}
-	// called on mouse move while button is down (mb is one of SDL_BUTTON_LMASK, ...RMASK, ...MMASK)
-	virtual void on_drag(int mx, int my, int rx, int ry, int mb) {}
-
-	// determine type of input, fetch it to on_* functions
-	virtual void process_input(const SDL_Event& event);
-	// just calls the previous function repeatedly
-	virtual void process_input(const std::list<SDL_Event>& events);
-
-	// check if event is mouse event and is over widget. In that case process_input()
-	// is called and true is returned
-	virtual bool check_for_mouse_event(const SDL_Event& event);
+	// called on mouse move while button is down
+	virtual void on_drag(vector2i position, vector2i motion, mouse_button_state btnstate) {}
 
 	// run() always returns 1    - fixme: make own widget classes for them?
 	static std::unique_ptr<widget> create_dialogue_ok(widget* parent_, const std::string& title, const std::string& text = "", int w = 0, int h = 0);
@@ -253,7 +234,13 @@ public:
 	// show & exec. widget, automatically disable widgets below
 	// run() runs for "time" milliseconds (or forever if time == 0), then returns
 	// if do_stacking is false only this widget is drawn, but none of its parents
-	virtual int run(unsigned timeout = 0, bool do_stacking = true, widget* focussed_at_begin = nullptr);
+	static int run(widget& w, unsigned timeout = 0, bool do_stacking = true, widget* focussed_at_begin = nullptr);
+	static bool handle_key_event(widget& w, const input_event_handler::key_data& k);
+	static bool handle_mouse_button_event(widget& w, const input_event_handler::mouse_click_data& m);
+	static bool handle_mouse_motion_event(widget& w, const input_event_handler::mouse_motion_data& m);
+	static bool handle_mouse_wheel_event(widget& w, const input_event_handler::mouse_wheel_data& m);
+	static bool handle_text_input_event(widget& w, const std::string& t);
+
 	virtual void close(int val);	// close this widget (stops run() on next turn, returns val)
 	virtual void open();	// "open" this widget (reverts what close() did)
 
@@ -291,7 +278,7 @@ public:
 		: widget(x, y, w, h, text_, parent_), checked(checked_) {}
 	widget_checkbox(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
-	void on_click(int mx, int my, int mb) override;
+	void on_click(vector2i position, mouse_button btn) override;
 	bool is_checked() const { return checked; }
 	virtual void on_change() {}
 };
@@ -309,7 +296,7 @@ public:
 		      widget* parent_ = nullptr, const std::string& backgrimg = std::string()) : widget(x, y, w, h, text_, parent_, backgrimg), pressed(false) {}
 	widget_button(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
-	void on_click(int mx, int my, int mb) override;
+	void on_click(vector2i position, mouse_button btn) override;
 	void on_release() override;
 	bool is_pressed() const { return pressed; }
 	virtual void on_change() {}
@@ -387,23 +374,20 @@ public:
 	unsigned get_current_position() const;
 	void set_current_position(unsigned p);
 	void draw() const override;
-	void on_click(int mx, int my, int mb) override;
-	void on_drag(int mx, int my, int rx, int ry, int mb) override;
-	void on_wheel(int wd) override;
+	void on_click(vector2i position, mouse_button btn) override;
+	void on_drag(vector2i position, vector2i motion, mouse_button_state btnstate) override;
+	void on_wheel(input_action wd) override;
 	virtual void on_scroll() {}
 };
 
 class widget_list : public widget
 {
 protected:
-	std::list<std::string> entries;
+	std::vector<std::string> entries;
 	unsigned listpos;
 	int selected;
 	widget_scrollbar* myscrollbar;	// stored also as child
 	int columnwidth;	// in pixels, translates tabs to column switches, set -1 for no columns (default)
-
-	std::list<std::string>::iterator ith(unsigned i);
-	std::list<std::string>::const_iterator ith(unsigned i) const;
 
 	widget_list();
 	widget_list(const widget_list& );
@@ -425,9 +409,9 @@ public:
 	unsigned get_nr_of_visible_entries() const;
 	void clear();
 	void draw() const override;
-	void on_click(int mx, int my, int mb) override;
-	void on_drag(int mx, int my, int rx, int ry, int mb) override;
-	void on_wheel(int wd) override;
+	void on_click(vector2i position, mouse_button btn) override;
+	void on_drag(vector2i position, vector2i motion, mouse_button_state btnstate) override;
+	void on_wheel(input_action wd) override;
 	virtual void on_sel_change() {}
 	void set_column_width(int cw);
 };
@@ -449,7 +433,8 @@ public:
 	widget_edit(xml_elem& elem, widget* _parent = nullptr);
 	void set_text(const std::string& s) override { widget::set_text(s); cursorpos = s.length(); }
 	void draw() const override;
-	void on_char(const SDL_keysym& ks) override;
+	void on_key(key_code , key_mod ) override;
+	void on_text(const std::string& ) override;
 	virtual void on_enter() {}	// run on pressed ENTER-key
 	virtual void on_change() {}
 };
@@ -466,8 +451,8 @@ protected:
 
 	struct filelist : public widget_list
 	{
-		void on_click(int mx, int my, int mb) override {
-			widget_list::on_click(mx, my, mb);
+		void on_click(vector2i position, mouse_button btn) override {
+			widget_list::on_click(position, btn);
 			dynamic_cast<widget_fileselector*>(parent)->listclick();
 		}
 		filelist(int x, int y, int w, int h) : widget_list(x, y, w, h) {}
@@ -495,8 +480,8 @@ protected:
 	vector4f lightdir;
 	color lightcol;
 
-	void on_wheel(int wd) override;
-	void on_drag(int mx, int my, int rx, int ry, int mb) override;
+	void on_wheel(input_action wd) override;
+	void on_drag(vector2i position, vector2i motion, mouse_button_state btnstate) override;
 
 	widget_3dview();
 	widget_3dview(const widget_3dview& );
@@ -531,9 +516,9 @@ public:
 		      widget* parent_ = nullptr);
 	widget_slider(xml_elem& elem, widget* _parent = nullptr);
 	void draw() const override;
-	void on_char(const SDL_keysym& ks) override;
-	void on_click(int mx, int my, int mb) override;
-	void on_drag(int mx, int my, int rx, int ry, int mb) override;
+	void on_key(key_code , key_mod ) override;
+	void on_click(vector2i position, mouse_button btn) override;
+	void on_drag(vector2i position, vector2i motion, mouse_button_state btnstate) override;
 	virtual void set_values(int minv, int maxv, int currv, int descrstep);
 	virtual void on_change() {}
 	virtual int get_min_value() const { return minvalue; }

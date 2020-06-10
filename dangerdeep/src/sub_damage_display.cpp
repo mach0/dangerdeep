@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <utility>
 
 using namespace std;
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "font.h"
 #include "global_data.h"
@@ -90,7 +90,6 @@ static rect rect_data[] = {
 
 sub_damage_display::sub_damage_display (user_interface& ui_) :
 	user_display(ui_),
-	mx(0), my(0),
 	notepadsheet(texturecache(), "notepadsheet.png")
 {
 }
@@ -107,10 +106,11 @@ void sub_damage_display::display_popup (int x, int y, const string& text, bool a
 	font_vtremington12->print_wrapped(posx+8, posy+45, 256-16, 20, text, color(0,0,128));
 }
 
-void sub_damage_display::display ( class game& gm ) const
+void sub_damage_display::display() const
 {
 	sys().prepare_2d_drawing();
 
+	auto& gm = ui.get_game();
 	int ydrawdiff = (damage_screen_background->get_height()-sub_damage_scheme_all->get_height())/2;
 	damage_screen_background->draw(0, 0);
 	sub_damage_scheme_all->draw(0, ydrawdiff);
@@ -132,13 +132,13 @@ void sub_damage_display::display ( class game& gm ) const
 			t->draw(x, y, 32, 32);
 		}
 	}
-	
+
 	// draw popup if mouse is over any part
 	for (unsigned i = 0; i < parts.size(); ++i) {
 		if (parts[i].status < 0) continue;	// part does not exist
 		rect r = rect_data[i];
 		r.y += (damage_screen_background->get_height()-sub_damage_scheme_all->get_height())/2;
-		if (mx >= r.x && mx <= r.x+r.w && my >= r.y && my <= r.y+r.h) {
+		if (mouse_position.x >= r.x && mouse_position.x <= r.x+r.w && mouse_position.y >= r.y && mouse_position.y <= r.y+r.h) {
 			// it is important, that texts are in correct order starting with 400.
 			bool atleft = (r.x+r.w/2) < 1024/2;
 			bool atbottom = (r.y+r.h/2) >= 768/2;
@@ -153,7 +153,7 @@ void sub_damage_display::display ( class game& gm ) const
 				else damcat = 5;
 			}
 
-			// display basic information			
+			// display basic information
 			ostringstream dmgstr;
 			dmgstr	<< texts::get(400+i) << "\n"	// name
 				<< texts::get(165) << texts::get(130+damcat)
@@ -174,7 +174,7 @@ void sub_damage_display::display ( class game& gm ) const
 					dmgstr << texts::get(169);
 				}
 			}
-			
+
 			// display popup with all information. fixme automatic line breaks
 			display_popup(r.x+r.w/2, r.y+r.h/2, dmgstr.str(), atleft, atbottom);
 		}
@@ -185,16 +185,10 @@ void sub_damage_display::display ( class game& gm ) const
 	sys().unprepare_2d_drawing();
 }
 
-void sub_damage_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_damage_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
-	switch (event.type) {
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		break;
-	default:
-		break;
-	}
+	mouse_position = m.position_2d;
+	return false;
 }
 
 

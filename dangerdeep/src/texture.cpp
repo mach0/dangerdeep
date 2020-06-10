@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "oglext/OglExt.h"
 #include <glu.h>
 
-#include "system.h"
+#include "system_interface.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -58,12 +58,7 @@ float texture::anisotropic_level = 0.0f;
 
 bool texture::size_non_power_two()
 {
-	if (size_non_power_2 < 0) {
-		size_non_power_2 = sys().extension_supported("GL_ARB_texture_non_power_of_two") ? 1 : 0;
-		if (size_non_power_2)
-			log_info("Textures with non-power-two sizes are supported and used.");
-	}
-	return (size_non_power_2 > 0);
+	return true;
 }
 
 // ------------------------------- GL mode tables -------------------
@@ -130,10 +125,12 @@ sdl_image::sdl_image(const std::string& filename)
 		    || (teximagergb->format->Amask != 0))
 			THROW(texture::texerror, fnrgb, ".jpg: no 3 byte/pixel RGB image!");
 
+		uint32_t color_key = 0;
+		bool usealpha = SDL_GetColorKey(teximagea.get_SDL_Surface(), &color_key) == 0;
 		if (teximagea->format->BytesPerPixel != 1
 		    || teximagea->format->palette == nullptr
 		    || teximagea->format->palette->ncolors != 256
-		    || ((teximagea->flags & SDL_SRCCOLORKEY) != 0))
+		    || usealpha)
 			THROW(texture::texerror, fna, ".png: no 8bit greyscale non-alpha-channel image!");
 
 		uint32_t rmask, gmask, bmask, amask;
@@ -234,6 +231,12 @@ std::vector<uint8_t> sdl_image::get_plain_data(unsigned& w, unsigned& h, unsigne
 	return tmp;
 }
 
+
+
+unsigned sdl_image::get_width() const { return img->w; }
+unsigned sdl_image::get_height() const { return img->h; }
+
+
 // --------------------------------------------------
 
 void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw, unsigned sh,
@@ -278,7 +281,8 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 		int ncol = fmt.palette->ncolors;
 		if (ncol > 256)
 			THROW(texerror, get_name(), "max. 256 colors in palette supported");
-		bool usealpha = (teximage->flags & SDL_SRCCOLORKEY);
+		uint32_t color_key = 0;
+		bool usealpha = SDL_GetColorKey(teximage, &color_key) == 0;
 
 		// check for greyscale images (GL_LUMINANCE), fixme: add also LUMINANCE_ALPHA!
 		bool lumi = false;
@@ -310,7 +314,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 			format = usealpha ? GL_RGBA : GL_RGB;
 			bpp = usealpha ? 4 : 3;
 
-			//old color table code, does not work		
+			//old color table code, does not work
 			//glColorTable(GL_TEXTURE_2D, internalformat, 256, GL_RGBA, GL_UNSIGNED_BYTE, &(palette[0]));
 			//internalformat = GL_COLOR_INDEX8_EXT;
 			//externalformat = GL_COLOR_INDEX;
@@ -326,7 +330,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 					*ptr2++ = pixcolor.g;
 					*ptr2++ = pixcolor.b;
 					if (usealpha)
-						*ptr2++ = (pixindex == (fmt.colorkey & 0xff)) ? 0x00 : 0xff;
+						*ptr2++ = (pixindex == (color_key & 0xff)) ? 0x00 : 0xff;
 				}
 				//old color table code, does not work
 				//memcpy(ptr, offset, sw);
@@ -418,7 +422,7 @@ void texture::sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned
 	SDL_UnlockSurface(teximage);
 	init(data, makenormalmap, detailh);
 }
-	
+
 
 
 void texture::init(const vector<uint8_t>& data, bool makenormalmap, float detailh)
@@ -451,7 +455,7 @@ void texture::init(const vector<uint8_t>& data, bool makenormalmap, float detail
 
 		if(use_compressed_textures)
 			format = GL_COMPRESSED_LUMINANCE_ARB;
-		
+
 		glTexImage2D(GL_TEXTURE_2D, 0, internalformat, gl_width, gl_height, 0, format, GL_UNSIGNED_BYTE, &nmpix[0]);
 
 #ifdef MEMMEASURE
@@ -489,7 +493,7 @@ void texture::init(const vector<uint8_t>& data, bool makenormalmap, float detail
 				//fixme: must detailh also get halfed here? yes...
 				vector<uint8_t> nmpix = make_normals(*gdat, w, h, detailh);
 				int internalformat = GL_RGB;
-					 
+
 				if(use_compressed_textures)
 					internalformat = GL_COMPRESSED_RGB_ARB;
 
@@ -567,7 +571,7 @@ void texture::init(const vector<uint8_t>& data, bool makenormalmap, float detail
 	glTexParameteri(dimension, GL_TEXTURE_MAG_FILTER, magfilter[mapping]);
 	glTexParameteri(dimension, GL_TEXTURE_WRAP_S, clampmodes[clamping]);
 	glTexParameteri(dimension, GL_TEXTURE_WRAP_T, clampmodes[clamping]);
-	
+
 	//enable anisotropic filtering if choosen
 	if(use_anisotropic_filtering)
 		glTexParameterf(dimension, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
@@ -593,46 +597,46 @@ void texture::load_dds(const std::string& filename, dds_data& target)
 		THROW(error, "not a valid .dds file: " + filename);
 
     //
-    // This .dds loader supports the loading of compressed formats DXT1, DXT3 
+    // This .dds loader supports the loading of compressed formats DXT1, DXT3
     // and DXT5.
     //
     target.components = 4;
 
     switch( SDL_SwapLE32(header.FourCC) )
     {
-        case MAKEFOURCC('D','X','T','1'):
-            // DXT1's compression ratio is 8:1
-            target.format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            target.components = 3;
-            factor = 2;
-            break;
+	case MAKEFOURCC('D','X','T','1'):
+	    // DXT1's compression ratio is 8:1
+	    target.format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+	    target.components = 3;
+	    factor = 2;
+	    break;
 
-        case MAKEFOURCC('D','X','T','3'):
-            // DXT3's compression ratio is 4:1
-            target.format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            factor = 4;
-            break;
+	case MAKEFOURCC('D','X','T','3'):
+	    // DXT3's compression ratio is 4:1
+	    target.format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+	    factor = 4;
+	    break;
 
-        case MAKEFOURCC('D','X','T','5'):
-            // DXT5's compression ratio is 4:1
-            target.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            factor = 4;
-            break;
+	case MAKEFOURCC('D','X','T','5'):
+	    // DXT5's compression ratio is 4:1
+	    target.format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+	    factor = 4;
+	    break;
 
-        default:
+	default:
 			THROW(error, "no supported compression type on file: " + filename);
     }
 
-    // How big will the buffer need to be to load all of the pixel data 
+    // How big will the buffer need to be to load all of the pixel data
     // including mip-maps?
 
     if( SDL_SwapLE32(header.LinearSize) == 0 )
 		THROW(error, "linear size in dds file is 0: " + filename);
 
     if( header.MipMapCount > 1 )
-        bufferSize = SDL_SwapLE32(header.LinearSize) * factor;
+	bufferSize = SDL_SwapLE32(header.LinearSize) * factor;
     else
-        bufferSize = SDL_SwapLE32(header.LinearSize);
+	bufferSize = SDL_SwapLE32(header.LinearSize);
 
     target.pixels.resize(bufferSize);
 
@@ -671,7 +675,7 @@ vector<uint8_t> texture::scale_half(const vector<uint8_t>& src, unsigned w, unsi
 	}
 	return dst;
 }
-	
+
 
 
 vector<uint8_t> texture::make_normals(const vector<uint8_t>& src, unsigned w, unsigned h,
@@ -753,7 +757,7 @@ texture::texture(const string& filename, mapping_mode mapping_, clamping_mode cl
 
 	sdl_image teximage(filename);
 	sdl_init(teximage.get_SDL_Surface(), 0, 0, teximage->w, teximage->h, makenormalmap, detailh, rgb2grey);
-}	
+}
 
 
 
@@ -787,7 +791,7 @@ texture::texture(const vector<uint8_t>& pixels, unsigned w, unsigned h, int form
 	dimension = _dimension;
 	mapping = mapping_;
 	clamping = clamp;
-	
+
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
 			THROW(texerror, get_name(), "texture width is no power of two!");
@@ -810,7 +814,7 @@ texture::texture(unsigned w, unsigned h, int format_,
 	dimension = GL_TEXTURE_2D;
 	mapping = mapping_;
 	clamping = clamp;
-	
+
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
 			THROW(texerror, get_name(), "texture width is no power of two!");
@@ -834,7 +838,7 @@ texture::texture(unsigned w, unsigned h, int format_,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter[mapping]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clampmodes[clamping]);
-	
+
 	//enable anisotropic filtering if choosen
 	if(use_anisotropic_filtering)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
@@ -857,7 +861,7 @@ texture::texture(unsigned w, unsigned h, int format_,
 			break;
 		}
 	}
-	
+
 	// initialize texel data with empty pixels
 	glTexImage2D(GL_TEXTURE_2D, 0, internalformat, w, h, 0, GL_RGB,
 		     GL_UNSIGNED_BYTE, (void*)nullptr);
@@ -868,19 +872,19 @@ texture::texture(const std::string& filename, bool dummy, mapping_mode mapping_,
 	dimension = GL_TEXTURE_2D;
 	mapping = mapping_;
 	clamping = clamp;
-	
+
 	// error checks.
 	if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
 		THROW(texerror, get_name(), "illegal mapping mode!");
 	if (clamping < 0 || clamping >= NR_OF_CLAMPING_MODES)
 		THROW(texerror, get_name(), "illegal clamping mode!");
-	
+
 	dds_data image_data;
 	load_dds(filename, image_data);
-	
+
 	width = gl_width = image_data.width;
 	height = gl_height = image_data.height;
-	
+
     int block_size;
 
 	if( image_data.format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT )
@@ -895,7 +899,7 @@ texture::texture(const std::string& filename, bool dummy, mapping_mode mapping_,
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter[mapping]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, clampmodes[clamping]);
-	
+
 	//enable anisotropic filtering if choosen
 	if(use_anisotropic_filtering)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
@@ -949,7 +953,7 @@ void texture::sub_image(int xoff, int yoff, unsigned w, unsigned h,
 void texture::sub_image(const sdl_image& sdlimage, int xoff, int yoff, unsigned w, unsigned h)
 {
 	SDL_Surface* teximage = sdlimage.get_SDL_Surface();
-	
+
 	SDL_LockSurface(teximage);
 
 	const SDL_PixelFormat& fmt = *(teximage->format);
@@ -1107,7 +1111,7 @@ texture3d::texture3d(const std::vector<uint8_t>& pixels, unsigned w, unsigned h,
 {
 	mapping = mapping_;
 	clamping = clamp;
-	
+
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
 			THROW(texerror, get_name(), "texture width is no power of two!");
@@ -1156,7 +1160,7 @@ texture3d::texture3d(const std::vector<uint8_t>& pixels, unsigned w, unsigned h,
 
 	glTexImage3D(GL_TEXTURE_3D, 0, internalformat, gl_width, gl_height, gl_depth, 0, format,
 		     GL_UNSIGNED_BYTE, &pixels[0]);
-	
+
 	if (do_mipmapping[mapping]) {
 		// fixme: does this command set the base level, too?
 		// i.e. are the two gl commands redundant?
@@ -1179,7 +1183,7 @@ texture3d::texture3d(const std::vector<uint8_t>& pixels, unsigned w, unsigned h,
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, clampmodes[clamping]);
-	
+
 	//enable anisotropic filtering if choosen
 	if(use_anisotropic_filtering)
 		glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
@@ -1194,7 +1198,7 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 {
 	mapping = mapping_;
 	clamping = clamp;
-	
+
 	if (!size_non_power_two()) {
 		if (w < 1 || (w & (w-1)) != 0)
 			THROW(texerror, get_name(), "texture width is no power of two!");
@@ -1222,11 +1226,11 @@ texture3d::texture3d(unsigned w, unsigned h, unsigned d,
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, clampmodes[clamping]);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, clampmodes[clamping]);
-	
+
 	//enable anisotropic filtering if choosen
 	if(use_anisotropic_filtering)
 		glTexParameterf(GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
-	
+
 	glTexImage3D(GL_TEXTURE_3D, 0, format, w, h, d, 0, GL_RGB,
 		     GL_UNSIGNED_BYTE, (void*)nullptr);
 	glBindTexture(GL_TEXTURE_3D, 0);

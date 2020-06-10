@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "oglext/OglExt.h"
 #include <glu.h>
-#include <SDL.h>
 
 #include <iomanip>
 #include <iostream>
@@ -37,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <utility>
 
 #include "user_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "game.h"
 #include "texts.h"
 #include "model.h"
@@ -121,7 +120,8 @@ user_interface::user_interface(game& gm) :
 	screen_selector->set_background(nullptr);
 
 	// create playlist widget
-	music_playlist = std::make_unique<widget>(0, 0, 384, 512, texts::get(262));
+	const auto music_playlist_width = 512;
+	music_playlist = std::make_unique<widget>(0, 0, music_playlist_width, 512, texts::get(262));
 	music_playlist->set_background(nullptr);
 	struct musiclist : public widget_list
 	{
@@ -134,30 +134,22 @@ user_interface::user_interface(game& gm) :
 		}
 		musiclist(int x, int y, int w, int h) : widget_list(x, y, w, h), active(false) {}
 	};
-	auto playlist = std::make_unique<musiclist>(0, 0, 384, 512);
-	auto& theplaylist = *playlist;
-	music_playlist->add_child_near_last_child(std::move(playlist));
+	auto& playlist = music_playlist->add_child_near_last_child(std::make_unique<musiclist>(0, 0, music_playlist_width, 512));
 	music& m = music::instance();
-	vector<string> mpl = m.get_playlist();
+	std::vector<std::string> mpl = m.get_playlist();
 	for (const auto & it : mpl) {
-		theplaylist.append_entry(it);
+		playlist.append_entry(it);
 	}
-	auto prcb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(263), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this);
-	playlist_repeat_checkbox = prcb.get();
-	music_playlist->add_child_near_last_child(std::move(prcb));
-	auto pscb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(264), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this);
-	playlist_shuffle_checkbox = pscb.get();
-	music_playlist->add_child_near_last_child(std::move(pscb));
-	auto pmcb = std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, 192, 32, texts::get(265), nullptr, false, [](user_interface& ui) { ui.playlist_mute(); }, *this);
-	playlist_mute_checkbox = pmcb.get();
-	music_playlist->add_child_near_last_child(std::move(pmcb));
-	playlist_mute_checkbox->move_pos(vector2i(-192, 0));
-	music_playlist->add_child_near_last_child(std::make_unique<widget_caller_button<bool&>>(0, 0, 384, 32, texts::get(260), nullptr, [](auto& b) { b = false; }, playlist_visible));
+	playlist_repeat_checkbox = &music_playlist->add_child_near_last_child(std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, music_playlist_width/2, 32, texts::get(263), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this));
+	playlist_shuffle_checkbox = &music_playlist->add_child_near_last_child(std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, music_playlist_width/2, 32, texts::get(264), nullptr, false, [](auto& ui) { ui.playlist_mode_changed(); }, *this), 0, 1);
+	playlist_mute_checkbox = &music_playlist->add_child_near_last_child(std::make_unique<widget_caller_checkbox<user_interface&>>(0, 0, music_playlist_width/2, 32, texts::get(265), nullptr, false, [](user_interface& ui) { ui.playlist_mute(); }, *this), 0);
+	playlist_mute_checkbox->move_pos(vector2i(-music_playlist_width, 0));
+	music_playlist->add_child_near_last_child(std::make_unique<widget_caller_button<bool&>>(0, 0, music_playlist_width, 32, texts::get(260), nullptr, [](auto& b) { b = false; }, playlist_visible));
 	music_playlist->clip_to_children_area();
 	music_playlist->set_pos(vector2i(0, 0));
 	// enable music switching finally, to avoid on_sel_change changing the music track,
 	// because on_sel_change is called above, when adding entries.
-	theplaylist.active = true;
+	playlist.active = true;
 
 	// create main menu widget
 	main_menu = std::make_unique<widget>(0, 0, 256, 128, texts::get(104));
@@ -298,15 +290,15 @@ void user_interface::finish_construction()
 
 
 
-user_interface* user_interface::create(game& gm)
+std::shared_ptr<user_interface> user_interface::create(game& gm)
 {
 	sea_object* p = gm.get_player();
-	user_interface* ui = nullptr;
+	std::shared_ptr<user_interface> ui;
 	// check for interfaces
-	if (dynamic_cast<submarine*>(p)) ui = new submarine_interface(gm);
+	if (dynamic_cast<submarine*>(p)) ui = std::make_shared<submarine_interface>(gm);
 #if 0
-	else if (dynamic_cast<ship*>(p)) ui = new ship_interface(gm);
-	else if (dynamic_cast<airplane*>(p)) ui = new airplane_interface(gm);
+	else if (dynamic_cast<ship*>(p)) ui = std::make_shared<ship_interface>(gm);
+	else if (dynamic_cast<airplane*>(p)) ui = std::make_shared<airplane_interface>(gm);
 #endif
 	if (ui) ui->finish_construction();
 	return ui;
@@ -372,11 +364,11 @@ void user_interface::display() const
 	// fixme: brightness needs sun_pos, so compute_sun_pos() is called multiple times per frame
 	// but is very costly. we could cache it.
 	mygame->get_water().set_refraction_color(mygame->compute_light_color(mygame->get_player()->get_pos()));
-	displays[current_display].display(*mygame);
+	displays[current_display].display();
 
 	// popups
 	if (current_popup > 0)
-		popups[current_popup-1].display(*mygame);
+		popups[current_popup-1].display();
 
 	// draw screen selector if visible
 	if (screen_selector_visible) {
@@ -423,104 +415,162 @@ void user_interface::set_time(double tm)
 
 
 
-void user_interface::process_input(const SDL_Event& event)
+bool user_interface::handle_key_event(const key_data& k)
 {
-	if (panel_visible) {
-		if (panel->check_for_mouse_event(event))
-			return;
-	}
-
-	if (main_menu_visible) {
-		if (main_menu->check_for_mouse_event(event)) {
-			return;
-		}
-	}
-
-	if (screen_selector_visible) {
-		if (screen_selector->check_for_mouse_event(event)) {
-			// drag for the menu
-			// fixme: drag&drop support should be in widget class...
-			if (event.type == SDL_MOUSEMOTION) {
-				vector2i p = screen_selector->get_pos();
-				vector2i s = screen_selector->get_size();
-				// drag menu with left mouse button when on title or right mouse button else
-				vector2i position = sys().translate_position(event);
-				vector2 motion = sys().translate_motion(event);
-				if (event.motion.state & SDL_BUTTON_MMASK
-				    || (event.motion.state & SDL_BUTTON_LMASK
-					&& position.x >= p.x
-					&& position.y >= p.y
-					&& position.x < p.x + s.x
-					&& position.y < p.y + 32)) {
-
-					p.x += int(ceil(motion.x));
-					p.y += int(ceil(motion.y));
-					p = p.max(vector2i(0, 0));
-					p = p.min(sys().get_res_2d() - s);
-					screen_selector->set_pos(p);
-				}
-			}
-			return;
-		}
-	}
-
-	if (playlist_visible) {
-		if (music_playlist->check_for_mouse_event(event)) {
-			// drag for the menu
-			// fixme: drag&drop support should be in widget class...
-			if (event.type == SDL_MOUSEMOTION) {
-				vector2i p = music_playlist->get_pos();
-				vector2i s = music_playlist->get_size();
-				vector2i pos = sys().translate_position(event);
-				// drag menu with left mouse button when on title or right mouse button else
-				if (event.motion.state & SDL_BUTTON_MMASK
-				    || (event.motion.state & SDL_BUTTON_LMASK
-					&& pos.x >= p.x
-					&& pos.y >= p.y
-					&& pos.x < p.x + s.x
-					&& pos.y < p.y + 32 + 8)) {
-
-					p.x += int(ceil(sys().translate_motion_x(event)));
-					p.y += int(ceil(sys().translate_motion_y(event)));
-					if (p.x < 0) p.x = 0;
-					if (p.y < 0) p.y = 0;
-					// 2006-11-30 doc1972 negative pos and size of a playlist makes no sence, so we cast
-					if ((unsigned int)(p.x + s.x) > sys().get_res_x_2d()) p.x = sys().get_res_x_2d() - s.x;
-					if ((unsigned int)(p.y + s.y) > sys().get_res_y_2d()) p.y = sys().get_res_y_2d() - s.y;
-					music_playlist->set_pos(p);
-				}
-			}
-			return;
-		}
-	}
-
-	if (event.type == SDL_KEYDOWN) {
-		if (cfg::instance().getkey(key_command::TOGGLE_RELATIVE_BEARING).equal(event.key.keysym)) {
+	if (k.down()) {
+		if (is_configured_key(key_command::TOGGLE_RELATIVE_BEARING, k)) {
 			bearing_is_relative = !bearing_is_relative;
 			add_message(texts::get(bearing_is_relative ? 220 : 221));
-			return;
-		} else if (cfg::instance().getkey(key_command::TOGGLE_POPUP).equal(event.key.keysym)) {
+			return true;
+		} else if (is_configured_key(key_command::TOGGLE_POPUP, k)) {
 			toggle_popup();
-			return;
+			return true;
 		}
 	}
-
-	displays[current_display].process_input(*mygame, event);
+	if (current_popup > 0) {
+		if (popups[current_popup-1].handle_key_event(k)) {
+			return true;
+		}
+	}
+	return displays[current_display].handle_key_event(k);
 }
 
 
 
-void user_interface::process_input(list<SDL_Event>& events)
+bool user_interface::handle_mouse_button_event(const mouse_click_data& m)
 {
-	// if screen selector menu is open and mouse is over that window, handle mouse events there.
+	if (panel_visible) {
+		if (panel->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*panel, m)) {
+			return true;
+		}
+	}
+
+	if (main_menu_visible) {
+		if (main_menu->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*main_menu, m)) {
+			return true;
+		}
+	}
+
+	if (screen_selector_visible) {
+		if (screen_selector->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*screen_selector, m)) {
+			return true;
+		}
+	}
+
+	if (playlist_visible) {
+		if (music_playlist->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*music_playlist, m)) {
+			return true;
+		}
+	}
+	if (current_popup > 0) {
+		if (popups[current_popup-1].handle_mouse_button_event(m)) {
+			return true;
+		}
+	}
+	return displays[current_display].handle_mouse_button_event(m);
+}
 
 
-	if (current_popup > 0)
-		popups[current_popup-1].process_input(*mygame, events);
 
-	for (list<SDL_Event>::const_iterator it = events.begin();
-	     it != events.end(); ++it)
-		process_input(*it);
+bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (panel_visible) {
+		if (panel->is_mouse_over(m.position_2d) && widget::handle_mouse_motion_event(*panel, m))
+			return true;
+	}
+
+	if (main_menu_visible) {
+		if (main_menu->is_mouse_over(m.position_2d) && widget::handle_mouse_motion_event(*main_menu, m)) {
+			return true;
+		}
+	}
+
+	if (screen_selector_visible) {
+		if (screen_selector->is_mouse_over(m.position_2d) && widget::handle_mouse_motion_event(*screen_selector, m)) {
+			// drag for the menu
+			// fixme: drag&drop support should be in widget class...
+			vector2i p = screen_selector->get_pos();
+			vector2i s = screen_selector->get_size();
+			// drag menu with left mouse button when on title or right mouse button else
+			if (m.is_pressed(mouse_button::middle) || (m.is_pressed(mouse_button::right)
+				&& m.position_2d.x >= p.x
+				&& m.position_2d.y >= p.y
+				&& m.position_2d.x < p.x + s.x
+				&& m.position_2d.y < p.y + 32))
+			{
+				p += m.rel_motion_2d;
+				p = p.max(vector2i(0, 0));
+				p = p.min(sys().get_res_2d() - s);
+				screen_selector->set_pos(p);
+				return true;
+			}
+		}
+	}
+
+	if (playlist_visible) {
+		if (music_playlist->is_mouse_over(m.position_2d) && widget::handle_mouse_motion_event(*music_playlist, m)) {
+			// drag for the menu
+			// fixme: drag&drop support should be in widget class...
+			vector2i p = music_playlist->get_pos();
+			vector2i s = music_playlist->get_size();
+			// drag menu with left mouse button when on title or right mouse button else
+			if (m.is_pressed(mouse_button::middle) || (m.is_pressed(mouse_button::right)
+				&& m.position_2d.x >= p.x
+				&& m.position_2d.y >= p.y
+				&& m.position_2d.x < p.x + s.x
+				&& m.position_2d.y < p.y + 32 + 8))
+			{
+				p += m.rel_motion_2d;
+				if (p.x < 0) p.x = 0;
+				if (p.y < 0) p.y = 0;
+				// 2006-11-30 doc1972 negative pos and size of a playlist makes no sence, so we cast
+				if ((unsigned int)(p.x + s.x) > sys().get_res_x_2d()) p.x = sys().get_res_x_2d() - s.x;
+				if ((unsigned int)(p.y + s.y) > sys().get_res_y_2d()) p.y = sys().get_res_y_2d() - s.y;
+				music_playlist->set_pos(p);
+			}
+		}
+	}
+	if (current_popup > 0) {
+		if (popups[current_popup-1].handle_mouse_motion_event(m)) {
+			return true;
+		}
+	}
+	return displays[current_display].handle_mouse_motion_event(m);
+}
+
+
+
+bool user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (panel_visible && panel->is_mouse_over(m.position_2d)) {
+		if (widget::handle_mouse_wheel_event(*panel, m)) {
+			return true;
+		}
+	}
+
+	if (main_menu_visible && main_menu->is_mouse_over(m.position_2d)) {
+		if (widget::handle_mouse_wheel_event(*main_menu, m)) {
+			return true;
+		}
+	}
+
+	if (screen_selector_visible && screen_selector->is_mouse_over(m.position_2d)) {
+		if (widget::handle_mouse_wheel_event(*screen_selector, m)) {
+			return true;
+		}
+	}
+
+	if (playlist_visible && music_playlist->is_mouse_over(m.position_2d)) {
+		if (widget::handle_mouse_wheel_event(*music_playlist, m)) {
+			return true;
+		}
+	}
+	if (current_popup > 0) {
+		if (popups[current_popup-1].handle_mouse_wheel_event(m)) {
+			return true;
+		}
+	}
+	return displays[current_display].handle_mouse_wheel_event(m);
 }
 
 
@@ -748,9 +798,9 @@ void user_interface::set_current_display(unsigned curdis)
 	// clear both screen buffers
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	sys().swap_buffers();
+	sys().finish_frame();
 	glClear(GL_COLOR_BUFFER_BIT);
-	sys().swap_buffers();
+	sys().finish_frame();
 
 	displays[current_display].enter(daymode);
 	if (mygame)
@@ -768,11 +818,11 @@ void user_interface::set_current_display(unsigned curdis)
 void user_interface::playlist_mode_changed()
 {
 	if (playlist_repeat_checkbox->is_checked()) {
-		music::instance().set_playback_mode(music::PBM_LOOP_TRACK);
+		music::instance().set_playback_mode(music::playback_mode::loop_track);
 	} else if (playlist_shuffle_checkbox->is_checked()) {
-		music::instance().set_playback_mode(music::PBM_SHUFFLE_TRACK);
+		music::instance().set_playback_mode(music::playback_mode::shuffle_track);
 	} else {
-		music::instance().set_playback_mode(music::PBM_LOOP_LIST);
+		music::instance().set_playback_mode(music::playback_mode::loop_list);
 	}
 }
 

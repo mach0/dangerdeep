@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class torpedo_camera_display : public freeview_display
 {
-	void pre_display(class game& gm) const override;
+	void pre_display() const override;
 	projection_data get_projection_data(class game& gm) const override;
-	void post_display(class game& gm) const override;
+	void post_display() const override;
 	vector3 get_viewpos(class game& gm) const override;
 
 	mutable const class torpedo* trackobj;

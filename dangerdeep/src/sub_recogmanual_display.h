@@ -32,7 +32,7 @@ class sub_recogmanual_display : public user_display
 {
 protected:
 
-	class widget_button_next : public widget_button 
+	class widget_button_next : public widget_button
 	{
 	protected:
 		int direction;
@@ -40,9 +40,9 @@ protected:
 	public:
 		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =nullptr);
 		void draw() const override;
-		void on_release () override;		
+		void on_release () override;
 	};
-	
+
 	int page;
 	widget_button_next btn_left;
 	widget_button_next btn_right;
@@ -53,12 +53,14 @@ protected:
 	ptrvector<std::string> displacements;
 	ptrvector<std::string> weapons;
 	ptrvector<std::string> countries;
-	
+
 public:
 	sub_recogmanual_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

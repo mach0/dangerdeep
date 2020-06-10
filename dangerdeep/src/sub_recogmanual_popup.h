@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "user_popup.h"
 #include "image.h"
-#include "system.h"
+#include "system_interface.h"
 #include "game.h"
 #include "datadirs.h"
 #include "widget.h"
@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class sub_recogmanual_popup : public user_popup
 {
 protected:
-	class widget_button_next : public widget_button 
+	class widget_button_next : public widget_button
 	{
 	protected:
 		int direction;
@@ -41,9 +41,9 @@ protected:
 	public:
 		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =nullptr);
 		void draw() const override;
-		void on_release () override;		
+		void on_release () override;
 	};
-	
+
 	int page;
 	std::unique_ptr<image> background_daylight;
 	std::unique_ptr<image> background_nightlight;
@@ -54,14 +54,16 @@ protected:
 	std::vector<std::string> weapons;
 	std::vector<std::string> countries;
 	widget_button_next btn_left;
-	widget_button_next btn_right;	
+	widget_button_next btn_right;
 
 public:
 	sub_recogmanual_popup(class user_interface& ui_);
 
-	void display(class game& gm) const override;
+	void display() const override;
 
-	bool process_input(class game& gm, const SDL_Event& event) override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 };
 
 #endif /* SUB_RECOGMANUAL_POPUP_H */

@@ -27,13 +27,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <sstream>
 #include "ship_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "game.h"
 #include "texts.h"
 #include "command.h"
 
 #include <GL/glu.h>
-#include <SDL.h>
 
 ship_interface::ship_interface(ship* player_ship, game& gm) :
 	user_interface( player_ship, gm )

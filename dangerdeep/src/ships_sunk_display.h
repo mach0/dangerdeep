@@ -36,8 +36,9 @@ protected:
 public:
 	ships_sunk_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

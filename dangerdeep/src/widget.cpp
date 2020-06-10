@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "model.h"
 #include "primitives.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include "widget.h"
@@ -228,50 +228,6 @@ widget_slider::widget_slider(xml_elem& elem, widget* _parent) : widget(elem, _pa
 		align(elem.attri("align_x"), elem.attri("align_y"));
 }
 
-void widget::fire_mouse_click_event(int mx, int my, int mb) {
-	mouse_click_event event(this, mx, my, mb);
-	for(std::list<const action_listener*>::const_iterator it=action_listeners.begin(); it!=action_listeners.end(); it++) {
-		(*it)->mouse_clicked(event);
-	}
-}
-
-void widget::fire_key_event(const SDL_keysym& ks) {
-	key_event event(this, ks);
-	for(std::list<const action_listener*>::const_iterator it=action_listeners.begin(); it!=action_listeners.end(); it++) {
-		(*it)->key_pressed(event);
-	}
-}
-
-void widget::fire_mouse_release_event() {
-	mouse_release_event event(this);
-	for(std::list<const action_listener*>::const_iterator it=action_listeners.begin(); it!=action_listeners.end(); it++) {
-		(*it)->mouse_released(event);
-	}
-}
-
-void widget::fire_mouse_drag_event(int mx, int my, int rx, int ry, int mb) {
-	mouse_drag_event event(this, mx, my, rx, ry, mb);
-	for(std::list<const action_listener*>::const_iterator it=action_listeners.begin(); it!=action_listeners.end(); it++) {
-		(*it)->mouse_dragged(event);
-	}
-}
-
-void widget::fire_mouse_scroll_event(int wd) {
-	mouse_scroll_event event(this, wd);
-	for(std::list<const action_listener*>::const_iterator it=action_listeners.begin(); it!=action_listeners.end(); it++) {
-		(*it)->mouse_scrolled(event);
-	}
-}
-
-void widget::add_action_listener(const action_listener* listener, bool recursive) {
-	action_listeners.push_back(listener);
-	if(recursive) {
-		for(auto & it : children) {
-			it->add_action_listener(listener);
-		}
-	}
-}
-
 widget* widget::get_child(const std::string& child, bool recursive)
 {
 	widget* retval = nullptr;
@@ -390,7 +346,7 @@ widget::~widget()
 
 
 
-void widget::add_child_near_last_child(std::unique_ptr<widget> w, int distance, unsigned direction)
+void widget::add_child_near_last_child_generic(std::unique_ptr<widget>&& w, int distance, unsigned direction)
 {
 	if (distance < 0)
 		distance = globaltheme->frame_size() * -distance;
@@ -567,18 +523,22 @@ void widget::redraw()
 	if (parent) parent->redraw();
 }
 
-void widget::on_char(const SDL_keysym& ks)
+void widget::on_key(key_code kc, key_mod km)
 {
 	// we can't handle it, so pass it to the parent
-	if (parent) parent->on_char(ks);
-	fire_key_event(ks);
+	if (parent) parent->on_key(kc, km);
 }
 
-void widget::on_wheel(int wd)
+void widget::on_text(const std::string& t)
+{
+	// we can't handle it, so pass it to the parent
+	if (parent) parent->on_text(t);
+}
+
+void widget::on_wheel(input_action wd)
 {
 	// we can't handle it, so pass it to the parent
 	if (parent) parent->on_wheel(wd);
-	fire_mouse_scroll_event(wd);
 }
 
 void widget::draw_frame(int x, int y, int w, int h, bool out)
@@ -594,81 +554,6 @@ void widget::draw_frame(int x, int y, int w, int h, bool out)
 	frelem[6]->draw(x, y+h-fw);
 	frelem[7]->draw(x, y+fw, fw, h-2*fw);
 }
-
-
-
-void widget::process_input(const SDL_Event& event)
-{
-	vector2i pos;
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		if (focussed && focussed->is_enabled())
-			focussed->on_char(event.key.keysym);
-		break;
-
-	case SDL_KEYUP:	// ignore for now
-		break;
-
-	case SDL_MOUSEBUTTONDOWN:
-		pos = sys().translate_position(event);
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			compute_focus(pos);
-			if (focussed) focussed->on_click(pos, SDL_BUTTON_LMASK);
-		} else if (event.button.button == SDL_BUTTON_RIGHT) {
-			compute_focus(pos);
-			if (focussed) focussed->on_click(pos, SDL_BUTTON_RMASK);
-		} else if (event.button.button == SDL_BUTTON_MIDDLE) {
-			compute_focus(pos);
-			if (focussed) focussed->on_click(pos, SDL_BUTTON_MMASK);
-		} else if (event.button.button == SDL_BUTTON_WHEELUP) {
-			if (focussed) focussed->on_wheel(1);
-		} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-			if (focussed) focussed->on_wheel(2);
-		}
-		break;
-
-	case SDL_MOUSEBUTTONUP:
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			if (focussed) focussed->on_release();
-		}
-		break;
-
-	case SDL_MOUSEMOTION:
-		compute_mouseover(sys().translate_position(event));
-		if (focussed) focussed->on_drag(sys().translate_position_x(event),
-						sys().translate_position_y(event),
-						int(ceil(sys().translate_motion_x(event))),
-						int(ceil(sys().translate_motion_y(event))),
-						event.motion.state);
-		break;
-	}
-}
-
-void widget::process_input(const list<SDL_Event>& events)
-{
-	for (const auto & event : events) {
-		process_input(event);
-	}
-}
-
-bool widget::check_for_mouse_event(const SDL_Event& event)
-{
-	vector2i pos = sys().translate_position(event);
-	if (event.type == SDL_MOUSEMOTION && is_mouse_over(pos)) {
-		process_input(event);
-		return true;
-	}
-	if (event.type == SDL_MOUSEBUTTONDOWN && is_mouse_over(pos)) {
-		process_input(event);
-		return true;
-	}
-	if (event.type == SDL_MOUSEBUTTONUP && is_mouse_over(pos)) {
-		process_input(event);
-		return true;
-	}
-	return false;
-}
-
 
 
 void widget::draw_rect(int x, int y, int w, int h, bool out)
@@ -751,53 +636,134 @@ std::unique_ptr<widget> widget::create_dialogue_ok_cancel(widget* parent_, const
 	return wi;
 }
 
-int widget::run(unsigned timeout, bool do_stacking, widget* focussed_at_begin)
+int widget::run(widget& w, unsigned timeout, bool do_stacking, widget* focussed_at_begin)
 {
-	bool inited = false; // draw first, then only draw when an event occurred
 	glClearColor(0, 0, 0, 0);
-	widget* myparent = parent;	// store parent info and unlink chain to parent
-	parent = nullptr;
+	widget* myparent = w.get_parent();	// store parent info and unlink chain to parent
+	w.set_parent(nullptr);
 	if (myparent) myparent->disable();
-	closeme = false;
+	w.closeme = false;
 	if (!do_stacking)
 		unref_all_backgrounds();
 	// we should encapsulate the code from here in a try call, to make changes reversible on error.
 	// but in case of errors, we can't handle them well here, so no matter.
-	widgets.push_back(this);
+	widgets.push_back(&w);
 	unsigned endtime = sys().millisec() + timeout;
-	focussed = focussed_at_begin ? focussed_at_begin : this;
-	while (!closeme) {
+	focussed = focussed_at_begin ? focussed_at_begin : &w;
+	// draw it initially
+	w.redraw();
+	auto event_handler = std::make_shared<input_event_handler_custom>();
+	event_handler->set_handler([&w](const input_event_handler::key_data& k) { return handle_key_event(w, k); });
+	event_handler->set_handler([&w](const input_event_handler::mouse_click_data& m) { return handle_mouse_button_event(w, m); });
+	event_handler->set_handler([&w](const input_event_handler::mouse_motion_data& m) { return handle_mouse_motion_event(w, m); });
+	event_handler->set_handler([&w](const input_event_handler::mouse_wheel_data& m) { return handle_mouse_wheel_event(w, m); });
+	event_handler->set_handler([&w](const std::string& t) { return handle_text_input_event(w, t); });
+	sys().add_input_event_handler(event_handler);
+	while (!w.was_closed()) {
 		unsigned time = sys().millisec();
 		if (timeout != 0 && time > endtime) break;
 
-		auto events = sys().poll_event_queue();
-		if (!redrawme && inited && events.size() == 0) {
-			unsigned crsrstat0 = sys().millisec() / 500 & 1;
-			SDL_Delay(50);
-			unsigned crsrstat1 = sys().millisec() / 500 & 1;
-			if (crsrstat1 == crsrstat0)
-				continue;
+		if (w.redrawme) {
+			glClear(GL_COLOR_BUFFER_BIT);
+			sys().prepare_2d_drawing();
+			if (do_stacking) {
+				for (auto & it : widgets)
+					it->draw();
+			} else {
+				w.draw();
+			}
+			sys().unprepare_2d_drawing();
 		}
-		inited = true;
-		glClear(GL_COLOR_BUFFER_BIT);
-		sys().prepare_2d_drawing();
-		if (do_stacking) {
-			for (auto & it : widgets)
-				it->draw();
-		} else {
-			draw();
-		}
-		sys().unprepare_2d_drawing();
-		process_input(events);
-		sys().swap_buffers();
+		sys().finish_frame();
 	}
 	widgets.pop_back();
 	if (!do_stacking)
 		ref_all_backgrounds();
 	if (myparent) myparent->enable();
-	parent = myparent;
-	return retval;
+	w.set_parent(myparent);
+	return w.retval;
 }
+
+bool widget::handle_key_event(widget& w, const input_event_handler::key_data& k)
+{
+	// any key press or release could potentially change the scene, so redraw
+	w.redraw();
+	if (k.down() && focussed && focussed->is_enabled()) {
+		focussed->on_key(k.keycode, k.mod);
+		return true;
+	}
+	return false;
+}
+
+
+
+bool widget::handle_mouse_button_event(widget& w, const input_event_handler::mouse_click_data& m)
+{
+	// any click or release could potentially change the scene, so redraw
+	w.redraw();
+	if (m.down()) {
+		w.compute_focus(m.position_2d);
+		if (focussed) {
+			focussed->on_click(m.position_2d, m.button);
+			return true;
+		}
+	} else if (m.up() && m.left()) {
+		if (focussed) {
+			focussed->on_release();
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+bool widget::handle_mouse_motion_event(widget& w, const input_event_handler::mouse_motion_data& m)
+{
+	// any mouse motion with pressed keys could potentially change the scene, so redraw,
+	// without keys pressed a redraw is needed when mouseover changes
+	auto current_mouseover = mouseover;
+	w.compute_mouseover(m.position_2d);
+	if (current_mouseover != mouseover) {
+		w.redraw();
+	}
+	if (m.buttons_pressed.any()) {
+		w.redraw();
+		if (focussed) {
+			focussed->on_drag(m.position_2d, m.rel_motion_2d, m.buttons_pressed);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+bool widget::handle_mouse_wheel_event(widget& w, const input_event_handler::mouse_wheel_data& m)
+{
+	// any mouse wheel event could potentially change the scene, so redraw
+	w.redraw();
+	if (focussed) {
+		focussed->on_wheel(m.action);
+		return true;
+	}
+	return false;
+}
+
+
+
+bool widget::handle_text_input_event(widget& w, const std::string& t)
+{
+	// any text input could potentially change the scene, so redraw
+	w.redraw();
+	if (focussed && focussed->is_enabled()) {
+		focussed->on_text(t);
+		return true;
+	}
+	return false;
+}
+
+
 
 void widget::close(int val)
 {
@@ -971,11 +937,10 @@ void widget_checkbox::draw() const
 
 
 
-void widget_checkbox::on_click(int mx, int my, int mb)
+void widget_checkbox::on_click(vector2i position, mouse_button btn)
 {
 	checked = !checked;
 	on_change();
-	fire_mouse_click_event(mx, my, mb);
 }
 
 
@@ -989,18 +954,16 @@ void widget_button::draw() const
 	globaltheme->myfont->print_c(p.x+size.x/2, p.y+size.y/2, text, col, true);
 }
 
-void widget_button::on_click(int mx, int my, int mb)
+void widget_button::on_click(vector2i position, mouse_button btn)
 {
 	pressed = true;
 	on_change();
-	fire_mouse_click_event(mx, my, mb);
 }
 
 void widget_button::on_release()
 {
 	pressed = false;
 	on_change();
-	fire_mouse_release_event();
 }
 
 widget_scrollbar::widget_scrollbar(int x, int y, int w, int h, widget* parent_)
@@ -1088,41 +1051,36 @@ void widget_scrollbar::draw() const
 	draw_area(p.x, p.y + globaltheme->icons[0]->get_height() + 2*fw + scrollbarpixelpos, globaltheme->icons[0]->get_width()+2*fw, get_scrollbarsize(), true);
 }
 
-void widget_scrollbar::on_click(int mx, int my, int mb)
+void widget_scrollbar::on_click(vector2i position, mouse_button btn)
 {
 	unsigned oldpos = scrollbarpos;
 	vector2i p = get_pos();
-	if (my < int(p.y + globaltheme->icons[0]->get_height() + 4)) {
-		if (mb != 0) {
-			if (scrollbarpos > 0) {
-				--scrollbarpos;
-				compute_scrollbarpixelpos();
-			}
+	if (position.y < int(p.y + globaltheme->icons[0]->get_height() + 4)) {
+		if (scrollbarpos > 0) {
+			--scrollbarpos;
+			compute_scrollbarpixelpos();
 		}
-	} else if (my >= int(p.y + size.y - globaltheme->icons[1]->get_height() - 4)) {
-		if (mb != 0) {
-			if (scrollbarpos+1 < scrollbarmaxpos) {
-				++scrollbarpos;
-				compute_scrollbarpixelpos();
-			}
+	} else if (position.y >= int(p.y + size.y - globaltheme->icons[1]->get_height() - 4)) {
+		if (scrollbarpos+1 < scrollbarmaxpos) {
+			++scrollbarpos;
+			compute_scrollbarpixelpos();
 		}
 	}
 	if (oldpos != scrollbarpos)
 		on_scroll();
-	fire_mouse_click_event(mx, my, mb);
 }
 
-void widget_scrollbar::on_drag(int mx, int my, int rx, int ry, int mb)
+void widget_scrollbar::on_drag(vector2i position, vector2i motion, mouse_button_state btnstate)
 {
 	unsigned oldpos = scrollbarpos;
 	vector2i p = get_pos();
-	if ((my >= int(p.y + globaltheme->icons[0]->get_height() + 4)) &&
-	    (my < int(p.y + size.y - globaltheme->icons[1]->get_height() - 4))) {
-		if (mb != 0 && ry != 0) {
+	if ((position.y >= int(p.y + globaltheme->icons[0]->get_height() + 4)) &&
+	    (position.y < int(p.y + size.y - globaltheme->icons[1]->get_height() - 4))) {
+		if (btnstate.any() && motion.y != 0) {
 			if (scrollbarmaxpos > 1) {
 				int msbp = get_max_scrollbarsize() - get_scrollbarsize();
 				int sbpp = scrollbarpixelpos;
-				sbpp += ry;
+				sbpp += motion.y;
 				if (sbpp < 0) sbpp = 0;
 				else if (sbpp > msbp) sbpp = msbp;
 				scrollbarpixelpos = sbpp;
@@ -1132,19 +1090,17 @@ void widget_scrollbar::on_drag(int mx, int my, int rx, int ry, int mb)
 		if (oldpos != scrollbarpos)
 			on_scroll();
 	}
-	fire_mouse_drag_event(mx, my, rx, ry, mb);
 }
 
-void widget_scrollbar::on_wheel(int wd)
+void widget_scrollbar::on_wheel(input_action wd)
 {
 	unsigned oldpos = scrollbarpos;
-	if (wd == 1) {
+	if (wd == input_action::up) {
 		if (scrollbarpos > 0) {
 			--scrollbarpos;
 			compute_scrollbarpixelpos();
 		}
-	}
-	if (wd == 2) {
+	} else if (wd == input_action::down) {
 		if (scrollbarpos+1 < scrollbarmaxpos) {
 			++scrollbarpos;
 			compute_scrollbarpixelpos();
@@ -1152,7 +1108,6 @@ void widget_scrollbar::on_wheel(int wd)
 	}
 	if (oldpos != scrollbarpos)
 		on_scroll();
-	fire_mouse_scroll_event(wd);
 }
 
 widget_list::widget_list(int x, int y, int w, int h, widget* parent_)
@@ -1169,31 +1124,12 @@ widget_list::widget_list(int x, int y, int w, int h, widget* parent_)
 	myscrollbar = &add_child(std::make_unique<wls>(listpos, size.x-3*fw-globaltheme->icons[0]->get_width(), fw, globaltheme->icons[0]->get_width()+2*fw, size.y-2*fw, this));
 }
 
-list<string>::iterator widget_list::ith(unsigned i)
-{
-	auto it = entries.begin();
-	while (it != entries.end() && i > 0) {
-		--i;
-		++it;
-	}
-	return it;
-}
-
-list<string>::const_iterator widget_list::ith(unsigned i) const
-{
-	auto it = entries.begin();
-	while (it != entries.end() && i > 0) {
-		--i;
-		++it;
-	}
-	return it;
-}
-
 void widget_list::delete_entry(unsigned n)
 {
-	auto it = ith(n);
-	if (it != entries.end())
+	auto it = entries.begin() + n;
+	if (it != entries.end()) {
 		entries.erase(it);
+	}
 	unsigned es = entries.size();
 	if (es == 0) selected = -1;	// remove selection
 	else if (es == 1) set_selected(0);	// set to first entry
@@ -1205,11 +1141,12 @@ void widget_list::delete_entry(unsigned n)
 
 void widget_list::insert_entry(unsigned n, const string& s)
 {
-	auto it = ith(n);
-	if (it != entries.end())
+	auto it = entries.begin() + n;
+	if (it != entries.end()) {
 		entries.insert(it, s);
-	else
+	} else {
 		entries.push_back(s);
+	}
 	unsigned es = entries.size();
 	if (es == 1) set_selected(0);	// set to first entry
 	else on_sel_change();
@@ -1231,19 +1168,20 @@ void widget_list::append_entry(const string& s)
 
 void widget_list::set_entry(unsigned n, const string& s)
 {
-	for (auto i = entries.begin(); i != entries.end(); ++i, --n)
-		if (n == 0) *i = s;
+	if (n < entries.size()) {
+		entries[n] = s;
+	}
 }
 
 void widget_list::sort_entries()
 {
-	entries.sort();
+	std::sort(entries.begin(), entries.end());
 	on_sel_change();
 }
 
 void widget_list::make_entries_unique()
 {
-	unique(entries.begin(), entries.end());
+	entries.erase(std::unique(entries.begin(), entries.end()), entries.end());
 	unsigned es = entries.size();
 	if (es == 1) set_selected(0);	// set to first entry
 	else on_sel_change();
@@ -1254,8 +1192,9 @@ void widget_list::make_entries_unique()
 
 string widget_list::get_entry(unsigned n) const
 {
-	for (auto i = entries.begin(); i != entries.end(); ++i, --n)
-		if (n == 0) return *i;
+	if (n < entries.size()) {
+		return entries[n];
+	}
 	return "";
 }
 
@@ -1291,7 +1230,7 @@ string widget_list::get_selected_entry() const
 
 unsigned widget_list::get_nr_of_visible_entries() const
 {
-	return (size.y - 2*globaltheme->frame_size()) / globaltheme->myfont->get_height();
+	return std::min(unsigned(entries.size()), (size.y - 2*globaltheme->frame_size()) / globaltheme->myfont->get_height());
 }
 
 void widget_list::clear()
@@ -1306,11 +1245,10 @@ void widget_list::draw() const
 {
 	vector2i p = get_pos();
 	draw_area(p.x, p.y, size.x, size.y, false);
-	auto it = ith(listpos);
 	int fw = globaltheme->frame_size();
 	unsigned maxp = get_nr_of_visible_entries();
 	bool scrollbarvisible = (entries.size() > maxp);
-	for (unsigned lp = 0; it != entries.end() && lp < maxp; ++it, ++lp) {
+	for (unsigned lp = 0; lp < maxp; ++lp) {
 		color tcol = !is_enabled() ? globaltheme->textdisabledcol : (selected==int(lp+listpos))? globaltheme->textselectcol : globaltheme->textcol;
 		if (selected == int(lp + listpos)) {
 			int width = size.x-2*fw;
@@ -1320,9 +1258,9 @@ void widget_list::draw() const
 		}
 		// optionally split string into columns
 		if (columnwidth < 0) {
-			globaltheme->myfont->print(p.x+fw, p.y+fw + lp*globaltheme->myfont->get_height(), *it, tcol, true);
+			globaltheme->myfont->print(p.x+fw, p.y+fw + lp*globaltheme->myfont->get_height(), entries[listpos + lp], tcol, true);
 		} else {
-			string tmp = *it;
+			string tmp = entries[listpos + lp];
 			unsigned col = 0;
 			while (true) {
 				string::size_type tp = tmp.find("\t");
@@ -1341,33 +1279,40 @@ void widget_list::draw() const
 		myscrollbar->draw();
 }
 
-void widget_list::on_click(int mx, int my, int mb)
+void widget_list::on_click(vector2i position, mouse_button btn)
 {
 	vector2i p = get_pos();
-	int oldselected = selected;
-	if (mb & 1) {
-		int fw = globaltheme->frame_size();
-		int sp = (my - p.y - fw)/int(globaltheme->myfont->get_height());
-		if (sp < 0) sp = 0;
-		selected = int(listpos) + sp;
-		if (unsigned(selected) >= entries.size()) selected = int(entries.size())-1;
+	if (btn == mouse_button::left) {
+		if (myscrollbar->is_mouse_over(position)) {
+			myscrollbar->on_click(position, btn);
+		} else {
+			int oldselected = selected;
+			int fw = globaltheme->frame_size();
+			int sp = std::max(0, (position.y - p.y - fw)/int(globaltheme->myfont->get_height()));
+			selected = std::min(int(entries.size())-1, int(listpos) + sp);
+			if (oldselected != selected) {
+				on_sel_change();
+			}
+		}
 	}
-	if (oldselected != selected)
-		on_sel_change();
-	fire_mouse_click_event(mx, my, mb);
 }
 
-void widget_list::on_drag(int mx, int my, int rx, int ry, int mb)
+void widget_list::on_drag(vector2i position, vector2i motion, mouse_button_state btnstate)
 {
-	// fixme: this is not correct, translate mb here!
-	on_click(mx, my, mb);
-	fire_mouse_drag_event(mx, my, rx, ry, mb);
+	auto btn = mouse_button::left;
+	if (!btnstate.left()) {
+		if (btnstate.right()) {
+			btn = mouse_button::right;
+		} else if (btnstate.middle()) {
+			btn = mouse_button::middle;
+		}
+	}
+	on_click(position, btn);
 }
 
-void widget_list::on_wheel(int wd)
+void widget_list::on_wheel(input_action wd)
 {
 	myscrollbar->on_wheel(wd);
-	fire_mouse_scroll_event(wd);
 }
 
 void widget_list::set_column_width(int cw)
@@ -1410,49 +1355,50 @@ unsigned widget_edit::cursor_right() const
 
 
 
-void widget_edit::on_char(const SDL_keysym& ks)
+void widget_edit::on_key(key_code kc, key_mod km)
 {
-	int c = ks.sym;
 	unsigned l = text.length();
-	unsigned textw = globaltheme->myfont->get_size(text).x;
 // 	printf("get char? %i unicode %i\n", c, ks.unicode);
 	// How to detect multibyte characters:
 	// All parts of a multibyte (UTF8 coded) character have their highest bit set (0x80).
 	// The first byte of the multibyte characters has its second highest bit set (0x40).
 	// So multibyte charactes are sequences 0xC0 | x, 0x80 | x, ...
-	if (c == SDLK_LEFT && cursorpos > 0) {
+	if (kc == key_code::LEFT && cursorpos > 0) {
 		cursorpos = cursor_left();
-	} else if (c == SDLK_RIGHT && cursorpos < l) {
+	} else if (kc == key_code::RIGHT && cursorpos < l) {
 		cursorpos = cursor_right();
-	} else if (c == SDLK_HOME) {
+	} else if (kc == key_code::HOME) {
 		cursorpos = 0;
-	} else if (c == SDLK_END) {
+	} else if (kc == key_code::END) {
 		cursorpos = l;
-	} else if (c == SDLK_RETURN) {
+	} else if (kc == key_code::RETURN) {
 		on_enter();
-	} else if (c >= 32 && c <= 255 && c != 127) {
-		string stx = font::to_utf8(ks.unicode);
-		unsigned stxw = globaltheme->myfont->get_size(stx).x;
-		if (int(textw + stxw + 8) < size.x) {
-			if (cursorpos < l) {
-				text.insert(cursorpos, stx);
-			} else {
-				text += stx;
-			}
-			cursorpos += stx.length();
-			on_change();
-		}
-	} else if (c == SDLK_DELETE && cursorpos < l) {
+	} else if (kc == key_code::DELETE && cursorpos < l) {
 		unsigned clen = cursor_right() - cursorpos;
 		text.erase(cursorpos, clen);
 		on_change();
-	} else if (c == SDLK_BACKSPACE && cursorpos > 0) {
+	} else if (kc == key_code::BACKSPACE && cursorpos > 0) {
 		unsigned clpos = cursor_left();
 		text = text.erase(clpos, cursorpos - clpos);
 		cursorpos = clpos;
 		on_change();
 	}
-	fire_key_event(ks);
+}
+
+void widget_edit::on_text(const std::string& new_text)
+{
+	unsigned stxw = globaltheme->myfont->get_size(new_text).x;
+	unsigned textw = globaltheme->myfont->get_size(text).x;
+	unsigned l = text.length();
+	if (int(textw + stxw + 8) < size.x) {
+		if (cursorpos < l) {
+			text.insert(cursorpos, new_text);
+		} else {
+			text += new_text;
+		}
+		cursorpos += new_text.length();	//fixme what is with UTF8 texts longer than one char
+		on_change();
+	}
 }
 
 widget_fileselector::widget_fileselector(int x, int y, int w, int h, const string& text_, widget* parent_)
@@ -1541,29 +1487,26 @@ void widget_3dview::set_model(std::unique_ptr<model> mdl_)
 
 
 
-void widget_3dview::on_wheel(int wd)
+void widget_3dview::on_wheel(input_action wd)
 {
-	if (wd == 1) {
+	if (wd == input_action::up) {
 		translation.z += 2;
-	} else if (wd == 2) {
+	} else if (wd == input_action::down) {
 		translation.z -= 2;
 	}
-	fire_mouse_scroll_event(wd);
 }
 
 
 
-void widget_3dview::on_drag(int mx, int my, int rx, int ry, int mb)
+void widget_3dview::on_drag(vector2i position, vector2i motion, mouse_button_state btnstate)
 {
-	if (mb & SDL_BUTTON_LMASK) {
-		z_angle += rx * 0.5;
-		x_angle += ry * 0.5;
+	if (btnstate.left()) {
+		z_angle += motion.x * 0.5;
+		x_angle += motion.y * 0.5;
 	}
-	if (mb & SDL_BUTTON_RMASK) {
-		translation.x += rx * 0.1;
-		translation.y += ry * 0.1;
+	if (btnstate.right()) {
+		translation += vector2(motion).xy0() * 0.1;
 	}
-	fire_mouse_drag_event(mx, my, rx, ry, mb);
 }
 
 
@@ -1680,44 +1623,40 @@ void widget_slider::draw() const
 
 
 
-void widget_slider::on_char(const SDL_keysym& ks)
+void widget_slider::on_key(key_code kc, key_mod km)
 {
 	// move with cursor
-	int c = ks.sym;
-	if (c == SDLK_LEFT && currvalue > minvalue) {
+	if (kc == key_code::LEFT && currvalue > minvalue) {
 		--currvalue;
 		on_change();
-	} else if (c == SDLK_RIGHT && currvalue < maxvalue) {
+	} else if (kc == key_code::RIGHT && currvalue < maxvalue) {
 		++currvalue;
 		on_change();
 	}
-	fire_key_event(ks);
 }
 
 
 
-void widget_slider::on_click(int mx, int my, int mb)
+void widget_slider::on_click(vector2i position, mouse_button btn)
 {
 	// set slider...
-	if (mb & SDL_BUTTON_LMASK) {
-		int sliderpos = std::min(std::max(pos.x, mx), pos.x + size.x) - pos.x;
+	if (btn == mouse_button::left) {//fixme rather state!
+		int sliderpos = std::min(std::max(position.x, pos.x), position.x + size.x) - position.x;
 		currvalue = (sliderpos * (maxvalue - minvalue) + size.x/2) / size.x + minvalue;
 		on_change();
 	}
-	fire_mouse_click_event(mx, my, mb);
 }
 
 
 
-void widget_slider::on_drag(int mx, int my, int rx, int ry, int mb)
+void widget_slider::on_drag(vector2i position, vector2i motion, mouse_button_state btnstate)
 {
 	// move slider...
-	if (mb & SDL_BUTTON_LMASK) {
-		int sliderpos = std::min(std::max(pos.x, mx), pos.x + size.x) - pos.x;
+	if (btnstate.left()) {
+		int sliderpos = std::min(std::max(position.x, pos.x), position.x + size.x) - position.x;
 		currvalue = (sliderpos * (maxvalue - minvalue) + size.x/2) / size.x + minvalue;
 		on_change();
 	}
-	fire_mouse_drag_event(mx, my, rx, ry, mb);
 }
 
 

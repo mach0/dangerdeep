@@ -49,12 +49,12 @@ class sub_torpsetup_display : public user_display
 		rotat_tex turnangleknob[6];
 		rotat_tex rundepthknob[6];
 		bool is_over(const std::unique_ptr<texture>& tex, const vector2i& pos,
-			     int mx, int my, int border = 32) const {
-			return (mx >= pos.x - border)
-				&& (my >= pos.y - border)
+			     vector2i mouse_position, int border = 32) const {
+			return (mouse_position.x >= pos.x - border)
+				&& (mouse_position.y >= pos.y - border)
 				// 2006-11-30 doc1972 only hight and width is unsigned, so we cast the result back to signed
-				&& (mx < (int)(pos.x + tex->get_width() + border))
-				&& (my < (int)(pos.y + tex->get_height() + border));
+				&& (mouse_position.x < (int)(pos.x + tex->get_width() + border))
+				&& (mouse_position.y < (int)(pos.y + tex->get_height() + border));
 		}
 		scheme(bool day);
 	protected:
@@ -84,8 +84,9 @@ class sub_torpsetup_display : public user_display
 public:
 	sub_torpsetup_display(class user_interface& ui_);
 
-	void process_input(class game& gm, const SDL_Event& event) override;
-	void display(class game& gm) const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	void display() const override;
 
 	void enter(bool is_day) override;
 	void leave() override;

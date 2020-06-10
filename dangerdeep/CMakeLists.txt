@@ -216,7 +216,6 @@ set ( EXTRA_CPP_ARGS "" CACHE STRING "Extra C++ command line definitions." )
 
 set ( USE_FLOAT_FFTW3 ON CACHE BOOL "Use single or double precision FFTW3, pending availability" )
 set ( USE_LIB64_SUFFIX ON CACHE BOOL "Use lib64 instead of lib on x86_64 systems" )
-set ( USE_EFENCE OFF CACHE BOOL "Use ElectricFence if available." )
 
 
 # set property for 64bits unices, debian does not follow the convention and

@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "model.h"
 #include "primitives.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include "triangulate.h"
 #include "xml.h"

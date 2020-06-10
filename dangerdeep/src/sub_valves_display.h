@@ -20,7 +20,7 @@
 #ifndef SUB_VALVES_DISPLAY_H
 #define SUB_VALVES_DISPLAY_H
 
-#include "system.h"
+#include "system_interface.h"
 #include "image.h"
 #include "game.h"
 #include "user_display.h"
@@ -35,8 +35,7 @@ protected:
 public:
 	sub_valves_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
 
 	void enter(bool is_day) override;
 	void leave() override;

@@ -66,37 +66,37 @@ include_directories(${OpenglIncludeSubdir})
 
 # SDL
 #
-find_package ( SDL REQUIRED )
-if ( SDL_FOUND )
-    message ( STATUS "SDL found." )
-    include_directories ( ${SDL_INCLUDE_DIR} )
-    set ( LIBS ${LIBS} ${SDL_LIBRARY} )
+find_package ( SDL2 REQUIRED )
+if ( SDL2_FOUND )
+    message ( STATUS "SDL2 found." )
+    include_directories ( ${SDL2_INCLUDE_DIR} )
+    set ( LIBS ${LIBS} ${SDL2_LIBRARY} )
 else ()
-    message ( FATAL_ERROR "SDL not found! This will fail." )
+    message ( FATAL_ERROR "SDL2 not found! This will fail." )
 endif ()
 
 
 # SDL_image
 #
-find_package ( SDL_image REQUIRED )
-if ( SDL_IMAGE_FOUND )
-    message ( STATUS "SDL_image found." )
-    include_directories ( ${SDL_IMAGE_INCLUDE_DIR} )
-    set ( LIBS ${LIBS} ${SDL_IMAGE_LIBRARY} )
+find_package ( SDL2_image REQUIRED )
+if ( SDL2_IMAGE_FOUND )
+    message ( STATUS "SDL2_image found." )
+    include_directories ( ${SDL2_IMAGE_INCLUDE_DIR} )
+    set ( LIBS ${LIBS} ${SDL2_IMAGE_LIBRARY} )
 else ()
-    message ( FATAL_ERROR "SDL_image not found! This will fail." )
+    message ( FATAL_ERROR "SDL2_image not found! This will fail." )
 endif ()
 
 
 # SDL_mixer
 #
-find_package ( SDL_mixer REQUIRED )
-if ( SDL_MIXER_FOUND )
-    message ( STATUS "SDL_mixer found." )
-    include_directories ( ${SDL_MIXER_INCLUDE_DIR} )
-    set ( LIBS ${LIBS} ${SDL_MIXER_LIBRARY} )
+find_package ( SDL2_mixer REQUIRED )
+if ( SDL2_MIXER_FOUND )
+    message ( STATUS "SDL2_mixer found." )
+    include_directories ( ${SDL2_MIXER_INCLUDE_DIR} )
+    set ( LIBS ${LIBS} ${SDL2_MIXER_LIBRARY} )
 else ()
-    message ( FATAL_ERROR "SDL_mixer not found! This will fail." )
+    message ( FATAL_ERROR "SDL2_mixer not found! This will fail." )
 endif ()
 
 

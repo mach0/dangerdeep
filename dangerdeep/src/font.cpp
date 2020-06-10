@@ -23,9 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "font.h"
 #include "oglext/OglExt.h"
 #include "shader.h"
-#include "system.h"
-#include <SDL.h>
-#include <SDL_image.h>
+#include "system_interface.h"
 #include <memory>
 
 #include <sstream>

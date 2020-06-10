@@ -27,9 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_bridge_display : public freeview_display
 {
-	void pre_display(class game& gm) const override;
+	void pre_display() const override;
 	projection_data get_projection_data(class game& gm) const override;
-	void post_display(class game& gm) const override;
+	void post_display() const override;
 
 	texture::ptr glasses_tex;
 
@@ -40,7 +40,8 @@ public:
 	~sub_bridge_display() override= default;;
 
 	//overload for glasses key handling ('y')
-	void process_input(class game& gm, const SDL_Event& event) override;
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

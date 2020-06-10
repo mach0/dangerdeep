@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "image.h"
 #include "log.h"
 #include "primitives.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include "torpedo.h"
@@ -168,8 +168,8 @@ vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
 unsigned sub_torpedo_display::get_tube_below_mouse(const vector<vector2i>& tubecoords) const
 {
 	for (unsigned i = 0; i < tubecoords.size(); ++i) {
-		if (mx >= tubecoords[i].x && mx < tubecoords[i].x+128 &&
-				my >= tubecoords[i].y && my < tubecoords[i].y+16) {
+		if (mouse_position.x >= tubecoords[i].x && mouse_position.x < tubecoords[i].x+128 &&
+				mouse_position.y >= tubecoords[i].y && mouse_position.y < tubecoords[i].y+16) {
 			return i;
 		}
 	}
@@ -180,14 +180,15 @@ unsigned sub_torpedo_display::get_tube_below_mouse(const vector<vector2i>& tubec
 
 sub_torpedo_display::sub_torpedo_display(user_interface& ui_) :
 	user_display(ui_), torptranssrc(ILLEGAL_TUBE), desc_texts(get_data_dir()),
-	mx(0), my(0), mb(0), torp_desc_line(0), notepadsheet(texturecache(), "notepadsheet.png")
+	torp_desc_line(0), notepadsheet(texturecache(), "notepadsheet.png")
 {
 }
 
 
 
-void sub_torpedo_display::display(class game& gm) const
+void sub_torpedo_display::display() const
 {
+	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 
 	double hours = 0.0, minutes = 0.0, seconds = 0.0;
@@ -201,7 +202,7 @@ void sub_torpedo_display::display(class game& gm) const
 	if (subtopsideview.get())//fixme later do not accept empty data
 	subtopsideview->draw(0, 0);
 
-	// tube handling. compute coordinates for display and mouse use	
+	// tube handling. compute coordinates for display and mouse use
 	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
 	vector<vector2i> tubecoords = get_tubecoords(sub);
 	pair<unsigned, unsigned> bow_tube_indices = sub->get_bow_tube_indices();
@@ -224,15 +225,15 @@ void sub_torpedo_display::display(class game& gm) const
 		draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
 	for (unsigned i = stern_deckreserve_indices.first; i < stern_deckreserve_indices.second; ++i)
 		draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
-	
+
 	// draw transfer graphics if needed
 	if (torptranssrc != ILLEGAL_TUBE && torpedoes[torptranssrc].status ==
 	    submarine::stored_torpedo::st_loaded) {
-		torptex(torpedoes[torptranssrc].specfilename).draw(mx-124/2, my-12/2,
+		torptex(torpedoes[torptranssrc].specfilename).draw(mouse_position.x-124/2, mouse_position.y-12/2,
 									       colorf(1,1,1,0.5));
 		primitives::line(vector2f(tubecoords[torptranssrc].x+124/2,
 					  tubecoords[torptranssrc].y+12/2),
-				 vector2f(mx, my), color::white()).render();
+				 vector2f(mouse_position), color::white()).render();
 	}
 
 	// draw information about torpedo in tube if needed
@@ -251,7 +252,7 @@ void sub_torpedo_display::display(class game& gm) const
 				torpdesctext = desc_texts.ref(data_file().get_rel_path(sfn) + sfn + "_en.txt");
 			}
 			// fixme: implement scrolling here!
-            // torpedo description text, for notepad
+	    // torpedo description text, for notepad
 			if (torp_desc_line > torpdesctext->nr_of_lines())
 				torp_desc_line = torpdesctext->nr_of_lines();
 			font_vtremington12->print_wrapped(100, 550, 570, 0, torpdesctext->str(torp_desc_line, 10), color(0,0,0));
@@ -261,13 +262,13 @@ void sub_torpedo_display::display(class game& gm) const
 			minutes = (torpedoes[tb].remaining_time - floor(hours)*3600)/60;
 			seconds = torpedoes[tb].remaining_time - floor(hours)*3600 - floor(minutes)*60;
 		}
-		if (mb & SDL_BUTTON_LMASK) {
+		if (left_mouse_button_pressed) {
 			// display remaining time if possible
-            // torpedo reload remaning time
+	    // torpedo reload remaning time
 			if (torpedoes[tb].status == submarine::stored_torpedo::st_reloading ||
 			    torpedoes[tb].status == submarine::stored_torpedo::st_unloading) {
-				notepadsheet.get()->draw(mx, my);
-				font_vtremington12->print(mx+32, my+50, texts::get(211) +
+				notepadsheet.get()->draw(mouse_position.x, mouse_position.y);
+				font_vtremington12->print(mouse_position.x+32, mouse_position.y+50, texts::get(211) +
 						  get_time_string(torpedoes[tb].remaining_time), color(32,0,0));
 			}
 		}
@@ -291,55 +292,59 @@ void sub_torpedo_display::display(class game& gm) const
 
 
 
-void sub_torpedo_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_torpedo_display::handle_mouse_button_event(const mouse_click_data& m)
 {
-	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
-
 	//fixme:
 	// increase/decrease torp_desc_line when clicking on desc text area or using mouse wheel
-
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		// check if there is a tube below the mouse and set torptranssrc
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			torptranssrc = get_tube_below_mouse(get_tubecoords(sub));
-			if (torptranssrc != ILLEGAL_TUBE) {
-				if (torpedoes[torptranssrc].status !=
-				    submarine::stored_torpedo::st_loaded) {
-					torptranssrc = ILLEGAL_TUBE;
-				}
+	auto& gm = ui.get_game();
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
+	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
+	if (m.down() && m.left()) {
+		torptranssrc = get_tube_below_mouse(get_tubecoords(sub));
+		if (torptranssrc != ILLEGAL_TUBE) {
+			if (torpedoes[torptranssrc].status !=
+			    submarine::stored_torpedo::st_loaded) {
+				torptranssrc = ILLEGAL_TUBE;
 			}
-			mb |= SDL_BUTTON_LMASK;
-		} else if (event.button.button == SDL_BUTTON_WHEELUP) {
-			if (torp_desc_line > 0) --torp_desc_line;
-		} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-			++torp_desc_line;
 		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		// check if there is a tube below and if its empty
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			unsigned torptransdst = get_tube_below_mouse(get_tubecoords(sub));
-			if (torptransdst != ILLEGAL_TUBE && torptranssrc != ILLEGAL_TUBE) {
-				if (torpedoes[torptransdst].status ==
-				    submarine::stored_torpedo::st_empty) {
-					sub->transfer_torpedo(torptranssrc, torptransdst);
-				}
+		left_mouse_button_pressed = true;
+		return true;
+	} else if (m.up() && m.left()) {
+		unsigned torptransdst = get_tube_below_mouse(get_tubecoords(sub));
+		if (torptransdst != ILLEGAL_TUBE && torptranssrc != ILLEGAL_TUBE) {
+			if (torpedoes[torptransdst].status ==
+			    submarine::stored_torpedo::st_empty) {
+				sub->transfer_torpedo(torptranssrc, torptransdst);
 			}
-			torptranssrc = ILLEGAL_TUBE;
-			mb &= ~SDL_BUTTON_LMASK;
 		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		mb = event.motion.state;
-
-		break;
-	default:
-		break;
+		torptranssrc = ILLEGAL_TUBE;
+		left_mouse_button_pressed = false;
+		return true;
 	}
+	return false;
+}
+
+
+
+bool sub_torpedo_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	mouse_position = m.position_2d;
+	left_mouse_button_pressed = m.left();
+	return false;
+}
+
+
+
+bool sub_torpedo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (m.up()) {
+		if (torp_desc_line > 0) --torp_desc_line;
+		return true;
+	} else if (m.down()) {
+		++torp_desc_line;
+		return true;
+	}
+	return false;
 }
 
 

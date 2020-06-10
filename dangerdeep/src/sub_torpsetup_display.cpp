@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "submarine.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "torpedo.h"
 #include "vector2.h"
 #include <memory>
@@ -102,164 +102,88 @@ sub_torpsetup_display::sub_torpsetup_display(user_interface& ui_)
 
 
 
-void sub_torpsetup_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_torpsetup_display::handle_mouse_button_event(const mouse_click_data& m)
 {
+	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
-	if (!myscheme.get()) THROW(error, "sub_torpsetup_display::process_input without scheme!");
+	if (!myscheme.get()) THROW(error, "sub_torpsetup_display without scheme!");
 	const scheme& s = *myscheme;
-	int mx, my, mb;
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	if (m.down() && m.left())
+	{
 		// check if mouse is over turn knobs
 		turnknobdrag = TK_NONE;
-		if (s.primaryrangeknob[0].is_mouse_over(mx, my)) {
+		if (s.primaryrangeknob[0].is_mouse_over(m.position_2d)) {
 			turnknobdrag = TK_PRIMARYRANGE;
-		} else if (s.turnangleknob[0].is_mouse_over(mx, my)) {
+		} else if (s.turnangleknob[0].is_mouse_over(m.position_2d)) {
 			turnknobdrag = TK_TURNANGLE;
-		} else if (s.rundepthknob[0].is_mouse_over(mx, my)) {
+		} else if (s.rundepthknob[0].is_mouse_over(m.position_2d)) {
 			turnknobdrag = TK_RUNDEPTH;
-		} else if (s.is_over(s.firstturn[0], firstturn_pos, mx, my)) {
-			tbsetup.initialturn_left = (mx < firstturn_pos.x + int(s.firstturn[0]->get_width()/2));
+		} else if (s.is_over(s.firstturn[0], firstturn_pos, m.position_2d)) {
+			tbsetup.initialturn_left = (m.position_2d.x < firstturn_pos.x + int(s.firstturn[0]->get_width()/2));
 			log_debug("left?"<<tbsetup.initialturn_left);
-		} else if (s.is_over(s.secondaryrange[0], secrange_pos, mx, my)) {
-			tbsetup.short_secondary_run = (mx < secrange_pos.x + int(s.secondaryrange[0]->get_width()/2));
+		} else if (s.is_over(s.secondaryrange[0], secrange_pos, m.position_2d)) {
+			tbsetup.short_secondary_run = (m.position_2d.x < secrange_pos.x + int(s.secondaryrange[0]->get_width()/2));
 			log_debug("short run?"<<tbsetup.short_secondary_run);
-		} else if (s.is_over(s.preheating[0], preheat_pos, mx, my)) {
-			tbsetup.preheating = (my < preheat_pos.y + int(s.preheating[0]->get_height()/2)) ? true : false;
-		} else if (s.is_over(s.torpspeed[0], torpspeed_pos, mx, my)) {
-			int i = (my - torpspeed_pos.y) * 3 / s.torpspeed[0]->get_height();
+		} else if (s.is_over(s.preheating[0], preheat_pos, m.position_2d)) {
+			tbsetup.preheating = (m.position_2d.y < preheat_pos.y + int(s.preheating[0]->get_height()/2)) ? true : false;
+		} else if (s.is_over(s.torpspeed[0], torpspeed_pos, m.position_2d)) {
+			int i = (m.position_2d.y - torpspeed_pos.y) * 3 / s.torpspeed[0]->get_height();
 			unsigned idx = 2 - unsigned(myclamp(i, int(0), int(2)));
 			log_debug("torpspeed="<<idx);
 			tbsetup.torpspeed = idx;
 		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_motion_x(event);
-		my = sys().translate_motion_y(event);
-		mb = event.motion.state;
-		if (event.motion.state & SDL_BUTTON_LMASK) {
-			if (turnknobdrag != TK_NONE) {
-				float& ang = turnknobang[unsigned(turnknobdrag)];
-				ang += mx * TK_ANGFAC;
-				switch (turnknobdrag) {
-				case TK_PRIMARYRANGE:
-					// 0-360 degrees match to 0-16
-					ang = myclamp(ang, 0.0f, 359.0f);
-					tbsetup.primaryrange = unsigned(ang*17/360)*100+1600;
-					break;
-				case TK_TURNANGLE:
-					// 0-360 degrees match to 0-180 degrees angle
-					// fixme: currently only 0/1 used!
-					//ang = myclamp(ang, 0.0f, 360.0f);
-					//tbsetup.turnangle = ang*180/360;
-					ang = myclamp(ang, 0.0f, 179.0f);
-					// fixme: allow only 90/180 for FAT, any angle for LUT, nothing for other types
-					tbsetup.turnangle = unsigned(ang*2/180)*90+90;
-					break;
-				case TK_RUNDEPTH:
-					// 0-360 degrees match to 0-25m
-					ang = myclamp(ang, 0.0f, 360.0f);
-					tbsetup.rundepth = ang*25/360;
-					break;
-				default:	// can never happen
-					break;
-				}
-			}
-		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+		return true;
+	} else if (m.up() && m.left()) {
 		turnknobdrag = TK_NONE;
 	}
-
-
-#if 0
-	int* tubelightx = (is_day) ? tubelightdx : tubelightnx;
-	int* tubelighty = (is_day) ? tubelightdy : tubelightny;
-	const scheme& s = *myscheme;
-	int mx, my;
-	switch (event.type) {
-
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		mb = event.motion.state;
-
-	case SDL_MOUSEBUTTONDOWN:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		// check if mouse is over tube indicators
-		for (unsigned i = 0; i < 6; ++i) {
-			if (mx >= tubelightx[i] && my >= tubelighty[i] &&
-			    mx < tubelightx[i] + int(s.tubelight[i]->get_width()) &&
-			    my < tubelighty[i] + int(s.tubelight[i]->get_height())) {
-				dynamic_cast<submarine_interface&>(ui).fire_tube(sub, i);
-			}
-		}
-		if (mx >= tubeswitchx && my >= tubeswitchy &&
-		    mx < tubeswitchx + int(s.tubeswitch[0]->get_width()) &&
-		    my < tubeswitchy + int(s.tubeswitch[0]->get_height())) {
-			// fixme: better make angle switch?
-			unsigned tn = (6 * (mx - tubeswitchx)) / s.tubeswitch[0]->get_width();
-			if (tn < sub->get_nr_of_bow_tubes() + sub->get_nr_of_stern_tubes())
-				selected_tube = tn;
-		}
-
-/*
-		//if mouse is over control c, compute angle a, set matching command, fixme
-		if (indicators[compass].is_over(mx, my)) {
-			sub->head_to_course(angle(180)-indicators[compass].get_angle(mx, my));
-		} else if (indicators[depth].is_over(mx, my)) {
-			angle mang = angle(-39) - indicators[depth].get_angle(mx, my);
-			if (mang.value() < 270) {
-				sub->dive_to_depth(unsigned(mang.value()));
-			}
-		} else if (indicators[mt].is_over(mx, my)) {
-			unsigned opt = (indicators[mt].get_angle(mx, my) - angle(210)).value() / 20;
-			if (opt >= 15) opt = 14;
-			switch (opt) {
-			case 0: sub->set_throttle(ship::aheadflank); break;
-			case 1: sub->set_throttle(ship::aheadfull); break;
-			case 2: sub->set_throttle(ship::aheadhalf); break;
-			case 3: sub->set_throttle(ship::aheadslow); break;
-			case 4: sub->set_throttle(ship::aheadlisten); break;
-			case 7: sub->set_throttle(ship::stop); break;
-			case 11: sub->set_throttle(ship::reverse); break;//fixme: various reverse speeds!
-			case 12: sub->set_throttle(ship::reversehalf); break;
-			case 13: sub->set_throttle(ship::reversefull); break;
-			case 14: sub->set_throttle(ship::reverse); break;
-			case 5: // diesel engines
-			case 6: // attention
-			case 8: // electric engines
-			case 9: // surface
-			case 10:// dive
-				break;
-			}
-		}
-*/
-		break;
-	default:
-		break;
-	}
-
-/*
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		//fixme
-	default: break;
-	}
-*/
-#endif
+	return false;
 }
 
 
 
-void sub_torpsetup_display::display(class game& gm) const
+bool sub_torpsetup_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
+	auto& gm = ui.get_game();
+	auto* sub = dynamic_cast<submarine*>(gm.get_player());
+	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
+	if (m.left()) {
+		if (turnknobdrag != TK_NONE) {
+			float& ang = turnknobang[unsigned(turnknobdrag)];
+			ang += m.rel_motion_2d.x * TK_ANGFAC;
+			switch (turnknobdrag) {
+			case TK_PRIMARYRANGE:
+				// 0-360 degrees match to 0-16
+				ang = myclamp(ang, 0.0f, 359.0f);
+				tbsetup.primaryrange = unsigned(ang*17/360)*100+1600;
+				break;
+			case TK_TURNANGLE:
+				// 0-360 degrees match to 0-180 degrees angle
+				// fixme: currently only 0/1 used!
+				//ang = myclamp(ang, 0.0f, 360.0f);
+				//tbsetup.turnangle = ang*180/360;
+				ang = myclamp(ang, 0.0f, 179.0f);
+				// fixme: allow only 90/180 for FAT, any angle for LUT, nothing for other types
+				tbsetup.turnangle = unsigned(ang*2/180)*90+90;
+				break;
+			case TK_RUNDEPTH:
+				// 0-360 degrees match to 0-25m
+				ang = myclamp(ang, 0.0f, 360.0f);
+				tbsetup.rundepth = ang*25/360;
+				break;
+			default:	// can never happen
+				break;
+			}
+		}
+	}
+	return false;
+}
+
+
+
+void sub_torpsetup_display::display() const
+{
+	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 
 	sys().prepare_2d_drawing();

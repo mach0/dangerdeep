@@ -27,9 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "oglext/OglExt.h"
 #include <glu.h>
-#include <SDL.h>
 
-#include "system.h"
+#include "system_interface.h"
 #include "vector3.h"
 #include "model.h"
 #include "texture.h"
@@ -179,17 +178,22 @@ int mymain(list<string>& args)
 	mycfg.register_option("hint_mipmap", 0);
 	mycfg.register_option("hint_texture_compression", 0);
 	mycfg.register_option("use_compressed_textures", false);
-	
+
 
 	// fixme: also allow 1280x1024, set up gl viewport for 4:3 display
 	// with black borders at top/bottom (height 2*32pixels)
 	res_y = res_x*3/4;
 	// weather conditions and earth curvature allow 30km sight at maximum.
-	system::parameters params(1.0, 30000.0+500.0, res_x, res_y, fullscreen);
-	system::create_instance(new class system(params));
-	sys().set_res_2d(1024, 768);
+	system_interface::parameters params;
+	params.resolution = {res_x, res_y};
+	params.near_z = 1.0;
+	params.far_z = 1000.0;
+	params.fullscreen = fullscreen;
+	params.resolution2d = {1024,768};
+	params.window_caption = "portal rendering";
+	system_interface::create_instance(new class system_interface(params));
 //	sys().set_max_fps(60);
-	
+
 	log_info("Danger from the Deep");
 
 	GLfloat lambient[4] = {0.3,0.3,0.3,1};
@@ -200,14 +204,13 @@ int mymain(list<string>& args)
 	glLightfv(GL_LIGHT0, GL_POSITION, lposition);
 	glEnable(GL_LIGHT0);
 
- 	font_arial = new font(get_font_dir() + "font_arial");
- 	sys().draw_console_with(font_arial, nullptr);
+	font_arial = new font(get_font_dir() + "font_arial");
 
 	run();
 
- 	delete font_arial;
+	delete font_arial;
 
-	system::destroy_instance();
+	system_interface::destroy_instance();
 
 	return 0;
 }
@@ -544,7 +547,54 @@ void run()
 
 	fpsmeasure fpsm(1.0f);
 
-	while (true) {
+	bool doquit = false;
+	auto ic = std::make_shared<input_event_handler_custom>();
+	ic->set_handler([&](const input_event_handler::key_data& k) {
+		if (k.down()) {
+			switch (k.keycode) {
+			case key_code::ESCAPE:
+				doquit = true; break;
+			case key_code::KP_4: mv_sideward = -1; break;
+			case key_code::KP_6: mv_sideward = 1; break;
+			case key_code::KP_8: mv_upward = 1; break;
+			case key_code::KP_2: mv_upward = -1; break;
+			case key_code::KP_1: mv_forward = 1; break;
+			case key_code::KP_3: mv_forward = -1; break;
+			default:
+				return false;
+				break;
+			}
+			return true;
+		} else if (k.up()) {
+			switch (k.keycode) {
+			case key_code::KP_4: mv_sideward = 0; break;
+			case key_code::KP_6: mv_sideward = 0; break;
+			case key_code::KP_8: mv_upward = 0; break;
+			case key_code::KP_2: mv_upward = 0; break;
+			case key_code::KP_1: mv_forward = 0; break;
+			case key_code::KP_3: mv_forward = 0; break;
+			default:
+				return false;
+				break;
+			}
+			return true;
+		}
+		return false;
+	});
+	ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
+		if (m.left()) {
+			viewangles.z -= m.rel_motion_2d.x;
+			viewangles.x -= m.rel_motion_2d.y;
+			return true;
+		} else if (m.right()) {
+			viewangles.y += m.rel_motion_2d.x;
+			return true;
+		}
+		return false;
+	});
+	sys().add_input_event_handler(ic);
+
+	while (!doquit) {
 		double tm1 = sys().millisec();
 		double delta_t = tm1 - tm0;
 		tm0 = tm1;
@@ -565,7 +615,6 @@ void run()
 		matrix4 mv = matrix4::get_gl(GL_MODELVIEW_MATRIX);
 		matrix4 prj = matrix4::get_gl(GL_PROJECTION_MATRIX);
 		matrix4 mvp = prj * mv;
-		matrix4 invmv = mv.inverse();
 		matrix4 invmvr = mvr.inverse();
 		matrix4 invmvp = mvp.inverse();
 		vector3 wbln = invmvp * vector3(-1,-1,-1);
@@ -588,52 +637,9 @@ void run()
 
 		vector3 oldpos = pos;
 		const double movesc = 0.25;
-		auto events = sys().poll_event_queue();
 		vector3 forward = -invmvr.column3(2) * movesc;
 		vector3 upward = invmvr.column3(1) * movesc;
 		vector3 sideward = invmvr.column3(0) * movesc;
-		for (auto & event : events) {
-				if (event.type == SDL_KEYDOWN) {
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-					return;
-				case SDLK_KP4: mv_sideward = -1; break;
-				case SDLK_KP6: mv_sideward = 1; break;
-				case SDLK_KP8: mv_upward = 1; break;
-				case SDLK_KP2: mv_upward = -1; break;
-				case SDLK_KP1: mv_forward = 1; break;
-				case SDLK_KP3: mv_forward = -1; break;
-				default: break;
-				}
-			} else if (event.type == SDL_KEYUP) {
-				switch (event.key.keysym.sym) {
-				case SDLK_KP4: mv_sideward = 0; break;
-				case SDLK_KP6: mv_sideward = 0; break;
-				case SDLK_KP8: mv_upward = 0; break;
-				case SDLK_KP2: mv_upward = 0; break;
-				case SDLK_KP1: mv_forward = 0; break;
-				case SDLK_KP3: mv_forward = 0; break;
-				default: break;
-				}
-			} else if (event.type == SDL_MOUSEMOTION) {
-				vector2 motion = sys().translate_motion(event) * 0.5;
-				if (event.motion.state & SDL_BUTTON_LMASK) {
-					viewangles.z -= motion.x;
-					viewangles.x -= motion.y;
-				} else if (event.motion.state & SDL_BUTTON_RMASK) {
-					viewangles.y += motion.x;
-// 				} else if (event.motion.state & SDL_BUTTON_MMASK) {
-// 					pos.x += motion.x;
-// 					pos.y += motion.y;
-				}
-			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
-// 				if (event.button.button == SDL_BUTTON_WHEELUP) {
-// 					pos.z -= movesc;
-// 				} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-// 					pos.z += movesc;
-// 				}
-			}
-		}
 		const double move_speed = 0.003;
 		pos += forward * mv_forward * delta_t * move_speed
 			+ sideward * mv_sideward * delta_t * move_speed
@@ -659,8 +665,8 @@ void run()
 		std::ostringstream oss; oss << "FPS: " << fps << "\n(all time total " << fpsm.get_total_fps() << ")";
 		font_arial->print(0, 0, oss.str());
 		sys().unprepare_2d_drawing();
-		
-		sys().swap_buffers();
+
+		sys().finish_frame();
 	}
 
 	delete glsl_reliefmapping;

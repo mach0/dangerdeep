@@ -142,6 +142,9 @@ enum class key_mod
 	number
 };
 
+inline key_mod operator| (const key_mod& a, const key_mod& b) { return key_mod(uint32_t(a) | uint32_t(b)); }
+inline key_mod operator& (const key_mod& a, const key_mod& b) { return key_mod(uint32_t(a) & uint32_t(b)); }
+
 /// mouse button type
 enum class mouse_button {
 	left,
@@ -152,21 +155,41 @@ enum class mouse_button {
 
 /// key/button/wheel type
 enum class input_action {
+	none,
 	up,	// released for mouse
 	down,	// pressed for mouse
 	number
 };
 
+/// mouse button(s) state
+struct mouse_button_state
+{
+	std::array<bool, unsigned(mouse_button::number)> pressed{};	///< for each button if pressed
+	bool is_pressed(mouse_button mb) const { return pressed[unsigned(mb)]; }
+	bool left() const { return is_pressed(mouse_button::left); }
+	bool middle() const { return is_pressed(mouse_button::middle); }
+	bool right() const { return is_pressed(mouse_button::right); }
+	bool any() const { return std::any_of(pressed.begin(), pressed.end(), [](bool b) { return b; }); }
+};
+
 /// input event handler interface
 class input_event_handler
 {
+protected:
+	inline bool key_mod_shift(key_mod m) { return (m & key_mod::shift) != key_mod::none; }
+	inline bool key_mod_ctrl(key_mod m) { return (m & key_mod::ctrl) != key_mod::none; }
+	inline bool key_mod_alt(key_mod m) { return (m & key_mod::alt) != key_mod::none; }
+
 public:
 	/// key event data
 	struct key_data
 	{
-		key_code keycode;		///< The pressed key
-		key_mod mod;			///< State of key modifiers
-		input_action action;		///< whether key was pressed or released
+		key_code keycode{key_code::UNKNOWN};		///< The pressed key
+		key_mod mod{key_mod::none};			///< State of key modifiers
+		input_action action{input_action::none};	///< whether key was pressed or released
+		bool up() const { return action == input_action::up; }
+		bool down() const { return action == input_action::down; }
+		bool is_keypad_number() const { return key_code::KP_1 <= keycode && keycode <= key_code::KP_9; }
 	};
 
 	/// Mouse motion event data
@@ -176,8 +199,11 @@ public:
 		vector2f relative_motion;	///< Relative mouse motion, matching screen coordinates
 		vector2i position_2d;		///< Absolute mouse position in 2D pseudo coordinates (1024x768)
 		vector2i rel_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
-		std::array<bool, unsigned(mouse_button::number)> buttons_pressed;	///< for each button if pressed
-		bool is_pressed(mouse_button mb) const { return buttons_pressed[unsigned(mb)]; }
+		mouse_button_state buttons_pressed;	///< for each button if pressed
+		bool is_pressed(mouse_button mb) const { return buttons_pressed.is_pressed(mb); }
+		bool left() const { return is_pressed(mouse_button::left); }
+		bool middle() const { return is_pressed(mouse_button::middle); }
+		bool right() const { return is_pressed(mouse_button::right); }
 	};
 
 	/// Mouse click event data
@@ -185,8 +211,14 @@ public:
 	{
 		vector2f position;		///< Absolute mouse position in screen coordinates -1...1, y axis up
 		vector2i position_2d;		///< Absolute mouse position in 2D pseudo coordinates (1024x768)
-		mouse_button button;		///< which mouse button was pressed
-		input_action action;		///< whether button was pressed or released
+		mouse_button button{mouse_button::left};		///< which mouse button was pressed
+		input_action action{input_action::none};		///< whether button was pressed or released
+		mouse_button_state buttons_pressed;	///< for each button if pressed
+		bool up() const { return action == input_action::up; }
+		bool down() const { return action == input_action::down; }
+		bool left() const { return button == mouse_button::left; }
+		bool middle() const { return button == mouse_button::middle; }
+		bool right() const { return button == mouse_button::right; }
 	};
 
 	/// Mouse wheel event data
@@ -194,7 +226,11 @@ public:
 	{
 		vector2f relative_motion;	///< Relative mouse motion, matching screen coordinates
 		vector2i rel_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
-		input_action action;		///< whether wheel turned up or down
+		vector2f position;		///< Absolute mouse position in screen coordinates -1...1, y axis up
+		vector2i position_2d;		///< Absolute mouse position in 2D pseudo coordinates (1024x768)
+		input_action action{input_action::none};		///< whether wheel turned up or down
+		bool up() const { return action == input_action::up; }
+		bool down() const { return action == input_action::down; }
 	};
 
 	/// Handle key event, returns if handled
@@ -210,11 +246,10 @@ public:
 	virtual bool handle_mouse_wheel_event(const mouse_wheel_data& /*mwd*/) { return false; }
 
 	/// Handle mouse button event, returns if handled
-	virtual bool handle_text_input_event(const char* /*text*/) { return false; }
+	virtual bool handle_text_input_event(const std::string& /*text*/) { return false; }
 
 	/// destructor
-	virtual ~input_event_handler() {}
-
+	virtual ~input_event_handler() { /*fixme call sys().remove_event_handler(this); needs a cpp to define it */ }
 };
 
 /// input event handler instance that can be customized
@@ -225,14 +260,14 @@ public:
 	void set_handler(std::function<bool(const mouse_click_data&)> handler) { handler_mouse_click = handler; }
 	void set_handler(std::function<bool(const mouse_motion_data&)> handler) { handler_mouse_motion = handler; }
 	void set_handler(std::function<bool(const mouse_wheel_data&)> handler) { handler_mouse_wheel = handler; }
-	void set_handler(std::function<bool(const char*)> handler) { handler_text_input = handler; }
+	void set_handler(std::function<bool(const std::string&)> handler) { handler_text_input = handler; }
 
 protected:
 	std::function<bool(const key_data&)> handler_key;
 	std::function<bool(const mouse_click_data&)> handler_mouse_click;
 	std::function<bool(const mouse_motion_data&)> handler_mouse_motion;
 	std::function<bool(const mouse_wheel_data&)> handler_mouse_wheel;
-	std::function<bool(const char*)> handler_text_input;
+	std::function<bool(const std::string&)> handler_text_input;
 
 	bool handle_key_event(const key_data& kd) override {
 		if (handler_key != nullptr) {
@@ -258,7 +293,7 @@ protected:
 		}
 		return false;
 	}
-	bool handle_text_input_event(const char* text) override {
+	bool handle_text_input_event(const std::string& text) override {
 		if (handler_text_input != nullptr) {
 			return handler_text_input(text);
 		}

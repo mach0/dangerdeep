@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #endif
 
-#include "system.h"
+#include "system_interface.h"
 #include "vector3.h"
 #include "datadirs.h"
 #include "font.h"
@@ -37,7 +37,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iomanip>
 #include <sstream>
 #include <glu.h>
-#include <SDL.h>
 #include "mymain.cpp"
 #include "primitives.h"
 #include "cfg.h"
@@ -105,7 +104,7 @@ void measure_model(double angle, ostringstream& osscs)
 	}
 	double crosssection = screenarea_meters * filledpixels / screen_pixels;
 	osscs << crosssection << " ";
-	sys().swap_buffers();
+	sys().finish_frame();
 }
 
 
@@ -123,7 +122,7 @@ void measure_mass_distribution(const std::string& massmapfn, const vector3i& res
 	unsigned screen_pixels = res_x*res_y;
 	vector<uint8_t> pic(screen_pixels*3);
 	glReadPixels(0, 0, res_x, res_y, GL_RGB, GL_UNSIGNED_BYTE, &pic[0]);
-	sys().swap_buffers();
+	sys().finish_frame();
 	float allmass = 0;
 	for (int z = 0; z < resolution.z; ++z) {
 		for (int y = 0; y < resolution.y; ++y) {
@@ -292,9 +291,14 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 
-	system::parameters params(1.0, 1000.0, res_x, res_y, fullscreen);
-	system::create_instance(new class system(params));
-	sys().set_res_2d(1024, 768);
+	system_interface::parameters params;
+	params.resolution = {res_x, res_y};
+	params.near_z = 1.0;
+	params.far_z = 1000.0;
+	params.fullscreen = fullscreen;
+	params.resolution2d = {1024,768};
+	params.window_caption = "modelmeasure";
+	system_interface::create_instance(new class system_interface(params));
 
 	// prepare output data file
 	string::size_type st = modelfilename.rfind(".");
@@ -310,7 +314,7 @@ int mymain(list<string>& args)
 		cout << "* Using special torpedo mode! *\n";
 		cout << "*******************************\n";
 	}
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0,res_x, 0,res_y);
@@ -356,7 +360,6 @@ int mymain(list<string>& args)
 	for (unsigned i = 0; i < ANGLES; ++i) {
 		double angle = 360.0 * i / ANGLES;
 		measure_model(angle, osscs);
-		sys().poll_event_queue();
 	}
 	physcs.add_child_text(osscs.str());
 
@@ -390,7 +393,7 @@ int mymain(list<string>& args)
 			qd.colors[1] = colorf(0, 0, 1);
 			qd.colors[0] = colorf(0, 0, 1);
 			qd.render();
-			sys().swap_buffers();
+			sys().finish_frame();
 			::thread::sleep(100);
 		}
 		sys().unprepare_2d_drawing();
@@ -454,7 +457,7 @@ int mymain(list<string>& args)
 		glRotated(-90.0, 1, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		mdl->get_base_mesh().display();
-		sys().swap_buffers();
+		sys().finish_frame();
 		sys().screenshot(modelfilename.substr(0, st) + ".mass_map_draft");
 		::thread::sleep(3000);
 	}
@@ -471,6 +474,7 @@ int mymain(list<string>& args)
 	physdat.save();
 
 	delete mdl;
+	system_interface::destroy_instance();
 
 	return 0;
 }

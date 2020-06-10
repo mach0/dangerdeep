@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "image.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include "torpedo.h"
@@ -68,10 +68,10 @@ sub_captainscabin_display::clickable_area::clickable_area(const vector2i& tl, co
 {
 }
 
-bool sub_captainscabin_display::clickable_area::is_mouse_over(int mx, int my) const
+bool sub_captainscabin_display::clickable_area::is_mouse_over(vector2i pos) const
 {
-	return (mx >= topleft.x && mx <= bottomright.x &&
-		my >= topleft.y && my <= bottomright.y);
+	return (pos.x >= topleft.x && pos.x <= bottomright.x &&
+		pos.y >= topleft.y && pos.y <= bottomright.y);
 }
 
 void sub_captainscabin_display::clickable_area::do_action(sub_captainscabin_display& obj)
@@ -80,7 +80,7 @@ void sub_captainscabin_display::clickable_area::do_action(sub_captainscabin_disp
 }
 
 sub_captainscabin_display::sub_captainscabin_display(user_interface& ui_) :
-	user_display(ui_), mx(0), my(0)
+	user_display(ui_)
 {
 	clickable_areas.emplace_back(vector2i(0, 540), vector2i(292,705), 272, &sub_captainscabin_display::goto_successes, color(255, 224, 224));
 	clickable_areas.emplace_back(vector2i(415, 495), vector2i(486,520), 255, &sub_captainscabin_display::goto_logbook, color(224, 224, 255));
@@ -88,7 +88,7 @@ sub_captainscabin_display::sub_captainscabin_display(user_interface& ui_) :
 	clickable_areas.emplace_back(vector2i(405, 430), vector2i(462,498), 273, &sub_captainscabin_display::goto_recogmanual, color(255, 224, 224));
 }
 
-void sub_captainscabin_display::display(class game& gm) const
+void sub_captainscabin_display::display() const
 {
 //	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
 
@@ -98,54 +98,48 @@ void sub_captainscabin_display::display(class game& gm) const
 	background->draw(0, 0);
 
 	for (const auto & it : clickable_areas) {
-		if (it.is_mouse_over(mx, my)) {
-			font_vtremington12->print_hc(mx, my - font_arial->get_height(),
+		if (it.is_mouse_over(mouse_position)) {
+			font_vtremington12->print_hc(mouse_position.x, mouse_position.y - font_arial->get_height(),
 					     texts::get(it.get_description()),
 					     it.get_description_color(), true);
 			break;
 		}
 	}
-	
+
 	ui.draw_infopanel();
 	sys().unprepare_2d_drawing();
 }
 
-void sub_captainscabin_display::process_input(class game& gm, const SDL_Event& event)
-{
-//	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
 
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		// check if there is a clickable area below the mouse and take some action
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			// fixme:
-		} else if (event.button.button == SDL_BUTTON_WHEELUP) {
-		} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		// check if there is a clickable area below the mouse and take some action
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		if (event.button.button == SDL_BUTTON_LEFT) {
-			for (auto & it : clickable_areas) {
-				if (it.is_mouse_over(mx, my)) {
+
+bool sub_captainscabin_display::handle_mouse_button_event(const mouse_click_data& m)
+{
+	if (m.down()) {
+		// just memorize
+		mouse_position = m.position_2d;
+	} else if (m.up()) {
+		mouse_position = m.position_2d;
+		if (m.left()) {
+			for (auto& it : clickable_areas) {
+				if (it.is_mouse_over(mouse_position)) {
 					it.do_action(*this);
-					break;
+					return true;
 				}
 			}
 		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		break;
-	default:
-		break;
 	}
+	return false;
 }
+
+
+
+bool sub_captainscabin_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	mouse_position = m.position_2d;
+	return false;
+}
+
+
 
 void sub_captainscabin_display::enter(bool is_day)
 {
