@@ -27,12 +27,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <utility>
 
-#include "system.h"
+#include "system_interface.h"
 #include "global_data.h"
 #include "game.h"
 #include "keys.h"
 #include "cfg.h"
 #include "datadirs.h"
+#include "user_interface.h"
 
 
 
@@ -51,21 +52,11 @@ sub_ecard_popup::~sub_ecard_popup()
 
 
 
-bool sub_ecard_popup::process_input(class game& gm, const SDL_Event& event)
-{
-	// nothing to do
-	switch (event.type) {
-	default: return false;
-	}
-	return false;
-}
-
-
-
-void sub_ecard_popup::display(class game& gm) const
+void sub_ecard_popup::display() const
 {
 	sys().prepare_2d_drawing();
 
+	auto& gm = ui.get_game();
 	bool is_day = gm.is_day_mode();
 	if (is_day)
 		background_daylight->draw(x, y);

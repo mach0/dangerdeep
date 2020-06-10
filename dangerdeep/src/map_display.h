@@ -39,7 +39,7 @@ protected:
 	// map
 	float mapzoom;	// factor pixel/meter
 	vector2 mapoffset;	// additional offset used for display, relative to player (meters)
-	int mx, my;	// last mouse position
+	vector2i mouse_position;	// last mouse position
 	int mapmode;
 
 	void draw_vessel_symbol(const vector2& offset, sea_object* so, color c) const;
@@ -73,24 +73,18 @@ protected:
 	widget_slider* edit_heading;
 	widget_slider* edit_speed;
 	widget_slider* edit_throttle;
- 	widget_slider* edit_timeyear;
- 	widget_slider* edit_timemonth;
- 	widget_slider* edit_timeday;
- 	widget_slider* edit_timehour;
- 	widget_slider* edit_timeminute;
- 	widget_slider* edit_timesecond;
+	widget_slider* edit_timeyear;
+	widget_slider* edit_timemonth;
+	widget_slider* edit_timeday;
+	widget_slider* edit_timehour;
+	widget_slider* edit_timeminute;
+	widget_slider* edit_timesecond;
 	widget_edit* edit_cvname;
 	widget_slider* edit_cvspeed;
 	widget_list* edit_cvlist;
-	int mx_down, my_down;	// position of mouse when button was pressed
-	int mx_curr, my_curr;	// current position of mouse
+	vector2i mouse_position_down{-1,-1};	// position of mouse when button was pressed
 	std::set<sea_object*> selection;
-	unsigned shift_key_pressed;
-	unsigned ctrl_key_pressed;
-#ifdef CVEDIT
-	vector<vector2> cvroute;
-	int cvridx;
-#endif
+	key_mod state_of_key_modifiers;
 	objcachet<texture>::reference notepadsheet;
 
 	// editor methods
@@ -112,8 +106,11 @@ private:
 public:
 	map_display(class user_interface& ui_);
 
-	void display(game& gm) const override;
-	void process_input(game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 };
 
 #endif

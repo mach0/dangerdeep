@@ -21,17 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_tdc_popup.h"
-
-
 #include <memory>
-
 #include <utility>
-
-#include "system.h"
+#include "system_interface.h"
 #include "datadirs.h"
 #include "game.h"
 #include "keys.h"
 #include "cfg.h"
+#include "user_interface.h"
 
 
 
@@ -49,21 +46,10 @@ sub_tdc_popup::~sub_tdc_popup()
 = default;
 
 
-
-bool sub_tdc_popup::process_input(class game& gm, const SDL_Event& event)
-{
-	switch (event.type) {
-	default: return false;
-	}
-	return false;
-}
-
-
-
-void sub_tdc_popup::display(class game& gm) const
+void sub_tdc_popup::display() const
 {
 	sys().prepare_2d_drawing();
-
+	auto& gm = ui.get_game();
 	bool is_day = gm.is_day_mode();
 	if (is_day)
 		background_daylight->draw(x, y);

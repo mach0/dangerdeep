@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "texture.h"
 #include "font.h"
-#include "system.h"
+#include "system_interface.h"
 #include "shader.h"
 #include "datadirs.h"
 #include "model.h"
@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "ptrvector.h"
 #include "frustum.h"
-
+#include "input_event_handler.h"
 #include <algorithm>
 #include <memory>
 
@@ -376,8 +376,8 @@ class plant_set
 {
 	// with the VBO we don't really need to store the plant vertex data...
 	std::vector<plant> plants;
- 	mutable vertexbufferobject plantvertexdata;
- 	mutable vertexbufferobject plantindexdata;
+	mutable vertexbufferobject plantvertexdata;
+	mutable vertexbufferobject plantindexdata;
 	std::unique_ptr<texture> planttex;
 	glsl_shader_setup myshader;
 	unsigned loc_textrees;
@@ -826,15 +826,12 @@ void show_credits()
 	double fpstime = sys().millisec() / 1000.0;
 	double totaltime = sys().millisec() / 1000.0;
 	double measuretime = 5;	// seconds
+	auto ic = std::make_shared<input_event_handler_custom>();
+	ic->set_handler([&quit](const input_event_handler::mouse_click_data& mc) { if (mc.up()) quit = true; return true; });
+	ic->set_handler([&quit](const input_event_handler::key_data& kd) { if (kd.up() && kd.keycode == key_code::ESCAPE) quit = true; return true; });
+	sys().add_input_event_handler(ic);
+
 	while (!quit) {
-		auto events = sys().poll_event_queue();
-		for (auto & event : events) {
-			if (event.type == SDL_KEYDOWN) {
-				quit = true;
-			} else if (event.type == SDL_MOUSEBUTTONUP) {
-				quit = true;
-			}
-		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -929,8 +926,8 @@ void show_credits()
 			lastframes = frames;
 		}
 
-		sys().swap_buffers();
+		sys().finish_frame();
 	}
-	
+
 	glClearColor(0, 0, 1, 0);
 }

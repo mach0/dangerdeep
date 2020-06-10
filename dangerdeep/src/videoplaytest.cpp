@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <SDL.h>
 #include <SDL_net.h>
 
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include "thread.h"
 #include "faulthandler.h"
@@ -419,7 +419,6 @@ int mymain(list<string>& args)
         } else if (*it == "--vsync") {
             if (putenv((char*) "__GL_SYNC_TO_VBLANK=1") < 0)
                 cout << "ERROR: vsync setting failed.\n";
-            //maxfps = 0;
 #endif
         } else if (*it == "--res") {
             list<string>::iterator it2 = it;
@@ -441,15 +440,14 @@ int mymain(list<string>& args)
     // with black borders at top/bottom (height 2*32pixels)
     res_y = res_x * 3 / 4;
     // weather conditions and earth curvature allow 30km sight at maximum.
-    system::parameters params(1.0, 30000.0 + 500.0, res_x, res_y, fullscreen);
-    system::create_instance(new class system(params));
+    system_interface::parameters params(1.0, 30000.0 + 500.0, res_x, res_y, fullscreen);
+    system_interface::create_instance(new class system(params));
     sys().set_res_2d(1024, 768);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     sys().gl_perspective_fovx(70, 4.0 / 3.0, 1.0, 30000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //	sys().set_max_fps(60);
 
     log_info("Danger from the Deep");
 
@@ -496,11 +494,11 @@ int mymain(list<string>& args)
 
         sys().unprepare_2d_drawing();
 
-        sys().swap_buffers();
+        sys().finish_frame();
     }
     vpl.reset();
 
-    system::destroy_instance();
+    system_interface::destroy_instance();
 
     return 0;
 }

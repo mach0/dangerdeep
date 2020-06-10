@@ -11,31 +11,29 @@ After each step check functionality.
 4. Compare basic classes between branches for differences!
 	use meld with directories to compare.
 	See below for more details.
+	New classes like gpu interface copied to master branch
 	DONE - remaining topics are GL related, except bivector
 5. use new C++ features for XML reader etc.
 	DONE
 6. use key enum class!
-	DONE - except in widget class
+	DONE
 7. make use of new C++ features for widgets etc. (no plain new/delete)
 	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
--------------WE ARE HERE-----------------	
-9. Introduce newer system input event handling
-	This means no more SDL includes in headers!
-	Rather introduce own input_event classes from codemodernization
-	Needs input_event_handler heirs and handling in system class.
-	This modern way is not even included in the codemodernization branch.
-	check_for_mouse_event must be translated as well.
------------- MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------	
-9. add new sensors (test if they work!!!)
-10. update internal game classes (storage of sea_object, reference to them via ID!)
-	later usage of rigid_body etc.
-11. Copy new classes like gpu interface to master branch so they can be
-	tested and used by standalone apps (copy DONE)
-12. Divide code into separate libraries better (partly done)
+-------------WE ARE HERE-----------------
+9. Introduce newer system input event handling and migrate to SDL2
+	DONE but:
+	viewmodel is broken.
+	portal rendering doesn't work anymore.
+	bvtree test doesnt work, bad_alloc
+------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
+10. add new sensors (test if they work!!!) needs test program.
+11. update internal game classes (storage of sea_object, reference to them via ID!)
+	later usage of rigid_body, generic_rudder etc.
+	A generic pointer to sea_object may be unnecessary, the objects can report their models for display.
+13. Divide code into separate libraries better (partly done)
 ------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
-13. Migrate to SDL2
 14. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
@@ -44,6 +42,7 @@ After each step check functionality.
 	PROJECT!
 15. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
 16. Turn on -Wall
+17. Sound sfx are not loaded (wav expected, ogg provided)
 
 
 Changes that have been started in code comparison:
@@ -74,7 +73,15 @@ Changes that have been started in code comparison:
 - sub_captains_cabin, use std::function instead of old C/C++ functions, maybe lambda also help
 - remove obsolete classes like morton_bivector etc. (what doesn't exist in codemodernization branch)
 - using namespace std in cpp should be avoided?
-- replace myclamp with std::clamp
+- replace myclamp with std::clamp, myfmod etc.
+- all display classes is_mouse_over should use vector2i instead of separeted x,y ints.
+- display classes need no game& for display(), can get that from user_interface, same for freeview_display methods
+- Provide new input_event data in system!
+  widgets don't work correctly, some displays don't work right.
+  we can't enter bridge/uzo even near the surface!
+- make every declared variable const that is not changed!
+- check clang tidy for readability-qualified-auto, readability-non-const-parameter
+
 
 
 
@@ -115,7 +122,7 @@ DONE
     modernize-loop-convert
     llvm-include-order
     modernize-use-auto
-DO NOT USE    
+DO NOT USE
     modernize-use-trailing-return-type
 CHECK
     There is a long list of clang tidy checks that could also be applied!
@@ -249,25 +256,11 @@ This means entering a user_display registers it as handler to the system
 interface and leaving the display unregisters it.
 This makes large switch/case code blocks obsolete that iterate over all
 events and call code by event type.
-There are/were 37 ::process_input methods in the code that all need to be split.
-For TDC display with 2 screens we even can switch handlers when screen changes.
-This all can be done with SDL1 also.
-Translate_position doesn't need to be called any longer then, transformed positions
-are already provided.
-We could even provide the handler methods for all events in parallel to existing code!
-user_display and user_interface etc. need to inherit from input_event_handler then.
 But why not just use two different classes for the TDC display?
-Translate-lambdas must not use hardcoded 1024,768 values but constants!
-This means we have to look into the .cpp files what events are processed and need to
-overload the matching handler methods, then duplicate the code from process_input
-to the handler methods and adapt it.
-Input handlers are: user_interface, all *display classes, user_popup, submarine_interface
-and widget class.
-This is a huge pile of work but rather a no-brainer.
-And we can commit only changes to all of them, but we can test all changes!
+Event handlers dont need to be registered when display change, as user interface fetches data.
 
 
-	
+
 10.)
 ====
 
@@ -277,7 +270,7 @@ Rendering: what needs to be changed
 - moon			DONE
 - water		DONE but visual bugs
 - geoclipmap terrain	DONE
-- widgets		
+- widgets
 - 2d drawing		DONE
-- displays		
+- displays
 

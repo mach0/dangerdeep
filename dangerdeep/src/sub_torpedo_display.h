@@ -77,7 +77,9 @@ class sub_torpedo_display : public user_display
 
 	void draw_torpedo(class game& gm, bool usebow, const vector2i& pos, const submarine::stored_torpedo& st) const;
 
-	int mx, my, mb;
+	vector2i mouse_position;
+	mouse_button_state mouse_buttons;
+	bool left_mouse_button_pressed{false};
 
 	mutable unsigned torp_desc_line;
 
@@ -92,8 +94,10 @@ class sub_torpedo_display : public user_display
 public:
 	sub_torpedo_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

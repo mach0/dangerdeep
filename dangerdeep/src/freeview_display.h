@@ -56,11 +56,11 @@ protected:
 	freeview_display();
 
 	// display() calls these functions
-	virtual void pre_display(class game& gm) const;
+	virtual void pre_display() const;
 //fixme: reflections need special viewport... depends on detail settings. mabye retrieve from ui
 	virtual projection_data get_projection_data(class game& gm) const;
 	virtual void set_modelview_matrix(class game& gm, const vector3& viewpos) const;
-	virtual void post_display(class game& gm) const;
+	virtual void post_display() const;
 
 	// draw all sea_objects
 	virtual void draw_objects(class game& gm, const vector3& viewpos,
@@ -79,8 +79,10 @@ public:
 	freeview_display(class user_interface& ui_);
 	~freeview_display() override;
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 };
 
 #endif

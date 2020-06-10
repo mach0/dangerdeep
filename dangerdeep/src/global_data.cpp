@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <list>
 #include <iomanip>
 #include "oglext/OglExt.h"
-#include "system.h"
+#include "system_interface.h"
 #include "log.h"
 #include "datadirs.h"
 #include "global_constants.h"
@@ -54,16 +54,28 @@ global_data::global_data()
 	  texturecache(get_texture_dir())
 	  //soundcache(get_sound_dir())
 {
+	font_arial = std::make_unique<font>(get_font_dir() + "font_arial");
+	font_jphsl = std::make_unique<font>(get_font_dir() + "font_jphsl");
+	font_vtremington10 = std::make_unique<font>(get_font_dir() + "font_vtremington10");
+	font_vtremington12 = std::make_unique<font>(get_font_dir() + "font_vtremington12");
+	font_typenr16 = std::make_unique<font>(get_font_dir() + "font_typenr16");
 }
 
 
 
 global_data::~global_data()
-= default;
+{
+	font_arial = nullptr;
+	font_jphsl = nullptr;
+	font_vtremington10 = nullptr;
+	font_vtremington12 = nullptr;
+	font_typenr16 = nullptr;
+}
 
 
-font *font_arial = nullptr, *font_jphsl = nullptr, *font_vtremington10 = nullptr, *font_vtremington12 = nullptr, 
-     *font_typenr16 = nullptr;
+
+std::unique_ptr<class font> font_arial, font_jphsl, font_vtremington10, font_vtremington12, font_typenr16;
+
 
 // display loading progress
 list<string> loading_screen_messages;
@@ -87,7 +99,7 @@ void display_loading_screen()
 		y += fh;
 	}
 	sys().unprepare_2d_drawing();
-	sys().swap_buffers();
+	sys().finish_frame();
 }
 
 void reset_loading_screen()
@@ -118,7 +130,7 @@ string get_time_string(double tm)
 	unsigned minutes = (seconds % 3600) / 60;
 	seconds = seconds % 60;
 	ostringstream oss;
-	oss << setw(2) << setfill('0') << hours << ":" 
+	oss << setw(2) << setfill('0') << hours << ":"
 	    << setw(2) << setfill('0') << minutes << ":"
 	    << setw(2) << setfill('0') << seconds;
 	return oss.str();
@@ -128,11 +140,11 @@ string get_time_string(double tm)
 void jacobi_amp(double u, double k, double& sn, double& cn)
 {
 	double emc = 1.0 - k*k;
-	
+
 	double a,b,c,d=0.0,dn;
 	double em[14],en[14];
 	int i,ii,l,bo;
-	
+
 	if (emc) {
 		bo=(emc < 0.0);
 		if (bo) {
@@ -183,12 +195,12 @@ vector2f transform_real_to_geo(vector2f& pos)
 {
 	double sn, cn, r;
 	vector2f coord;
-	
+
 	jacobi_amp(pos.y/WGS84_A, WGS84_K, sn, cn);
 	r = sqrt((WGS84_B*WGS84_B)/(1.0-WGS84_K*WGS84_K*cn*cn));
 	coord.x = (180.0*pos.x)/(M_PI*r);
 	coord.y = (asin(sn)*180.0)/M_PI;
-	
+
 	return coord;
 }
 

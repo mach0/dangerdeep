@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "image.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include <fstream>
@@ -42,7 +42,7 @@ sub_soldbuch_display::sub_soldbuch_display(user_interface& ui_) :
 {
 }
 
-void sub_soldbuch_display::display(class game& gm) const
+void sub_soldbuch_display::display() const
 {
 	// just for simplier handling of coords
 	int offset_x, offset_y;
@@ -54,6 +54,7 @@ void sub_soldbuch_display::display(class game& gm) const
 	background->draw(0, 0);
 
 	// render player info here..
+	auto& gm = ui.get_game();
 	const game::player_info& pi = gm.get_player_info();
 	player_photo->draw(250, 200);
 
@@ -72,7 +73,7 @@ void sub_soldbuch_display::display(class game& gm) const
 	// paygroup
 	ss << "A" << 2;
 	font_jphsl->print(offset_x+230, offset_y+81, ss.str(), color(20, 20, 30));
-	
+
 	//career
 	if (pi.career.size() > 1) {
 		ss.str("");
@@ -108,14 +109,10 @@ void sub_soldbuch_display::display(class game& gm) const
 	flotname.replace(flotname.find("#"), 1, ss.str());
 	font_jphsl->print(offset_x+95, offset_y+438, flotname, color(20, 20, 30));
 	//identification
-	font_jphsl->print(offset_x+125, offset_y+313, pi.name + "/" + pi.soldbuch_nr, color(20, 20, 30));	
+	font_jphsl->print(offset_x+125, offset_y+313, pi.name + "/" + pi.soldbuch_nr, color(20, 20, 30));
 
 	ui.draw_infopanel();
 	sys().unprepare_2d_drawing();
-}
-
-void sub_soldbuch_display::process_input(class game& gm, const SDL_Event& event)
-{
 }
 
 void sub_soldbuch_display::enter(bool is_day)

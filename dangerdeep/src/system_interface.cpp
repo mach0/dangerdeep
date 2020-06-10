@@ -22,33 +22,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Parts taken and adapted from Martin Butterwecks's OOML SDL code (wws.sourceforget.net/projects/ooml/)
 
 #include "system_interface.h"
-#include <SDL2/SDL.h>	// fixme later just include SDL.h
-#include "gpu_interface.h"
+#include <SDL.h>
+//#include "gpu_interface.h"
+#include "shader.h"	// for old OpenGL shader init
+#include <GL/glu.h>
 #include "log.h"
+#include "error.h"
+#include "helper.h"
 #include <fstream>
 #include <sstream>
 #include <chrono>
 
 static auto start_time = std::chrono::high_resolution_clock::now();
 
-system_interface::parameters::parameters()
- :	resolution(1024, 768),
-	window_caption("Danger from the Deep"),
-	fullscreen(false),
-	vertical_sync(true)
-{
-}
-
 
 
 system_interface::system_interface(const parameters& params_) :
-	params(params_),
-	time_passed_while_sleeping(0),
-	sleep_time(0),
-	is_sleeping(false),
-	maxfps(0),
-	last_swap_time(0),
-	screenshot_nr(0)
+	params(params_)
 {
 	// Initialize SDL first
 	int err = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO|SDL_INIT_EVENTS|SDL_INIT_TIMER);
@@ -68,14 +58,22 @@ system_interface::system_interface(const parameters& params_) :
 				log_info("Available resolution " << mode.w << "x" << mode.h << "\n");
 			}
 		}
+		std::sort(available_resolutions.begin(), available_resolutions.end());
+		available_resolutions.erase(std::unique(available_resolutions.begin(), available_resolutions.end()), available_resolutions.end());
 	}
 
 	// load default GL library
 	SDL_GL_LoadLibrary(nullptr);
-	// request GL 4.5 context.
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+#if 0
+	// request GL 4.5 context.
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+#else
+	// request GL 2.1 context.
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#endif
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// Define depth buffer size, but we don't need it.
@@ -128,7 +126,7 @@ system_interface::system_interface(const parameters& params_) :
 system_interface::~system_interface()
 {
 	// deinit gpu_interface first
-	gpu::interface::destroy_instance();
+//	gpu::interface::destroy_instance();
 	SDL_GL_DeleteContext((SDL_GLContext)sdl_gl_context);
 	SDL_DestroyWindow((SDL_Window*)sdl_main_window);
 	SDL_Quit();
@@ -188,24 +186,6 @@ uint32_t system_interface::millisec()
 //	std::cout << "duration " << duration << " tpws " << time_passed_while_sleeping << "\n";
 	return uint32_t(duration) - time_passed_while_sleeping;
 //	return SDL_GetTicks() - time_passed_while_sleeping;
-}
-
-
-
-void system_interface::swap_buffers()
-{
-	SDL_GL_SwapWindow((SDL_Window*)sdl_main_window);
-	if (maxfps > 0) {
-		unsigned tm = millisec();
-		unsigned d = tm - last_swap_time;
-		unsigned dmax = 1000/maxfps;
-		if (d < dmax) {
-			SDL_Delay(dmax - d);
-			last_swap_time = tm + dmax - d;
-		} else {
-			last_swap_time = tm;
-		}
-	}
 }
 
 
@@ -416,10 +396,48 @@ std::string system_interface::get_key_name(key_code key, key_mod mod)
 
 
 
+void system_interface::prepare_2d_drawing()
+{
+	if (draw_2d) THROW(error, "2d drawing already turned on");
+	glFlush();
+	glViewport(offset_2D.x, offset_2D.y, size_2D.x, size_2D.y);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, params.resolution2d.x, 0, params.resolution2d.y);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0, params.resolution2d.y, 0);
+	glScalef(1, -1, 1);
+	glDisable(GL_DEPTH_TEST);
+	glCullFace(GL_FRONT);
+	draw_2d = true;
+	glPixelZoom(float(size_2D.x)/params.resolution2d.x, -float(size_2D.y)/params.resolution2d.y);	// flip images
+}
+
+
+
+void system_interface::unprepare_2d_drawing()
+{
+	if (!draw_2d) THROW(error, "2d drawing already turned off");
+	glFlush();
+	glPixelZoom(1.0f, 1.0f);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
+	draw_2d = false;
+}
+
+
+
 bool system_interface::finish_frame()
 {
 	// Switch window frame buffers
-	swap_buffers();
+	SDL_GL_SwapWindow((SDL_Window*)sdl_main_window);
 
 	// translate 2D motion/position to screen size -1...1, y axis up
 	auto translate_p = [&](int x, int y) -> vector2f
@@ -433,25 +451,31 @@ bool system_interface::finish_frame()
 		return vector2f(2.f * x / params.resolution.x,
 				-2.f * y / params.resolution.y);
 	};
-	// translate 2d motion to pseudo 2d coordinates 1024x768, y axis down
+	// translate 2d motion to pseudo 2d coordinates, y axis down
 	// Note that scaling depends on 2d screen size
 	auto translate_m_2d = [&](int x, int y) -> vector2i
 	{
-		return vector2i(1024 * x / size_2D.x, 768 * y / size_2D.y);
+		return vector2i(params.resolution2d.x * x / size_2D.x, params.resolution2d.y * y / size_2D.y);
 	};
-	// translate 2D position to pseudo 2d coordinates 1024x768, y axis down
+	// translate 2D position to pseudo 2d coordinates, y axis down
 	// coordinates inside area defined by offset_2D/size_2D should be mapped
-	// to 1024x768. Note that this can give coordinates outside the 0,0...1023,767 area.
+	// to resolution2d. Note that this can give coordinates outside the 0,0...1023,767 area.
 	auto translate_p_2d = [&](int x, int y) -> vector2i
 	{
 		// as first remove offset
 		x -= offset_2D.x;
 		y -= offset_2D.y;
 		// then translate to pseudo 2d
-		x = int(1024 * x / size_2D.x);
-		y = int( 768 * y / size_2D.y);
+		x = int(params.resolution2d.x * x / size_2D.x);
+		y = int(params.resolution2d.y * y / size_2D.y);
 		return vector2i(x, y);
 	};
+
+	// Clean up empty input event handlers
+	helper::erase_remove_if(input_event_handlers, [](std::weak_ptr<input_event_handler> ptr) {
+		auto sptr = ptr.lock();
+		return sptr == nullptr;
+	});
 
 	// Handle all events
 	SDL_Event event;
@@ -466,7 +490,7 @@ bool system_interface::finish_frame()
 					std::ofstream f("log.txt");
 					log::instance().write(f, log::level::SYSINFO);
 				}
-				return true;
+				throw quit_exception(0);
 
 			case SDL_WINDOWEVENT:		// Application activation or focus event
 				if (event.window.event == SDL_WINDOWEVENT_ENTER) {
@@ -490,25 +514,16 @@ bool system_interface::finish_frame()
 					kd.mod = get_key_mod(event.key.keysym.mod);
 					if (kd.keycode != key_code::UNKNOWN) {
 						kd.action = (event.type == SDL_KEYUP) ? input_action::up : input_action::down;
-						for (unsigned i = unsigned(input_event_handlers.size()); i > 0; --i) {
-							std::shared_ptr<input_event_handler> handler(input_event_handlers[i-1]);
-							if (handler && handler->handle_key_event(kd)) {
-								break;
-							}
-						}
+						fetch_event([&kd](auto& handler) { return handler.handle_key_event(kd); });
 					}
 				}
 				break;
 			case SDL_TEXTINPUT:
 				{
 					const char* text = event.text.text;
-					if (*text != 0x00) {	// not empty
-						for (unsigned i = unsigned(input_event_handlers.size()); i > 0; --i) {
-							std::shared_ptr<input_event_handler> handler(input_event_handlers[i-1]);
-							if (handler && handler->handle_text_input_event(text)) {
-								break;
-							}
-						}
+					if (text != nullptr) {	// not empty
+						std::string the_text(text);
+						fetch_event([&the_text](auto& handler) { return handler.handle_text_input_event(the_text); });
 					}
 				}
 				break;
@@ -520,16 +535,13 @@ bool system_interface::finish_frame()
 					md.rel_motion_2d = translate_m_2d(event.motion.xrel, event.motion.yrel);
 					md.position = translate_p(event.motion.x, event.motion.y);
 					md.position_2d = translate_p_2d(event.motion.x, event.motion.y);
-					md.buttons_pressed.fill(false);
-					if (event.motion.state & SDL_BUTTON_LMASK) md.buttons_pressed[unsigned(mouse_button::left)] = true;
-					if (event.motion.state & SDL_BUTTON_MMASK) md.buttons_pressed[unsigned(mouse_button::middle)] = true;
-					if (event.motion.state & SDL_BUTTON_RMASK) md.buttons_pressed[unsigned(mouse_button::right)] = true;
-					for (unsigned i = unsigned(input_event_handlers.size()); i > 0; --i) {
-						std::shared_ptr<input_event_handler> handler(input_event_handlers[i-1]);
-						if (handler && handler->handle_mouse_motion_event(md)) {
-							break;
-						}
-					}
+					mouse_position = md.position;
+					mouse_position_2d = md.position_2d;
+					md.buttons_pressed = mouse_button_state{};
+					if (event.motion.state & SDL_BUTTON_LMASK) md.buttons_pressed.pressed[unsigned(mouse_button::left)] = true;
+					if (event.motion.state & SDL_BUTTON_MMASK) md.buttons_pressed.pressed[unsigned(mouse_button::middle)] = true;
+					if (event.motion.state & SDL_BUTTON_RMASK) md.buttons_pressed.pressed[unsigned(mouse_button::right)] = true;
+					fetch_event([&md](auto& handler) { return handler.handle_mouse_motion_event(md); });
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -538,6 +550,8 @@ bool system_interface::finish_frame()
 					input_event_handler::mouse_click_data md;
 					md.position = translate_p(event.button.x, event.button.y);
 					md.position_2d = translate_p_2d(event.button.x, event.button.y);
+					mouse_position = md.position;
+					mouse_position_2d = md.position_2d;
 					// we get all mouse events here so we can track the button state and
 					// offer that info also in button down/up events...
 					// we would miss events outside the window then... but who cares,
@@ -546,12 +560,7 @@ bool system_interface::finish_frame()
 					if (event.button.button == SDL_BUTTON_MIDDLE) md.button = mouse_button::middle;
 					if (event.button.button == SDL_BUTTON_RIGHT) md.button = mouse_button::right;
 					md.action = (event.type == SDL_MOUSEBUTTONUP) ? input_action::up : input_action::down;
-					for (unsigned i = unsigned(input_event_handlers.size()); i > 0; --i) {
-						std::shared_ptr<input_event_handler> handler(input_event_handlers[i-1]);
-						if (handler && handler->handle_mouse_button_event(md)) {
-							break;
-						}
-					}
+					fetch_event([&md](auto& handler) { return handler.handle_mouse_button_event(md); });
 				}
 				break;
 			case SDL_MOUSEWHEEL:
@@ -559,16 +568,14 @@ bool system_interface::finish_frame()
 					input_event_handler::mouse_wheel_data md;
 					md.relative_motion = translate_m(event.wheel.x, event.wheel.y);
 					md.rel_motion_2d = translate_m_2d(event.wheel.x, event.wheel.y);
-					if (md.relative_motion.y < 0.f)	// fixme check that orientation is correct (up/down)
+					md.position = mouse_position;
+					md.position_2d = mouse_position_2d;
+					if (md.relative_motion.y < 0.f)	{
 						md.action = input_action::up;
-					else if (md.relative_motion.y > 0.f)	// fixme check that orientation is correct (up/down)
+					} else if (md.relative_motion.y > 0.f) {
 						md.action = input_action::down;
-					for (unsigned i = unsigned(input_event_handlers.size()); i > 0; --i) {
-						std::shared_ptr<input_event_handler> handler(input_event_handlers[i-1]);
-						if (handler && handler->handle_mouse_wheel_event(md)) {
-							break;
-						}
 					}
+					fetch_event([&md](auto& handler) { return handler.handle_mouse_wheel_event(md); });
 				}
 				break;
 			default: // we don't handle unknown events
@@ -578,10 +585,31 @@ bool system_interface::finish_frame()
 			++nr_of_events;
 		}
 		// do not waste CPU time when sleeping
-		if (nr_of_events == 0 && is_sleeping)
+		if (nr_of_events == 0 && is_sleeping) {
 			SDL_Delay(25);
+		}
 	} while (is_sleeping);
 	return false;
+}
+
+
+
+void system_interface::add_input_event_handler(std::shared_ptr<input_event_handler> ptr)
+{
+	input_event_handlers.push_back(ptr);
+}
+
+
+
+void system_interface::remove_input_event_handler(std::shared_ptr<input_event_handler> ptr_to_remove)
+{
+	helper::erase_remove_if(input_event_handlers, [&ptr_to_remove](std::weak_ptr<input_event_handler> ptr) {
+		auto sptr = ptr.lock();
+		if (sptr != nullptr) {
+			return sptr == ptr_to_remove;
+		}
+		return false;
+	});
 }
 
 
@@ -606,19 +634,13 @@ void system_interface::screenshot(const std::string& filename)
 
 
 
-void system_interface::add_event_handler(std::weak_ptr<input_event_handler> new_handler)
+void system_interface::gl_perspective_fovx(double fovx, double aspect, double znear, double zfar)
 {
-	input_event_handlers.push_back(new_handler);
-}
-
-
-
-void system_interface::remove_event_handler()
-{
-	if (input_event_handlers.empty()) {
-		THROW(error, "remove_event_handler with already empty stack");
-	}
-	input_event_handlers.pop_back();
+	double tanfovx2 = tan(M_PI*fovx/360.0);
+	double tanfovy2 = tanfovx2 / aspect;
+	double r = znear * tanfovx2;
+	double t = znear * tanfovy2;
+	glFrustum(-r, r, -t, t, znear, zfar);
 }
 
 
@@ -634,8 +656,8 @@ void system_interface::prepare_new_resolution()
 		offset_2D.y = 0;
 		offset_pseudo_2D.x = 2.f * offset_2D.x / params.resolution.x - 1.f;
 		offset_pseudo_2D.y = 1.f;
-		scale_pseudo_2D.x = (2.f * size_2D.x) / (params.resolution.x * 1024);
-		scale_pseudo_2D.y = -2.f / 768;
+		scale_pseudo_2D.x = (2.f * size_2D.x) / (params.resolution.x * params.resolution2d.x);
+		scale_pseudo_2D.y = -2.f / params.resolution2d.y;
 	} else {
 		// screen is higher than wide
 		size_2D.x = params.resolution.x;
@@ -644,10 +666,106 @@ void system_interface::prepare_new_resolution()
 		offset_2D.y = (params.resolution.y - size_2D.y) / 2;
 		offset_pseudo_2D.x = -1.f;
 		offset_pseudo_2D.y = 1.f - 2.f * offset_2D.y / params.resolution.y;
-		scale_pseudo_2D.x = 2.f / 1024;
-		scale_pseudo_2D.y = -(2.f * size_2D.y) / (params.resolution.y * 768);
+		scale_pseudo_2D.x = 2.f / params.resolution2d.x;
+		scale_pseudo_2D.y = -(2.f * size_2D.y) / (params.resolution.y * params.resolution2d.y);
 	}
 
 	// reinit frame buffer
-	GPU().init_frame_buffer(params.resolution.x, params.resolution.y);
+	//fixme call glViewPort etc, compare old system.cpp
+//	GPU().init_frame_buffer(params.resolution.x, params.resolution.y);
+
+	// OpenGL Init.
+	glClearColor (32/255.0, 64/255.0, 192/255.0, 1.0);
+	glClearDepth(1.0);
+	glDepthFunc(GL_LEQUAL);
+	glShadeModel(GL_SMOOTH);
+	glDisable(GL_LIGHTING); // we use shaders for everything
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_NORMALIZE);
+	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_COLOR_MATERIAL);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE); // should be obsolete
+	// set up some things for drawing pixels
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glReadBuffer(GL_BACK);
+	glDrawBuffer(GL_BACK);
+
+	// screen resize
+	glViewport(0, 0, params.resolution.x, params.resolution.y);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gl_perspective_fovx (90.0, (GLdouble)params.resolution.x/(GLdouble)params.resolution.y, params.near_z, params.far_z);
+	float m[16];
+	glGetFloatv(GL_PROJECTION_MATRIX, m);
+	//xscal_2d = 2*params.near_z/m[0];
+	//yscal_2d = 2*params.near_z/m[5];
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// enable texturing on all units
+	GLint nrtexunits = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &nrtexunits);
+	for (unsigned i = 0; i < unsigned(nrtexunits); ++i) {
+		glActiveTexture(GL_TEXTURE0 + i);
+		glEnable(GL_TEXTURE_2D);
+	}
+
+	/* fixme replace by modern stuff
+	if (params.use_multisampling) {
+		glEnable(GL_MULTISAMPLE);
+		switch(params.hint_multisampling) {
+			case 1:
+				glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+			break;
+			case 2:
+				glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_FASTEST);
+			break;
+			default:
+				glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_DONT_CARE);
+			break;
+		}
+	}
+	switch (params.hint_fog) {
+		case 1:
+			glHint(GL_FOG_HINT, GL_NICEST);
+		break;
+		case 2:
+			glHint(GL_FOG_HINT, GL_FASTEST);
+		break;
+		default:
+			glHint(GL_FOG_HINT, GL_DONT_CARE);
+		break;
+	}
+	switch (params.hint_mipmap) {
+		case 1:
+			glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+		break;
+		case 2:
+			glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
+		break;
+		default:
+			glHint(GL_GENERATE_MIPMAP_HINT, GL_DONT_CARE);
+		break;
+	}
+	switch (params.hint_texture_compression) {
+		case 1:
+			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
+		break;
+		case 2:
+			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_FASTEST);
+		break;
+		default:
+			glHint(GL_TEXTURE_COMPRESSION_HINT, GL_DONT_CARE);
+		break;
+	}
+	*/
+	// since we use vertex arrays for every primitive, we can enable it
+	// here and leave it enabled forever
+	glEnableClientState(GL_VERTEX_ARRAY);
+
+	glsl_shader_setup::default_init();
 }

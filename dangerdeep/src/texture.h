@@ -34,8 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #endif
 
-#include <SDL.h>
-#include <SDL_image.h>
+struct SDL_Surface;
 #include "oglext/OglExt.h"
 
 #include <vector>
@@ -74,10 +73,10 @@ class sdl_image
 	std::vector<uint8_t> get_plain_data(unsigned& w, unsigned& h, unsigned& byte_per_pixel);
 
 	/// get width of image
-	unsigned get_width() const { return img->w; }
+	unsigned get_width() const;
 
 	/// get height of image
-	unsigned get_height() const { return img->h; }
+	unsigned get_height() const;
 
  protected:
 	SDL_Surface* img;

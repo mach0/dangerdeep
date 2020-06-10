@@ -25,13 +25,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <vector>
 
-#include "system.h"
+#include "system_interface.h"
 #include "triangle_intersection.h"
 #include "datadirs.h"
 #include "model.h"
 #include "log.h"
 #include "cfg.h"
-#include <SDL.h>
 #include "oglext/OglExt.h"
 #include "shader.h"
 #include "ptrvector.h"
@@ -78,10 +77,13 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 
-	system::parameters params(1.0, 1000.0, 1024, 768, false);
-	system::create_instance(new class system(params));
-	sys().set_res_2d(1024, 768);
-	sys().set_max_fps(60);
+	system_interface::parameters params;
+	params.resolution = {1024, 768};
+	params.near_z = 1.0;
+	params.far_z = 1000.0;
+	params.fullscreen = false;
+	params.resolution2d = {1024,768};
+	system_interface::create_instance(new class system_interface(params));
 
 	auto it = ++args.begin();
 	std::unique_ptr<model> modelA(new model(*it++));
@@ -113,108 +115,122 @@ int mymain(list<string>& args)
 	matrix4f* curr_transform = &transformA;
 	bool check_tri_tri = false;
 
-	// hier laufen lassen
-	for (bool doquit = false; !doquit; ) {
-		auto events = sys().poll_event_queue();
-		for (auto & event : events) {
-				if (event.type == SDL_KEYDOWN) {
-				switch (event.key.keysym.sym) {
-				case SDLK_ESCAPE:
-					doquit = true;
+	bool doquit = false;
+	auto ic = std::make_shared<input_event_handler_custom>();
+	ic->set_handler([&](const input_event_handler::key_data& k) {
+		if (k.down()) {
+			switch (k.keycode) {
+			case key_code::ESCAPE:
+				doquit = true;
+				break;
+			case key_code::a:
+				curr_model = modelA.get();
+				curr_transform = &transformA;
+				break;
+			case key_code::b:
+				curr_model = modelB.get();
+				curr_transform = &transformB;
+				break;
+			case key_code::m:
+				move_not_rotate = true;
+				break;
+			case key_code::r:
+				move_not_rotate = false;
+				break;
+			case key_code::x:
+				axis = 0;
+				break;
+			case key_code::y:
+				axis = 1;
+				break;
+			case key_code::z:
+				axis = 2;
+				break;
+			case key_code::s:
+				render_spheres = !render_spheres;
+				break;
+			case key_code::_1:
+				if (splevel > 0)
+					--splevel;
+				break;
+			case key_code::_2:
+				++splevel;
+				break;
+			case key_code::_3:
+				splevel = 0;
+				break;
+			case key_code::t:
+				check_tri_tri = !check_tri_tri;
+				intersects_tri = false;
+				break;
+			default:
+				return false;
+				break;
+			}
+			return true;
+		}
+		return false;
+	});
+	ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
+		if (m.right()) {
+			matrix4f transf;
+			if (move_not_rotate) {
+				vector3f t;
+				(&t.x)[axis] = m.relative_motion.x * 0.1f;
+				transf = matrix4f::trans(t);
+			} else {
+				switch (axis) {
+				case 0:
+					transf = matrix4f::rot_x(m.relative_motion.x * 0.1f);
 					break;
-				case SDLK_a:
-					curr_model = modelA.get();
-					curr_transform = &transformA;
+				case 1:
+					transf = matrix4f::rot_y(m.relative_motion.x * 0.1f);
 					break;
-				case SDLK_b:
-					curr_model = modelB.get();
-					curr_transform = &transformB;
+				case 2:
+					transf = matrix4f::rot_z(m.relative_motion.x * 0.1f);
 					break;
-				case SDLK_m:
-					move_not_rotate = true;
-					break;
-				case SDLK_r:
-					move_not_rotate = false;
-					break;
-				case SDLK_x:
-					axis = 0;
-					break;
-				case SDLK_y:
-					axis = 1;
-					break;
-				case SDLK_z:
-					axis = 2;
-					break;
-				case SDLK_s:
-					render_spheres = !render_spheres;
-					break;
-				case SDLK_1:
-					if (splevel > 0)
-						--splevel;
-					break;
-				case SDLK_2:
-					++splevel;
-					break;
-				case SDLK_3:
-					splevel = 0;
-					break;
-				case SDLK_t:
-					check_tri_tri = !check_tri_tri;
-					intersects_tri = false;
-					break;
-				default: break;
-				}
-			} else if (event.type == SDL_MOUSEMOTION) {
-				vector2 motion = sys().translate_motion(event);
-				if (event.motion.state & SDL_BUTTON_RMASK) {
-					matrix4f transf;
-					if (move_not_rotate) {
-						vector3f t;
-						(&t.x)[axis] = motion.x * 0.1f;
-						transf = matrix4f::trans(t);
-					} else {
-						switch (axis) {
-						case 0:
-							transf = matrix4f::rot_x(motion.x * 0.1f);
-							break;
-						case 1:
-							transf = matrix4f::rot_y(motion.x * 0.1f);
-							break;
-						case 2:
-							transf = matrix4f::rot_z(motion.x * 0.1f);
-							break;
-						}
-					}
-					*curr_transform = transf * *curr_transform;
-					matrix4f transA = transformA * modelA->get_base_mesh_transformation();
-					matrix4f transB = transformB * modelB->get_base_mesh_transformation();
-					model::mesh& mA = modelA->get_base_mesh();
-					model::mesh& mB = modelB->get_base_mesh();
-					// here we transform in world space
-					bv_tree::param p0(mA.get_bv_tree(), mA.vertices, transA);
-					bv_tree::param p1(mB.get_bv_tree(), mB.vertices, transB);
-					std::list<vector3f> contact_points;
-					intersects = bv_tree::collides(p0, p1, contact_points);
-					if (check_tri_tri) {
-						matrix4f transformAtoB = transB.inverse() * transA;
-						intersects_tri = mA.intersects(mB, transformAtoB);
-					}
-				} else if (event.motion.state & SDL_BUTTON_LMASK) {
-					viewangles.x += motion.x;
-					viewangles.y += motion.y;
-				} else if (event.motion.state & SDL_BUTTON_MMASK) {
-					viewangles.y += motion.x;
-					viewangles.z += motion.y;
-				}
-			} else if (event.type == SDL_MOUSEBUTTONDOWN) {
-				if (event.button.button == SDL_BUTTON_WHEELUP) {
-					pos.z -= 1;
-				} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-					pos.z += 1;
 				}
 			}
+			*curr_transform = transf * *curr_transform;
+			matrix4f transA = transformA * modelA->get_base_mesh_transformation();
+			matrix4f transB = transformB * modelB->get_base_mesh_transformation();
+			model::mesh& mA = modelA->get_base_mesh();
+			model::mesh& mB = modelB->get_base_mesh();
+			// here we transform in world space
+			bv_tree::param p0(mA.get_bv_tree(), mA.vertices, transA);
+			bv_tree::param p1(mB.get_bv_tree(), mB.vertices, transB);
+			std::list<vector3f> contact_points;
+			intersects = bv_tree::collides(p0, p1, contact_points);
+			if (check_tri_tri) {
+				matrix4f transformAtoB = transB.inverse() * transA;
+				intersects_tri = mA.intersects(mB, transformAtoB);
+			}
+			return true;
+		} else if (m.left()) {
+			viewangles.x += m.relative_motion.x;
+			viewangles.y += m.relative_motion.y;
+			return true;
+		} else if (m.middle()) {
+			viewangles.y += m.relative_motion.x;
+			viewangles.z += m.relative_motion.y;
+			return true;
 		}
+		return false;
+	});
+	ic->set_handler([&](const input_event_handler::mouse_wheel_data& m) {
+		if (m.up()) {
+			pos.z -= 1;
+			return true;
+		} else if (m.down()) {
+			pos.z += 1;
+			return true;
+		}
+		return false;
+	});
+	sys().add_input_event_handler(ic);
 
+	// hier laufen lassen
+	while (!doquit) {
 		if (intersects) {
 			if (intersects_tri) {
 				glClearColor(1.0, 0.2, 0.2, 0.0);
@@ -282,11 +298,12 @@ int mymain(list<string>& args)
 				++k;
 			}
 		}
-		
-		sys().swap_buffers();
-	}
 
-	system::destroy_instance();
+		sys().finish_frame();
+	}
+	ic = nullptr;
+
+	system_interface::destroy_instance();
 
 	return 0;
 }

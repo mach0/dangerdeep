@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
 #include "fpsmeasure.h"
-#include "system.h"
+#include "system_interface.h"
 
 fpsmeasure::fpsmeasure(float mi)
 	: measure_interval(unsigned(1000 * mi + 0.5f)) 

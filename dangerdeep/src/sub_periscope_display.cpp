@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 #include "submarine.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include <iostream>
 #include <memory>
@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using std::cout;
 
 
-void sub_periscope_display::pre_display(game& gm) const
+void sub_periscope_display::pre_display() const
 {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
@@ -98,8 +98,9 @@ void sub_periscope_display::set_modelview_matrix(game& gm, const vector3& viewpo
 
 
 
-void sub_periscope_display::post_display(game& gm) const
+void sub_periscope_display::post_display() const
 {
+	auto& gm = ui.get_game();
 	if (use_hqsfx) {
 		// here we render scope view as blurred, watery image
 		viewtex->set_gl_texture();
@@ -210,46 +211,58 @@ sub_periscope_display::~sub_periscope_display()
 
 
 
-void sub_periscope_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_periscope_display::handle_key_event(const key_data& k)
 {
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		if (cfg::instance().getkey(key_command::TOGGLE_ZOOM_OF_VIEW).equal(event.key.keysym)) {
+	if (k.down()) {
+		if (is_configured_key(key_command::TOGGLE_ZOOM_OF_VIEW, k)) {
 			zoomed = !zoomed;
-		} 
-                break;
-        case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_WHEELUP) {
-                        zoomed = true;
-                } else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-                        zoomed = false;
-                }
-                return;
-	case SDL_MOUSEMOTION:
-		if (event.motion.state & SDL_BUTTON_LMASK) {
-			if (event.motion.yrel != 0) {
-				// remove y motion, replace by scope raise/lower code
-				auto* s = dynamic_cast<submarine*>(gm.get_player());
-				s->scope_to_level(s->get_scope_raise_level() - event.motion.yrel / 100.0f);
-				SDL_Event e = event;
-				e.motion.yrel = 0;
-				freeview_display::process_input(gm, e);
-				return;
-			}
+			return true;
+		} else if (k.is_keypad_number()) {
+			   // filter away keys NP_1...NP_9 to avoid moving viewer like in freeview mode
+			   return true;
 		}
-		break;
-	default: break;
 	}
-	freeview_display::process_input(gm, event);
+	return freeview_display::handle_key_event(k);
 }
 
 
 
-void sub_periscope_display::display(class game& gm) const
+bool sub_periscope_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (m.left() && m.rel_motion_2d.y != 0) {
+		// remove y motion, replace by scope raise/lower code
+		auto& gm = ui.get_game();
+		auto* s = dynamic_cast<submarine*>(gm.get_player());
+		s->scope_to_level(s->get_scope_raise_level() - m.relative_motion.y / 100.0f);
+		auto m2{m};
+		m2.relative_motion.y = 0;
+		m2.rel_motion_2d.y = 0;
+		return freeview_display::handle_mouse_motion_event(m2);
+	}
+	return freeview_display::handle_mouse_motion_event(m);
+}
+
+
+
+bool sub_periscope_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (m.up()) {
+		zoomed = true;
+		return true;
+	} else if (m.down()) {
+		zoomed = false;
+		return true;
+	}
+	return freeview_display::handle_mouse_wheel_event(m);
+}
+
+
+
+void sub_periscope_display::display() const
 {
 	// with new compassbar lower 32 pixel of 3d view are not visible... maybe shrink 3d view? fixme
 	//fixme: add specials for underwater rendering here... or in freeview class!
-	freeview_display::display(gm);
+	freeview_display::display();
 }
 
 
@@ -259,7 +272,7 @@ unsigned sub_periscope_display::get_popup_allow_mask() const
 	return
 		(1 << submarine_interface::popup_mode_control) |
 		(1 << submarine_interface::popup_mode_tdc) |
-		(1 << submarine_interface::popup_mode_ecard) |		
+		(1 << submarine_interface::popup_mode_ecard) |
 		(1 << submarine_interface::popup_mode_recogmanual);
 }
 

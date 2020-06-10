@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "game.h"
 #include "ai.h"
-#include "system.h"
+#include "system_interface.h"
 #include "ship.h"
 #include "datadirs.h"
 #include "global_data.h"

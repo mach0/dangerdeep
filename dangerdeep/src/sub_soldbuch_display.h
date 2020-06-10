@@ -36,8 +36,7 @@ protected:
 public:
 	sub_soldbuch_display(class user_interface& ui_);
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
 
 	void enter(bool is_day) override;
 	void leave() override;

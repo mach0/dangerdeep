@@ -25,7 +25,7 @@
 #include <sstream>
 #include "tile.h"
 #include "vector2.h"
-#include "system.h"
+#include "system_interface.h"
 
 /* A simple tile cache.
  * 

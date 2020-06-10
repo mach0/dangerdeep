@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "framebufferobject.h"
 #include "oglext/OglExt.h"
 #include "texture.h"
-#include "system.h"
+#include "system_interface.h"
 #include "log.h"
 #include <stdexcept>
 
@@ -31,10 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 int framebufferobject::fbo_supported = -1;
 bool framebufferobject::supported()
 {
-	if (fbo_supported < 0) {
-		fbo_supported = sys().extension_supported("GL_EXT_framebuffer_object") ? 1 : 0;
-	}
-	return fbo_supported == 1;
+	return true;
 }
 
 

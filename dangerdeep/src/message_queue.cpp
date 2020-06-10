@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "error.h"
 #include "log.h"
 #include "message_queue.h"
-#include "system.h"
+#include "system_interface.h"
 
 
 void message::evaluate() const

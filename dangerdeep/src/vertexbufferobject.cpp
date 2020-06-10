@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
 #include "vertexbufferobject.h"
-#include "system.h"
+#include "system_interface.h"
 #include "oglext/OglExt.h"
 #include "log.h"
 #include "error.h"
@@ -31,8 +31,6 @@ vertexbufferobject::vertexbufferobject(bool indexbuffer)
 	: 
 	  target(indexbuffer ? GL_ELEMENT_ARRAY_BUFFER : GL_ARRAY_BUFFER)
 {
-	if (!sys().extension_supported("GL_ARB_vertex_buffer_object"))
-		THROW(error, "vertex buffer objects are not supported!");
 	glGenBuffers(1, &id);
 }
 

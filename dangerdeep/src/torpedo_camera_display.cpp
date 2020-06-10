@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's UZO
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
+#include "system_interface.h"
 #include "image.h"
 #include "texture.h"
 #include "game.h"
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
-void torpedo_camera_display::pre_display(game& gm) const
+void torpedo_camera_display::pre_display() const
 {
 	if (!trackobj)
 		return;
@@ -51,7 +51,7 @@ freeview_display::projection_data torpedo_camera_display::get_projection_data(cl
 {
 	projection_data pd;
 	pd.x = sys().get_res_x() * 3 / 4;
-       	pd.y = 0;
+	pd.y = 0;
 	pd.w = sys().get_res_x() / 4;
 	pd.h = sys().get_res_y() / 4;
 	pd.fov_x = 70.0;
@@ -63,7 +63,7 @@ freeview_display::projection_data torpedo_camera_display::get_projection_data(cl
 
 
 
-void torpedo_camera_display::post_display(game& gm) const
+void torpedo_camera_display::post_display() const
 {
 	if (!trackobj)
 		return;

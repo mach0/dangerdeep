@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's gauges
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
+#include "system_interface.h"
 #include "image.h"
 #include "texture.h"
 #include "game.h"
@@ -50,17 +50,17 @@ void sub_gauges_display::indicator::display(double angle) const
 
 
 
-bool sub_gauges_display::indicator::is_over(int mx, int my) const
+bool sub_gauges_display::indicator::is_over(vector2i pos) const
 {
-	return (mx >= int(x) && my >= int(y) && mx < int(x+w) && my < int(y+h));
+	return (pos.x >= int(x) && pos.y >= int(y) && pos.x < int(x+w) && pos.y < int(y+h));
 }
 
 
 
-angle sub_gauges_display::indicator::get_angle(int mx, int my) const
+angle sub_gauges_display::indicator::get_angle(vector2i pos) const
 {
 	// need to negate y, because onscreen y is down
-	return angle(vector2(mx - int(x + w/2), int(y + h/2) - my));
+	return angle(vector2(pos.x - int(x + w/2), int(y + h/2) - pos.y));
 }
 
 
@@ -71,10 +71,10 @@ sub_gauges_display::sub_gauges_display(user_interface& ui_) : user_display(ui_),
 
 
 
-void sub_gauges_display::display(class game& gm) const
+void sub_gauges_display::display() const
 {
-	auto* player = dynamic_cast<submarine*> ( gm.get_player () );
-	system::sys().prepare_2d_drawing();
+	auto* player = dynamic_cast<submarine*> ( ui.get_game().get_player () );
+	sys().prepare_2d_drawing();
 
 	controlscreen->draw(0, 0);
 
@@ -106,38 +106,36 @@ void sub_gauges_display::display(class game& gm) const
 */
 	ui.draw_infopanel(true);
 
-	system::sys().unprepare_2d_drawing();
+	sys().unprepare_2d_drawing();
 }
 
-void sub_gauges_display::process_input(class game& gm, const SDL_Event& event)
+
+
+bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 {
-	// fixme: actions are executed, but no messages are sent...
-	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	int mx, my;
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	if (m.down()) {
+		// fixme: actions are executed, but no messages are sent...
+		auto* sub = dynamic_cast<submarine*>(ui.get_game().get_player());
 		//if mouse is over control c, compute angle a, set matching command, fixme
-		if (indicator_compass->is_over(mx, my)) {
-			sub->head_to_course(indicator_compass->get_angle(mx, my));
-		} else if (indicator_depth->is_over(mx, my)) {
-			angle mang = indicator_depth->get_angle(mx, my) - angle(225);
+		if (indicator_compass->is_over(m.position_2d)) {
+			sub->head_to_course(indicator_compass->get_angle(m.position_2d));
+		} else if (indicator_depth->is_over(m.position_2d)) {
+			angle mang = indicator_depth->get_angle(m.position_2d) - angle(225);
 			// 135° are 100m
 			if (mang.value()/1.35 < 270) {
 				sub->dive_to_depth(unsigned(mang.value()/1.35));
 			}
-		} else if( indicator_bow_depth_rudder->is_over(mx,my)){
-			angle mang(indicator_bow_depth_rudder->get_angle(mx,my)-angle(270));
+		} else if( indicator_bow_depth_rudder->is_over(m.position_2d)){
+			angle mang(indicator_bow_depth_rudder->get_angle(m.position_2d)-angle(270));
 			double pos = myclamp(mang.value_pm180() / 60.0, -1.0, 1.0);
 			sub->set_bow_depth_rudder(-pos);
-		} else if( indicator_stern_depth_rudder->is_over(mx,my)){
-			angle mang(angle(90) - indicator_stern_depth_rudder->get_angle(mx,my));
+		} else if( indicator_stern_depth_rudder->is_over(m.position_2d)){
+			angle mang(angle(90) - indicator_stern_depth_rudder->get_angle(m.position_2d));
 			double pos = myclamp(mang.value_pm180() / 60.0, -1.0, 1.0);
 			sub->set_stern_depth_rudder(-pos);
-		} else if (indicator_mt->is_over(mx, my)) {
+		} else if (indicator_mt->is_over(m.position_2d)) {
 			// 270° in 15 steps, 45°-315°, so 18° per step.
-			unsigned opt = unsigned( ((indicator_mt->get_angle(mx, my) - angle(45)).value()) / 18.0);
+			unsigned opt = unsigned( ((indicator_mt->get_angle(m.position_2d) - angle(45)).value()) / 18.0);
 			if (opt >= 15) opt = 14;
 			switch (opt) {
 			case 0: sub->set_throttle(ship::reversefull); break;
@@ -158,10 +156,9 @@ void sub_gauges_display::process_input(class game& gm, const SDL_Event& event)
 				break;
 			}
 		}
-		break;
-	default:
-		break;
+		return true;
 	}
+	return false;
 }
 
 
@@ -172,7 +169,7 @@ int sub_gauges_display::compute_throttle_angle(int throttle_pos) const
 
 	switch(submarine::throttle_status(throttle_pos)){
 	case submarine::reversefull: throttle_goal = -125; break;
-	case submarine::reversehalf: throttle_goal = -107; break;                             
+	case submarine::reversehalf: throttle_goal = -107; break;
 	case submarine::reverse: throttle_goal = -90; break;
 	case submarine::aheadlisten: throttle_goal = 54; break;
 	case submarine::aheadslow: throttle_goal = 72; break;

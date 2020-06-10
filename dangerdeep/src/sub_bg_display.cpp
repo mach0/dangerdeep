@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "keys.h"
 #include "submarine.h"
 #include "submarine_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include <memory>
 
@@ -59,56 +59,50 @@ sub_bg_display::sub_bg_display(user_interface& ui_)
 
 
 
-void sub_bg_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_bg_display::handle_mouse_button_event(const mouse_click_data& m)
 {
-	int mx, my, mb;
-
-	if (!myscheme.get()) THROW(error, "sub_bg_display::process_input without scheme!");
-	const scheme& s = *myscheme;
-
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	if (m.down()) {
 		// check if mouse is over turn knobs
+		if (!myscheme.get()) THROW(error, "sub_bg_display without scheme!");
+		const scheme& s = *myscheme;
 		turnknobdrag = TK_NONE;
-		if (s.turn_wheel[0].is_mouse_over(mx, my, 128)) {
+		if (s.turn_wheel[0].is_mouse_over(m.position_2d, 128)) {
 			turnknobdrag = TK_DIRECTION;
+			return true;
 		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_motion_x(event);
-		my = sys().translate_motion_y(event);
-		mb = event.motion.state;
-		if (event.motion.state & SDL_BUTTON_LMASK) {
-			if (turnknobdrag != TK_NONE) {
-				float& ang = turnknobang[unsigned(turnknobdrag)];
-				ang += mx * TK_ANGFAC;
-				switch (turnknobdrag) {
-				case TK_DIRECTION:
-					// bring to 0...360 degree value
-					ang = myfmod(ang, 720.0f);
-					//sub->set_bg_direction(ang); // fixme: set angle of player
-					break;
-				default:	// can never happen
-					break;
-				}
-			}
-		}
-		break;
-	case SDL_MOUSEBUTTONUP:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
+	} else if (m.up()) {
 		turnknobdrag = TK_NONE;
-		break;
-	default:
-		break;
+		return true;
 	}
+	return false;
 }
 
 
 
-void sub_bg_display::display(class game& gm) const
+bool sub_bg_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (m.left()) {
+		if (turnknobdrag != TK_NONE) {
+			float& ang = turnknobang[unsigned(turnknobdrag)];
+			ang += m.position_2d.x * TK_ANGFAC;
+			switch (turnknobdrag) {
+			case TK_DIRECTION:
+				// bring to 0...360 degree value
+				ang = myfmod(ang, 720.0f);
+				//sub->set_bg_direction(ang); // fixme: set angle of player
+				break;
+			default:	// can never happen
+				break;
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+void sub_bg_display::display() const
 {
 	sys().prepare_2d_drawing();
 

@@ -30,16 +30,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_periscope_display : public freeview_display
 {
-	void pre_display(class game& gm) const override;
+	void pre_display() const override;
 	projection_data get_projection_data(class game& gm) const override;
 	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
-	void post_display(class game& gm) const override;
+	void post_display() const override;
 
 	std::unique_ptr<image> background;
 	texture::ptr compassbar_tex;
 	texture::ptr clock_hours_pointer;
 	texture::ptr clock_minutes_pointer;
-	
+
 	bool zoomed;	// use 1,5x (false) or 6x zoom (true)
 
 	bool use_hqsfx;
@@ -57,8 +57,10 @@ public:
 	~sub_periscope_display() override;
 
 	//overload for zoom key handling ('y') and TDC input
-	void process_input(class game& gm, const SDL_Event& event) override;
-	void display(class game& gm) const override;
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
+	void display() const override;
 
 	unsigned get_popup_allow_mask() const override;
 

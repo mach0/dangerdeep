@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "matrix4.h"
 #include "oglext/OglExt.h"
 #include "plane.h"
-#include "system.h"
+#include "system_interface.h"
 #include "triangle_intersection.h"
 #include "xml.h"
 #include <cmath>

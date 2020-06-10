@@ -37,9 +37,7 @@ public:
 	sub_ecard_popup(class user_interface& ui_);
 	~sub_ecard_popup() override;
 
-	void display(class game& gm) const override;
-
-	bool process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
 };
 
 #endif /* SUB_ECARD_POPUP_H */

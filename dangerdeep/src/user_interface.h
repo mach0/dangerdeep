@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ptrvector.h"
 #include "user_display.h"
 #include "user_popup.h"
+#include "input_event_handler.h"
 
 class game;
 class water;
@@ -41,7 +42,7 @@ class water;
 ///\defgroup interfaces In-game user interfaces
 ///\brief Base class for a user interface for playing the game.
 ///\ingroup interfaces
-class user_interface
+class user_interface : public input_event_handler
 {
 	user_interface();
 public:
@@ -88,6 +89,7 @@ protected:
 
 	// fixme replace the above with: THE ONE AND ONLY DATA UI SHOULD HAVE
 	ptrvector<user_display> displays;
+	//fixme must be std::vector<std::shared_ptr<user_display>> displays to register them as input event handlers!
 
 	// which popup is shown (0 = none)
 	unsigned current_popup;
@@ -138,7 +140,7 @@ protected:
 	virtual void toggle_popup();
 	virtual void show_playlist();
 
-public:	
+public:
 	virtual ~user_interface();
 
 	// display (const) and input handling
@@ -148,11 +150,13 @@ public:
 	virtual void set_time(double tm);
 
 	// process common events (common keys, mouse input to panel)
-	virtual void process_input(const SDL_Event& event);
-	virtual void process_input(std::list<SDL_Event>& events);
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 
 	// create ui matching to player type (requested from game)
-	static user_interface* create(game& gm);
+	static std::shared_ptr<user_interface> create(game& gm);
 
 	const sky& get_sky() const { return *(mysky.get()); }
 	const caustics& get_caustics() const { return mycaustics; }

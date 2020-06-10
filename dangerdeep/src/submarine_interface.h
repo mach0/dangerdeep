@@ -118,7 +118,9 @@ public:
 	void fire_tube(submarine* player, int nr);
 
 	void display() const override;
-	void process_input(const SDL_Event& events) override;
+	//fixme use block as copy source, later refine!
+	bool handle_key_event(const key_data& ) override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
 	virtual unsigned get_selected_tube() const { return selected_tube; }
 	virtual void select_tube(unsigned nr) { selected_tube = nr; }
 };

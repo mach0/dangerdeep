@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "torpedo.h"
 #include "depth_charge.h"
 #include "date.h"
-#include "system.h"
+#include "system_interface.h"
 #include "user_interface.h"
 #include "texts.h"
 #include "global_data.h"

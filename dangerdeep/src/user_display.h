@@ -24,15 +24,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define USER_DISPLAY_H
 
 #include <list>
-#include <SDL.h>
 #include "texture.h"
 #include "datadirs.h"
+#include "input_event_handler.h"
 class image;
 
 ///\defgroup displays In-game user interface screens
 ///\brief Base class for a single screen of the ingame user interface.
 ///\ingroup displays
-class user_display
+class user_display : public input_event_handler
 {
 private:
 	// no empty construction, no copy
@@ -53,25 +53,24 @@ protected:
 	public:
 		rotat_tex()  = default;
 		std::unique_ptr<texture> tex;
-		int left{0}, top{0}, centerx{0}, centery{0};
+		vector2i left_top;
+		vector2i center;
 		void draw(double angle) const {
 			// fixme: maybe rotate around pixel center (x/y + 0.5)
-			tex->draw_rot(centerx, centery, angle, centerx - left, centery - top);
+			tex->draw_rot(center.x, center.y, angle, center.x - left_top.x, center.y - left_top.y);
 		}
 		void set(texture* tex_, int left_, int top_, int centerx_, int centery_) {
 			tex.reset(tex_);
-			left = left_;
-			top = top_;
-			centerx = centerx_;
-			centery = centery_;
+			left_top = {left_, top_};
+			center = {centerx_, centery_};
 		}
 		void set(const std::string& filename, int left_, int top_, int centerx_, int centery_) {
 			set(new texture(get_image_dir() + filename), left_, top_, centerx_, centery_);
 		}
-		bool is_mouse_over(int mx, int my, int tolerance = 0) const {
-			return (mx + tolerance >= left && my + tolerance >= top
-				&& mx - tolerance < left + int(tex->get_width())
-				&& my - tolerance < top + int(tex->get_height()));
+		bool is_mouse_over(vector2i pos, int tolerance = 0) const {
+			return (pos.x + tolerance >= left_top.x && pos.y + tolerance >= left_top.y
+				&& pos.x - tolerance < left_top.x + int(tex->get_width())
+				&& pos.y - tolerance < left_top.y + int(tex->get_height()));
 		}
 	protected:
 		rotat_tex(const rotat_tex& );
@@ -82,22 +81,22 @@ protected:
 	public:
 		fix_tex()  = default;
 		std::unique_ptr<texture> tex;
-		int left{0}, top{0};
+		vector2i left_top;
 		void draw() const {
-			tex->draw(left, top);
+			tex->draw(left_top.x, left_top.y);
 		}
 		void set(texture* tex_, int left_, int top_) {
 			tex.reset(tex_);
-			left = left_;
-			top = top_;
+			left_top.x = left_;
+			left_top.y = top_;
 		}
 		void set(const std::string& filename, int left_, int top_) {
 			set(new texture(get_image_dir() + filename), left_, top_);
 		}
-		bool is_mouse_over(int mx, int my, int tolerance = 0) const {
-			return (mx + tolerance >= left && my + tolerance >= top
-				&& mx - tolerance < left + int(tex->get_width())
-				&& my - tolerance < top + int(tex->get_height()));
+		bool is_mouse_over(vector2i pos, int tolerance = 0) const {
+			return (pos.x + tolerance >= left_top.x && pos.y + tolerance >= left_top.y
+				&& pos.x - tolerance < left_top.x + int(tex->get_width())
+				&& pos.y - tolerance < left_top.y + int(tex->get_height()));
 		}
 	protected:
 		fix_tex(const fix_tex& );
@@ -108,13 +107,7 @@ public:
 	// needed for correct destruction of heirs.
 	virtual ~user_display() = default;
 	// very basic. Just draw display and handle input.
-	virtual void display(class game& gm) const = 0;
-	virtual void process_input(class game& gm, const SDL_Event& event) = 0;
-	virtual void process_input(class game& gm, const std::list<SDL_Event>& events)
-	{
-		for (const auto & event : events)
-			process_input(gm, event);
-	}
+	virtual void display() const = 0;
 	// mask contains one bit per popup (at most 31 popups)
 	virtual unsigned get_popup_allow_mask() const { return 0; }
 

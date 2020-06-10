@@ -34,13 +34,12 @@ using std::list;
 using std::set;
 #include "user_display.h"
 #include "airplane_interface.h"
-#include "system.h"
+#include "system_interface.h"
 #include "game.h"
 #include "texts.h"
 #include "image.h"
 #include "command.h"
 #include <GL/glu.h>
-#include <SDL.h>
 
 //#include "widget.h"
 

@@ -31,6 +31,7 @@ add_library (dftdbasic	SHARED
 	filehelper.h
 	graph.h
 	helper.h
+	input_event_handler.h
 	matrix.h
 	matrix3.h
 	matrix4.h
@@ -234,8 +235,8 @@ add_library ( dftdall SHARED
 	submarine.h
 	submarine_interface.cpp
 	submarine_interface.h
-	system.cpp
-	system.h
+	system_interface.cpp
+	system_interface.h
 	tdc.cpp
 	tdc.h
 	terrain.h
@@ -270,7 +271,7 @@ add_library ( dftdall SHARED
 target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
 
 # needs updated model classes etc., so this won't work
-add_library(dftdmedia	SHARED
+#add_library(dftdmedia	SHARED
 #	color.h
 #	daysky.cpp
 #	daysky.h
@@ -290,7 +291,7 @@ add_library(dftdmedia	SHARED
 #	gpu_mesh.h
 #	gpu_model.cpp
 #	gpu_model.h
-	input_event_handler.h
+#	input_event_handler.h
 #	image.cpp
 #	image.h
 #	log.cpp
@@ -303,8 +304,8 @@ add_library(dftdmedia	SHARED
 #	ocean_wave_generator.h
 #	sky.cpp
 #	sky.h
-	system_interface.cpp
-	system_interface.h
+#	system_interface.cpp
+#	system_interface.h
 #	stars.cpp
 #	stars.h
 #	terrain_generator.h
@@ -314,8 +315,8 @@ add_library(dftdmedia	SHARED
 #	tone_reproductor.h
 #	water.cpp
 #	water.h
-)
-target_link_libraries(dftdmedia dftdbasic)
+#)
+#target_link_libraries(dftdmedia dftdbasic)
 
 
 add_executable ( dangerdeep subsim.cpp )

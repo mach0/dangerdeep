@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's UZO
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
+#include "system_interface.h"
 #include "image.h"
 #include "texture.h"
 #include "game.h"
@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 
-void sub_uzo_display::pre_display(game& gm) const
+void sub_uzo_display::pre_display() const
 {
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
@@ -49,7 +49,7 @@ freeview_display::projection_data sub_uzo_display::get_projection_data(class gam
 {
 	projection_data pd;
 	pd.x = sys().get_res_area_2d_x();
-       	pd.y = sys().get_res_area_2d_y();
+	pd.y = sys().get_res_area_2d_y();
 	pd.w = sys().get_res_area_2d_w();
 	pd.h = sys().get_res_area_2d_h();
 	// with normal fov of 70 degrees, this is 1.5 / 6.0 magnification
@@ -93,15 +93,16 @@ void sub_uzo_display::set_modelview_matrix(game& gm, const vector3& viewpos) con
 
 
 
-void sub_uzo_display::post_display(game& gm) const
+void sub_uzo_display::post_display() const
 {
+	auto& gm = ui.get_game();
 	if (gm.get_player()->get_target()) {
 		projection_data pd = get_projection_data(gm);
 		ui.show_target(pd.x, pd.y, pd.w, pd.h, get_viewpos(gm));
 	}
 
 	sys().prepare_2d_drawing();
-	
+
 	int tex_w = compass->get_width();
 	int tex_h = compass->get_height();
 
@@ -115,7 +116,7 @@ void sub_uzo_display::post_display(game& gm) const
 		compass->draw_subimage(xi, yi, dx1, tex_h, tex_w-(dx1), 0, dx1, tex_h);
 		compass->draw_subimage(xi+dx1, yi, dx2, tex_h, 0, 0, dx2, tex_h );
 	}
-	
+
 	uzotex->draw(0, 0, 1024, 768);
 	ui.draw_infopanel(true);
 
@@ -135,38 +136,32 @@ sub_uzo_display::sub_uzo_display(user_interface& ui_) : freeview_display(ui_), z
 
 
 
-void sub_uzo_display::process_input(class game& gm, const SDL_Event& event)
+bool sub_uzo_display::handle_key_event(const key_data& k)
 {
-	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	if (sub->is_submerged()) {
-	}
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		if (cfg::instance().getkey(key_command::TOGGLE_ZOOM_OF_VIEW).equal(event.key.keysym)) {
+	if (k.down()) {
+		if (is_configured_key(key_command::TOGGLE_ZOOM_OF_VIEW, k)) {
 			zoomed = !zoomed;
-		} else {
-			switch(event.key.keysym.sym) {
-				// filter away keys NP_1...NP_9 to avoid moving viewer like in freeview mode
-			case SDLK_KP8: return;
-			case SDLK_KP2: return;
-			case SDLK_KP4: return;
-			case SDLK_KP6: return;
-			case SDLK_KP1: return;
-			case SDLK_KP3: return;
-			default: break;
-			}
+			return true;
+		} else if (k.is_keypad_number()) {
+			   // filter away keys NP_1...NP_9 to avoid moving viewer like in freeview mode
+			   return true;
 		}
-                break;
-        case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_WHEELUP) {
-                        zoomed = true;
-                } else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-                        zoomed = false;
-                }
-                break;
-	default: break;
 	}
-	freeview_display::process_input(gm, event);
+	return freeview_display::handle_key_event(k);
+}
+
+
+
+bool sub_uzo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (m.up()) {
+		zoomed = true;
+		return true;
+	} else if (m.down()) {
+		zoomed = false;
+		return true;
+	}
+	return freeview_display::handle_mouse_wheel_event(m);
 }
 
 
@@ -186,7 +181,7 @@ void sub_uzo_display::enter(bool is_day)
 		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_daylight.png");
 	else
 		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_redlight.png");
-	
+
 	comp_size = int(compass->get_width()/3.6);
 	dx = int(comp_size*0.5);
 	xi = 512-dx;

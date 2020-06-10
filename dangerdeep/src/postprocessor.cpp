@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "postprocessor.h"
 #include "datadirs.h"
-#include "system.h"
+#include "system_interface.h"
 #include "cfg.h"
 #include "log.h"
 
@@ -353,9 +353,9 @@ void postprocessor::hdr()
 
 	// debug
 #if 0
-	system::sys().prepare_2d_drawing();
+	system_interface::sys().prepare_2d_drawing();
 	h_textures[0]->draw(0, 0, 256, 256);
-	system::sys().unprepare_2d_drawing();
+	system_interface::sys().unprepare_2d_drawing();
 
 #endif
 }

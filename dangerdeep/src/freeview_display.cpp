@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ship.h"
 #include "sky.h"
 #include "submarine.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texture.h"
 #include "torpedo.h"
 #include "user_interface.h"
@@ -65,7 +65,7 @@ using std::vector;
    texture map, but it costs some shader instructions.
 */
 
-void freeview_display::pre_display(game& gm) const
+void freeview_display::pre_display() const
 {
 }
 
@@ -113,7 +113,7 @@ void freeview_display::set_modelview_matrix(game& gm, const vector3& /*viewpos*/
 
 
 
-void freeview_display::post_display(game& gm) const
+void freeview_display::post_display() const
 {
 	sys().prepare_2d_drawing();
 	ui.draw_infopanel(true);
@@ -158,63 +158,81 @@ vector3 freeview_display::get_viewpos(class game& gm) const
 
 
 
-void freeview_display::display(class game& gm) const
+void freeview_display::display() const
 {
 	// glClear or not, background drawing
-	pre_display(gm);
+	pre_display();
 
 	// render scene
 	//std::cout << "add_pos is " << add_pos << " playerpos " << gm.get_player()->get_pos() << " viewpos " << get_viewpos(gm) << " aboard: " << aboard << "\n";
-	draw_view(gm, get_viewpos(gm));
+	draw_view(ui.get_game(), get_viewpos(ui.get_game()));
 
 	// e.g. drawing of infopanel or 2d effects, background mask etc.
-	post_display(gm);
+	post_display();
 }
 
 
 
-void freeview_display::process_input(class game& gm, const SDL_Event& event)
+bool freeview_display::handle_key_event(const key_data& k)
+{
+	if (k.down()) {
+		glPushMatrix();
+		glLoadIdentity();
+		set_modelview_matrix(ui.get_game(), vector3());	// position doesn't matter, only direction.
+		matrix4 viewmatrix = matrix4::get_gl(GL_MODELVIEW_MATRIX);
+		glPopMatrix();
+		vector3 sidestep = viewmatrix.row3(0);
+		vector3 upward = viewmatrix.row3(1);
+		vector3 forward = -viewmatrix.row3(2);
+
+		switch(k.keycode) {
+		case key_code::KP_8: add_pos -= forward * 15; break;
+		case key_code::KP_2: add_pos += forward * 15; break;
+		case key_code::KP_4: add_pos -= sidestep * 15; break;
+		case key_code::KP_6: add_pos += sidestep * 15; break;
+		case key_code::KP_1: add_pos -= upward * 15; break;
+		case key_code::KP_3: add_pos += upward * 15; break;
+		case key_code::KP_5: std::cout << ui.get_game().get_player()->get_pos() << std::endl; break;
+		case key_code::w: ui.switch_geo_wire(); break;
+		default: break;
+		}
+		return true;
+	}
+	return false;
+}
+
+
+
+bool freeview_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (m.left()) {
+		ui.add_bearing(0.5*m.rel_motion_2d.x);
+		ui.add_elevation(-0.5*m.rel_motion_2d.y);
+		//fixme handle clamping of elevation at +-90deg
+		return true;
+	}
+	return false;
+}
+
+
+
+bool freeview_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
 {
 	glPushMatrix();
 	glLoadIdentity();
-	set_modelview_matrix(gm, vector3());	// position doesn't matter, only direction.
+	set_modelview_matrix(ui.get_game(), vector3());	// position doesn't matter, only direction.
 	matrix4 viewmatrix = matrix4::get_gl(GL_MODELVIEW_MATRIX);
 	glPopMatrix();
-	vector3 sidestep = viewmatrix.row3(0);
-	vector3 upward = viewmatrix.row3(1);
 	vector3 forward = -viewmatrix.row3(2);
 
-	switch (event.type) {
-	case SDL_KEYDOWN:
-		switch(event.key.keysym.sym) {
-		case SDLK_KP8: add_pos -= forward * 15; break;
-		case SDLK_KP2: add_pos += forward * 15; break;
-		case SDLK_KP4: add_pos -= sidestep * 15; break;
-		case SDLK_KP6: add_pos += sidestep * 15; break;
-		case SDLK_KP1: add_pos -= upward * 15; break;
-		case SDLK_KP3: add_pos += upward * 15; break;
-		case SDLK_KP5: std::cout << gm.get_player()->get_pos() << std::endl; break;
-		case SDLK_w: ui.switch_geo_wire(); break;
-		default: break;
-		}
-		break;
-	case SDL_MOUSEMOTION:
-		if (event.motion.state & SDL_BUTTON_LMASK) {
-			ui.add_bearing(sys().translate_motion_x(event)*0.5);
-			ui.add_elevation(-sys().translate_motion_y(event)*0.5);
-			//fixme handle clamping of elevation at +-90deg
-		}
-		break;
-        case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_WHEELUP) {
-			add_pos += forward * 15;
-                } else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-			add_pos -= forward * 15;
-                }
-                break;
-	default:
-		break;
+	if (m.up()) {
+		add_pos += forward * 15;
+		return true;
+	} else if (m.down()) {
+		add_pos -= forward * 15;
+		return true;
 	}
+	return false;
 }
 
 
@@ -332,7 +350,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 
 	vector<particle*> particles = gm.visible_particles(player);
 	particle::display_all(particles, viewpos, gm, light_color);
-	
+
 	glDepthMask(GL_FALSE);
 	// render all visible splashes. must alpha sort them, and not write to z-buffer.
 	vector<water_splash*> water_splashes = gm.visible_water_splashes(player);
@@ -355,7 +373,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 
 
 void freeview_display::draw_view(game& gm, const vector3& viewpos) const
-{	
+{
 	double max_view_dist = gm.get_max_view_distance();
 
 	// check if we are below water surface, above or near it
@@ -364,7 +382,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	if (viewpos.z < waterheight) {
 		above_water = -1;
 	}
-	
+
 	// the modelview matrix is set around the player's viewing position.
 	// i.e. it has an translation part of zero.
 	// this means all objects have to be drawn with an offset of (-viewpos)
@@ -395,9 +413,9 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
 	// get light color, previously all channels were uniform, so we'll make a
 	// function of elevation to have some variation
-   
+
 	colorf lightcol = gm.compute_light_color(viewpos);
-    
+
 	// ambient light intensity depends on time of day, maximum at noon
 	// max. value 0.35. At sun rise/down we use 0.11, at night 0.05
 	float ambient_intensity = (std::max(sundir.z, -0.25) + 0.25) * 0.3 / 1.25 + 0.05;
@@ -419,7 +437,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	//out of the frustum, or their foam is lost as well, even it would be visible...
 
 	// ********************* draw mirrored scene
-	
+
 	// ************ compute water reflection ******************************************
 	// in theory we have to set up a projection matrix with a slightly larger FOV than the scene projection matrix,
 	// because the mirrored scene can show parts that are not seen in normal view.
@@ -682,7 +700,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	// ******** terrain/land ********************************************************
 //	glDisable(GL_FOG);	//testing with new 2d bspline terrain.
 	ui.draw_terrain(viewpos, ui.get_absolute_bearing(), max_view_dist, false/*not mirrored*/, above_water);
-//	glEnable(GL_FOG);	
+//	glEnable(GL_FOG);
 
 	// ******************** ships & subs *************************************************
 //	cout << "mv trans pos " << matrix4::get_gl(GL_MODELVIEW_MATRIX).column(3) << "\n";
@@ -696,7 +714,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 		vector3 conntowerpos = player->get_pos() - viewpos;
 		glPushMatrix();
 		// we would have to translate the conning tower, but the current model is centered arount the player's view
-		// already, fixme. 
+		// already, fixme.
 		//glTranslated(conntowerpos.x, conntowerpos.y, conntowerpos.z);
 		//glRotatef(-player->get_heading().value(),0,0,1);
 		// fixme: rotate by player's orientation, but this looks strange, see above why.
@@ -706,7 +724,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 		glPopMatrix();
 	}
 
-	glDisable(GL_FOG);	
+	glDisable(GL_FOG);
 
 	ui.draw_weather_effects();
 

@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: general map view
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system.h"
+#include "system_interface.h"
 #include "image.h"
 #include "texture.h"
 #include "game.h"
@@ -41,10 +41,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "xml.h"
 #include "filehelper.h"
 #include "global_data.h"
-#ifdef CVEDIT
-#include "color.h"
-#include "bspline.h"
-#endif
 #include <memory>
 
 #include <sstream>
@@ -284,7 +280,7 @@ void map_display::draw_square_mark_special ( class game& gm,
 
 
 map_display::map_display(user_interface& ui_) :
-	user_display(ui_), mapzoom(0.1), mx(0), my(0), mapmode(0),
+	user_display(ui_), mapzoom(0.1), mapmode(0),
 	edit_btn_del(nullptr),
 	edit_btn_chgmot(nullptr),
 	edit_btn_copy(nullptr),
@@ -303,7 +299,6 @@ map_display::map_display(user_interface& ui_) :
 	edit_cvname(nullptr),
 	edit_cvspeed(nullptr),
 	edit_cvlist(nullptr),
-	mx_down(-1), my_down(-1), shift_key_pressed(0), ctrl_key_pressed(0),
 	notepadsheet(texturecache(), "notepadsheet.png")
 {
 	game& gm = ui_.get_game();
@@ -381,9 +376,6 @@ map_display::map_display(user_interface& ui_) :
 		check_edit_sel();
 	}
 
-#ifdef CVEDIT
-	cvridx = -1;
-#endif
 }
 
 
@@ -535,8 +527,9 @@ void map_display::check_edit_sel()
 
 
 
-void map_display::display(class game& gm) const
+void map_display::display() const
 {
+	auto& gm = ui.get_game();
 	sea_object* player = gm.get_player ();
 	bool is_day_mode = gm.is_day_mode ();
 
@@ -616,26 +609,6 @@ void map_display::display(class game& gm) const
 		texture atlanticmap(colors, size.x, size.y, GL_RGB, texture::LINEAR, texture::CLAMP);
 		primitives::textured_quad(vector2f(0.0, 0.0), vector2f(1024, 768), atlanticmap).render();
 	}
-#ifdef CVEDIT
-	// draw convoy route points and route
-	if (cvroute.size() >= 2) {
-		unsigned n = std::min(unsigned(3), cvroute.size()-1);
-		bsplinet<vector2> bsp(n, cvroute);
-		const unsigned detail = 10000;
-		primitives cvr(GL_LINE_STRIP, detail+1, colorf(1,0.6,0.2));
-		for (unsigned i = 0; i <= detail; ++i) {
-			double j = double(i)/detail;
-			vector2 p = bsp.value(j);
-			p = (p - offset) * mapzoom;
-			cvr.vertices[i].x = 512 + p.x;
-			cvr.vertices[i].y = 384 - p.y;
-		}
-		cvr.render();
-	}
-	for (unsigned i = 0; i < cvroute.size(); ++i) {
-		draw_square_mark(gm, cvroute[i], -offset, color(255, 0, 255));
-	}
-#endif
 
 	// draw city names
 	const list<pair<vector2, string> >& cities = ui.get_coastmap().get_city_list();
@@ -753,8 +726,8 @@ void map_display::display(class game& gm) const
 	}
 
 	// draw world coordinates for mouse
-	double mouserealmx = double(mx - 512) / mapzoom + offset.x;
-	double mouserealmy = double(384 - my) / mapzoom + offset.y;
+	double mouserealmx = double(mouse_position.x - 512) / mapzoom + offset.x;
+	double mouserealmy = double(384 - mouse_position.y) / mapzoom + offset.y;
 	unsigned degrx, degry, minutx, minuty;
 	bool west, south;
 	sea_object::meters2degrees(mouserealmx, mouserealmy, west, degrx, minutx, south, degry, minuty);
@@ -769,11 +742,11 @@ void map_display::display(class game& gm) const
 			edit_panel_fg->draw();
 		} else {
 			// selection rectangle
-			if (mx_down >= 0 && my_down >= 0) {
-				int x1 = std::min(mx_down, mx_curr);
-				int y1 = std::min(my_down, my_curr);
-				int x2 = std::max(mx_down, mx_curr);
-				int y2 = std::max(my_down, my_curr);
+			if (mouse_position_down.x >= 0 && mouse_position_down.y >= 0) {
+				int x1 = std::min(mouse_position_down.x, mouse_position.x);
+				int y1 = std::min(mouse_position_down.y, mouse_position.y);
+				int x2 = std::max(mouse_position_down.x, mouse_position.x);
+				int y2 = std::max(mouse_position_down.y, mouse_position.y);
 				primitives::rectangle(vector2f(x1,y1), vector2f(x2,y2), colorf(1,1,0,1)).render();
 			}
 			// selected objects
@@ -792,291 +765,263 @@ void map_display::display(class game& gm) const
 
 
 
-void map_display::process_input(class game& gm, const SDL_Event& event)
+bool map_display::handle_key_event(const key_data& k)
 {
-	sea_object* player = gm.get_player();
-
-	if (gm.is_editor()) {
-		// handle mouse events for edit panel if that exists.
-		if (edit_panel->check_for_mouse_event(event))
-			return;
+	if (ui.get_game().is_editor()) {
+		if (widget::handle_key_event(*edit_panel, k)) {
+			return true;
+		}
 		// check if foreground window is open and event should go to it
-		if (edit_panel_fg != nullptr/* && edit_panel_fg->check_for_mouse_event(event)*/) {
-			edit_panel_fg->process_input(event);
-			// we could compare edit_panel_fg to the pointers of the various panels
-			// here instead of using a global enum for all possible return values...
-			if (edit_panel_fg->was_closed()) {
-				int retval = edit_panel_fg->get_return_value();
-				if (retval == EPFG_SHIPADDED) {
-					// add ship
-					xml_doc spec(data_file().get_filename(edit_shiplist->get_selected_entry()));
-					spec.load();
-					unique_ptr<ship> shp(new ship(gm, spec.first_child()));
-					shp->set_skin_layout(model::default_layout);
-					// set pos and other values etc.
-					vector2 pos = gm.get_player()->get_pos().xy() + mapoffset;
-					shp->manipulate_position(pos.xy0());
-					shp->manipulate_invulnerability(true);
-					gm.spawn_ship(shp.release());
-				} else if (retval == EPFG_CHANGEMOTION) {
-					for (auto it : selection) {
-						ship* s = dynamic_cast<ship*>(it);
-						if (s) {
-							s->set_throttle(edit_throttle->get_curr_value());
-							s->manipulate_heading(angle(edit_heading->get_curr_value()));
-							s->manipulate_speed(edit_speed->get_curr_value());
-						}
-					}
-				} else if (retval == EPFG_CHANGETIME) {
-					date d(edit_timeyear->get_curr_value(),
-					       edit_timemonth->get_curr_value(),
-					       edit_timeday->get_curr_value(),
-					       edit_timehour->get_curr_value(),
-					       edit_timeminute->get_curr_value(),
-					       edit_timesecond->get_curr_value());
-					double time = d.get_time();
-					auto& ge = dynamic_cast<game_editor&>(gm);
-					ge.manipulate_time(time);
-					// construct new date to correct possible wrong date values
-					// like 30th february or so...
-					ge.manipulate_equipment_date(date(d.get_time()));
-				} else if (retval == EPFG_ADDSELTOCV) {
-					// compute center of ships
-					vector2 center;
-					unsigned nrsh = 0;
-					for (auto it : selection) {
-						ship* s = dynamic_cast<ship*>(it);
-						if (s) {
-							center += s->get_pos().xy();
-							++nrsh;
-						}
-					}
-					center = center * (1.0/nrsh);
-					// create convoy object
-					unique_ptr<convoy> cv(new convoy(gm, center, edit_cvname->get_text()));
-					// add all ships to convoy with relative positions
-					nrsh = 0;
-					for (auto it : selection) {
-						ship* s = dynamic_cast<ship*>(it);
-						if (s) {
-							if (cv->add_ship(s))
-								++nrsh;
-						}
-					}
-					// add convoy to class game, if it has ships
-					if (nrsh > 0) {
-						gm.spawn_convoy(cv.release());
-					}
-				}
-				edit_panel->enable();
-				edit_panel_fg = nullptr;
+		if (edit_panel_fg != nullptr) {
+			if (widget::handle_key_event(*edit_panel_fg, k)) {
+				return true;
 			}
-			return;
+			return false;
 		}
 		// no panel visible. handle extra edit modes
-		if (event.type == SDL_KEYDOWN) {
-			if (event.key.keysym.sym == SDLK_LSHIFT) {
-				shift_key_pressed |= 1;
-				return;
-			} else if (event.key.keysym.sym == SDLK_RSHIFT) {
-				shift_key_pressed |= 2;
-				return;
-			} else if (event.key.keysym.sym == SDLK_LCTRL) {
-				ctrl_key_pressed |= 1;
-				return;
-			} else if (event.key.keysym.sym == SDLK_RCTRL) {
-				ctrl_key_pressed |= 2;
-				return;
-			}
-		} else if (event.type == SDL_KEYUP) {
-			if (event.key.keysym.sym == SDLK_LSHIFT) {
-				shift_key_pressed &= ~1;
-				return;
-			} else if (event.key.keysym.sym == SDLK_RSHIFT) {
-				shift_key_pressed &= ~2;
-				return;
-			} else if (event.key.keysym.sym == SDLK_LCTRL) {
-				ctrl_key_pressed &= ~1;
-				return;
-			} else if (event.key.keysym.sym == SDLK_RCTRL) {
-				ctrl_key_pressed &= ~2;
-				return;
-			}
-		} else if (event.type == SDL_MOUSEBUTTONDOWN) {
-			if (event.button.button == SDL_BUTTON_LEFT) {
-				mx_down = sys().translate_position_x(event);
-				my_down = sys().translate_position_y(event);
-				return;
-			}
-		} else if (event.type == SDL_MOUSEBUTTONUP) {
-			if (event.button.button == SDL_BUTTON_LEFT) {
-				mx_curr = sys().translate_position_x(event);
-				my_curr = sys().translate_position_y(event);
-				// check for shift / ctrl
-				unsigned mode = 0;	// replace selection
-				if (shift_key_pressed) mode = 1; // subtract
-				if (ctrl_key_pressed) mode = 2; // add.
-				if (mx_curr != mx_down || my_curr != my_down) {
-					// group select
-					int x1 = std::min(mx_down, mx_curr);
-					int y1 = std::min(my_down, my_curr);
-					int x2 = std::max(mx_down, mx_curr);
-					int y2 = std::max(my_down, my_curr);
-					// fixme: later all objects
-					vector<sea_object*> objs = gm.visible_surface_objects(player);
-					if (mode == 0) selection.clear();
-					for (auto & obj : objs) {
-						vector2 p = (obj->get_pos().xy() -
-							     (player->get_pos().xy() + mapoffset)) * mapzoom;
-						p.x += 512;
-						p.y = 384 - p.y;
-						if (p.x >= x1 && p.x <= x2 &&
-						    p.y >= y1 && p.y <= y2) {
-							if (mode == 1)
-								selection.erase(obj);
-							else
-								selection.insert(obj);
+		state_of_key_modifiers = k.mod;
+	}
+
+	// non-editor events.
+	if (k.down()) {
+		if (is_configured_key(key_command::ZOOM_MAP, k)) {
+			if (mapzoom < 1) mapzoom *= 2;
+			return true;
+		} else if (is_configured_key(key_command::UNZOOM_MAP, k)) {
+			if (mapzoom > 1.0/16384) mapzoom /= 2;
+			return true;
+		} else if (k.keycode == key_code::m) {
+			mapmode++;
+			if(mapmode>1)mapmode=0;
+			return true;
+		}
+	}
+	return false;
+}
+
+
+
+bool map_display::handle_mouse_button_event(const mouse_click_data& m)
+{
+	auto& gm = ui.get_game();
+	sea_object* player = gm.get_player ();
+	if (gm.is_editor()) {
+		if (edit_panel->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*edit_panel, m)) {
+			return true;
+		}
+		// check if foreground window is open and event should go to it
+		if (edit_panel_fg != nullptr) {
+			if (widget::handle_mouse_button_event(*edit_panel_fg, m)) {
+				// we could compare edit_panel_fg to the pointers of the various panels
+				// here instead of using a global enum for all possible return values...
+				if (edit_panel_fg->was_closed()) {
+					int retval = edit_panel_fg->get_return_value();
+					if (retval == EPFG_SHIPADDED) {
+						// add ship
+						xml_doc spec(data_file().get_filename(edit_shiplist->get_selected_entry()));
+						spec.load();
+						unique_ptr<ship> shp(new ship(gm, spec.first_child()));
+						shp->set_skin_layout(model::default_layout);
+						// set pos and other values etc.
+						vector2 pos = gm.get_player()->get_pos().xy() + mapoffset;
+						shp->manipulate_position(pos.xy0());
+						shp->manipulate_invulnerability(true);
+						gm.spawn_ship(shp.release());
+					} else if (retval == EPFG_CHANGEMOTION) {
+						for (auto it : selection) {
+							ship* s = dynamic_cast<ship*>(it);
+							if (s) {
+								s->set_throttle(edit_throttle->get_curr_value());
+								s->manipulate_heading(angle(edit_heading->get_curr_value()));
+								s->manipulate_speed(edit_speed->get_curr_value());
+							}
+						}
+					} else if (retval == EPFG_CHANGETIME) {
+						date d(edit_timeyear->get_curr_value(),
+						       edit_timemonth->get_curr_value(),
+						       edit_timeday->get_curr_value(),
+						       edit_timehour->get_curr_value(),
+						       edit_timeminute->get_curr_value(),
+						       edit_timesecond->get_curr_value());
+						double time = d.get_time();
+						auto& ge = dynamic_cast<game_editor&>(gm);
+						ge.manipulate_time(time);
+						// construct new date to correct possible wrong date values
+						// like 30th february or so...
+						ge.manipulate_equipment_date(date(d.get_time()));
+					} else if (retval == EPFG_ADDSELTOCV) {
+						// compute center of ships
+						vector2 center;
+						unsigned nrsh = 0;
+						for (auto it : selection) {
+							ship* s = dynamic_cast<ship*>(it);
+							if (s) {
+								center += s->get_pos().xy();
+								++nrsh;
+							}
+						}
+						center = center * (1.0/nrsh);
+						// create convoy object
+						unique_ptr<convoy> cv(new convoy(gm, center, edit_cvname->get_text()));
+						// add all ships to convoy with relative positions
+						nrsh = 0;
+						for (auto it : selection) {
+							ship* s = dynamic_cast<ship*>(it);
+							if (s) {
+								if (cv->add_ship(s))
+									++nrsh;
+							}
+						}
+						// add convoy to class game, if it has ships
+						if (nrsh > 0) {
+							gm.spawn_convoy(cv.release());
 						}
 					}
-					check_edit_sel();
-				} else {
-					// select nearest
-					vector2 mapclick(mx_curr, my_curr);
-					// fixme: later all objects!
-					vector<sea_object*> objs = gm.visible_surface_objects(player);
-					double mapclickdist = 1e30;
-					sea_object* target = nullptr;
-					if (mode == 0) selection.clear();
-					for (auto & obj : objs) {
-						vector2 p = (obj->get_pos().xy() -
-							     (player->get_pos().xy() + mapoffset)) * mapzoom;
-						p.x += 512;
-						p.y = 384 - p.y;
-						double clickd = mapclick.square_distance(p);
-						if (clickd < mapclickdist) {
-							target = obj;
-							mapclickdist = clickd;
-						}
+					edit_panel->enable();
+					edit_panel_fg = nullptr;
+				}
+				return true;
+			}
+			return false;
+		}
+		// no panel visible. handle extra edit modes
+		if (m.down() && m.left()) {
+			mouse_position_down = m.position_2d;
+			return true;
+		} else if (m.up() && m.left()) {
+			mouse_position = m.position_2d;
+			// check for shift / ctrl
+			unsigned mode = 0;	// replace selection
+			if (key_mod_shift(state_of_key_modifiers)) mode = 1;	// subtract
+			if (key_mod_ctrl(state_of_key_modifiers)) mode = 2;	// add
+			if (mouse_position != mouse_position_down) {
+				// group select
+				int x1 = std::min(mouse_position_down.x, mouse_position.x);
+				int y1 = std::min(mouse_position_down.y, mouse_position.y);
+				int x2 = std::max(mouse_position_down.x, mouse_position.x);
+				int y2 = std::max(mouse_position_down.y, mouse_position.y);
+				// fixme: later all objects
+				vector<sea_object*> objs = gm.visible_surface_objects(player);
+				if (mode == 0) selection.clear();
+				for (auto & obj : objs) {
+					vector2 p = (obj->get_pos().xy() -
+						     (player->get_pos().xy() + mapoffset)) * mapzoom;
+					p.x += 512;
+					p.y = 384 - p.y;
+					if (p.x >= x1 && p.x <= x2 &&
+					    p.y >= y1 && p.y <= y2) {
+						if (mode == 1)
+							selection.erase(obj);
+						else
+							selection.insert(obj);
 					}
-					if (mode == 1)
-						selection.erase(target);
-					else
-						selection.insert(target);
-					check_edit_sel();
 				}
-				mx_down = -1;
-				my_down = -1;
-				return;
-			}
-		} else if (event.type == SDL_MOUSEMOTION) {
-			mx_curr = sys().translate_position_x(event);
-			my_curr = sys().translate_position_y(event);
-			if ((event.motion.state & SDL_BUTTON_MMASK) && (ctrl_key_pressed != 0)) {
-				// move selected objects!
-				vector2 drag = sys().translate_motion(event) * (1.0 / mapzoom);
-				for (auto it : selection) {
-					vector3 p = it->get_pos();
-					p.x += drag.x;
-					p.y += drag.y;
-					it->manipulate_position(p);
+				check_edit_sel();
+			} else {
+				// select nearest
+				vector2 mapclick(mouse_position.x, mouse_position.y);
+				// fixme: later all objects!
+				vector<sea_object*> objs = gm.visible_surface_objects(player);
+				double mapclickdist = 1e30;
+				sea_object* target = nullptr;
+				if (mode == 0) selection.clear();
+				for (auto & obj : objs) {
+					vector2 p = (obj->get_pos().xy() -
+						     (player->get_pos().xy() + mapoffset)) * mapzoom;
+					p.x += 512;
+					p.y = 384 - p.y;
+					double clickd = mapclick.square_distance(p);
+					if (clickd < mapclickdist) {
+						target = obj;
+						mapclickdist = clickd;
+					}
 				}
-				return;
+				if (mode == 1)
+					selection.erase(target);
+				else
+					selection.insert(target);
+				check_edit_sel();
 			}
+			mouse_position_down = {-1,-1};
+			return true;
 		}
 	}
 
 	// non-editor events.
-	switch (event.type) {
-	case SDL_MOUSEBUTTONDOWN:
-		if (event.button.button == SDL_BUTTON_LEFT) {
-#ifndef CVEDIT
-			// set target. get visible objects and determine which is nearest to
-			// mouse position. set target for player object
-			vector2 mapclick(sys().translate_position_x(event), sys().translate_position_y(event));
-			vector<sea_object*> objs = gm.visible_surface_objects(player);
-			double mapclickdist = 1e30;
-			sea_object* target = nullptr;
-			for (auto & obj : objs) {
-				if (!obj->is_alive()) continue;
-				vector2 p = (obj->get_pos().xy() -
-					     (player->get_pos().xy() + mapoffset)) * mapzoom;
-				p.x += 512;
-				p.y = 384 - p.y;
-				double clickd = mapclick.square_distance(p);
-				if (clickd < mapclickdist) {
-					target = obj;	// fixme: message?
-					mapclickdist = clickd;
-				}
+	if (m.down() && m.left()) {
+		// set target. get visible objects and determine which is nearest to
+		// mouse position. set target for player object
+		vector2 mapclick(m.position_2d);
+		vector<sea_object*> objs = gm.visible_surface_objects(player);
+		double mapclickdist = 1e30;
+		sea_object* target = nullptr;
+		for (auto & obj : objs) {
+			if (!obj->is_alive()) continue;
+			vector2 p = (obj->get_pos().xy() -
+				     (player->get_pos().xy() + mapoffset)) * mapzoom;
+			p.x += 512;
+			p.y = 384 - p.y;
+			double clickd = mapclick.square_distance(p);
+			if (clickd < mapclickdist) {
+				target = obj;	// fixme: message?
+				mapclickdist = clickd;
 			}
+		}
 
-			player->set_target(target);
-#else
-			// move nearest cv point
-			if (cvroute.size() > 0) {
-				vector2 mapclick(sys().translate_position_x(event) - 512, 384 - sys().translate_position_y(event));
-				vector2 real = mapclick * (1.0/mapzoom) + mapoffset + player->get_pos().xy();
-				double dist = cvroute.front().distance(real);
-				cvridx = 0;
-				for (unsigned i = 1; i < cvroute.size(); ++i) {
-					double d = cvroute[i].distance(real);
-					if (d < dist) {
-						dist = d;
-						cvridx = i;
-					}
-				}
-			}
-#endif
-		}
-#ifdef CVEDIT
-		if (event.button.button == SDL_BUTTON_RIGHT) {
-			vector2 mapclick(sys().translate_position_x(event) - 512, 384 - sys().translate_position_y(event));
-			vector2 real = mapclick * (1.0/mapzoom) + mapoffset + player->get_pos().xy();
-			cvroute.push_back(real);
-		}
-#endif
-
-		if (event.button.button == SDL_BUTTON_WHEELUP) {
-			if (mapzoom < 1) mapzoom *=1.25;
-		} else if (event.button.button == SDL_BUTTON_WHEELDOWN) {
-			if (mapzoom > 1.0/16384) mapzoom /= 1.25;
-		}
-		break;
-	case SDL_MOUSEMOTION:
-		mx = sys().translate_position_x(event);
-		my = sys().translate_position_y(event);
-		if ((event.motion.state & SDL_BUTTON_MMASK) && (ctrl_key_pressed == 0)) {
-			vector2 motion = sys().translate_motion(event);
-			motion.y = -motion.y;
-			mapoffset += motion * (1.0 / mapzoom);
-		}
-#ifdef CVEDIT
-		if (event.motion.state & SDL_BUTTON_LMASK && cvridx >= 0) {
-			vector2 motion = sys().translate_motion(event);
-			motion.y = -motion.y;
-			cvroute[cvridx] += motion * (1.0 / mapzoom);
-		}
-#endif
-	case SDL_KEYDOWN:
-		if (cfg::instance().getkey(key_command::ZOOM_MAP).equal(event.key.keysym)) {
-			if (mapzoom < 1) mapzoom *= 2;
-		} else if (cfg::instance().getkey(key_command::UNZOOM_MAP).equal(event.key.keysym)) {
-			if (mapzoom > 1.0/16384) mapzoom /= 2;
-		}
-		if (event.key.keysym.sym == SDLK_m) {
-			mapmode++;
-			if(mapmode>1)mapmode=0;
-		}
-#ifdef CVEDIT
-		if (event.key.keysym.sym == SDLK_w) {
-			cout << "Current cv route:\n\n";
-			for (unsigned i = 0; i < cvroute.size(); ++i) {
-				cout << "\t<waypoint x=\"" << cvroute[i].x << "\" y=\"" << cvroute[i].y
-				     << "\" />\n";
-			}
-		}
-#endif
-		break;
-	default:
-		break;
+		player->set_target(target);
+		return true;
 	}
+	return false;
+}
+
+
+
+bool map_display::handle_mouse_motion_event(const mouse_motion_data& m)
+{
+	if (ui.get_game().is_editor()) {
+		// handle mouse events for edit panel if that exists.
+		if (edit_panel->is_mouse_over(m.position_2d) && widget::handle_mouse_motion_event(*edit_panel, m))
+			return true;
+		// check if foreground window is open and event should go to it
+		if (edit_panel_fg != nullptr) {
+			return widget::handle_mouse_motion_event(*edit_panel_fg, m);
+		}
+		// no panel visible. handle extra edit modes
+		mouse_position = m.position_2d;
+		if (m.middle() && key_mod_ctrl(state_of_key_modifiers)) {
+			// move selected objects!
+			vector2 drag = vector2(m.rel_motion_2d) * (1.0 / mapzoom);
+			for (auto it : selection) {
+				vector3 p = it->get_pos();
+				p.x += drag.x;
+				p.y += drag.y;
+				it->manipulate_position(p);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	// non-editor events.
+	mouse_position = m.position_2d;
+	if (m.middle() && key_mod_ctrl(state_of_key_modifiers)) {
+		vector2 motion(m.rel_motion_2d);
+		motion.y = -motion.y;
+		mapoffset += motion * (1.0 / mapzoom);
+		return true;
+	}
+	return false;
+}
+
+
+
+bool map_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+{
+	if (m.up()) {
+		if (mapzoom < 1) mapzoom *=1.25;
+		return true;
+	} else if (m.down()) {
+		if (mapzoom > 1.0/16384) mapzoom /= 1.25;
+	}
+	return false;
 }

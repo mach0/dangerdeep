@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 #include <vector>
 
-#include "system.h"
+#include "system_interface.h"
 #include "cfg.h"
 #include "vector3.h"
 #include "datadirs.h"
@@ -47,7 +47,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "log.h"
 #include "primitives.h"
 #include <glu.h>
-#include <SDL.h>
 
 #include "mymain.cpp"
 
@@ -161,8 +160,8 @@ int mymain(list<string>& args)
 	mycfg.register_option("cpucores", 1);
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 
-	system::parameters params(1.0, 1000.0, res_x, res_y, false);
-	system::create_instance(new class system(params));
+	system_interface::parameters params(1.0, 1000.0, res_x, res_y, false);
+	system_interface::create_instance(new class system(params));
 	sys().set_res_2d(640, 480);
 	sys().set_max_fps(25);
 	
@@ -289,7 +288,7 @@ int mymain(list<string>& args)
 		glCullFace(GL_BACK);
 		glEnable(GL_LIGHTING);
 
-		sys().swap_buffers();
+		sys().finish_frame();
 
 		SDL_Delay( 5000 );
 	}
@@ -297,7 +296,7 @@ int mymain(list<string>& args)
 	delete test_texture;
 	delete glsl1;
 
-	system::destroy_instance();
+	system_interface::destroy_instance();
 
 	return 0;
 }

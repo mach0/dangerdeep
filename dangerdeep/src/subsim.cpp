@@ -29,7 +29,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "oglext/OglExt.h"
 #include <glu.h>
-#include <SDL.h>
 
 #include "date.h"
 #include "game.h"
@@ -37,7 +36,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "model.h"
 #include "ship.h"
-#include "system.h"
+#include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
 #include "vector3.h"
@@ -106,7 +105,7 @@ void menu_notimplemented()
 	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(110)));
 	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(0, 0, 0, 0, "", nullptr, [](auto& w) { w.close(0); }, w));
 	wm.align(0, 0);
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 
@@ -204,7 +203,7 @@ void loadsavequit_dialogue::load()
 	gamefilename_to_load = get_savegame_name_for(gamename->get_text(), savegames);
 	//fixme: ask: replace this game?
 	unique_ptr<widget> w(create_dialogue_ok(texts::get(185), texts::get(180) + gamename->get_text() + texts::get(181)));
-	w->run();
+	widget::run(*w);
 	close(2);	// load and close
 }
 
@@ -215,21 +214,21 @@ void loadsavequit_dialogue::save()
 	if (f) {
 		fclose(f);
 		unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get_replace(183, gamename->get_text())));
-		int ok = w->run();
+		int ok = widget::run(*w);
 		w.reset();
 		if (!ok) return;
 	}
 	gamesaved = true;
 	mygame->save(fn, gamename->get_text());
 	unique_ptr<widget> w(create_dialogue_ok(texts::get(186), texts::get(180) + gamename->get_text() + texts::get(187)));
-	w->run();
+	widget::run(*w);
 	update_list();
 }
 
 void loadsavequit_dialogue::erase()
 {
 	unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(188) + gamename->get_text() + texts::get(189)));
-	int ok = w->run();
+	int ok = widget::run(*w);
 	w.reset();
 	if (ok) {
 		string fn = get_savegame_name_for(gamename->get_text(), savegames);
@@ -246,7 +245,7 @@ void loadsavequit_dialogue::quit()
 {
 	if (!gamesaved) {
 		unique_ptr<widget> w(create_dialogue_ok_cancel(texts::get(182), texts::get(190)));
-		int q = w->run();
+		int q = widget::run(*w);
 		if (q) close(1);
 	} else {
 		close(1);
@@ -301,7 +300,7 @@ void show_halloffame(const highscorelist& hsl)
 	w.add_child(std::make_unique<widget>(40, 50, 944, 640, string("")));
 	w.add_child(std::make_unique<widget_caller_button<widget&>>((1024-128)/2, 768-32-16, 128, 32, texts::get(105), nullptr, [](auto& w) { w.close(1); }, w));
 	hsl.show(&w);
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 void show_halloffame_mission() { show_halloffame(hsl_mission); }
 void show_halloffame_career() { show_halloffame(hsl_career); }
@@ -329,11 +328,11 @@ void check_for_highscore(const game& gm)
 		if (pos == 0)
 			txt += "\n\n" + texts::get(201);
 		w.add_child(std::make_unique<widget_text>(400, 200, 0,0, txt));
-		w.run(0, false);
+		widget::run(w, 0, false);
 		hsl.record(points, gm.get_player_info().name);
 	} else {
 		w.add_child(std::make_unique<widget_text>(400, 200, 0,0, texts::get(198)));
-		w.run(0, false);
+		widget::run(w, 0, false);
 	}
 	show_halloffame(hsl);
 }
@@ -361,14 +360,14 @@ void show_results_for_game(const game& gm)
 	ostringstream os;
 	os << "total: " << totaltons;
 	wl.append_entry(os.str());
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 
 
 // main play loop
 // fixme: clean this up!!!
-game::run_state game__exec(game& gm, user_interface& ui)
+game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
 {
 	// fixme: add special ui heir: playback
 	// to record videos.
@@ -383,32 +382,28 @@ game::run_state game__exec(game& gm, user_interface& ui)
 	double totaltime = 0;
 	double measuretime = 5;	// seconds
 
-	ui.resume_all_sound();
+	ui->resume_all_sound();
 
 	// draw one initial frame
-	ui.display();
+	ui->display();
 
-	ui.request_abort(false);
+	ui->request_abort(false);
+	sys().add_input_event_handler(ui);
 
-	while (gm.get_run_state() == game::running && !ui.abort_requested()) {
-		auto events = sys().poll_event_queue();
-
-		// maybe limit input processing to 30 fps
-		ui.process_input(events);
-
+	while (gm.get_run_state() == game::running && !ui->abort_requested()) {
 		// this time_scaling is bad. hits may get computed wrong when time
 		// scaling is too high. fixme
 		unsigned thistime = sys().millisec();
 		if (gm.get_freezetime_start() > 0)
 			THROW(error, "freeze_time() called without unfreeze_time() call");
 		lasttime += gm.process_freezetime();
-		unsigned time_scale = ui.time_scaling();
+		unsigned time_scale = ui->time_scaling();
 		double delta_time = (thistime - lasttime)/1000.0; // * time_scale;
 		totaltime += (thistime - lasttime)/1000.0;
 		lasttime = thistime;
 
 		// next simulation step
-		if (!ui.paused()) {
+		if (!ui->paused()) {
 			for (unsigned j = 0; j < time_scale; ++j) {
 				gm.simulate(time_scale == 1 ? delta_time : (1.0/30.0));
 				// evaluate events of game, because they are cleared
@@ -416,14 +411,14 @@ game::run_state game__exec(game& gm, user_interface& ui)
 				// generated
 				const ptrlist<event>& events = gm.get_events();
 				for (auto & it : events) {
-					it.evaluate(ui);
+					it.evaluate(*ui);
 				}
 			}
 		}
 
 		// fixme: make use of game::job interface, 3600/256 = 14.25 secs job period
-		ui.set_time(gm.get_time());
-		ui.display();
+		ui->set_time(gm.get_time());
+		ui->display();
 		++frames;
 
 		// record fps
@@ -433,10 +428,12 @@ game::run_state game__exec(game& gm, user_interface& ui)
 			lastframes = frames;
 		}
 
-		sys().swap_buffers();
+		// this also fetches input events to the handlers
+		sys().finish_frame();
 	}
+	sys().remove_input_event_handler(ui);
 
-	ui.pause_all_sound();
+	ui->pause_all_sound();
 
 	return gm.get_run_state();	// if player is killed, end game (1), else show menu (0)
 }
@@ -451,15 +448,15 @@ void run_game(unique_ptr<game> gm)
 	widget::unref_all_backgrounds();
 
 	auto gametheme = std::make_unique<widget::theme>("widgetelements_game.png", "widgeticons_game.png",
-								 font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
+								 &*font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
 	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
-	unique_ptr<user_interface> ui(user_interface::create(*gm));
+	auto ui = user_interface::create(*gm);
 	gametheme = widget::replace_theme(std::move(tmp));
 	while (true) {
 		tmp = widget::replace_theme(std::move(gametheme));
-		game::run_state state = game__exec(*gm, *ui);
+		game::run_state state = game__exec(*gm, ui);
 		gametheme = widget::replace_theme(std::move(tmp));
 
 		//if (state == 2) break;
@@ -473,7 +470,7 @@ void run_game(unique_ptr<game> gm)
 				auto& wm = w.add_child(std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(103)));
 				wm.add_entry(texts::get(105), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 				wm.align(0, 0);
-				w.run(0, false);
+				widget::run(w, 0, false);
 			}
 
 //			if (state == game::contact_lost)
@@ -486,7 +483,7 @@ void run_game(unique_ptr<game> gm)
 		} else {
 			music::instance().play_track(1, 500);
 			loadsavequit_dialogue dlg(gm.get());
-			int q = dlg.run(0, false);
+			int q = widget::run(dlg, 0, false);
 			// replace game and ui if new game was loaded
 			if (q == 2) {
 				// fixme: ui doesn't need to get replaced, just give pointer to new
@@ -495,11 +492,11 @@ void run_game(unique_ptr<game> gm)
 				// this can only work if old and new game have same type
 				// of player (and thus same type of ui)
 				gm.reset();
-				ui.reset();
+				ui = nullptr;
 				gm = std::make_unique<game>(dlg.get_gamefilename_to_load());
 				// embrace user interface generation with right theme set!
 				tmp = widget::replace_theme(std::move(gametheme));
-				ui.reset(user_interface::create(*gm));
+				ui = user_interface::create(*gm);
 				gametheme = widget::replace_theme(std::move(tmp));
 			}
 			//replace ui after loading!!!!
@@ -531,23 +528,23 @@ void run_game_editor(unique_ptr<game> gm)
 	widget::unref_all_backgrounds();
 
 	auto gametheme = std::make_unique<widget::theme>("widgetelements_game.png", "widgeticons_game.png",
-							    font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
+							    &*font_vtremington12,color(182, 146, 137),color(240, 217, 127), color(64,64,64));
 	reset_loading_screen();
 	// embrace user interface generation with right theme set!
 	unique_ptr<widget::theme> tmp = widget::replace_theme(std::move(gametheme));
-	unique_ptr<user_interface> ui(user_interface::create(*gm));
+	auto ui = user_interface::create(*gm);
 	gametheme = widget::replace_theme(std::move(tmp));
 	// game is initially running, so pause it.
 	ui->toggle_pause();
 	while (true) {
 		tmp = widget::replace_theme(std::move(gametheme));
 		// 2006-12-01 doc1972 we should do some checks of the state if game exits
-		/*game::run_state state =*/ game__exec(*gm, *ui);
+		/*game::run_state state =*/ game__exec(*gm, ui);
 		gametheme = widget::replace_theme(std::move(tmp));
 
 		music::instance().play_track(1, 500);
 		loadsavequit_dialogue dlg(gm.get());
-		int q = dlg.run(0, false);
+		int q = widget::run(dlg, 0, false);
 		// replace game and ui if new game was loaded
 		if (q == 2) {
 			// fixme: ui doesn't need to get replaced, just give pointer to new
@@ -556,11 +553,11 @@ void run_game_editor(unique_ptr<game> gm)
 			// as long as class game holds a pointer to ui this is more difficult or
 			// won't work.
 			gm.reset();
-			ui.reset();
+			ui = nullptr;
 			gm = std::make_unique<game_editor>(dlg.get_gamefilename_to_load());
 			// embrace user interface generation with right theme set!
 			tmp = widget::replace_theme(std::move(gametheme));
-			ui.reset(user_interface::create(*gm));
+			ui = user_interface::create(*gm);
 			gametheme = widget::replace_theme(std::move(tmp));
 		}
 		//replace ui after loading!!!!
@@ -698,7 +695,7 @@ void show_flotilla_description(const std::string& infopopupdescr)
 	tmp[1] = 8;
 	texture t(tmp, 1, 1, GL_RGB, texture::NEAREST, texture::REPEAT);
 	w->set_background(&t);
-	w->run();
+	widget::run(*w);
 
 }
 
@@ -866,7 +863,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
 	wm.add_entry(texts::get(19), std::make_unique<widget_caller_button<widget&>>(540, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
 	wm.adjust_buttons(944);
-	int result = w.run(0, false);
+	int result = widget::run(w, 0, false);
 	if (result == 2) {
 		pi.name = wplayername.get_text();
 		pi.flotilla = availableflotillas[std::max(0, wflotilla_.get_selected())].nr;
@@ -930,7 +927,7 @@ void create_convoy_mission()
 		wm.adjust_buttons(944);
 	}
 	while (true) {
-		int result = w.run(0, false);
+		int result = widget::run(w, 0, false);
 		if (result == 2) {	// start game
 			string st;
 			switch (wsubtype.get_selected()) {
@@ -1063,7 +1060,7 @@ void choose_historical_mission()
 	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
 	wm.add_entry(texts::get(19), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
 	wm.adjust_buttons(944);
-	int result = w.run(0, false);
+	int result = widget::run(w, 0, false);
 	if (result == 2) {	// start game
 		unique_ptr<game> gm;
 		try {
@@ -1087,7 +1084,7 @@ void choose_historical_mission()
 void choose_saved_game()
 {
 	loadsavequit_dialogue dlg(nullptr);
-	int q = dlg.run(0, false);
+	int q = widget::run(dlg, 0, false);
 	if (q == 0) return;
 	if (q == 2) {
 		// reset loading screen here to show user we are doing something
@@ -1108,7 +1105,7 @@ void menu_single_mission()
 	wm.add_entry(texts::get(118), std::make_unique<widget_caller_button<>>(choose_saved_game));
 	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 	wm.align(0, 0);
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 
@@ -1130,7 +1127,7 @@ void menu_mission_editor()
 	wm.add_entry(texts::get(20), std::make_unique<widget_caller_button<widget&>>(540, 700, 400, 40, "", nullptr, [](auto& w) { w.close(1); }, w));
 	wm.add_entry(texts::get(222), std::make_unique<widget_caller_button<widget&>>(70, 700, 400, 40, "", nullptr, [](auto& w) { w.close(2); }, w));
 	wm.adjust_buttons(944);
-	int result = w.run(0, false);
+	int result = widget::run(w, 0, false);
 	if (result == 2) {	// start editor
 /*
 		string st;
@@ -1177,7 +1174,7 @@ void menu_select_language()
 	wm.set_pos(vector2i(wlgp.x, wlgp.y - 60));
 	wcb.set_pos(vector2i(wlgp.x, wlgp.y + wlgs.y + 20));
 
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 //
@@ -1203,7 +1200,9 @@ void apply_mode(widget_list* wlg)
 	// try to set video mode BEFORE writing to config file, so that if video mode
 	// is broken, user is not forced to same mode again on restart
 	try {
-		sys().set_video_mode(width, height, sys().is_fullscreen_mode());
+		auto params = sys().get_parameters();
+		params.resolution = {width, height};
+		sys().set_parameters(params);
 		cfg::instance().set("screen_res_y",int(height));
 		cfg::instance().set("screen_res_x",int(width));
 		glClearColor(0, 0, 0, 0);
@@ -1217,7 +1216,7 @@ void apply_mode(widget_list* wlg)
 
 void menu_resolution()
 {
-	const list<vector2i>& available_resolutions = sys().get_available_resolutions();
+	auto& available_resolutions = sys().get_available_resolutions();
 
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
 	auto wm = std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(106));
@@ -1246,7 +1245,7 @@ void menu_resolution()
 	w.add_child(std::move(wm));
 	w.add_child(std::move(wlg));
 	w.add_child(std::move(wcb));
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 void configure_key(widget_list* wkeys)
@@ -1254,15 +1253,14 @@ void configure_key(widget_list* wkeys)
 	struct confkey_widget : public widget {
 		widget_text* keyname;
 		key_command keynr;
-		void on_char(const SDL_keysym& ks) override {
-			if (ks.sym == SDLK_ESCAPE) {
+		void on_key(key_code kc, key_mod km) override {
+			//fixme this doesn't provide the modifiers! we need a key_event here instead!
+			//easy! just overload the handle_key method!!!
+			if (kc == key_code::ESCAPE) {
 				close(0);
 				return;
 			}
-			bool ctrl = (ks.mod & (KMOD_LCTRL | KMOD_RCTRL)) != 0;
-			bool alt = (ks.mod & (KMOD_LALT | KMOD_RALT | KMOD_MODE /* Alt Gr */)) != 0;
-			bool shift = (ks.mod & (KMOD_LSHIFT | KMOD_RSHIFT)) != 0;
-			cfg::instance().set_key(keynr, ks.sym, ctrl, alt, shift);
+			cfg::instance().set_key(keynr, kc, km);
 			keyname->set_text(cfg::instance().getkey(keynr).get_name());
 			redraw();
 		}
@@ -1280,7 +1278,7 @@ void configure_key(widget_list* wkeys)
 	string wks = wkeys->get_selected_entry();
 	wks = wks.substr(0, wks.find("\t"));
 	w.add_child(std::make_unique<widget_text>(40, 40, 432, 32, wks));
-	w.run(0, true);
+	widget::run(w, 0, true);
 	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + cfg::instance().getkey(key_command(sel)).get_name());
 }
 
@@ -1302,7 +1300,7 @@ void menu_configure_keys()
 
 	w.add_child(std::make_unique<widget_caller_button<widget&>>(40, 708, 452, 40, texts::get(20), nullptr, [](auto& w) { w.close(0); }, w));
 	w.add_child(std::make_unique<widget_caller_button<widget_list*>>(532, 708, 452, 40, texts::get(215), nullptr, configure_key, &wkeys));
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 void menu_opt_input()
@@ -1315,7 +1313,7 @@ void menu_opt_input()
 
 	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 	wm.align(0, 0);
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 void menu_opt_audio()
@@ -1408,7 +1406,7 @@ void menu_opt_video()
 
 	w.add_child(std::move(wcb));
 
-	w.run(0, false);
+	widget::run(w, 0, false);
 
 	// save settings
 	cfg::instance().set("vsync", vsync_.is_checked());
@@ -1469,7 +1467,7 @@ void menu_options()
 
 	wm.add_entry(texts::get(11), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 	wm.align(0, 0);
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 
@@ -1480,8 +1478,10 @@ class vessel_view
 	list<string>::iterator current;
 	set<string> modellayouts;
 	set<string>::iterator currentlayout;
-	widget_text& wdesc;
-	unique_ptr<model> load_model() {
+	widget_text& wdesc;	///< description of model
+	widget_3dview* w3d{nullptr};
+	auto load_model()
+	{
 		xml_doc doc(data_file().get_filename(*current));
 		doc.load();
 		string mdlname = doc.first_child().child("classification").attr("modelname");
@@ -1504,7 +1504,7 @@ class vessel_view
 		return mdl;
 	}
 public:
-	vessel_view(widget_text& wdesc_, std::unique_ptr<widget_3dview>& w3d)
+	vessel_view(widget& parent, widget_text& wdesc_)
 		: current(shipnames.end()), wdesc(wdesc_)
 	{
 		color bgcol(50, 50, 150);
@@ -1514,33 +1514,33 @@ public:
 		tmp = data_file().get_airplane_list();
 		shipnames.splice(shipnames.end(), tmp);
 		current = shipnames.begin();
-		w3d = std::make_unique<widget_3dview>(20, 0, 1024-2*20, 700-32-16, load_model(), bgcol);
+		w3d = &parent.add_child(std::make_unique<widget_3dview>(20, 0, 1024-2*20, 700-32-16, load_model(), bgcol));
 		vector3f lightdir = vector3f(angle(143).cos(), angle(143).sin(), angle(49.5).tan()).normal();
 		w3d->set_light_dir(vector4f(lightdir.x, lightdir.y, lightdir.z, 0));
 		w3d->set_light_color(color(233, 221, 171));
 	}
-	void next(widget_3dview& w3d) {
+	void next() {
 		++current;
 		if (current == shipnames.end())
 			current = shipnames.begin();
-		w3d.set_model(load_model());
-		w3d.redraw();
+		w3d->set_model(load_model());
+		w3d->redraw();
 	}
-	void previous(widget_3dview& w3d) {
+	void previous() {
 		if (current == shipnames.begin())
 			current = shipnames.end();
 		--current;
-		w3d.set_model(load_model());
-		w3d.redraw();
+		w3d->set_model(load_model());
+		w3d->redraw();
 	}
-	void switchlayout(widget_3dview& w3d) {
+	void switchlayout() {
 		++currentlayout;
 		if (currentlayout == modellayouts.end())
 			currentlayout = modellayouts.begin();
 		// registering the same layout multiple times does not hurt, no problem
-		w3d.get_model()->register_layout(*currentlayout);
-		w3d.get_model()->set_layout(*currentlayout);
-		w3d.redraw();
+		w3d->get_model()->register_layout(*currentlayout);
+		w3d->get_model()->set_layout(*currentlayout);
+		w3d->redraw();
 	}
 };
 
@@ -1549,17 +1549,16 @@ void menu_show_vessels()
 	widget w(0, 0, 1024, 768, texts::get(24), nullptr, "threesubs.jpg");
 	auto& wt = w.add_child(std::make_unique<widget_text>(0, 50, 1024, 32, "", nullptr, true));
 	auto& wm = w.add_child(std::make_unique<widget_menu>(0, 700, 140, 32, ""/*texts::get(110)*/, true));
-	std::unique_ptr<widget_3dview> w3d;
-	vessel_view vw(wt, w3d);
+	vessel_view vw(w, wt);
 
-	wm.add_entry(texts::get(115), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.next(w3d); }, vw, *w3d));
-	wm.add_entry(texts::get(116), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.previous(w3d); }, vw, *w3d));
+	wm.add_entry(texts::get(115), std::make_unique<widget_caller_button<vessel_view&>>([](auto& vw) { vw.next(); }, vw));
+	wm.add_entry(texts::get(116), std::make_unique<widget_caller_button<vessel_view&>>([](auto& vw) { vw.previous(); }, vw));
 	// fixme: disable butten when there is only one layout
-	wm.add_entry(texts::get(246), std::make_unique<widget_caller_button<vessel_view&, widget_3dview&>>([](auto& vw, auto& w3d) { vw.switchlayout(w3d); }, vw, *w3d));
+	wm.add_entry(texts::get(246), std::make_unique<widget_caller_button<vessel_view&>>([](auto& vw) { vw.switchlayout(); }, vw));
 	wm.add_entry(texts::get(117), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 	wm.adjust_buttons(984);
 
-	w.run(0, false);
+	widget::run(w, 0, false);
 }
 
 
@@ -1613,7 +1612,6 @@ int mymain(list<string>& args)
 	bool fullscreen = true;
 	string cmdmissionfilename;
 	bool runeditor = false;
-	unsigned maxfps = 60;
 	bool override_lang = false;
 	bool use_sound = true;
 	date editor_start_date(1939, 9, 1);
@@ -1637,7 +1635,6 @@ int mymain(list<string>& args)
 #if !(defined (WIN32) || (defined (__APPLE__) && defined (__MACH__)))
 			     << "--vsync\tsync to vertical retrace signal (for nvidia cards)\n"
 #endif
-			     << "--maxfps x\tset maximum fps to x frames per second (default 60). Use x=0 to disable fps limit.\n"
 			     << "--consolelog\tcopy log output to current console\n";
 			return 0;
 		} else if (*it == "--nofullscreen") {
@@ -1755,15 +1752,7 @@ int mymain(list<string>& args)
 		} else if (*it == "--vsync") {
 			if (putenv((char*)"__GL_SYNC_TO_VBLANK=1") < 0)
 				cout << "ERROR: vsync setting failed.\n";
-			maxfps = 0;
 #endif
-		} else if (*it == "--maxfps") {
-			auto it2 = it; ++it2;
-			if (it2 != args.end()) {
-				int mf = atoi(it2->c_str());
-				if (mf >= 0) maxfps = unsigned(mf);
-				++it;
-			}
 		} else {
 			cout << "unknown parameter " << *it << ".\n";
 		}
@@ -1804,68 +1793,68 @@ int mymain(list<string>& args)
 	mycfg.register_option("terrain_texture_resolution", 0.1f);
 	mycfg.register_option("terrain_detail", 1);
 
-	mycfg.register_key(key_names[unsigned(key_command::ZOOM_MAP)].name, SDLK_PLUS, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::UNZOOM_MAP)].name, SDLK_MINUS, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_GAUGES_SCREEN)].name, SDLK_F1, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_PERISCOPE_SCREEN)].name, SDLK_F2, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_UZO_SCREEN)].name, SDLK_F3, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_BRIDGE_SCREEN)].name, SDLK_F4, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_MAP_SCREEN)].name, SDLK_F5, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_SCREEN)].name, SDLK_F6, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_DAMAGE_CONTROL_SCREEN)].name, SDLK_F7, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_LOGBOOK_SCREEN)].name, SDLK_F8, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_SUCCESS_RECORDS_SCREEN)].name, SDLK_F9, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_FREEVIEW_SCREEN)].name, SDLK_F10, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_LEFT)].name, SDLK_LEFT, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_LEFT)].name, SDLK_LEFT, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_RIGHT)].name, SDLK_RIGHT, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_RIGHT)].name, SDLK_RIGHT, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_UP)].name, SDLK_UP, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_UP)].name, SDLK_UP, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_DOWN)].name, SDLK_DOWN, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_DOWN)].name, SDLK_DOWN, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::CENTER_RUDDERS)].name, SDLK_RETURN, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_LISTEN)].name, SDLK_1, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_SLOW)].name, SDLK_2, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_HALF)].name, SDLK_3, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FULL)].name, SDLK_4, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FLANK)].name, SDLK_5, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_STOP)].name, SDLK_6, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSE)].name, SDLK_7, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEHALF)].name, SDLK_8, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEFULL)].name, SDLK_9, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_1)].name, SDLK_1, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_2)].name, SDLK_2, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_3)].name, SDLK_3, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_4)].name, SDLK_4, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_5)].name, SDLK_5, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_6)].name, SDLK_6, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::SELECT_TARGET)].name, SDLK_SPACE, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SCOPE_UP_DOWN)].name, SDLK_0, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::CRASH_DIVE)].name, SDLK_c, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SNORKEL_DEPTH)].name, SDLK_d, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_SNORKEL)].name, SDLK_f, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SET_HEADING_TO_VIEW)].name, SDLK_h, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::IDENTIFY_TARGET)].name, SDLK_i, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::GO_TO_PERISCOPE_DEPTH)].name, SDLK_p, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SURFACE)].name, SDLK_s, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_TORPEDO)].name, SDLK_t, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SET_VIEW_TO_HEADING)].name, SDLK_v, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_ZOOM_OF_VIEW)].name, SDLK_y, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT)].name, SDLK_COMMA, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT_FAST)].name, SDLK_COMMA, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT)].name, SDLK_PERIOD, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT_FAST)].name, SDLK_PERIOD, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_UP)].name, SDLK_KP_PLUS, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_DOWN)].name, SDLK_KP_MINUS, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::FIRE_DECK_GUN)].name, SDLK_g, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_RELATIVE_BEARING)].name, SDLK_r, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_MAN_DECK_GUN)].name, SDLK_g, false, false, true);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC_SCREEN)].name, SDLK_F11, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_POPUP)].name, SDLK_TAB, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPSETUP_SCREEN)].name, SDLK_F12, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_CAMERA)].name, SDLK_k, false, false, false);
-	mycfg.register_key(key_names[unsigned(key_command::TAKE_SCREENSHOT)].name,  SDLK_PRINT, false, false, false);
+	mycfg.register_key(key_names[unsigned(key_command::ZOOM_MAP)].name, key_code::PLUS, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::UNZOOM_MAP)].name, key_code::MINUS, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_GAUGES_SCREEN)].name, key_code::F1, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_PERISCOPE_SCREEN)].name, key_code::F2, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_UZO_SCREEN)].name, key_code::F3, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_BRIDGE_SCREEN)].name, key_code::F4, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_MAP_SCREEN)].name, key_code::F5, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_SCREEN)].name, key_code::F6, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_DAMAGE_CONTROL_SCREEN)].name, key_code::F7, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_LOGBOOK_SCREEN)].name, key_code::F8, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_SUCCESS_RECORDS_SCREEN)].name, key_code::F9, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_FREEVIEW_SCREEN)].name, key_code::F10, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_LEFT)].name, key_code::LEFT, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_LEFT)].name, key_code::LEFT, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_RIGHT)].name, key_code::RIGHT, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_RIGHT)].name, key_code::RIGHT, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_UP)].name, key_code::UP, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_UP)].name, key_code::UP, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_DOWN)].name, key_code::DOWN, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_DOWN)].name, key_code::DOWN, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::CENTER_RUDDERS)].name, key_code::RETURN, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_LISTEN)].name, key_code::_1, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_SLOW)].name, key_code::_2, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_HALF)].name, key_code::_3, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FULL)].name, key_code::_4, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_FLANK)].name, key_code::_5, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_STOP)].name, key_code::_6, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSE)].name, key_code::_7, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEHALF)].name, key_code::_8, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::THROTTLE_REVERSEFULL)].name, key_code::_9, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_1)].name, key_code::_1, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_2)].name, key_code::_2, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_3)].name, key_code::_3, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_4)].name, key_code::_4, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_5)].name, key_code::_5, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TUBE_6)].name, key_code::_6, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::SELECT_TARGET)].name, key_code::SPACE, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SCOPE_UP_DOWN)].name, key_code::_0, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::CRASH_DIVE)].name, key_code::c, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SNORKEL_DEPTH)].name, key_code::d, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_SNORKEL)].name, key_code::f, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SET_HEADING_TO_VIEW)].name, key_code::h, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::IDENTIFY_TARGET)].name, key_code::i, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_PERISCOPE_DEPTH)].name, key_code::p, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::GO_TO_SURFACE)].name, key_code::s, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_TORPEDO)].name, key_code::t, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SET_VIEW_TO_HEADING)].name, key_code::v, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_ZOOM_OF_VIEW)].name, key_code::y, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT)].name, key_code::COMMA, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_LEFT_FAST)].name, key_code::COMMA, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT)].name, key_code::PERIOD, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TURN_VIEW_RIGHT_FAST)].name, key_code::PERIOD, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_UP)].name, key_code::KP_PLUS, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TIME_SCALE_DOWN)].name, key_code::KP_MINUS, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::FIRE_DECK_GUN)].name, key_code::g, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_RELATIVE_BEARING)].name, key_code::r, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_MAN_DECK_GUN)].name, key_code::g, key_mod::shift);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC_SCREEN)].name, key_code::F11, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_POPUP)].name, key_code::TAB, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPSETUP_SCREEN)].name, key_code::F12, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_CAMERA)].name, key_code::k, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::TAKE_SCREENSHOT)].name,  key_code::PRINTSCREEN, key_mod::none);
 
 	//mycfg.register_option("invert_mouse", false);
 	//mycfg.register_option("ocean_res_x", 128);
@@ -1905,33 +1894,21 @@ int mymain(list<string>& args)
 	// fixme: also allow 1280x1024, set up gl viewport for 4:3 display
 	// with black borders at top/bottom (height 2*32pixels)
 	// weather conditions and earth curvature allow 30km sight at maximum.
-	system::parameters params;
+	system_interface::parameters params;
 	params.near_z = 1.0;
 	params.far_z = 30000.0+500.0;
-	params.resolution_x = res_x;
-	params.resolution_y = res_y;
+	params.resolution = {res_x, res_y};
+	params.resolution2d = {1024,768};
 	params.window_caption = texts::get(7);
 	params.fullscreen = fullscreen;
-	params.use_multisampling = mycfg.getb("use_multisampling");
-	params.hint_multisampling = mycfg.geti("hint_multisampling");
-	params.multisample_level = mycfg.geti("multisampling_level");
-	params.hint_fog = mycfg.geti("hint_fog");
-	params.hint_mipmap = mycfg.geti("hint_mipmap");
-	params.hint_texture_compression = mycfg.geti("hint_texture_compression");
 	params.vertical_sync = mycfg.getb("vsync");
 	texture::use_compressed_textures = mycfg.getb("use_compressed_textures");
 	texture::use_anisotropic_filtering = mycfg.getb("use_ani_filtering");
 	texture::anisotropic_level = mycfg.getf("anisotropic_level");
-	system::create_instance(new class system(params));
+	system_interface::create_instance(new class system_interface(params));
 	sys().set_screenshot_directory(savegamedirectory);
-	sys().set_res_2d(1024, 768);
-	sys().set_max_fps(maxfps);
-	font_arial = &sys().register_font(get_font_dir(), "font_arial");
+	global_data::instance();	// create fonts
 	reset_loading_screen();
-	font_jphsl = &sys().register_font(get_font_dir(), "font_jphsl");
-	font_vtremington10 = &sys().register_font(get_font_dir(), "font_vtremington10");
-	font_vtremington12 = &sys().register_font(get_font_dir(), "font_vtremington12");
-	font_typenr16 = &sys().register_font(get_font_dir(), "font_typenr16");
 	widget::set_image_cache(&(imagecache()));
 
 	// --------------------------------------------------------------------------------
@@ -1972,19 +1949,15 @@ int mymain(list<string>& args)
 				sys().prepare_2d_drawing();
 				font_arial->print(0, 0, str_problems.str());
 				sys().unprepare_2d_drawing();
-				sys().swap_buffers();
+				sys().finish_frame();
 				bool quit = false;
+				input_event_handler_custom ic;
+				ic.set_handler([&quit](const input_event_handler::mouse_click_data& mc) { if (mc.up()) quit = true; return true; });
+				ic.set_handler([&quit](const input_event_handler::key_data& kd) { if (kd.keycode == key_code::ESCAPE) quit = true; return true; });
 				while (!quit) {
-					auto events = sys().poll_event_queue();
-					for (auto & event : events) {
-						if (event.type == SDL_KEYDOWN) {
-							quit = true;
-						} else if (event.type == SDL_MOUSEBUTTONUP) {
-							quit = true;
-						}
-					}
+					sys().finish_frame();
 				}
-				throw system::quit_exception(-1);
+				throw system_interface::quit_exception(-1);
 			}
 		}
 #endif // WIN32
@@ -2004,6 +1977,7 @@ int mymain(list<string>& args)
 
 	// create and start thread for music handling.
 	music::create_instance(new music(use_sound));
+	music::instance().set_sound_dir(get_sound_dir());
 	music::instance().start();
 
 	music::instance().append_track("ImInTheMood.ogg");
@@ -2016,17 +1990,16 @@ int mymain(list<string>& args)
 	music::instance().append_track("loopable_seasurface_badweather.ogg");
 	music::instance().append_track("Auf_Feindfahrt.ogg");
 	add_loading_screen("Music list loaded");
-	//music::instance().set_playback_mode(music::PBM_SHUFFLE_TRACK);
+	//music::instance().set_playback_mode(music::playback_mode::shuffle_track);
 	music::instance().play();
 
 	widget::set_theme(std::make_unique<widget::theme>("widgetelements_menu.png", "widgeticons_menu.png",
-								    font_typenr16,
+								    &*font_typenr16,
 								    color(182, 146, 137),
 								    color(240, 217, 127) /*color(222, 208, 195)*/,
 								    color(92, 72 ,68)));
 
 	std::unique_ptr<texture> metalbackground(new texture(get_image_dir() + "metalbackground.jpg"));
-	sys().draw_console_with(font_arial, metalbackground.get());
 
 
 	// try to make directories if they do not exist
@@ -2117,7 +2090,7 @@ int mymain(list<string>& args)
 
 			wm.add_entry(texts::get(30), std::make_unique<widget_caller_button<widget&>>([](auto& w) { w.close(0); }, w));
 			wm.align(0, 0);
-			retval = w.run(0, false);
+			retval = widget::run(w, 0, false);
 			if (retval == 1)
 				menu_select_language();
 		} while (retval != 0);
@@ -2134,7 +2107,7 @@ int mymain(list<string>& args)
 	widget::set_theme(unique_ptr<widget::theme>());	// clear allocated theme
 	music::release_instance()->destruct(); // kill thread
 	global_data::destroy_instance();
-	system::destroy_instance();
+	system_interface::destroy_instance();
 
 	return 0;
 }

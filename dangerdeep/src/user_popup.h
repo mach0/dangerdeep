@@ -24,9 +24,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define USER_POPUP_H
 
 #include <list>
-#include <SDL.h>
+#include "input_event_handler.h"
 
-class user_popup
+class user_popup : public input_event_handler
 {
 private:
 	// no empty construction, no copy
@@ -47,19 +47,7 @@ public:
 	// needed for correct destruction of heirs.
 	virtual ~user_popup() = default;
 	// very basic. Just draw display and handle input.
-	virtual void display(class game& gm) const = 0;
-	// returns true if event was used
-	virtual bool process_input(class game& gm, const SDL_Event& event) = 0;
-	virtual void process_input(class game& gm, std::list<SDL_Event>& events)
-	{
-		auto it = events.begin();
-		while (it != events.end()) {
-			if (process_input(gm, *it))
-				it = events.erase(it);
-			else
-				++it;
-		}
-	}
+	virtual void display() const = 0;
 };
 
 #endif /* USER_POPUP_H */

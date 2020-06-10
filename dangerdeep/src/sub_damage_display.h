@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_damage_display : public user_display
 {
-	int mx, my;	// last mouse position, needed for popup display
+	vector2i mouse_position;	// last mouse position, needed for popup display
 	std::unique_ptr<image> damage_screen_background;
 	std::unique_ptr<image> sub_damage_scheme_all;
 	texture::ptr repairlight, repairmedium, repairheavy, repaircritical, repairwrecked;
@@ -40,8 +40,8 @@ public:
 
 	virtual void display_popup (int x, int y, const std::string& text, bool atleft, bool atbottom) const;
 
-	void display(class game& gm) const override;
-	void process_input(class game& gm, const SDL_Event& event) override;
+	void display() const override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
 
 	void enter(bool is_day) override;
 	void leave() override;

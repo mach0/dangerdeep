@@ -31,9 +31,8 @@ double log2( double n )
 #endif
 
 #include "oglext/OglExt.h"
-#include <SDL.h>
 
-#include "system.h"
+#include "system_interface.h"
 #include <memory>
 
 #include <sstream>
