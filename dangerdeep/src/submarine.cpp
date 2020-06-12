@@ -113,19 +113,19 @@ the waterline although the ship would swim in total.
 
 
 submarine::stored_torpedo::stored_torpedo()
-	 
+
 = default;
 
 
 
-submarine::stored_torpedo::stored_torpedo(game& gm, std::string  type)
+submarine::stored_torpedo::stored_torpedo(std::string type)
 	: specfilename(std::move(type)),  status(st_loaded), associated(0), remaining_time(0)
 {
 }
 
 
 
-void submarine::stored_torpedo::load(game& gm, const xml_elem& parent)
+void submarine::stored_torpedo::load(const xml_elem& parent)
 {
 	specfilename = parent.attr("type");
 	if (parent.has_child("setup")) {
@@ -280,7 +280,7 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 	//parts[i] = part(0, 0);
 
 	// set hearing device
-	date dt = gm.get_date();
+	date dt = gm_.get_date();
 	if (dt < date(1941, 6, 1))
 		hearing_device = hearing_device_KDB;
 	else if (dt < date(1944, 11, 1))
@@ -326,7 +326,7 @@ void submarine::load(const xml_elem& parent)
 	torpedoes.reserve(tp.attru("nr"));
 	for (auto elem : tp.iterate("stored_torpedo")) {
 		torpedoes.emplace_back();
-		torpedoes.back().load(gm, elem);
+		torpedoes.back().load(elem);
 	}
 
 	xml_elem sst = parent.child("sub_state");
@@ -334,7 +334,7 @@ void submarine::load(const xml_elem& parent)
 	electric_engine = sst.attru("electric_engine");
 	snorkelup = sst.attru("snorkelup");
 	battery_level = sst.attrf("battery_level");
-    
+
 	// fixme: later move to ship, or even sea_object!
 #if 0 // disabled to avoid abort when loading savegames
 	xml_elem dm = parent.child("parts");
@@ -384,7 +384,7 @@ void submarine::save(xml_elem& parent) const
 	sst.set_attr(electric_engine, "electric_engine");
 	sst.set_attr(snorkelup, "snorkelup");
 	sst.set_attr(battery_level, "battery_level");
-    
+
 	// fixme: later move to ship, or even sea_object!
 	//xml_elem dm = parent.add_child("parts");
 	//dm.set_attr(unsigned(parts.size()), "nr");
@@ -427,7 +427,7 @@ void submarine::transfer_torpedo(unsigned from, unsigned to)
 		torpedoes[from].associated = to;
 		torpedoes[to].associated = from;
 		torpedoes[from].remaining_time =
-		torpedoes[to].remaining_time = 
+		torpedoes[to].remaining_time =
 			get_torp_transfer_time(from, to);	// fixme: add time for torpedos already in transfer (one transfer may block another!)
 	}
 }
@@ -448,7 +448,7 @@ int submarine::find_stored_torpedo(bool usebow)
 
 
 
-void submarine::simulate(double delta_time)
+void submarine::simulate(double delta_time, game& gm)
 {
 	// diveplane animation
 	if (diveplane_1_id >= 0) mymodel->set_object_angle(diveplane_1_id, -bow_depth_rudder.angle);
@@ -470,14 +470,14 @@ void submarine::simulate(double delta_time)
 	double mass_orig = mass;
 	mass += mass_flooded_tanks;
 	mass_inv = 1.0/mass;
-	ship::simulate(delta_time);
+	ship::simulate(delta_time, gm);
 	mass = mass_orig;
 	mass_inv = 1.0/mass;
 
 	if (!permanent_dive) {
 		depth_steering_logic();
 	}
-	
+
 	ballast_tank_control_logic(delta_time);
 
 	bow_depth_rudder.simulate(delta_time);
@@ -528,14 +528,14 @@ void submarine::simulate(double delta_time)
 	// ------------- simulate the TDC ------------------------------------------
 	TDC.update_heading(get_heading());
 	TDC.simulate(delta_time);
-	if (target) {
+	if (target.is_valid()) {
 		// fixme: limit update of bearing to each 5-30 secs or so,
 		// quality depends on duration of observance and quality of crew!
 		if (TDC.auto_mode_enabled()) {
-			TDC.set_bearing(angle(target->get_pos().xy() - get_pos().xy()));
+			TDC.set_bearing(angle(gm.get_object(target).get_pos().xy() - get_pos().xy()));
 		}
 	}
-		
+
 	// ------------- torpedo transfer -----------------------------------
 	for (unsigned i = 0; i < torpedoes.size(); ++i) {
 		stored_torpedo& st = torpedoes[i];
@@ -547,7 +547,7 @@ void submarine::simulate(double delta_time)
 					st.status = stored_torpedo::st_loaded;	// loading
 //					torpedoes[st.associated].status = stored_torpedo::st_empty;	// empty
 					if (i < get_nr_of_bow_tubes() + get_nr_of_stern_tubes())
-						gm.add_event(new event_tube_reloaded(i + 1));
+						gm.add_event(std::make_unique<event_tube_reloaded>(i + 1));
 				} else {		// unloading
 					st.status = stored_torpedo::st_empty;	// empty
 					st.specfilename = "";
@@ -594,19 +594,20 @@ void submarine::simulate(double delta_time)
 
 
 
-void submarine::set_target(sea_object* s)
+void submarine::set_target(sea_object_id s, game& gm)
 {
-	sea_object::set_target(s);
-	if (!target) return;
+	sea_object::set_target(s, gm);
+	if (!target.is_valid()) return;
 
 	TDC.set_torpedo_data(kts2ms(30), 7500);	// fixme!!!!
 	// the values below should be modified by quality of guessed target data
 	// well trained crews guess better and/or faster
 	if (TDC.auto_mode_enabled()) {
-		TDC.set_target_speed(target->get_speed());
-		TDC.set_target_distance(target->get_pos().xy().distance(get_pos().xy()));
-		TDC.set_bearing(angle(target->get_pos().xy() - get_pos().xy()));
-		TDC.set_target_course(target->get_heading());
+		auto& mytarget = gm.get_object(target);
+		TDC.set_target_speed(mytarget.get_speed());
+		TDC.set_target_distance(mytarget.get_pos().xy().distance(get_pos().xy()));
+		TDC.set_bearing(angle(mytarget.get_pos().xy() - get_pos().xy()));
+		TDC.set_target_course(mytarget.get_heading());
 	}
 	// this value is always fetched automatically to the TDC
 	TDC.set_heading(get_heading());
@@ -692,43 +693,43 @@ void submarine::init_fill_torpedo_tubes(const date& d)
 		stern = "TXI";
 		deck = "TI_LuTII";
 	}
-	
+
 	pair<unsigned, unsigned> idx;
 	idx = get_bow_tube_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
 		unsigned r = rnd(6);
-		if (r <= 1) torpedoes[i] = stored_torpedo(gm, standard1);
-		else if (r <= 2) torpedoes[i] = stored_torpedo(gm, standard2);
-		else if (r <= 3) torpedoes[i] = stored_torpedo(gm, special1);
-		else torpedoes[i] = stored_torpedo(gm, special2);
+		if (r <= 1) torpedoes[i] = stored_torpedo(standard1);
+		else if (r <= 2) torpedoes[i] = stored_torpedo(standard2);
+		else if (r <= 3) torpedoes[i] = stored_torpedo(special1);
+		else torpedoes[i] = stored_torpedo(special2);
 	}
 	idx = get_stern_tube_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
-		torpedoes[i] = stored_torpedo(gm, stern);
+		torpedoes[i] = stored_torpedo(stern);
 	}
 	idx = get_bow_reserve_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
 		unsigned r = rnd(6);
-		if (r <= 1) torpedoes[i] = stored_torpedo(gm, standard1);
-		else if (r <= 3) torpedoes[i] = stored_torpedo(gm, standard2);
-		else if (r <= 4) torpedoes[i] = stored_torpedo(gm, special1);
-		else torpedoes[i] = stored_torpedo(gm, special2);
+		if (r <= 1) torpedoes[i] = stored_torpedo(standard1);
+		else if (r <= 3) torpedoes[i] = stored_torpedo(standard2);
+		else if (r <= 4) torpedoes[i] = stored_torpedo(special1);
+		else torpedoes[i] = stored_torpedo(special2);
 	}
 	idx = get_stern_reserve_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
 		unsigned r = rnd(2);
-		if (r < 1) torpedoes[i] = stored_torpedo(gm, stern);
-		else torpedoes[i] = stored_torpedo(gm, special2);
+		if (r < 1) torpedoes[i] = stored_torpedo(stern);
+		else torpedoes[i] = stored_torpedo(special2);
 	}
 	idx = get_bow_deckreserve_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
 		// later in the war no torpedoes were stored at deck, fixme
-		torpedoes[i] = stored_torpedo(gm, deck);
+		torpedoes[i] = stored_torpedo(deck);
 	}
 	idx = get_stern_deckreserve_indices();
 	for (unsigned i = idx.first; i < idx.second; ++i) {
 		// later in the war no torpedoes were stored at deck, fixme
-		torpedoes[i] = stored_torpedo(gm, deck);
+		torpedoes[i] = stored_torpedo(deck);
 	}
 }
 
@@ -870,7 +871,7 @@ float submarine::surface_visibility(const vector2& watcher) const
 	// the water. In reality it is hidden in the waves when watched from a longer
 	// distance (it doesn't need to be under water, just hidden by higher waves nearby).
 	// So the only visible thing of a sub is the conning tower, making it less visible.
-	
+
 	// fixme: 2004/05/16, i removed the 1/750 factor from sea_object.cpp
 	// the rest of the code has to be adapted
 
@@ -879,7 +880,7 @@ float submarine::surface_visibility(const vector2& watcher) const
 
 	if ( depth >= 0.0f && depth < 10.0f )
 	{
-		dive_factor = 0.1f * ( 10.0f - depth ) * 
+		dive_factor = 0.1f * ( 10.0f - depth ) *
 			ship::surface_visibility(watcher);
 	}
 
@@ -942,15 +943,15 @@ void submarine::scope_to_level(float f)
 
 
 
-void submarine::set_planes_to(double amount)
+void submarine::set_planes_to(double amount, game& gm)
 {
 	amount = myclamp(amount, -1.0, 1.0);
 	if (amount < 0) {
 		if (dive_state == dive_state_surfaced) {
-			gm.add_event(new event_preparing_to_dive());
+			gm.add_event(std::make_unique<event_preparing_to_dive>());
 			if (has_deck_gun() && is_gun_manned()) {
 				unman_guns(); // rather to state simulation?! fixme
-				gm.add_event(new event_unmanning_gun());
+				gm.add_event(std::make_unique<event_unmanning_gun>());
 			}
 			// don't set planes yet
 			return;
@@ -959,8 +960,8 @@ void submarine::set_planes_to(double amount)
 		// planes at midships, stop depth change
 		permanent_dive = false;
 		dive_to = position.z;
-	}		
-	
+	}
+
 	if (dive_state == dive_state_crashdive) {
 		dive_state = dive_state_diving;
 	}
@@ -972,14 +973,14 @@ void submarine::set_planes_to(double amount)
 
 
 
-void submarine::dive_to_depth(unsigned meters)
+void submarine::dive_to_depth(unsigned meters, game& gm)
 {
 	// fixme misplaced here...
 	if (dive_state == dive_state_surfaced) {
 		if (has_deck_gun() && is_gun_manned()) {
-			gm.add_event(new event_preparing_to_dive());
+			gm.add_event(std::make_unique<event_preparing_to_dive>());
 			unman_guns();
-			gm.add_event(new event_unmanning_gun());
+			gm.add_event(std::make_unique<event_unmanning_gun>());
 		}
 		dive_state = dive_state_preparing_for_dive;
 	} else if (dive_state == dive_state_crashdive) {
@@ -991,14 +992,14 @@ void submarine::dive_to_depth(unsigned meters)
 
 
 
-void submarine::crash_dive()
+void submarine::crash_dive(game& gm)
 {
 	// fixme misplaced here...
 	if (dive_state == dive_state_surfaced) {
 		if (has_deck_gun() && is_gun_manned()) {
-			gm.add_event(new event_preparing_to_dive());
+			gm.add_event(std::make_unique<event_preparing_to_dive>());
 			unman_guns();
-			gm.add_event(new event_unmanning_gun());
+			gm.add_event(std::make_unique<event_unmanning_gun>());
 		}
 		dive_state = dive_state_preparing_for_crashdive;
 	}
@@ -1018,7 +1019,7 @@ void submarine::depth_steering_logic()
 	   We have the formula
 	   error = a * x + b * y + c * z
 	   where x = depth difference between dive_to and position.z
-	         y = vertical velocity (with sign)
+		 y = vertical velocity (with sign)
 		 z = dive_rudder_pos
 	   and a, b, c are some control factors (constants).
 	   c should be much smaller than a and b, normally a > b > c.
@@ -1151,7 +1152,7 @@ void submarine::depth_charge_explosion(const class depth_charge& dc)
 	double deadly_radius = DEADLY_DC_RADIUS_SURFACE +
 		get_pos().z * DEADLY_DC_RADIUS_200M / 200;
 	vector3 relpos = get_pos() - dc.get_pos();
-	
+
 	// this factor is used later in damage strength calculation.
 	// strength is >= 1.0 at deadly radius or nearer.
 	// strength is <= 0.01 at damage radius or farther.
@@ -1160,12 +1161,12 @@ void submarine::depth_charge_explosion(const class depth_charge& dc)
 	// fixme: check if relative position is translated correctly to sub pos, e.g.
 	// z coordinates seemed to be reversed, a dc exploding below the sub damages the
 	// aa gun more than the hull (2003/07/31)
-	
+
 	// depth differences change destructive power
 	// but only when dc explodes above... fixme
 	// explosion and shock wave strength depends on water depth... fixme
 	// damage/deadly radii depend on this power and on sub type. fixme
-		
+
 	log_debug("depth charge explosion distance to sub: " << relpos.length() << "m.");
 	vector3 sdist(relpos.x, relpos.y, relpos.z /* *2.0 */);
 	double sdlen = sdist.length();
@@ -1178,12 +1179,12 @@ void submarine::depth_charge_explosion(const class depth_charge& dc)
 	} else if (sdlen <= damage_radius) {	// handle damages
 		// add damage
 		vector3f bb = mymodel->get_boundbox_size();
-	
+
 		// project relative position to circle on 2d plane (y,z) parallel to sub.
 		// circle's radius is proportional to strength.
 		// all parts within this circle are affected to damage relative to their distance to the
 		// circles center.
-	
+
 		for (unsigned i = 0; i < parts.size() /*nr_of_parts*/; ++i) {
 			if (parts[i].status < 0) continue;	// avoid non existent parts.
 
@@ -1197,7 +1198,7 @@ void submarine::depth_charge_explosion(const class depth_charge& dc)
 			// depth differences change destructive power etc. see above
 			double sdlen = relpos.length();
 			double strength = exp((deadly_radius - sdlen) * expfac);
-			
+
 			if (strength > 0 && strength <= 1) {
 				add_saturated(parts[i].status, strength, 1.0);
 			}
@@ -1230,7 +1231,7 @@ void submarine::calculate_fuel_factor ( double delta_time )
 
 bool submarine::set_snorkel_up ( bool snorkelup )
 {
-	// Snorkel can be toggled only when it is available 
+	// Snorkel can be toggled only when it is available
 	// and the submarine is at least at snorkel depth.
 	if ( has_snorkel() && get_depth () <= snorkel_depth )
 	{
@@ -1250,16 +1251,14 @@ bool submarine::set_snorkel_up ( bool snorkelup )
 
 
 
-bool submarine::launch_torpedo(int tubenr, sea_object* target)
+bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
 {
-	if (target == nullptr) return false;	// maybe assert this?
-	if (target == this) return false;
-	
 	bool usebowtubes = false;
 
 	// if tubenr is < 0, choose a tube
 	if (tubenr < 0) {	// check if target is behind
-		angle a = angle(target->get_pos().xy() - get_pos().xy())
+		auto& mytarget = gm.get_object(target);
+		angle a = angle(targetpos.xy() - get_pos().xy())
 			- get_heading(); // + trp_addleadangle;
 		usebowtubes = (a.ui_abs_value180() <= 90.0);
 		// search for a filled tube
@@ -1291,12 +1290,12 @@ bool submarine::launch_torpedo(int tubenr, sea_object* target)
 		//cout << "fired at " << fired_at_angle.value() << ", head to " << torp_head_to.value() << ", is cw nearer " << torp_head_to.is_clockwise_nearer(fired_at_angle) << "\n";
 		xml_doc doc(data_file().get_filename(torpedoes[tubenr].specfilename));
 		doc.load();
-		std::unique_ptr<torpedo> torp(new torpedo(gm, doc.first_child(), torpedoes[tubenr].setup));
-		torp->head_to_course(torp_head_to, fired_at_angle.is_clockwise_nearer(torp_head_to) ? 1 : -1);
+		torpedo torp(gm, doc.first_child(), torpedoes[tubenr].setup);
+		torp.head_to_course(torp_head_to, fired_at_angle.is_clockwise_nearer(torp_head_to) ? 1 : -1);
 		// just hand the torpedo object over to class game. tube is empty after that...
 		vector3 torppos = position + (fired_at_angle.direction() * (get_length()/2 + 5 /*5m extra*/)).xy0();
-		torp->launch(torppos, fired_at_angle);
-		gm.spawn_torpedo(torp.release());
+		torp.launch(torppos, fired_at_angle);
+		gm.spawn(std::move(torp));
 		torpedoes[tubenr].status = stored_torpedo::st_empty;
 		return true;
 	} else {
@@ -1306,24 +1305,24 @@ bool submarine::launch_torpedo(int tubenr, sea_object* target)
 
 
 
-void submarine::gun_manning_changed(bool is_gun_manned)
+void submarine::gun_manning_changed(bool is_gun_manned, game& gm)
 {
 	//fixme: these events occur endlessly once active!
 	log_debug("gun_manning_changed is_gun_manned="<<is_gun_manned);
 	if (is_gun_manned)
-		gm.add_event(new event_gun_manned());
+		gm.add_event(std::make_unique<event_gun_manned>());
 	else
-		gm.add_event(new event_gun_unmanned());
+		gm.add_event(std::make_unique<event_gun_unmanned>());
 }
 
 
 
-void submarine::compute_force_and_torque(vector3& F, vector3& T) const
+void submarine::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 {
 	// static buoyancy from ballast tanks is inherently handled
 	// because if the tanks are empty, they do not account to
 	// total mass of submarine.
-	ship::compute_force_and_torque(F, T);
+	ship::compute_force_and_torque(F, T, gm);
 
 	// drag by stern dive rudder
 	const double water_density = 1000.0;

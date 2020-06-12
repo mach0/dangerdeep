@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "coastmap.h"
 #include "caustics.h"
 #include "geoclipmap.h"
-#include "ptrvector.h"
 #include "user_display.h"
 #include "user_popup.h"
 #include "input_event_handler.h"
@@ -88,14 +87,14 @@ protected:
 	unsigned current_display;
 
 	// fixme replace the above with: THE ONE AND ONLY DATA UI SHOULD HAVE
-	ptrvector<user_display> displays;
+	std::vector<std::unique_ptr<user_display>> displays;
 	//fixme must be std::vector<std::shared_ptr<user_display>> displays to register them as input event handlers!
 
 	// which popup is shown (0 = none)
 	unsigned current_popup;
 
 	// possible popups
-	ptrvector<user_popup> popups;
+	std::vector<std::unique_ptr<user_popup>> popups;
 
 	// environmental data
 	std::unique_ptr<class sky> mysky;	// the one and only sky
@@ -107,8 +106,8 @@ protected:
 	bool daymode;
 
 	// weather graphics
-	ptrvector<class texture> raintex;	// images (animation) of rain drops
-	ptrvector<class texture> snowtex;	// images (animation) of snow flakes
+	std::vector<std::unique_ptr<class texture>> raintex;	// images (animation) of rain drops
+	std::vector<std::unique_ptr<class texture>> snowtex;	// images (animation) of snow flakes
 
 	// free view mode
 //	float freeviewsideang, freeviewupang;	// global spectators viewing angles

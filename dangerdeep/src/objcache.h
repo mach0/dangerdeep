@@ -108,7 +108,7 @@ public:
 			}
 		}
 	}
-	
+
 	void unref(T* obj) {
 		for (auto it = cache.begin(); it != cache.end(); ++it) {
 			if (it->second.second == obj) {
@@ -125,7 +125,7 @@ public:
 			}
 		}
 	}
-	
+
 	void print() const {
 		std::cout << "objcache: " << cache.size() << " entries.\n";
 		for (typename std::map<std::string, std::pair<unsigned, T*> >::const_iterator it = cache.begin(); it != cache.end(); ++it)
@@ -143,6 +143,30 @@ public:
 		T* get() { return myobj; }
 		const T* get() const { return myobj; }
 	};
+};
+
+/// handle class to use as reference
+template<class C, typename Key = std::string>
+class object_handle
+{
+public:
+	object_handle() = default;
+	~object_handle() { unref(); }
+	C& get() { return *storage; }
+	const C& get() const { return *storage; }
+	bool is_valid() const { return mystore != nullptr; }
+	C* operator->() { return storage; }
+	const C* operator->() const { return storage; }
+	object_handle(objcachet<C>& store, Key key_) { mystore = &store; key = std::move(key_); storage = store.ref(key); }
+	object_handle(object_handle&& o) : mystore(o.mystore), key(o.key), storage(o.storage) { o.storage = nullptr; }
+	object_handle& operator= (object_handle&& o) { if (&o != this) { mystore = o.mystore; key = o.key; storage = o.storage; o.storage = nullptr; } return *this; }
+protected:
+	object_handle(const object_handle& ) = delete;
+	object_handle& operator= (const object_handle& ) = delete;
+	void unref() { if (mystore) { mystore->unref(key); mystore = nullptr; storage = nullptr; } }
+	objcachet<C>* mystore{nullptr};
+	Key key;
+	C* storage{nullptr};
 };
 
 #endif

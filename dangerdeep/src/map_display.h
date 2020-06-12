@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "widget.h"
 #include "primitives.h"
 #include "bivector.h"
+#include <unordered_set>
 class game;
 class game_editor;
 class sea_object;
@@ -42,8 +43,8 @@ protected:
 	vector2i mouse_position;	// last mouse position
 	int mapmode;
 
-	void draw_vessel_symbol(const vector2& offset, sea_object* so, color c) const;
-	void draw_trail(sea_object* so, const vector2& offset) const;
+	void draw_vessel_symbol(const vector2& offset, const sea_object* so, color c) const;
+	void draw_trail(const sea_object* so, const vector2& offset) const;
 	void draw_pings(game& gm, const vector2& offset) const;
 	void draw_sound_contact(game& gm, const sea_object* player,
 		double max_view_dist, const vector2& offset) const;
@@ -83,7 +84,7 @@ protected:
 	widget_slider* edit_cvspeed;
 	widget_list* edit_cvlist;
 	vector2i mouse_position_down{-1,-1};	// position of mouse when button was pressed
-	std::set<sea_object*> selection;
+	std::unordered_set<sea_object_id> selection;
 	key_mod state_of_key_modifiers;
 	objcachet<texture>::reference notepadsheet;
 

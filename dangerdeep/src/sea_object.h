@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SEA_OBJECT_H
 
 #include <string>
-#include "ptrvector.h"
 #include <new>
 #include <stdexcept>
 
@@ -38,6 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "countrycodes.h"
 #include "sensors.h"
 #include "sonar.h"
+#include "objcache.h"
 
 /*
 fixme: global todo (2004/06/26):
@@ -58,6 +58,12 @@ class texture;
 class sea_object
 {
 public:
+	/// defined to make it storeable in map, don't use
+	// fixme why forbid copy? not necessary!
+	sea_object() = default;
+	sea_object(sea_object&& ) = default;
+	sea_object& operator= (sea_object&& ) = default;
+
 	/// special class to make handling of dead/defunct objects easier.
 	class is_dead_exception : public error
 	{
@@ -112,18 +118,18 @@ public:
 	// position inside sub
 	// relative weakness (how sensitive is part to shock waves)
 	// must be surfaced to get repaired
-	// cannot be repaired at sea	
+	// cannot be repaired at sea
 	// absolute time needed for repair
 	// new: damage levels (some parts can only be ok/wrecked or ok/damaged/wrecked)
 	// new: damagle from which direction/protected by etc.
 	//      parts that get damaged absorb shock waves, protecing other parts
 	//      either this must be calculated or faked via direction indicators etc.
-	
+
 	// addition damage for ships: armor, i.e. resistance against shells.
 	// two shell types AP and HE (armor piercing and high explosive)
 	// we would have only HE shells in Dftd, because we have no battleship simulator...
 	// although PD could be also needed...
-	
+
 	struct damage_data_scheme {
 		vector3f p1, p2;	// corners of bounding box around part, p1 < p2
 					// coordinates in 0...1 relative to left,bottom,aft
@@ -135,7 +141,7 @@ public:
 		damage_data_scheme(const vector3f& a, const vector3f& b, float w, unsigned t, bool s = false, bool r = true) :
 			p1(a), p2(b), weakness(w), repairtime(t), surfaced(s), repairable(r) {}
 	};
-	
+
 	std::vector<damage_data_scheme> damage_schemes;
 
 	// each sea_object has some damageable parts.
@@ -160,22 +166,13 @@ public:
 		//void save(ostream& out) const { write_double(out, status); write_double(out, repairtime); }
 	};
 
-private:
-	sea_object() = delete;
-	sea_object& operator=(const sea_object& other) = delete;
-	sea_object(const sea_object& other) = delete;
-
 protected:
-	// game exists before and after live of each sea_object, but calls to game are very common.
-	// so store a ref to game here.	
-	game& gm;
-
 	// filename for specification .xml file, set in constructor
 	std::string specfilename;
 
 	// filename for model file (also used for modelcache requests), read from spec file
 	std::string modelname;
-	class model* mymodel;	// pointer to model object, store as quick lookup
+	object_handle<class model> mymodel;	// pointer to model object, store as quick lookup
 
 	// model variants (layout / skin), read from spec file
 	struct skin_variant {
@@ -219,14 +216,14 @@ protected:
 	/// with drag already included.
 	///@param F the force in world space, default (0, 0, 0)
 	///@param T the torque in world space, default (0, 0, 0).
-	virtual void compute_force_and_torque(vector3& F, vector3& T) const;
+	virtual void compute_force_and_torque(vector3& F, vector3& T, game& gm) const;
 
 	/// recomputes *_velocity, heading etc.
 	void compute_helper_values();
 
 	vector3f size3d;		// computed from model, indirect read from spec file, width, length, height
 
-	/// Activity state of an object.	
+	/// Activity state of an object.
 	/// an object is alive until it is killed or inactive.
 	/// killed (dead) objects exists at least one simulation step. All other objects must remove their
 	/// pointers to an object, if it is dead.
@@ -234,17 +231,17 @@ protected:
 	alive_status alive_stat;	// [SAVE]
 
 	/// Sensor systems, created after data in spec file
-	ptrvector<sensor> sensors;
-	
+	std::vector<std::unique_ptr<sensor>> sensors;
+
 	// fixme: this is per model/type only. it is a waste to store it for every object
 	std::string descr_near, descr_medium, descr_far;	// read from spec file
 
 	std::unique_ptr<ai> myai;	// created from spec file, but data needs to be saved, [SAVE]
 
-	/// pointer to target or similar object.
+	/// pointer to target or similar object. @todo store in ai/player object, not here!!!
 	/// used by airplanes/ships/submarines to store a reference to their target.
 	/// automatically set to NULL by simulate() if target is inactive.
-	sea_object* target;	// [SAVE]
+	sea_object_id target{};	// [SAVE]
 
 	/// flag to toggle invulnerability. Note that this is only set or used for the editor
 	/// or debugging purposes!
@@ -261,13 +258,13 @@ protected:
 	/// Detection time counter (counts down). When it reaches zero, detection of other objects is triggered.
 	double redetect_time;
 	/// list of visible objects, recreated regularly
-	std::vector<sea_object*> visible_objects;
+	std::vector<const sea_object*> visible_objects;
 	/// list of radar detected objects, recreated regularly  , fixme: use some contact type here as well
-	std::vector<sea_object*> radar_objects;
+	std::vector<const sea_object*> radar_objects;
 	/// list of heared/sonar detected objects, recreated regularly
 	std::vector<sonar_contact> sonar_objects;
 
-	virtual void set_sensor ( sensor_system ss, sensor* s );
+	virtual void set_sensor ( sensor_system ss, std::unique_ptr<sensor>&& s );
 
 	/**
 		This method calculates the visible cross section of the target.
@@ -278,7 +275,7 @@ protected:
 
 	// construct sea_object without spec file (for simple objects like DCs, shells, ...)
 	// these models have no skin support, because there is no spec file.
-	sea_object(game& gm_, std::string  modelname_);
+	sea_object(game& gm_, std::string modelname_);
 
 	// construct a sea_object. called by heirs
 	sea_object(game& gm_, const xml_elem& parent);
@@ -299,16 +296,16 @@ public:
 	const std::string& get_modelname() const { return modelname; }
 	const std::string& get_skin_layout() const { return skin_name; }
 
-	virtual void simulate(double delta_time);
+	virtual void simulate(double delta_time, game& gm);
 //	virtual bool is_collision(const sea_object* other);
 //	virtual bool is_collision(const vector2& pos);
 
 	// damage an object. give a relative position (in meters) where the damage is caused,
 	// the strength (and type!) of damage. (types: impact (piercing), explosion (destruction), shock wave)
 	// the strength is proportional to damage_status, 0-none, 1-light, 2-medium...
-	virtual bool damage(const vector3& fromwhere, unsigned strength); // returns true if object was destroyed
+	virtual bool damage(const vector3& fromwhere, unsigned strength, game& gm); // returns true if object was destroyed
 
-	virtual void set_target(sea_object* s) { if (s && s->is_alive()) target = s; }
+	virtual void set_target(sea_object_id s, game& gm) { target = s; }
 
 	virtual unsigned calc_damage() const;	// returns damage in percent (100 means dead)
 
@@ -346,8 +343,8 @@ public:
 	virtual float surface_visibility(const vector2& watcher) const;
 	virtual angle get_heading() const { return heading; }
 	virtual class ai* get_ai() { return myai.get(); }
-	virtual sea_object* get_target() { return target; }
-	virtual const sea_object* get_target() const { return target; }
+	auto get_target() { return target; }
+	const auto get_target() const { return target; }
 	bool is_invulnerable() const { return invulnerable; }
 	countrycode get_country() const { return country; }
 	partycode get_party() const { return party; }
@@ -378,18 +375,18 @@ public:
 	virtual sensor* get_sensor ( sensor_system ss );
 	virtual const sensor* get_sensor ( sensor_system ss ) const;
 
-	virtual const std::vector<sea_object*>& get_visible_objects() const { return visible_objects; }
-	virtual const std::vector<sea_object*>& get_radar_objects() const { return radar_objects; }
-	virtual const std::vector<sonar_contact>& get_sonar_objects() const { return sonar_objects; }
+	const auto& get_visible_objects() const { return visible_objects; }
+	const auto& get_radar_objects() const { return radar_objects; }
+	const auto& get_sonar_objects() const { return sonar_objects; }
 
 	// check for a vector of pointers if the objects are still alive
 	// and remove entries of dead objects (do not delete the objects itself!)
 	// and compress the vector afterwars.
-	static void compress(std::vector<sea_object*>& vec);
-	static void compress(std::list<sea_object*>& lst);
+	static void compress(std::vector<const sea_object*>& vec);
+	static void compress(std::list<const sea_object*>& lst);
 
 	/// get reference to model of this object, throws error if no model
-	class model& get_model() const;
+	const class model& get_model() const;
 
 	/// get minimum and maximum voxel index covering a point (polygon) set
 	///@returns number of voxels covered

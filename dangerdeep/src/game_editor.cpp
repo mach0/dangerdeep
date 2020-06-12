@@ -73,23 +73,20 @@ game_editor::game_editor(const date& start_date)
 	// standard sub type, can be changed later
 	string subtype = "submarine_VIIc";
 
-	submarine* psub = nullptr;
 	for (unsigned i = 0; i < 1/*nr_of_players*/; ++i) {
 		xml_doc doc(data_file().get_filename(subtype));
 		doc.load();
-		auto* sub = new submarine(*this, doc.first_child());
-		sub->set_skin_layout(model::default_layout);
-		sub->init_fill_torpedo_tubes(start_date);
-		sub->manipulate_invulnerability(true);
+		submarine sub(*this, doc.first_child());
+		sub.set_skin_layout(model::default_layout);
+		sub.init_fill_torpedo_tubes(start_date);
+		sub.manipulate_invulnerability(true);
+		auto& [id, thesub] = spawn_submarine(std::move(sub));
 		if (i == 0) {
-			psub = sub;
-			player = psub;
+			player = &thesub;
+			player_id = id;
 			compute_max_view_dist();
 		}
-
-		spawn_submarine(sub);
 	}
-	player = psub;
 
 	my_run_state = running;
 	last_trail_time = time - TRAIL_TIME;
@@ -118,7 +115,7 @@ game_editor::~game_editor()
 
 
 // copied from class game
-template<class T> void cleanup(ptrvector<T>& s)
+template<class T> void cleanup(std::vector<T>& s)
 {
 	for (unsigned i = 0; i < s.size(); ++i) {
 		if (s[i] && s[i]->is_defunct()) {

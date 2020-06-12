@@ -40,7 +40,7 @@ public:
 	// create from mission file or savegame (xml file)
 	game_editor(const std::string& filename);
 
-	const ptrvector<convoy>& get_convoy_list() const { return convoys; }
+	const auto& get_convoy_list() const { return convoys; }
 
 	// is editor?
 	bool is_editor() const override { return true; }

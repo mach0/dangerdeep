@@ -36,23 +36,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /** At the moment there are no specialisations for various types of depth charges */
 class depth_charge : public sea_object
 {
- private:
-	depth_charge() = delete;
-	depth_charge& operator=(const depth_charge& other) = delete;
-	depth_charge(const depth_charge& other) = delete;
-
 protected:
 	double explosion_depth;
 
 public:
+	/// Needed to store in map, don't use
+	depth_charge() = default;
 	depth_charge(game& gm_);	// for loading
 	depth_charge(game& gm_, double expl_depth, const vector3& pos);	// for creation
 
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
 
-	void simulate(double delta_time) override;
-	void compute_force_and_torque(vector3& F, vector3& T) const override;
+	void simulate(double delta_time, game& gm) override;
+	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 };
 
 #endif

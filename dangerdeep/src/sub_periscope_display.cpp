@@ -128,7 +128,7 @@ void sub_periscope_display::post_display() const
 		glPopMatrix();
 	}
 
-	if (gm.get_player()->get_target()) {
+	if (gm.get_player()->get_target().is_valid()) {
 		projection_data pd = get_projection_data(gm);
 		ui.show_target(pd.x, pd.y, pd.w, pd.h, get_viewpos(gm));
 	}

@@ -33,6 +33,7 @@ public:
 private:
 	tdc& operator=(const tdc& other) = delete;
 	tdc(const tdc& other) = delete;
+	tdc& operator=(tdc&& ) = delete;
 
 protected:
 	// tracker switches
@@ -68,6 +69,7 @@ protected:
 
 public:
 	tdc();
+	tdc(tdc&& ) = default;
 	void load(const xml_elem& parent);
 	void save(xml_elem& parent) const;
 

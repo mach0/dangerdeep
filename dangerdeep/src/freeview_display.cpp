@@ -237,18 +237,8 @@ bool freeview_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
 
 
 
-struct alpha_cmp : public std::binary_function<water_splash*, water_splash*, bool> {
-	vector2 playerpos;
-	bool operator()(water_splash* a, water_splash* b) {
-		return	a->get_pos().xy().square_distance(playerpos) >
-			b->get_pos().xy().square_distance(playerpos);
-	}
-};
-
-
-
 void freeview_display::draw_objects(game& gm, const vector3& viewpos,
-				    const vector<sea_object*>& objects,
+				    const vector<const sea_object*>& objects,
 				    const colorf& light_color,
 				    const bool under_water,
 				    bool mirrorclip) const
@@ -327,7 +317,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 #endif
 
 	if (withunderwaterweapons) {
-		vector<depth_charge*> depth_charges = gm.visible_depth_charges(player);
+		auto depth_charges = gm.visible_depth_charges(player);
 		for (auto it : depth_charges) {
 			glPushMatrix();
 			vector3 pos = it->get_pos() - viewpos;
@@ -338,7 +328,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 		}
 	}
 
-	vector<gun_shell*> gun_shells = gm.visible_gun_shells(player);
+	auto gun_shells = gm.visible_gun_shells(player);
 	for (auto it : gun_shells) {
 		glPushMatrix();
 		vector3 pos = it->get_pos() - viewpos;
@@ -348,15 +338,17 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 		glPopMatrix();
 	}
 
-	vector<particle*> particles = gm.visible_particles(player);
+	auto particles = gm.visible_particles(player);
 	particle::display_all(particles, viewpos, gm, light_color);
 
 	glDepthMask(GL_FALSE);
 	// render all visible splashes. must alpha sort them, and not write to z-buffer.
-	vector<water_splash*> water_splashes = gm.visible_water_splashes(player);
-	alpha_cmp ac;
-	ac.playerpos = player->get_pos().xy();
-	std::sort(water_splashes.begin(), water_splashes.end(), ac);
+	auto water_splashes = gm.visible_water_splashes(player);
+	const auto& playerpos = player->get_pos().xy();
+	std::sort(water_splashes.begin(), water_splashes.end(), [&playerpos](const auto* a, const auto* b) {
+		return a->get_pos().xy().square_distance(playerpos) > b->get_pos().xy().square_distance(playerpos);
+	});
+
 	// sort that array by square of distance to player, with std::sort and compare function
 	for (auto water_splashe : water_splashes) {
 		glPushMatrix();
@@ -432,7 +424,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	// ************************* compute visible surface objects *******************
 
 	// compute visble ships/subs, needed for draw_objects and amount of foam computation
-	const vector<sea_object*>& objects = player->get_visible_objects();
+	const auto& objects = player->get_visible_objects();
 	//fixme: the lookout sensor must give all ships seens around, not cull away ships
 	//out of the frustum, or their foam is lost as well, even it would be visible...
 
@@ -500,7 +492,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 		// would be perfect which is highly unrealistic.
 		// so remove entries that are too far away. Torpedoes can't be seen
 		// so they don't need to get rendered.
-		vector<sea_object*> objects_mirror;
+		vector<const sea_object*> objects_mirror;
 		objects_mirror.reserve(objects.size());
 		const double MIRROR_DIST = 1000.0;	// 1km or so...
 		for (auto object : objects) {
@@ -552,12 +544,12 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	// give pointers to all visible ships for foam calculation, that are all ships, subs
 	// and torpedoes. Gun shell impacts/dc explosions will be added later...
 	//fixme: foam generated depends on depth of sub and type of torpedo etc.
-	vector<ship*> allships;
+	vector<const ship*> allships;
 	allships.reserve(objects.size());
 	for (auto object : objects) {
-		ship* s = dynamic_cast<ship*>(object);
+		auto* s = dynamic_cast<const ship*>(object);
 		if (s) {
-			auto* t = dynamic_cast<torpedo*>(s);
+			auto* t = dynamic_cast<const torpedo*>(s);
 			if (!t) {
 				// do NOT store torpedoes here, because they have no foam trail,
 				// they travel under water.

@@ -409,9 +409,9 @@ game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
 				// evaluate events of game, because they are cleared
 				// by next call of game::simulate and new ones are
 				// generated
-				const ptrlist<event>& events = gm.get_events();
+				const auto& events = gm.get_events();
 				for (auto & it : events) {
-					it.evaluate(*ui);
+					it->evaluate(*ui);
 				}
 			}
 		}

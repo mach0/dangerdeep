@@ -28,7 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector4.h"
 #include "texture.h"
 #include "datadirs.h"
-#include "ptrvector.h"
 
 /* possible interface changes ahead:
    normals have 2x resolution than vertices,

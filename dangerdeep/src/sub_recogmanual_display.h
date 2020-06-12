@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "user_display.h"
 #include "datadirs.h"
 #include "widget.h"
-#include "ptrvector.h"
 
 class sub_recogmanual_display : public user_display
 {
@@ -47,12 +46,12 @@ protected:
 	widget_button_next btn_left;
 	widget_button_next btn_right;
 	std::unique_ptr<image> background;
-	ptrvector<image> silhouettes;
-	ptrvector<std::string> classes;
-	ptrvector<std::string> lengths;
-	ptrvector<std::string> displacements;
-	ptrvector<std::string> weapons;
-	ptrvector<std::string> countries;
+	std::vector<std::unique_ptr<image>> silhouettes;
+	std::vector<std::string> classes;
+	std::vector<std::string> lengths;
+	std::vector<std::string> displacements;
+	std::vector<std::string> weapons;
+	std::vector<std::string> countries;
 
 public:
 	sub_recogmanual_display(class user_interface& ui_);

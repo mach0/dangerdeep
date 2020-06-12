@@ -26,8 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include <list>
 #include <string>
-#include "ptrvector.h"
-#include "texture.h"	// needed at least for correct "delete" usage in ptrvector
+#include "texture.h"	// needed at least for correct "delete" usage
 
 
 ///\brief Handles an image for OpenGL based rendering.
@@ -37,7 +36,7 @@ protected:
 	std::string name;	// filename
 	unsigned width, height;
 	unsigned gltx, glty;	// no. of textures in x and y direction
-	ptrvector<texture> textures;
+	std::vector<std::unique_ptr<texture>> textures;
 
 private:
 	image() = delete;

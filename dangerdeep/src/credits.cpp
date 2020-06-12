@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "angle.h"
 #include "bspline.h"
 #include "log.h"
-#include "ptrvector.h"
 #include "frustum.h"
 #include "input_event_handler.h"
 #include <algorithm>

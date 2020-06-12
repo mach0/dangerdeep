@@ -38,12 +38,9 @@ class game;
  */
 class submarine : public ship
 {
- private:
-	submarine() = delete;
-	submarine& operator= (const submarine& other) = delete;
-	submarine(const submarine& other) = delete;
-
  public:
+	/// defined to make it storeable in map, don't use
+	submarine() = default;
 
 	struct stored_torpedo
 	{
@@ -58,8 +55,8 @@ class submarine : public ship
 		angle addleadangle;	///< additional lead angle (only per tube) fixme: replace by lead angle reported from TDC
 
 		stored_torpedo();
-		stored_torpedo(game& gm, std::string  type);
-		void load(game& gm, const xml_elem& parent);
+		stored_torpedo(std::string type);
+		void load(const xml_elem& parent);
 		void save(xml_elem& parent) const;
 	};
 
@@ -126,7 +123,7 @@ protected:
 
 	// the hearing device type
 	hearing_device_type hearing_device;	// read from spec file and time, should be saved later
-    
+
 	std::vector<part> parts;	// read from data/spec file, fixme do that!
 
 	// fixme: add: double temperature;	// overall temperature in submarine. used for torpedo preheating computation
@@ -147,14 +144,14 @@ protected:
 	*/
 	virtual double get_battery_recharge_rate () const
 	{ return ( 1.0f - ( battery_recharge_value_a *
-    	exp ( - get_throttle_speed () / battery_recharge_value_t ) ) ); }
+	exp ( - get_throttle_speed () / battery_recharge_value_t ) ) ); }
 
 	void calculate_fuel_factor ( double delta_time ) override;
-	
-	void gun_manning_changed(bool is_gun_manned) override;
+
+	void gun_manning_changed(bool is_gun_manned, game& gm) override;
 
 	/// used to simulate diving
-	void compute_force_and_torque(vector3& F, vector3& T) const override;
+	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 
 	/// open ballast tank valves
 	void flood_ballast_tanks();
@@ -237,10 +234,10 @@ public:
 
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
-	
-	void simulate(double delta_time) override;
 
-	void set_target(sea_object* s) override;
+	void simulate(double delta_time, game& gm) override;
+
+	void set_target(sea_object_id s, game& gm) override;
 
 	// get bridge data
 	std::string get_bridge_filename() { return bridge_model_name; }
@@ -307,10 +304,10 @@ public:
 	virtual double get_bow_deck_reload_time() const { return torp_transfer_times[2]; }
 	virtual double get_stern_deck_reload_time() const { return torp_transfer_times[3]; }
 	virtual double get_bow_stern_deck_transfer_time() const { return torp_transfer_times[4]; }
-	
+
 	// damage is added if dc damages sub.
 	virtual void depth_charge_explosion(const class depth_charge& dc);
-    
+
 	// command interface for subs
 	virtual void scope_up() { scope_to_level(1.0f); }
 	virtual void scope_down() { scope_to_level(0.0f); }
@@ -318,19 +315,19 @@ public:
 	virtual bool set_snorkel_up ( bool snorkel_up );	// fixme get rid of this
 	virtual void snorkel_up() { set_snorkel_up(true); }
 	virtual void snorkel_down() { set_snorkel_up(false); }
-	virtual void set_planes_to(double amount); // -2...2 // fixme: functions for both dive planes needed?
-	virtual void crash_dive();
-	virtual void dive_to_depth(unsigned meters);
+	virtual void set_planes_to(double amount, game& gm); // -2...2 // fixme: functions for both dive planes needed?
+	virtual void crash_dive(game& gm);
+	virtual void dive_to_depth(unsigned meters, game& gm);
 	virtual void depth_steering_logic();
 	virtual void ballast_tank_control_logic(double delta_time);
 	virtual void transfer_torpedo(unsigned from, unsigned to);
 
 	// give tubenr -1 for any loaded tube, or else 0-5, returns true on success
-	virtual bool launch_torpedo(int tubenr, sea_object* target);
+	virtual bool launch_torpedo(int tubenr, const vector3& targetpos, game& gm);
 	// end of command interface
 
 	virtual bool has_deck_gun() { return has_guns(); }
-	
+
 	virtual tdc& get_tdc() { return TDC; }
 	virtual const tdc& get_tdc() const { return TDC; }
 	//virtual sonar_operator& get_sonarman() { return sonarman; } // not needed. dangerous, sonarman could get manipulated.

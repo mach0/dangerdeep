@@ -17,37 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// underwater caustic simulation
+// sea object id
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef CAUSTICS_H
-#define CAUSTICS_H
+#ifndef SEA_OBJECT_ID_H
+#define SEA_OBJECT_ID_H
 
-/*
-	This class contains map for underwater caustic
-*/
+#include <functional>
 
-
-#include "texture.h"
-#include <cfloat>
-
-
-
-class caustics
+/// Define datatype for a sea object reference. 0 is invalid reference.
+struct sea_object_id
 {
-protected:
-	double mytime{-DBL_MAX};
-	std::vector<std::unique_ptr<texture>> texture_pointers;
-	unsigned int current_texture{0};
-
-public:
-	caustics();
-
-	void set_time(double tm);
-	texture *get_map() const;
+	unsigned id{0};
+	bool is_valid() const { return id != 0; }
+	sea_object_id() = default;
+	sea_object_id(unsigned n) : id(n) {}
+	bool operator== (const sea_object_id& other) const { return id == other.id; }
+	bool operator!= (const sea_object_id& other) const { return id != other.id; }
 };
 
-
-
+/// Declare hash function so we can use sea_object_id as map-key
+template<> struct std::hash<sea_object_id>
+{
+	std::size_t operator()(const sea_object_id& id) const noexcept { return id.id; }
+};
 
 #endif

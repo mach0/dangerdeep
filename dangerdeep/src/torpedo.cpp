@@ -73,10 +73,10 @@ bool torpedo::fuse::handle_impact(angle impactangle) const
 
 
 torpedo::setup::setup()
-	: 
+	:
 	  turnangle(180.0),
 	  lut_angle(0.0)
-	  
+
 {
 }
 
@@ -117,7 +117,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	  probability_of_rundepth_failure(0.2),	// basically high before mid 1942, fixme
 	  run_length(0),
 	  steering_device_phase(0),
-  	  dive_planes(vector3(0,-3.5,0 /*not used yet*/), 1, 20, 0.25*0.1/*area*/, 40)//read consts from spec file, fixme
+	  dive_planes(vector3(0,-3.5,0 /*not used yet*/), 1, 20, 0.25*0.1/*area*/, 40)//read consts from spec file, fixme
 {
 	date dt = gm.get_equipment_date();
 	// ------------ availability, check this first
@@ -284,7 +284,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	log_debug("torpedo mass now " << mass);
 }
 
-	
+
 
 void torpedo::load(const xml_elem& parent)
 {
@@ -314,7 +314,7 @@ void torpedo::save(xml_elem& parent) const
 
 
 
-void torpedo::simulate(double delta_time)
+void torpedo::simulate(double delta_time, game& gm)
 {
 	/*
 	log_debug("torpedo  " << this << " heading " << heading.value() << " should head to " << head_to.value() << " turn speed " << turn_velocity << "\n"
@@ -323,7 +323,7 @@ void torpedo::simulate(double delta_time)
 		  << " delta t "<< delta_time << "linear_mom " << linear_momentum);
 	*/
 	redetect_time = 1.0;
-	ship::simulate(delta_time);
+	ship::simulate(delta_time, gm);
 
 	depth_steering_logic();
 	dive_planes.simulate(delta_time);
@@ -341,7 +341,7 @@ void torpedo::simulate(double delta_time)
 	// Torpedo starts to search for a target when the minimum save
 	// distance for the warhead is passed.
 	if (!sensors.empty() && run_length >= sensor_activation_distance) {
-		ship* target = gm.sonar_acoustical_torpedo_target ( this );
+		auto* target = gm.sonar_acoustical_torpedo_target ( this );
 		if (target) {
 			angle targetang(target->get_engine_noise_source() - get_pos().xy());
 			bool turnright = get_heading().is_clockwise_nearer(targetang);
@@ -412,9 +412,9 @@ void torpedo::simulate(double delta_time)
 
 
 
-void torpedo::compute_force_and_torque(vector3& F, vector3& T) const
+void torpedo::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 {
-	ship::compute_force_and_torque(F, T);
+	ship::compute_force_and_torque(F, T, gm);
 
 	// drag by stern dive rudder
 	const double water_density = 1000.0;
@@ -582,7 +582,7 @@ double torpedo::get_torp_speed() const
 
 
 
-bool torpedo::test_contact_fuse() const
+bool torpedo::test_contact_fuse(game& gm) const
 {
 	// compute if contact fuse fails (if fuse type is NONE, probability is 1.0, so it fails always)
 	return gm.randomf() > contact_fuse.failure_probability;
@@ -590,7 +590,7 @@ bool torpedo::test_contact_fuse() const
 
 
 
-bool torpedo::test_magnetic_fuse() const
+bool torpedo::test_magnetic_fuse(game& gm) const
 {
 	// compute if magnetic fuse fails (if fuse type is NONE, probability is 1.0, so it fails always)
 	return gm.randomf() > magnetic_fuse.failure_probability;

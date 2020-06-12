@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "shader.h"
 #include "vertexbufferobject.h"
-#include "ptrvector.h"
 #include "frustum.h"
 #include "datadirs.h"
 #include "height_generator.h"
@@ -147,7 +146,7 @@ class geoclipmap
 
 	};
 
-	ptrvector<level> levels;
+	std::vector<std::unique_ptr<level>> levels;
 	height_generator& height_gen;
 
 	int mod(int n) const {
