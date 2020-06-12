@@ -118,7 +118,6 @@ protected:
 	bool attackrun;		// true when running full speed shortly before the attack
 	bool evasive_manouver;	// true when set_course tries an alternative route
 	double rem_manouver_time; // remaining time that ai should wait for during an evasive manouver
-	ship& parent;		// fixme: should be sea_object and redefined by heirs!
 	sea_object_id followme;		// could be a sea_object instead of ship?
 	sea_object_id myconvoy;	// convoy to which parent belongs (if any)
 	bool has_contact;
@@ -129,12 +128,14 @@ protected:
 	bool cyclewaypoints;
 	std::list<vector2> waypoints;
 
-	ai();
-	ai(const ai& other);
-	ai& operator= (const ai& other);
+	ai() = delete;
+	ai(const ai& other) = delete;
+	ai& operator= (const ai& other) = delete;
+	ai(ai&& ) = delete;
+	ai& operator= (ai&& ) = delete;
 
 public:
-	ai(ship& parent_, types type_);
+	ai(types type_);
 	virtual ~ai();
 
 	// attention: all sea_objects must exist BEFORE this is called!
@@ -148,16 +149,16 @@ private:
 
 public:
 	virtual void attack_contact(const vector3& c);
-	virtual void act(class game& gm, double delta_time);
+	virtual void act(ship& parent, class game& gm, double delta_time);
 
 private:
 	// various ai's and helper functions, fixme replace with subclasses
 	virtual void set_zigzag(bool stat = true);
-	virtual void act_escort(class game& g, double delta_time);
-	virtual void act_dumb(class game& g, double delta_time);
-	virtual void act_convoy(class game& g, double delta_time);
-	virtual bool set_course_to_pos(class game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
-	virtual void relax(class game& gm);	// follow path/object, remove contact info
+	virtual void act_escort(ship& parent, class game& g, double delta_time);
+	virtual void act_dumb(ship& parent, class game& g, double delta_time);
+	virtual void act_convoy(ship& parent, class game& g, double delta_time);
+	virtual bool set_course_to_pos(ship& parent, class game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
+	virtual void relax(ship& parent, class game& gm);	// follow path/object, remove contact info
 	virtual void follow(sea_object_id t = {});	// follows path if t is 0
 	void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };

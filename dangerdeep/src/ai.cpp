@@ -58,9 +58,9 @@ using std::string;
 
 // ai computation between is randomly interleaved between frames to avoid
 // time consumption peeks every AI_THINK_CYCLE_TIME seconds
-ai::ai(ship& parent_, types type_) : type(type_), state(followpath),
+ai::ai(types type_) : type(type_), state(followpath),
 	zigzagstate(1/*0 fixme*/), attackrun(false), evasive_manouver(false),
-	rem_manouver_time(0), parent(parent_),
+	rem_manouver_time(0),
 	has_contact(false),
 	remaining_time(rnd() * AI_THINK_CYCLE_TIME),
 	cyclewaypoints(false)
@@ -122,7 +122,7 @@ void ai::save(xml_elem& parentnode) const
 }
 
 
-void ai::relax(game& gm)
+void ai::relax(ship& parent, game& gm)
 {
 	has_contact = false;
 	state = followme.is_valid() ? followobject : followpath;
@@ -142,7 +142,7 @@ void ai::follow(sea_object_id t)
 	state = followme.is_valid() ? followobject : followpath;
 }
 
-void ai::act(class game& gm, double delta_time)
+void ai::act(ship& parent, class game& gm, double delta_time)
 {
 	remaining_time -= delta_time;
 	if (remaining_time > 0) {
@@ -152,9 +152,9 @@ void ai::act(class game& gm, double delta_time)
 	}
 
 	switch (type) {
-		case escort: act_escort(gm, delta_time); break;
-		case convoy: act_convoy(gm, delta_time); break;
-		default: act_dumb(gm, delta_time); break;
+		case escort: act_escort(parent, gm, delta_time); break;
+		case convoy: act_convoy(parent, gm, delta_time); break;
+		default: act_dumb(parent, gm, delta_time); break;
 	}
 
 	if (zigzagstate > 0) {	// this depends on ai type, convoys zigzag different! fixme
@@ -177,7 +177,7 @@ void ai::set_zigzag(bool stat)
 		zigzagstate = 0;
 }
 
-void ai::act_escort(game& gm, double delta_time)
+void ai::act_escort(ship& parent, game& gm, double delta_time)
 {
 	// always watch out/listen/ping for the enemy
 	// watch around
@@ -195,7 +195,7 @@ void ai::act_escort(game& gm, double delta_time)
 	// to locate them anymore.
 	if ( !parent.is_alive () )
 	{
-		act_dumb(gm, delta_time);
+		act_dumb(parent, gm, delta_time);
 		return;
 	}
 
@@ -255,11 +255,11 @@ void ai::act_escort(game& gm, double delta_time)
 	}
 
 	if (state == followpath || state == followobject) {
-		act_dumb(gm, delta_time);
+		act_dumb(parent, gm, delta_time);
 	} else if (state == attackcontact) {	// attack sonar/visible contact
 
 		if (!(evasive_manouver && rem_manouver_time > 0)) {
-			evasive_manouver = ! set_course_to_pos(gm, contact.xy());//fixme move function to ai!!!
+			evasive_manouver = ! set_course_to_pos(parent, gm, contact.xy());//fixme move function to ai!!!
 			if (evasive_manouver) {
 				// wait for half circle to complete
 				double waittime = 180.0 / (parent.get_turn_rate().value() * parent.get_speed());
@@ -291,20 +291,20 @@ void ai::act_escort(game& gm, double delta_time)
 			// have exploded to avoid suicide. fixme
 			// fixme: just ai hacking/testing.
 			// after spawning a DC start pinging again.
-			relax(gm);
+			relax(parent, gm);
 		}
 	}
 
 	if (rem_manouver_time > 0) rem_manouver_time -= AI_THINK_CYCLE_TIME;
 }
 
-void ai::act_dumb(game& gm, double delta_time)
+void ai::act_dumb(ship& parent, game& gm, double delta_time)
 {
 	if (state == followobject && followme.is_valid()) {
-		set_course_to_pos(gm, gm.get_object(followme).get_pos().xy());
+		set_course_to_pos(parent, gm, gm.get_object(followme).get_pos().xy());
 	} else if (state == followpath) {
 		if (waypoints.size() > 0) {
-			set_course_to_pos(gm, waypoints.front());
+			set_course_to_pos(parent, gm, waypoints.front());
 			if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS) {
 				if (cyclewaypoints)
 					waypoints.push_back(waypoints.front());
@@ -314,11 +314,11 @@ void ai::act_dumb(game& gm, double delta_time)
 	}
 }
 
-void ai::act_convoy(game& gm, double delta_time)
+void ai::act_convoy(ship& parent, game& gm, double delta_time)
 {
 	// follow waypoints
 	if (waypoints.size() > 0) {
-		set_course_to_pos(gm, waypoints.front());
+		set_course_to_pos(parent, gm, waypoints.front());
 		if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS) {
 /*
 			if (cyclewaypoints)
@@ -351,7 +351,7 @@ void ai::act_convoy(game& gm, double delta_time)
 //	}
 }
 
-bool ai::set_course_to_pos(game& gm, const vector2& pos)
+bool ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos)
 {
 	vector2 d = pos - parent.get_pos().xy();
 	vector2 hd = parent.get_heading().direction();
