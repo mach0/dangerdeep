@@ -43,6 +43,8 @@ After each step check functionality.
 17. Sound sfx are not loaded (wav expected, ogg provided)
 18. Fix portal rendering
 19. Check bvtree test, causes bad_alloc
+20. New bvtree as vector<node>, with each node is spheref and 3 indices (can be child0,1 or leaf data!)
+    Much faster and better for memory!
 
 
 Changes that have been started in code comparison:
