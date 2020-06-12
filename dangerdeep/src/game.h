@@ -118,7 +118,7 @@ public:
 		unsigned tons;
 		sink_record(date d, std::string  s, std::string  m,
 			    std::string  sn, std::string  ln, unsigned t)
-			: dat(d), descr(std::move(std::move(s))), mdlname(std::move(std::move(m))), specfilename(std::move(std::move(sn))), layoutname(std::move(std::move(ln))), tons(t) {}
+			: dat(d), descr(std::move(s)), mdlname(std::move(m)), specfilename(std::move(sn)), layoutname(std::move(ln)), tons(t) {}
 		sink_record(const xml_elem& parent);
 		void save(xml_elem& parent) const;
 	};
