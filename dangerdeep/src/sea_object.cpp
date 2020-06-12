@@ -741,6 +741,8 @@ void sea_object::kill()
 	if (alive_stat == defunct)
 		THROW(error, "illegal alive_stat switch (defunct to inactive)");
 	alive_stat = dead;
+	// avoid that the AI accesses this object, so delete it
+	myai = nullptr;
 }
 
 

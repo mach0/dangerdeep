@@ -96,13 +96,13 @@ that is later replaced by new sensor work.
 We need to know the ID from inside the objects or ai needs to store still
 pointers to parent.
 hall of frame is broken, widget hangs!
-when starting game, sub is immediatly sunk, something is wrong.
-starting editor the player object seems broken, segfault
 
 later usage of rigid_body, generic_rudder etc.
 A generic pointer to sea_object may be unnecessary, the objects can report their models for display.
 
 crash in editor when placing new ship directly on top of sub.
+
+rudder hard left seems not to work!
 
 
 Notes

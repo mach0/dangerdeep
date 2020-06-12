@@ -227,8 +227,8 @@ ship::ship(game& gm_, const xml_elem& parent)
 	if (parent.has_child("ai")) {
 		xml_elem eai = parent.child("ai");
 		string aitype = eai.attr("type");
-		if (aitype == "dumb") myai = std::make_unique<ai>(*this, ai::dumb);
-		else if (aitype == "escort") myai = std::make_unique<ai>(*this, ai::escort);
+		if (aitype == "dumb") myai = std::make_unique<ai>(ai::dumb);
+		else if (aitype == "escort") myai = std::make_unique<ai>(ai::escort);
 		else if (aitype == "none") myai.reset();
 		else THROW(error, string("illegal AI type in ") + specfilename);
 	}
@@ -577,7 +577,7 @@ void ship::simulate(double delta_time, game& gm)
 	if (rudder_2_id >= 0) mymodel->set_object_angle(rudder_2_id, rudder.angle);
 
 	if ( myai.get() )
-		myai->act(gm, delta_time);
+		myai->act(*this, gm, delta_time);
 
 	// calculate sinking, fixme replace by buoyancy...
 	if (is_inactive()) {
