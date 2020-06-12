@@ -64,7 +64,7 @@ protected:
 
 	// draw all sea_objects
 	virtual void draw_objects(class game& gm, const vector3& viewpos,
-				  const std::vector<sea_object*>& objects,
+				  const std::vector<const sea_object*>& objects,
 				  const colorf& light_color,
 				  const bool underwater,
 				  bool mirrorclip) const;

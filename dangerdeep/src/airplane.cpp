@@ -55,11 +55,11 @@ void airplane::save(xml_elem& parent) const
 
 
 
-void airplane::simulate(double delta_time)
+void airplane::simulate(double delta_time, game& gm)
 {
 	quaternion invrot = orientation.conj();
 	vector3 localvelocity = invrot.rotate(velocity);
-		
+
 	//vector3 locx = orientation.rotate(1, 0, 0);
 	vector3 locy = orientation.rotate(0, 1, 0);
 	vector3 locz = orientation.rotate(0, 0, 1);
@@ -94,17 +94,17 @@ void airplane::simulate(double delta_time)
 	// is - if the plane would change its orientation with respect to spatial velocity
 	// it couldn't turn or dive that fast, allowing the speed to catch up...
 
-/*	
+/*
 	vector3 winddir = localvelocity.normal();
 	double windturnangle = acos(locy * winddir) * 180.0 / M_PI;
 	if (windturnangle <= 0.0001) windturnangle = 0.0;
 	vector3 windturnaxis = (windturnangle > 0.0001) ? locy.cross(winddir).normal() : vector3(0, 0, 0);
-*/	
+*/
 /*
-cout << "winddir      " << winddir << "\n";	
-cout << "windta      " << windturnaxis << "\n";	
-cout << "windtan      " << windturnangle << "\n";	
-cout << "windtal      " << windturnaxis.length() << "\n";	
+cout << "winddir      " << winddir << "\n";
+cout << "windta      " << windturnaxis << "\n";
+cout << "windtan      " << windturnangle << "\n";
+cout << "windtal      " << windturnaxis.length() << "\n";
 */
 //	double windturnfactor = 0.333333;	// 1/sec
 //	quaternion windrotation = quaternion::rot(windturnfactor * windturnangle * delta_time, windturnaxis);
@@ -120,7 +120,7 @@ cout << "windtal      " << windturnaxis.length() << "\n";
 
 	// avoid negative speeds/forces fixme
 
-	// compute forces	
+	// compute forces
 	// propulsion by engine (thrust)
 	vector3 thrust = get_engine_thrust() * locy;
 	// lift by wings (fixme: works also if plane is upside down or nearly!)

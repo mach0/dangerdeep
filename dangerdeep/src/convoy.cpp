@@ -138,11 +138,11 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 	if (type_ == small || type_ == medium || type_ == large) {
 		name = "Custom"; // fixme...
 		auto cvsize = unsigned(type_);
-		
+
 		// speed? could be a slow or fast convoy (~4 or ~8 kts).
 		int throttle = 4 + rnd(2)*4;
 		velocity = sea_object::kts2ms(throttle);
-	
+
 		// compute size and structure of convoy
 		unsigned nrships = (2<<cvsize)*10+rnd(10)-5;
 		auto sqrtnrships = unsigned(floor(sqrt(float(nrships))));
@@ -159,21 +159,21 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 				string shiptype = get_random_ship(civilships);
 				xml_doc doc(data_file().get_filename(shiptype));
 				doc.load();
-				ship* s = new ship(gm, doc.first_child());
-				s->set_random_skin_name(gm.get_date());
+				ship s(gm, doc.first_child());
+				s.set_random_skin_name(gm.get_date());
 				vector2 pos = vector2(
 					dx*intershipdist + rnd()*60.0-30.0,
 					dy*intershipdist + rnd()*60.0-30.0 );
 				pos = pos.matrixmul(coursevec, coursevec.orthogonal());
-				s->manipulate_position((waypoints.front() + pos).xy0());
-				s->manipulate_heading(heading);
-				s->manipulate_speed(velocity);
-				s->set_throttle(throttle);
-				merchants.emplace_back(s, pos);
+				s.manipulate_position((waypoints.front() + pos).xy0());
+				s.manipulate_heading(heading);
+				s.manipulate_speed(velocity);
+				s.set_throttle(throttle);
+				merchants.emplace_back(gm.spawn_ship(std::move(s)).first, pos);
 				++shps;
 			}
 		}
-		
+
 		// compute nr of escorts
 		unsigned nrescs = esct_ * 5;
 		for (unsigned i = 0; i < nrescs; ++i) {
@@ -194,28 +194,17 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 			string shiptype = get_random_ship(escortships);
 			xml_doc doc(data_file().get_filename(shiptype));
 			doc.load();
-			ship* s = new ship(gm, doc.first_child());
-			s->set_random_skin_name(gm.get_date());
+			ship s(gm, doc.first_child());
+			s.set_random_skin_name(gm.get_date());
 			vector2 pos = vector2(
 				dx+nx + rnd()*100.0-50.0,
 				dy+ny + rnd()*100.0-50.0 );
 			pos = pos.matrixmul(coursevec, coursevec.orthogonal());
-			s->manipulate_position((waypoints.front() + pos).xy0());
-			s->manipulate_heading(heading);
-			s->manipulate_speed(velocity);
-			s->set_throttle(throttle);
-			escorts.emplace_back(s, pos);
-		}
-			
-		// spawn the objects in class game after creating them
-		for (auto & merchant : merchants) {
-			gm.spawn_ship(merchant.first);
-		}
-		for (auto & warship : warships) {
-			gm.spawn_ship(warship.first);
-		}
-		for (auto & escort : escorts) {
-			gm.spawn_ship(escort.first);
+			s.manipulate_position((waypoints.front() + pos).xy0());
+			s.manipulate_heading(heading);
+			s.manipulate_speed(velocity);
+			s.set_throttle(throttle);
+			escorts.emplace_back(gm.spawn_ship(std::move(s)).first, pos);
 		}
 
 		return;
@@ -223,7 +212,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 
 	// fixme
 	name = "SC-122";
-	
+
 	// fixme
 	switch (type_) {
 		case small: break;
@@ -245,18 +234,19 @@ convoy::convoy(class game& gm_, const vector2& pos, std::string  name_)
 
 
 
-bool convoy::add_ship(ship* shp)
+bool convoy::add_ship(sea_object_id id)
 {
-	vector2 spos = shp->get_pos().xy() - position;
-	switch (shp->get_class()) {
+	auto& shp = gm.get_ship(id);
+	vector2 spos = shp.get_pos().xy() - position;
+	switch (shp.get_class()) {
 	case WARSHIP:
-		warships.emplace_back(shp, spos);
+		warships.emplace_back(id, spos);
 		return true;
 	case ESCORT:
-		escorts.emplace_back(shp, spos);
+		escorts.emplace_back(id, spos);
 		return true;
 	case MERCHANT:
-		merchants.emplace_back(shp, spos);
+		merchants.emplace_back(id, spos);
 		return true;
 	default:
 		// can't add this to convoy
@@ -275,19 +265,19 @@ void convoy::load(const xml_elem& parent)
 	merchants.clear();
 	//merchants.reserve(mc.attru("nr"));
 	for (auto elem : mc.iterate("merchant")) {
-		merchants.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
+		merchants.emplace_back(elem.attru("ref"), elem.attrv2());
 	}
 	xml_elem ws = parent.child("warships");
 	warships.clear();
 	//warships.reserve(ws.attru("nr"));
 	for (auto elem : ws.iterate("warship")) {
-		warships.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
+		warships.emplace_back(elem.attru("ref"), elem.attrv2());
 	}
 	xml_elem es = parent.child("escorts");
 	escorts.clear();
 	//escorts.reserve(es.attru("nr"));
 	for (auto elem : es.iterate("escort")) {
-		escorts.emplace_back(gm.load_ship_ptr(elem.attru("ref")), elem.attrv2());
+		escorts.emplace_back(elem.attru("ref"), elem.attrv2());
 	}
 	xml_elem wp = parent.child("waypoints");
 	waypoints.clear();
@@ -308,21 +298,21 @@ void convoy::save(xml_elem& parent) const
 	mc.set_attr(unsigned(merchants.size()), "nr");
 	for (const auto & merchant : merchants) {
 		xml_elem mc2 = mc.add_child("merchant");
-		mc2.set_attr(gm.save_ptr(merchant.first), "ref");
+		mc2.set_attr(merchant.first.id, "ref");
 		mc2.set_attr(merchant.second);
 	}
 	xml_elem ws = parent.add_child("warships");
 	ws.set_attr(unsigned(warships.size()), "nr");
 	for (const auto & warship : warships) {
 		xml_elem ws2 = ws.add_child("warship");
-		ws2.set_attr(gm.save_ptr(warship.first), "ref");
+		ws2.set_attr(warship.first.id, "ref");
 		ws2.set_attr(warship.second);
 	}
 	xml_elem es = parent.add_child("escorts");
 	es.set_attr(unsigned(escorts.size()), "nr");
 	for (const auto & escort : escorts) {
 		xml_elem es2 = es.add_child("escort");
-		es2.set_attr(gm.save_ptr(escort.first), "ref");
+		es2.set_attr(escort.first.id, "ref");
 		es2.set_attr(escort.second);
 	}
 	xml_elem wp = parent.add_child("waypoints");
@@ -341,7 +331,7 @@ unsigned convoy::get_nr_of_ships() const
 
 
 
-void convoy::simulate(double delta_time)
+void convoy::simulate(double delta_time, game& gm)
 {
 	//if (is_defunct()) return;
 
@@ -366,17 +356,17 @@ void convoy::simulate(double delta_time)
 	// check for ships to be erased
 	for (auto it = merchants.begin(); it != merchants.end(); ) {
 		auto it2 = it; ++it;
-		if (it2->first->is_defunct())
+		if (!it2->first.is_valid())
 			merchants.erase(it2);
 	}
 	for (auto it = warships.begin(); it != warships.end(); ) {
 		auto it2 = it; ++it;
-		if (it2->first->is_defunct())
+		if (!it2->first.is_valid())
 			warships.erase(it2);
 	}
 	for (auto it = escorts.begin(); it != escorts.end(); ) {
 		auto it2 = it; ++it;
-		if (it2->first->is_defunct())
+		if (!it2->first.is_valid())
 			escorts.erase(it2);
 	}
 
@@ -401,6 +391,6 @@ void convoy::simulate(double delta_time)
 void convoy::add_contact(const vector3& pos)	// fixme: simple, crude, ugly
 {
 	for (auto & escort : escorts) {
-		escort.first->get_ai()->attack_contact(pos);
+		gm.get_object(escort.first).get_ai()->attack_contact(pos);
 	}
 }

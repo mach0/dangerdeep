@@ -44,8 +44,8 @@ image::image(string  s) :
 	if (texture::size_non_power_two()) {
 		gltx = glty = 1;
 		textures.resize(1);
-		textures.reset(0, new texture(img, 0, 0, width, height,
-					      texture::NEAREST, texture::CLAMP));
+		textures[0] = std::make_unique<texture>(img, 0, 0, width, height,
+					      texture::NEAREST, texture::CLAMP);
 	} else {
 		std::vector<unsigned> widths, heights;
 		unsigned maxs = texture::get_max_size();
@@ -72,9 +72,9 @@ image::image(string  s) :
 		for (unsigned y = 0; y < glty; ++y) {
 			unsigned cw = 0;
 			for (unsigned x = 0; x < gltx; ++x) {
-				textures.reset(y*gltx+x, new texture(img, cw, ch,
+				textures[y*gltx+x] = std::make_unique<texture>(img, cw, ch,
 								     widths[x], heights[y],
-								     texture::NEAREST, texture::CLAMP));
+								     texture::NEAREST, texture::CLAMP);
 				cw += widths[x];
 			}
 			ch += heights[y];
@@ -90,10 +90,10 @@ void image::draw(int x, int y, const colorf& col) const
 	int yp = y;
 	for (unsigned yy = 0; yy < glty; ++yy) {
 		int xp = x;
-		unsigned h = textures[texptr].get_height();
+		unsigned h = textures[texptr]->get_height();
 		for (unsigned xx = 0; xx < gltx; ++xx) {
-			textures[texptr].draw(xp, yp, col);
-			xp += textures[texptr].get_width();
+			textures[texptr]->draw(xp, yp, col);
+			xp += textures[texptr]->get_width();
 			++texptr;
 		}
 		yp += h;

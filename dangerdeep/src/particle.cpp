@@ -214,7 +214,7 @@ void particle::init()
 	interpolate_func.resize(256);
 	for (unsigned i = 0; i < 256; ++i)
 		interpolate_func[i] = 0.5f - 0.5f * cos(i * M_PI / 256);
-	
+
 	// compute random smoke textures here.
 	// just random noise with smoke color gradients and irregular outline
 	// resolution 64x64, outline 8x8 scaled, smoke structure 8x8 or 16x16
@@ -261,7 +261,7 @@ void particle::init()
 		color(255, 128,  32,  32),
 		color(255,   0,   0,  64),
 		color(255,  64,  32, 128),
-		color(255, 160,  16, 160),		
+		color(255, 160,  16, 160),
 		color(255, 255,   0, 192),
 		color(255, 255,  64, 192),
 		color(255, 255, 255, 255)
@@ -369,7 +369,7 @@ void particle::simulate(game& gm, double delta_t)
 
 
 
-void particle::display_all(const vector<particle*>& pts, const vector3& viewpos, class game& gm,
+void particle::display_all(const vector<const particle*>& pts, const vector3& viewpos, class game& gm,
 			   const colorf& light_color)
 {
 	glDepthMask(GL_FALSE);
@@ -591,7 +591,7 @@ void fire_particle::simulate(game& gm, double delta_t)
 	float lf = get_life_time();
 	float l = myfrac(life * lf);
 	if (l - lf * delta_t <= 0) {
-		gm.spawn_particle(new smoke_particle(position));
+		gm.spawn(std::make_unique<smoke_particle>(position));
 	}
 	particle::simulate(gm, delta_t);
 	if (life <= 0.0) {

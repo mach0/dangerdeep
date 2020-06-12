@@ -28,11 +28,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class water_splash : public sea_object
 {
- private:
-	water_splash() = delete;
-	water_splash& operator=(const water_splash& other) = delete;
-	water_splash(const water_splash& other) = delete;
-
  protected:
 	double resttime;
 	double lifetime;
@@ -49,38 +44,15 @@ class water_splash : public sea_object
 	double compute_height(double t) const;
 
  public:
+	water_splash() = default;
 	water_splash(game& gm, const vector3& pos, double risetime = 0.4, double riseheight = 25.0);
-	void simulate(double delta_time) override;
+	void simulate(double delta_time, game& gm) override;
 	void display() const;
 	void display_mirror_clip() const override;
-	void compute_force_and_torque(vector3& F, vector3& T) const override {} // static object, no acceleration
-};
-
-
-
-class torpedo_water_splash : public water_splash
-{
- public:
-	torpedo_water_splash(game& gm, const vector3& pos)
-		: water_splash(gm, pos, 0.4, 20.0) {}
-};
-
-
-
-class depth_charge_water_splash : public water_splash
-{
- public:
-	depth_charge_water_splash(game& gm, const vector3& pos)
-		: water_splash(gm, pos, 0.6, 30.0) {}
-};
-
-
-
-class gun_shell_water_splash : public water_splash
-{
- public:
-	gun_shell_water_splash(game& gm, const vector3& pos)
-		: water_splash(gm, pos, 0.25, 12.5) {}
+	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override {} // static object, no acceleration
+	static auto torpedo(game& gm, const vector3& pos) { return water_splash(gm, pos, 0.4, 20.0); }
+	static auto depth_charge(game& gm, const vector3& pos) { return water_splash(gm, pos, 0.6, 30.0); }
+	static auto gun_shell(game& gm, const vector3& pos) { return water_splash(gm, pos, 0.25, 12.5); }
 };
 
 #endif

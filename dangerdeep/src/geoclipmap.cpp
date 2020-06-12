@@ -60,7 +60,7 @@ geoclipmap::geoclipmap(unsigned nr_levels, unsigned resolution_exp, height_gener
 			+ 4*2*resolution_vbo // outmost tri-fan
 			+ 32*resolution_vbo // some extra rest for striping etc.
 #ifdef DEBUG_INDEX_USAGE
-	                + DEBUG_INDEX_EXTRA
+			+ DEBUG_INDEX_EXTRA
 #endif
 			),
 	  levels(nr_levels),
@@ -69,7 +69,7 @@ geoclipmap::geoclipmap(unsigned nr_levels, unsigned resolution_exp, height_gener
 {
 	// initialize vertex VBO and all level VBOs
 	for (unsigned lvl = 0; lvl < levels.size(); ++lvl) {
-		levels.reset(lvl, new level(*this, lvl, lvl+1==levels.size()));
+		levels[lvl] = std::make_unique<level>(*this, lvl, lvl+1==levels.size());
 	}
 
 	myshader[0] = std::make_unique<glsl_shader_setup>(get_shader_dir() + "geoclipmap.vshader",
@@ -79,12 +79,12 @@ geoclipmap::geoclipmap(unsigned nr_levels, unsigned resolution_exp, height_gener
 	myshader[1] = std::make_unique<glsl_shader_setup>(get_shader_dir() + "geoclipmap.vshader",
 					     get_shader_dir() + "geoclipmap.fshader", defines);
 
-	
+
 	// do not use too high w_fac with too small resolutions.
 	// Otherwise the decaying transition factor (going from 1.0 at outer border
 	// down to 0.0 at center), won't have reached 0.0 at inner border,
 	// leading to visible gaps.
-	
+
 	const float w_fac = resolution_vbo < 128 ? 0.1f : 0.2f;
 	for (unsigned i = 0; i < 2; ++i) {
 		myshader[i]->use();
@@ -135,7 +135,7 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
 	// check for a total reset of base_viewpos
 	if (new_viewpos.xy().distance(base_viewpos) > 10000.0) {
 		for (unsigned i = 0; i < levels.size(); ++i) {
-			levels[i].clear_area();
+			levels[i]->clear_area();
 		}
 		base_viewpos = new_viewpos.xy();
 	}
@@ -160,7 +160,7 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
 	//log_debug("min_level=" << min_level);
 
 	for (unsigned lvl = min_level; lvl < levels.size(); ++lvl) {
-		levelborder = levels[lvl].set_viewerpos(new_viewpos, levelborder);
+		levelborder = levels[lvl]->set_viewerpos(new_viewpos, levelborder);
 		// next level has coordinates with half resolution
 		// let outer area of current level be inner area of next level
 		levelborder.bl.x /= 2;
@@ -193,7 +193,7 @@ void geoclipmap::display(const frustum& f, const vector3& view_delta, bool is_mi
 	if (is_mirror) f2 = f.get_mirrored();
 	myshader[si]->set_uniform(loc_above_water[si], above_water);
 
-	
+
   myshader[si]->set_gl_texture(height_gen.get_sand_texture(), loc_sand_texture[si], 4);
 	myshader[si]->set_gl_texture(height_gen.get_mud_texture(), loc_mud_texture[si], 5);
 	myshader[si]->set_gl_texture(height_gen.get_forest_texture(), loc_forest_texture[si], 6);
@@ -207,13 +207,13 @@ void geoclipmap::display(const frustum& f, const vector3& view_delta, bool is_mi
 
 	for (unsigned lvl = 0; lvl < levels.size(); ++lvl) {
 		myshader[si]->set_uniform(loc_tex_stretch_factor[si], height_gen.get_tex_stretch_factor()/pow(2.0,int(lvl)));
-		myshader[si]->set_gl_texture(levels[lvl].normals_tex(), loc_texnormal[si], 0);
+		myshader[si]->set_gl_texture(levels[lvl]->normals_tex(), loc_texnormal[si], 0);
 		if (lvl + 1 < levels.size()) {
-			myshader[si]->set_gl_texture(levels[lvl+1].normals_tex(), loc_texnormal_c[si], 1);
+			myshader[si]->set_gl_texture(levels[lvl+1]->normals_tex(), loc_texnormal_c[si], 1);
 		} else {
 			myshader[si]->set_gl_texture(*horizon_normal, loc_texnormal_c[si], 1);
 		}
-		levels[lvl].display(f2, is_mirror);
+		levels[lvl]->display(f2, is_mirror);
 	}
 	glPopMatrix();
 	if (wireframe) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -255,7 +255,7 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level)
 	std::vector<uint8_t> pxl(3*gcm.resolution_vbo*gcm.resolution_vbo*2*2);
 	normals = std::make_unique<texture>(pxl, gcm.resolution_vbo*2,
 				  gcm.resolution_vbo*2, GL_RGB, texture::LINEAR, texture::REPEAT);
-	
+
 	// fixme: is this still needed?
 	if (color_res_fac == 2) {
 		// reuse pxl
@@ -515,7 +515,7 @@ void geoclipmap::level::update_VBO_and_tex(const vector2i& scratchoff,
 					   int scratchmod,
 					   const vector2i& sz,
 					   const vector2i& vbooff)
-{		
+{
 	/* fixme: CPU load is high, especially kernel part, could be cause of
 	   these calls to GL.
 	   We could at least reduce the glTexSubImage2D calls by copying the
@@ -587,7 +587,7 @@ unsigned geoclipmap::level::generate_indices(const frustum& f,
 	const double eps = 0.5;
 	if (f.viewpos.z > minmaxz[0] - eps && f.viewpos.z < minmaxz[1] + eps) {
 		minv = maxv = f.viewpos.xy();
-	} 
+	}
 	bool allempty = true;
 	for (unsigned i = 0; i < 6; ++i) {
 		polygon p = f.clip(polygon(cv[geoidx[i*8+0]].xyz(minmaxz[geoidx[i*8+1]]),
@@ -604,7 +604,7 @@ unsigned geoclipmap::level::generate_indices(const frustum& f,
 	}
 
 	if (allempty) return idxbase;
-				
+
 	// convert coordinates back to integer values with rounding down/up
 	vector2i minvi(int(floor(minv.x / L_l)), int(floor(minv.y / L_l)));
 	vector2i maxvi(int(ceil(maxv.x / L_l)), int(ceil(maxv.y / L_l)));
@@ -621,7 +621,7 @@ unsigned geoclipmap::level::generate_indices(const frustum& f,
 // 	log_debug("clip area, vbooff="<<vbooff<<" now "<<vbooff + newoffset - offset
 // 		  <<" size="<<size<<" now "<<newsize);
 // 	log_debug("offset shift: "<<newoffset-offset<<" sizechange: "<<size-newsize);
-	
+
 	// modify vbooff accordingly (no clamping needed, is done later anyway)
 	vector2i vbooff2 = vbooff + newoffset - offset;
 	vector2i size2 = newsize;
@@ -699,15 +699,15 @@ unsigned geoclipmap::level::generate_indices2(uint32_t* buffer, unsigned idxbase
 		for (int x = 0; x < size2.x; ++x) {
 			//gcc does strange things with this line!
 			//it is indexing it via the loop counter etc., it cant be optimal
- 			*bufptr++ = vbooffy1_l + vbooffx0;
- 			*bufptr++ = vbooffy0_l + vbooffx0;
+			*bufptr++ = vbooffy1_l + vbooffx0;
+			*bufptr++ = vbooffy0_l + vbooffx0;
 			vbooffx0 = (vbooffx0 + 1) & resolution_vbo_mod;
 		}
 #else
 		// try a loop with pointers directly
 		for (uint32_t* limit = bufptr + size2.x*2; bufptr != limit; bufptr += 2) {
- 			bufptr[0] = vbooffy1_l + vbooffx0;
- 			bufptr[1] = vbooffy0_l + vbooffx0;
+			bufptr[0] = vbooffy1_l + vbooffx0;
+			bufptr[1] = vbooffy0_l + vbooffx0;
 			vbooffx0 = (vbooffx0 + 1) & resolution_vbo_mod;
 		}
 #endif

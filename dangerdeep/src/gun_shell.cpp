@@ -46,8 +46,8 @@ gun_shell::gun_shell(game& gm_)
 
 
 gun_shell::gun_shell(game& gm_, const vector3& pos, angle direction, angle elevation,
-	double initial_velocity, double damage)
-	: sea_object(gm_, "gun_shell.ddxml")
+	double initial_velocity, double damage, double caliber_)
+	: sea_object(gm_, "gun_shell.ddxml"), caliber(caliber_)
 {
 	orientation = quaternion::rot(-direction.value(), 0, 0, 1);
 	mass = 20;
@@ -86,7 +86,7 @@ void gun_shell::save(xml_elem& parent) const
 
 
 
-void gun_shell::check_collision()
+void gun_shell::check_collision(game& gm)
 {
 	// fixme use bv trees for this: tree/sphere with ray intersection
 
@@ -131,7 +131,7 @@ void gun_shell::check_collision()
 		return;
 	dvl = sqrt(dvl);
 	vector3 dv = dv2 * (1.0/dvl);
-	std::vector<ship*> allships = gm.get_all_ships();
+	auto allships = gm.get_all_ships();
 	for (auto s : allships) {
 			vector3 k = s->get_pos() - oldpos;
 		double kd = k * dv;
@@ -143,7 +143,7 @@ void gun_shell::check_collision()
 		double t0 = -kd + tmp, t1 = -kd - tmp;
 		if (t0*t1 < 0.0 || (t0 >= 0.0 && t0 <= dvl) || (t1 >= 0.0 && t1 <= dvl)) {
 			//log_debug("gun_shell "<<this<<" intersects bsphere of "<<s);
-			check_collision_precise(*s, -k, dv2 - k);
+			check_collision_precise(gm, *s, -k, dv2 - k);
 			if (alive_stat == dead) return; // no more checks after hit
 		}
 	}
@@ -156,8 +156,8 @@ void gun_shell::check_collision()
 		if (position.z < wh) {
 			vector3 p = position;
 			position.z = wh;
-			gm.spawn_water_splash(new gun_shell_water_splash(gm, p));
-			gm.add_event(new event_shell_splash(get_pos()));
+			gm.spawn(water_splash::gun_shell(gm, p));
+			gm.add_event(std::make_unique<event_shell_splash>(get_pos()));
 			kill();
 		}
 	}
@@ -165,7 +165,7 @@ void gun_shell::check_collision()
 
 
 
-void gun_shell::check_collision_precise(ship& s, const vector3& oldrelpos,
+void gun_shell::check_collision_precise(game& gm, const ship& s, const vector3& oldrelpos,
 					const vector3& newrelpos)
 {
 	// transform positions to s' local bbox space
@@ -208,14 +208,14 @@ void gun_shell::check_collision_precise(ship& s, const vector3& oldrelpos,
 	if (tmin <= tmax) {
 		//log_debug("shell hit object?!");
 		vector3f d = newrelbbox - oldrelbbox;
-		check_collision_voxel(s, oldrelbbox + d * tmin, oldrelbbox + d * tmax);
+		check_collision_voxel(gm, s, oldrelbbox + d * tmin, oldrelbbox + d * tmax);
 		if (alive_stat == dead) return; // no more checks after hit
 	}
 }
 
 
 
-void gun_shell::check_collision_voxel(ship& s, const vector3f& oldrelpos, const vector3f& newrelpos)
+void gun_shell::check_collision_voxel(game& gm, const ship& s, const vector3f& oldrelpos, const vector3f& newrelpos)
 {
 	// positions are relative to bbox of s.
 	matrix4f obj2voxel = s.get_model().get_base_mesh_transformation().inverse();
@@ -254,18 +254,19 @@ void gun_shell::check_collision_voxel(ship& s, const vector3f& oldrelpos, const 
 				position = impactpos;
 				log_debug("Hit object at real world pos " << impactpos);
 				log_debug("that is relative: " << s.get_pos()-impactpos);
-				// now damage the ship
-				if (s.damage(impactpos, int(damage_amount))) { // fixme, crude
+				// now damage the ship - fixme should be done in class game! report collision to game!
+				auto& shp = const_cast<ship&>(s);
+				if (shp.damage(impactpos, int(damage_amount), gm)) { // fixme, crude
 					gm.ship_sunk(&s);
 				} else {
-					s.ignite();
+					shp.ignite(gm);
 				}
 #if 0
 				//spawn some location marker object for testing
 				//at exact impact position
 				gm.spawn_particle(new marker_particle(impactpos));
 #endif
-				gm.add_event(new event_shell_explosion(get_pos()));
+				gm.add_event(std::make_unique<event_shell_explosion>(get_pos()));
 				kill(); // grenade is used and dead
 				return; // no more checks
 			}
@@ -275,12 +276,12 @@ void gun_shell::check_collision_voxel(ship& s, const vector3f& oldrelpos, const 
 
 
 
-void gun_shell::simulate(double delta_time)
+void gun_shell::simulate(double delta_time, game& gm)
 {
-	check_collision();
+	check_collision(gm);
 	oldpos = position;
 	//log_debug("GS: position="<<position);
-	sea_object::simulate(delta_time);
+	sea_object::simulate(delta_time, gm);
 }
 
 

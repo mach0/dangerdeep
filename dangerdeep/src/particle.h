@@ -47,7 +47,7 @@ protected:
 
 	// returns wether particle is shown parallel to z-axis (true), or 3d billboarding always (false)
 	virtual bool is_z_up() const { return true; }
-	
+
 	// returns wether image should be drawn above pos or centered around pos
 	virtual bool tex_centered() const { return true; }
 
@@ -102,7 +102,7 @@ public:
 	// class game is given so that particles can spawn other particles (fire->smoke)
 	virtual void simulate(game& gm, double delta_t);
 
-	static void display_all(const std::vector<particle*>& pts, const vector3& viewpos, game& gm,
+	static void display_all(const std::vector<const particle*>& pts, const vector3& viewpos, game& gm,
 				const colorf& light_color);
 
 	// return width/height (in meters) of particle (length of quad edge)
@@ -111,7 +111,7 @@ public:
 
 	virtual void kill() { life = 0.0; }
 	virtual bool is_defunct() const { return life <= 0.0; }
-	
+
 	// set opengl texture by particle type or e.g. game time etc.
 	virtual const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const = 0;
 

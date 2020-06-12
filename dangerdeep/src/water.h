@@ -40,7 +40,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vertexbufferobject.h"
 #include "framebufferobject.h"
 #include "shader.h"
-#include "ptrvector.h"
 
 ///\brief Rendering of ocean water surfaces.
 class water
@@ -194,7 +193,7 @@ protected:
 		geoclipmap_patch(const geoclipmap_patch& ) = delete;
 		geoclipmap_patch& operator=(const geoclipmap_patch& ) = delete;
 	};
-	ptrvector<geoclipmap_patch> patches;
+	std::vector<std::unique_ptr<geoclipmap_patch>> patches;
 	mutable vertexbufferobject vertices;
 
 	class worker : public ::thread
@@ -222,7 +221,7 @@ public:
 
 	void draw_foam_for_ship(const game& gm, const ship* shp, const vector3& viewpos) const;
 	void compute_amount_of_foam_texture(const game& gm, const vector3& viewpos,
-					    const std::vector<ship*>& allships) const;
+					    const std::vector<const ship*>& allships) const;
 
 	// give absolute position of viewer as viewpos, but modelview matrix without translational component!
 	void display(const vector3& viewpos, double max_view_dist, bool under_water = false) const;

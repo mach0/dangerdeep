@@ -94,13 +94,13 @@ Only partly, only older, simpler model.
 */
 
 
+#include "sea_object_id.h"
 #include "xml.h"
 #include <list>
 #include <memory>
-class ship;
-class sea_object;
-class convoy;
 class game;
+class sea_object;
+class ship;
 
 ///\brief This class implements artificial intelligence for various objects.
 ///\todo split this class in heir classes for specific objects or AI types.
@@ -118,9 +118,9 @@ protected:
 	bool attackrun;		// true when running full speed shortly before the attack
 	bool evasive_manouver;	// true when set_course tries an alternative route
 	double rem_manouver_time; // remaining time that ai should wait for during an evasive manouver
-	ship* parent;		// fixme: should be sea_object and redefined by heirs!
-	sea_object* followme;		// could be a sea_object instead of ship?
-	class convoy* myconvoy;	// convoy to which parent belongs (if any)
+	ship& parent;		// fixme: should be sea_object and redefined by heirs!
+	sea_object_id followme;		// could be a sea_object instead of ship?
+	sea_object_id myconvoy;	// convoy to which parent belongs (if any)
 	bool has_contact;
 	vector3 contact;	// position of target to attack
 	double remaining_time;	// time to next thought/situation analysis
@@ -134,17 +134,17 @@ protected:
 	ai& operator= (const ai& other);
 
 public:
-	ai(ship* parent_, types type_);
+	ai(ship& parent_, types type_);
 	virtual ~ai();
 
 	// attention: all sea_objects must exist BEFORE this is called!
-	void load(game& gm_, const xml_elem& parent);
-	void save(game& gm, xml_elem& parent) const;
+	void load(const xml_elem& parent);
+	void save(xml_elem& parent) const;
 
 private:
 	void clear_waypoints() { waypoints.clear(); };
 	void add_waypoint(const vector2& wp) { waypoints.push_back(wp); };
-	void set_convoy(class convoy* cv) { myconvoy = cv; }
+	void set_convoy(sea_object_id cv) { myconvoy = cv; }
 
 public:
 	virtual void attack_contact(const vector3& c);
@@ -158,7 +158,7 @@ private:
 	virtual void act_convoy(class game& g, double delta_time);
 	virtual bool set_course_to_pos(class game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
 	virtual void relax(class game& gm);	// follow path/object, remove contact info
-	virtual void follow(sea_object* t = nullptr);	// follows path if t is 0
+	virtual void follow(sea_object_id t = {});	// follows path if t is 0
 	void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };
 

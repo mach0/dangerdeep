@@ -153,21 +153,21 @@ water::water(double tm) :
 	wave_resolution(nextgteqpow2(cfg::instance().geti("wave_fft_res"))),
 	wave_resolution_shift(ulog2(wave_resolution)),
 	wavetile_data(wave_phases),
-	
+
 	owg(wave_resolution,
 	    vector2f(1,1), // wind direction
 	    12 /*12*/ /*10*/ /*31*/,	// wind speed m/s. fixme make dynamic (weather!)
 	    wave_resolution * (1e-8) /* roughly 2e-6 for 128 */,	// scale factor for heights. depends on wave resolution, maybe also on tidecycle time
 	    wavetile_length,
 	    wave_tidecycle_time),
-	
+
 	geoclipmap_resolution(cmpdtl(cfg::instance().geti("water_detail"))), // should be power of two
 	geoclipmap_levels(wave_resolution_shift-2),
 	patches(1 + (geoclipmap_levels-1)*8*3*3 + 4 /*horizon*/)
 {
 	// generate geoclipmap index data.
-	patches.reset(0, new geoclipmap_patch(geoclipmap_resolution,
-					      0, 0, 0, 0, geoclipmap_resolution, geoclipmap_resolution));
+	patches[0] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution,
+					      0, 0, 0, 0, geoclipmap_resolution, geoclipmap_resolution);
 	unsigned N2 = geoclipmap_resolution/2, N4 = geoclipmap_resolution/4, N34 = geoclipmap_resolution*3/4;
 	for (unsigned j = 1; j < geoclipmap_levels; ++j) {
 		// each level has 8 patches and 9 variations of each patch.
@@ -180,23 +180,23 @@ water::water(double tm) :
 		for (int y = -1; y <= 1; ++y) {
 			for (int x = -1; x <= 1; ++x) {
 				unsigned pn = 1 + (j-1)*9*8 + ((y+1) * 3 + (x+1)) * 8;
-				patches.reset(pn + 0, new geoclipmap_patch(geoclipmap_resolution, j, 0x80,       0,       0, N4+x  , N4+y  ));
-				patches.reset(pn + 1, new geoclipmap_patch(geoclipmap_resolution, j, 0x01, N4 +x  ,       0, N2    , N4+y-1));
-				patches.reset(pn + 2, new geoclipmap_patch(geoclipmap_resolution, j, 0x40, N34+x  ,       0, N4-x  , N4+y  ));
-				patches.reset(pn + 3, new geoclipmap_patch(geoclipmap_resolution, j, 0x02,       0, N4 +y  , N4+x-1, N2    ));
-				patches.reset(pn + 4, new geoclipmap_patch(geoclipmap_resolution, j, 0x08, N34+x+1, N4 +y  , N4-x-1, N2    ));
-				patches.reset(pn + 5, new geoclipmap_patch(geoclipmap_resolution, j, 0x10,       0, N34+y  , N4+x  , N4-y  ));
-				patches.reset(pn + 6, new geoclipmap_patch(geoclipmap_resolution, j, 0x04, N4 +x  , N34+y+1, N2    , N4-y-1));
-				patches.reset(pn + 7, new geoclipmap_patch(geoclipmap_resolution, j, 0x20, N34+x  , N34+y  , N4-x  , N4-y  ));
+				patches[pn + 0] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x80,       0,       0, N4+x  , N4+y  );
+				patches[pn + 1] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x01, N4 +x  ,       0, N2    , N4+y-1);
+				patches[pn + 2] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x40, N34+x  ,       0, N4-x  , N4+y  );
+				patches[pn + 3] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x02,       0, N4 +y  , N4+x-1, N2    );
+				patches[pn + 4] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x08, N34+x+1, N4 +y  , N4-x-1, N2    );
+				patches[pn + 5] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x10,       0, N34+y  , N4+x  , N4-y  );
+				patches[pn + 6] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x04, N4 +x  , N34+y+1, N2    , N4-y-1);
+				patches[pn + 7] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, j, 0x20, N34+x  , N34+y  , N4-x  , N4-y  );
 			}
 		}
 	}
 	// horizon, for North, East, South, West part
 	unsigned pn = patches.size() - 4;
-	patches.reset(pn + 0, new geoclipmap_patch(geoclipmap_resolution, geoclipmap_levels-1, 0x01));
-	patches.reset(pn + 1, new geoclipmap_patch(geoclipmap_resolution, geoclipmap_levels-1, 0x02));
-	patches.reset(pn + 2, new geoclipmap_patch(geoclipmap_resolution, geoclipmap_levels-1, 0x04));
-	patches.reset(pn + 3, new geoclipmap_patch(geoclipmap_resolution, geoclipmap_levels-1, 0x08));
+	patches[pn + 0] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, geoclipmap_levels-1, 0x01);
+	patches[pn + 1] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, geoclipmap_levels-1, 0x02);
+	patches[pn + 2] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, geoclipmap_levels-1, 0x04);
+	patches[pn + 3] = std::make_unique<geoclipmap_patch>(geoclipmap_resolution, geoclipmap_levels-1, 0x08);
 
 #if 0 // analysis
 	unsigned idxtotal = 0;
@@ -586,7 +586,7 @@ void water::draw_foam_for_ship(const game& gm, const ship* shp, const vector3& v
 
 //static unsigned nrfm=0;
 void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpos,
-					   const vector<ship*>& allships) const
+					   const vector<const ship*>& allships) const
 {
 //	glPushMatrix();
 
@@ -633,15 +633,15 @@ void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpo
 	glDrawPixels(8, 8, GL_LUMINANCE, GL_UNSIGNED_BYTE, &tmp[0]);
 	glRasterPos2i(0, 0);
 */
-	
+
 #if 0
 	vector<uint8_t> data(afs*afs*3);
 	glReadPixels(0, 0, afs, afs, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
-        ostringstream osgname;
-        osgname << "foamamount" << setw(2) << setfill('0') << nrfm++ << ".ppm";
-        ofstream osg(osgname.str().c_str());
-        osg << "P6\n"<<afs<<" "<<afs<<"\n255\n";
-        osg.write((const char*)(&data[0]), afs*afs*3);
+	ostringstream osgname;
+	osgname << "foamamount" << setw(2) << setfill('0') << nrfm++ << ".ppm";
+	ofstream osg(osgname.str().c_str());
+	osg << "P6\n"<<afs<<" "<<afs<<"\n255\n";
+	osg.write((const char*)(&data[0]), afs*afs*3);
 #endif
 
 	if (foamamounttex_fbo.get()) {
@@ -694,7 +694,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 		|| (rerender_viewpos.square_distance(viewpos) > 0.0001);
 	rerender_new_wtp = false;
 	rerender_viewpos = viewpos;
-	
+
 	//fixme: in setup_textures wird texmatrix von modelviewmatrix gesetzt, die veraendern wir aber
 	//hier nochmal, das passt dann nicht mehr...   wirklich? pruefe das!!!
 
@@ -882,7 +882,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	vertices.unbind();
 
 	// innermost level is rendered always
-	patches[0].render();
+	patches[0]->render();
 	// render outer levels with view frustum culling
 	for (unsigned level = 1; level < geoclipmap_levels; ++level) {
 		// scalar depending on level
@@ -918,7 +918,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 			y_patchidx = 2;
 		//printf("x/y patch idx=%u %u\n", x_patchidx, y_patchidx);
 		unsigned patchidx = y_patchidx*3 + x_patchidx;
-		
+
 		// render outer levels with inner hole, render 8 parts
 		const unsigned kk[8] = { 0, 0, 0, 1, 1, 2, 2, 2 };
 		const unsigned jj[8] = { 0, 1, 2, 0, 2, 0, 1, 2 };
@@ -936,7 +936,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 					  vector3(offset.x, offset.y + y_size[k]*L_l, -viewpos.z));
 			if (!viewfrustum.clip(patchpoly).empty()) {
 				// render patch
-				patches[1 + (level-1)*9*8 + patchidx*8 + i].render();
+				patches[1 + (level-1)*9*8 + patchidx*8 + i]->render();
 			} else {
 				//printf("culled away patch, level=%i xyoff=%f,%f\n",level,offset.x,offset.y);
 			}
@@ -945,7 +945,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	// render horizon polys
 	for (unsigned k = 0; k < 4; ++k) {
 		// fixme: view frustum clipping, but gives only small performance gain
-		patches[patches.size() - 4 + k].render();
+		patches[patches.size() - 4 + k]->render();
 	}
 
 	// unmap, cleanup
@@ -1217,7 +1217,7 @@ void water::compute_amount_of_foam()
 				}
 			}
 		}
-				
+
 #if 0
 		// test: write amount of foam as grey value image
 		ostringstream osfn;

@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <windows.h>
 #include <cmath>
 double log2( double n )
-{ 
-    return log( n ) / log( double(2) ); 
+{
+    return log( n ) / log( double(2) );
 }
 #endif
 
@@ -200,14 +200,6 @@ game::game()
 	//myheightgen.reset(new height_generator_map("default.xml"));
 
 	myheightgen = std::make_unique<terrain<int16_t>>(get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/", TERRAIN_NR_LEVELS+1);
-	
-#if 0
-	if (cfg::instance().geti("cpucores") > 1) {
-		log_info("game: Using extra worker for multicore acceleration.");
-		myworker.reset(new simulate_worker(*this));
-		myworker->start();
-	}
-#endif
 }
 
 
@@ -241,21 +233,14 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	To do that we create and use a lookout sensor.
 	This technique ignores the fact that convoys could be heared earlier than seen
 	(below surface, passive sonar) or even detected by their smell (smoke)!
-***********************************************************************/	
+***********************************************************************/
 	networktype = 0;
 	servercon = nullptr;
-
-#if 0
-	if (cfg::instance().geti("cpucores") > 1) {
-		myworker.reset(new simulate_worker(*this));
-		myworker->start();
-	}
-#endif
 
 	// fixme: show some info like in Silent Service II? sun/moon pos,time,visibility?
 
 	time = timeperioddate.get_time();
-	
+
 	// all code from here on is fixme and experimental.
 	// fixme: we need exact sunrise and fall times for a day. (also moon state is needed
 	// later) The compute_sun_pos func is not enough
@@ -265,7 +250,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 		case 2: time += ( 8+10*rnd())*3600; break;		// day
 		case 3: time += (18+ 2*rnd())*3600; break;		// dusk
 	}
-	
+
 	date currentdate((unsigned)time);
 	equipment_date = currentdate;	// fixme: another crude guess or hack
 
@@ -277,24 +262,17 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	// Convoy-constructor creates all the objects and spawns them in this game object.
 	// fixme: creation of convoys should be rather moved to this class, so object creation
 	// and logic is centralized.
-	auto* cv = new convoy(*this, (convoy::types)(cvsize), (convoy::esctypes)(cvesc));
-	spawn_convoy(cv);
+	spawn(convoy(*this, (convoy::types)(cvsize), (convoy::esctypes)(cvesc)));
 
 	lookout_sensor tmpsensor;
 	vector<angle> subangles;
-	submarine* psub = nullptr;
 	for (unsigned i = 0; i < nr_of_players; ++i) {
 		xml_doc doc(data_file().get_filename(subtype));
 		doc.load();
-		auto* sub = new submarine(*this, doc.first_child());
-		sub->set_skin_layout(model::default_layout);
-		sub->init_fill_torpedo_tubes(currentdate);
-		if (i == 0) {
-			psub = sub;
-			player = psub;
-			compute_max_view_dist();
-		}
-		
+		submarine sub(*this, doc.first_child());
+		sub.set_skin_layout(model::default_layout);
+		sub.init_fill_torpedo_tubes(currentdate);
+
 		// distribute subs randomly around convoy.
 		angle tmpa;
 		double anglediff = 90.0;
@@ -317,34 +295,37 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 				}
 			}
 		} while (!angleok);
-		
+
 		// now tmpa holds the angle of the sub's position around the convoy.
 		double maxt = 0;
-		for (unsigned k = 0; k < ships.size(); ++k) {
+		for (auto& [id, ship] : ships) {
 			double maxt1 = 0, maxt2 = get_max_view_distance()/2, maxt3 = get_max_view_distance();
-			sub->manipulate_position((maxt2 * tmpa.direction()).xy0());
+			sub.manipulate_position((maxt2 * tmpa.direction()).xy0());
 			// find maximum distance t along line (0,0)+t*tmpa.dir() for this ship
 			while (maxt3 - maxt1 > 50.0) {
-				if (tmpsensor.is_detected(this, sub, &ships[k])) {
+				if (tmpsensor.is_detected(this, &sub, &ship)) {
 					maxt1 = maxt2;
 				} else {
 					maxt3 = maxt2;
 				}
 				maxt2 = (maxt1 + maxt3)/2;
-				sub->manipulate_position((maxt2 * tmpa.direction()).xy0());
+				sub.manipulate_position((maxt2 * tmpa.direction()).xy0());
 			}
 			if (maxt2 > maxt) maxt = maxt2;
 		}
 		vector3 subpos = (maxt * tmpa.direction()).xy0();
 		subpos.z = (timeofday == 2) ? 0 : -12; // fixme maybe always surfaced, except late in war
-		sub->manipulate_position(subpos);
+		sub.manipulate_position(subpos);
 		// heading should be facing to the convoy (+-90deg), as it is unrealistic
 		// to detect a convoy while moving away from it
-		sub->manipulate_heading(angle(rnd()*180.0 + 90.0) + tmpa);
-	
-		spawn_submarine(sub);
+		sub.manipulate_heading(angle(rnd()*180.0 + 90.0) + tmpa);
+		auto& [id, thesub] = spawn_submarine(std::move(sub));
+		if (i == 0) {
+			player = &thesub;
+			player_id = id;
+			compute_max_view_dist();
+		}
 	}
-	player = psub;
 
 	my_run_state = running;
 	last_trail_time = time - TRAIL_TIME;
@@ -373,13 +354,6 @@ game::game(const string& filename)
 //	if (v != SAVEVERSION)
 //		THROW(error, "invalid game version");
 
-#if 0
-	if (cfg::instance().geti("cpucores") > 1) {
-		myworker.reset(new simulate_worker(*this));
-		myworker->start();
-	}
-#endif
-
 	// load state first, because time is stored there and we need time/date for checks
 	// while loading the rest.
 	xml_elem gst = sg.child("state");
@@ -402,7 +376,7 @@ game::game(const string& filename)
 	for (auto elem : sh.iterate("ship")) {
 		xml_doc spec(data_file().get_filename(elem.attr("type")));
 		spec.load();
-		ships.push_back(new ship(*this, spec.first_child()));
+		spawn_ship(ship(*this, spec.first_child())).second.load(elem);
 	}
 
 	// there must be submarines in a mission...
@@ -410,7 +384,7 @@ game::game(const string& filename)
 	for (auto elem : su.iterate("submarine")) {
 		xml_doc spec(data_file().get_filename(elem.attr("type")));
 		spec.load();
-		submarines.push_back(new submarine(*this, spec.first_child()));
+		spawn_submarine(submarine(*this, spec.first_child())).second.load(elem);
 	}
 
 	if (sg.has_child("airplanes")) {
@@ -418,7 +392,7 @@ game::game(const string& filename)
 		for (auto elem : ap.iterate("airplane")) {
 			xml_doc spec(data_file().get_filename(elem.attr("type")));
 			spec.load();
-			airplanes.push_back(new airplane(*this, spec.first_child()));
+			spawn_airplane(airplane(*this, spec.first_child())).second.load(elem);
 		}
 	}
 
@@ -427,7 +401,7 @@ game::game(const string& filename)
 		for (auto elem : tp.iterate("torpedo")) {
 			xml_doc spec(data_file().get_filename(elem.attr("type")));
 			spec.load();
-			torpedoes.push_back(new torpedo(*this, spec.first_child(), torpedo::setup()));
+			spawn(torpedo(*this, spec.first_child(), torpedo::setup())).load(elem);
 		}
 	}
 
@@ -436,7 +410,7 @@ game::game(const string& filename)
 		for (auto elem : dc.iterate("depth_charge")) {
 			//xml_doc spec(get_depth_charge_dir() + elem.attr("type") + ".xml");
 			//spec.load();
-			depth_charges.push_back(new depth_charge(*this/*, spec.first_child()*/));
+			spawn(depth_charge(*this/*, spec.first_child()*/)).load(elem);
 		}
 	}
 
@@ -445,7 +419,7 @@ game::game(const string& filename)
 		for (auto elem : gs.iterate("gun_shell")) {
 			//xml_doc spec(get_gun_shell_dir() + elem.attr("type") + ".xml");
 			//spec.load();
-			gun_shells.push_back(new gun_shell(*this/*, spec.first_child()*/));
+			spawn(gun_shell(*this/*, spec.first_child()*/)).load(elem);
 		}
 	}
 
@@ -454,7 +428,7 @@ game::game(const string& filename)
 		for (auto elem : cv.iterate("convoy")) {
 			//xml_doc spec(get_convoy_dir() + elem.attr("type") + ".xml");
 			//spec.load();
-			convoys.push_back(new convoy(*this/*, spec.first_child()*/));
+			spawn(convoy(*this/*, spec.first_child()*/)).second.load(elem);
 		}
 	}
 
@@ -470,52 +444,6 @@ game::game(const string& filename)
 		}
 	}
 #endif
-
-	// now all objects exist and must get loaded
-	unsigned k = 0;
-	for (auto elem : sh.iterate("ship")) {
-		ships[k++].load(elem);
-	}
-
-	k = 0;
-	for (auto elem : su.iterate("submarine")) {
-		submarines[k++].load(elem);
-	}
-
-	if (airplanes.size() > 0) {
-		k = 0;
-		for (auto elem : sg.child("airplanes").iterate("airplane")) {
-			airplanes[k++].load(elem);
-		}
-	}
-
-	if (torpedoes.size() > 0) {
-		k = 0;
-		for (auto elem : sg.child("torpedoes").iterate("torpedo")) {
-			torpedoes[k++].load(elem);
-		}
-	}
-
-	if (depth_charges.size() > 0) {
-		k = 0;
-		for (auto elem : sg.child("depth_charges").iterate("depth_charge")) {
-			depth_charges[k++].load(elem);
-		}
-	}
-
-	if (gun_shells.size() > 0) {
-		k = 0;
-		for (auto elem : sg.child("gun_shells").iterate("gun_shell")) {
-			gun_shells[k++].load(elem);
-		}
-	}
-
-	if (convoys.size() > 0) {
-		k = 0;
-		for (auto elem : sg.child("convoys").iterate("convoy")) {
-			convoys[k++].load(elem);
-		}
-	}
 
 	// fixme: handle water splashes too
 
@@ -533,7 +461,8 @@ game::game(const string& filename)
 
 	// load player
 	xml_elem pl = sg.child("player");
-	player = load_ptr(pl.attru("ref"));
+	player_id = sea_object_id(pl.attru("ref"));
+	player = const_cast<sea_object*>(&get_object(player_id));
 	// fixme: maybe check if type matches!
 
 	// ui is created from client of game!
@@ -578,58 +507,58 @@ void game::save(const string& savefilename, const string& description) const
 
 	xml_elem sh = sg.add_child("ships");
 	sh.set_attr(unsigned(ships.size()), "nr");
-	for (unsigned k = 0; k < ships.size(); ++k) {
+	for (auto& [id, ship] : ships) {
 		xml_elem e = sh.add_child("ship");
-		e.set_attr(ships[k].get_specfilename(), "type");
-		ships[k].save(e);
+		e.set_attr(ship.get_specfilename(), "type");
+		ship.save(e);
 	}
 
 	xml_elem su = sg.add_child("submarines");
 	su.set_attr(unsigned(submarines.size()), "nr");
-	for (unsigned k = 0; k < submarines.size(); ++k) {
+	for (auto& [id, submarine] : submarines) {
 		xml_elem e = su.add_child("submarine");
-		e.set_attr(submarines[k].get_specfilename(), "type");
-		submarines[k].save(e);
+		e.set_attr(submarine.get_specfilename(), "type");
+		submarine.save(e);
 	}
 
 	xml_elem ap = sg.add_child("airplanes");
 	ap.set_attr(unsigned(airplanes.size()), "nr");
-	for (unsigned k = 0; k < airplanes.size(); ++k) {
+	for (auto& [id, airplane] : airplanes) {
 		xml_elem e = ap.add_child("airplane");
-		e.set_attr(airplanes[k].get_specfilename(), "type");
-		airplanes[k].save(e);
+		e.set_attr(airplane.get_specfilename(), "type");
+		airplane.save(e);
 	}
 
 	xml_elem tp = sg.add_child("torpedoes");
 	tp.set_attr(unsigned(torpedoes.size()), "nr");
-	for (unsigned k = 0; k < torpedoes.size(); ++k) {
+	for (auto& torpedo : torpedoes) {
 		xml_elem e = tp.add_child("torpedo");
-		e.set_attr(torpedoes[k].get_specfilename(), "type");
-		torpedoes[k].save(e);
+		e.set_attr(torpedo.get_specfilename(), "type");
+		torpedo.save(e);
 	}
 
 	xml_elem dc = sg.add_child("depth_charges");
 	dc.set_attr(unsigned(depth_charges.size()), "nr");
-	for (unsigned k = 0; k < depth_charges.size(); ++k) {
+	for (auto& depth_charge : depth_charges) {
 		xml_elem e = dc.add_child("depth_charge");
 		//e.set_attr(depth_charges[k].get_specfilename(), "type");//no specfilename for DCs
-		depth_charges[k].save(e);
+		depth_charge.save(e);
 	}
 
 	xml_elem gs = sg.add_child("gun_shells");
 	gs.set_attr(unsigned(gun_shells.size()), "nr");
-	for (unsigned k = 0; k < gun_shells.size(); ++k) {
+	for (auto& gun_shell : gun_shells) {
 		xml_elem e = gs.add_child("gun_shell");
 		//e.set_attr(gun_shells[k].get_specfilename(), "type");//no specfilename for shells
-		gun_shells[k].save(e);
+		gun_shell.save(e);
 	}
 
 	xml_elem cv = sg.add_child("convoys");
 	cv.set_attr(unsigned(convoys.size()), "nr");
-	for (unsigned k = 0; k < convoys.size(); ++k) {
+	for (auto& [id, convoy] : convoys) {
 		xml_elem e = cv.add_child("convoy");
-		//e.set_attr(convoys[k].get_specfilename(), "type");//no specfilename for convoys
-		convoys[k].save(e);
+		//e.set_attr(convoy.get_specfilename(), "type");//no specfilename for convoys
+		convoy.save(e);
 	}
 
 #if 0	// fixme later!!!
@@ -643,7 +572,7 @@ void game::save(const string& savefilename, const string& description) const
 #endif
 
 	// my_run_state doesn't need to be saved
-	
+
 	// jobs are generated by dftd itself
 
 	// save player
@@ -665,9 +594,9 @@ void game::save(const string& savefilename, const string& description) const
 		}
 	}
 	xml_elem pl = sg.add_child("player");
-	pl.set_attr(save_ptr(player), "ref");
+	pl.set_attr(player_id.id, "ref");
 	pl.set_attr(pltype, "type");
-	
+
 	// user interface is generated according to player object by dftd
 
 	xml_elem sks = sg.add_child("sunken_ships");
@@ -686,7 +615,7 @@ void game::save(const string& savefilename, const string& description) const
 	xml_elem equ = gst.add_child("equipment_date");
 	equipment_date.save(equ);
 	gst.set_attr(max_view_dist, "max_view_dist");
-	
+
 	xml_elem pgs = sg.add_child("pings");
 	pgs.set_attr(unsigned(pings.size()), "nr");
 	for (const auto & it : pings) {
@@ -731,14 +660,28 @@ void game::compute_max_view_dist()
 
 
 
-template<class T> void cleanup(ptrvector<T>& s)
+template<class T> void cleanup(std::unordered_map<sea_object_id, T>& s)
 {
-	for (unsigned i = 0; i < s.size(); ++i) {
-		if (&s[i] != nullptr && s[i].is_defunct()) {
-			s.reset(i);
+	for (auto it = s.begin(); it != s.end(); ) {
+		if (it->second.is_defunct()) {
+			it = s.erase(it);
+		} else {
+			++it;
 		}
 	}
-	s.compact();
+}
+
+
+
+template<class T> void cleanup(std::vector<T>& s)
+{
+	for (auto it = s.begin(); it != s.end(); ) {
+		if (it->is_defunct()) {
+			it = s.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 
@@ -788,7 +731,7 @@ void game::simulate(double delta_t)
 			return;
 #endif//COD_MODE
 		}
-	
+
 		if (/* submarines.size() == 0 && */ ships.size() == 0 && torpedoes.size() == 0 && depth_charges.size() == 0 &&
 		    airplanes.size() == 0 && gun_shells.size() == 0) {
 			log_info("no objects except player left!");//testing fixme
@@ -798,13 +741,13 @@ void game::simulate(double delta_t)
 	}
 
 	compute_max_view_dist();
-	
+
 	bool record = false;
 	if (get_time() >= last_trail_time + TRAIL_TIME) {
 		last_trail_time = get_time();
 		record = true;
 	}
-	
+
 	//fixme 2003/07/11: time compression trashes trail recording.
 
 	double nearest_contact = 1e10;
@@ -840,32 +783,7 @@ void game::simulate(double delta_t)
 	cleanup(water_splashes);
 
 	// step 2: simulate all objects, possibly setting state to dead/defunct.
-	if (myworker.get()) {
-		// Multi-Threading code path (2 cores)
-		myworker->work(delta_t, 1, 2, record);
-		simulate_objects_mt(delta_t, 0, 2, record, nearest_contact);
-		double nc = myworker->sync();
-		nearest_contact = std::min(nc, nearest_contact);
-		/* fixme: the following methods of class game need to be made
-		   thread-safe for this to work:
-		   --------------------
-		   dc_explosion
-		   spawn_*
-		   add_event
-		   check_torpedo_hit
-		   ping_ASDIC
-		   --------------------
-		   making this easier: give sea_object only a const-ref to game,
-		   and a non-const-ref to an interface class, where we add
-		   only the allowed functions (the ones to be made threadsafe).
-		   then game heirs from that interface and all is solved.
-		*/
-	} else {
-		simulate_objects_mt(delta_t, 0, 1, record, nearest_contact);
-	}
-	// must not be done multithreaded.
-	convoys.compact();
-	particles.compact();
+	simulate_objects(delta_t, record, nearest_contact);
 
 	// Now check for collisions. As a result objects could be set to dead state.
 	// If we would call this before simulate() an object could go from alive
@@ -894,7 +812,7 @@ void game::simulate(double delta_t)
 		if (time - it2->time > PINGREMAINTIME)
 			pings.erase(it2);
 	}
-	
+
 	if (!is_editor()) {
 		if (nearest_contact > ENEMYCONTACTLOST) {
 			log_info("player lost contact to enemy!");//testing fixme
@@ -905,18 +823,17 @@ void game::simulate(double delta_t)
 
 
 
-void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod, bool record,
-			       double& nearest_contact)
+void game::simulate_objects(double delta_t, bool record, double& nearest_contact)
 {
 	// ------------------------------ ships ------------------------------
-	for (unsigned i = idxoff; i < ships.size(); i += idxmod) {
-		if (&ships[i] != player) {
-			double dist = ships[i].get_pos().distance(player->get_pos());
+	for (auto& [id, ship] : ships) {
+		if (&ship != player) {
+			double dist = ship.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
 		try {
-			ships[i].simulate(delta_t);
-			if (record) ships[i].remember_position(get_time());
+			ship.simulate(delta_t, *this);
+			if (record) ship.remember_position(get_time());
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -924,14 +841,14 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ submarines ------------------------------
-	for (unsigned i = idxoff; i < submarines.size(); i += idxmod) {
-		if (&submarines[i] != player) {
-			double dist = submarines[i].get_pos().distance(player->get_pos());
+	for (auto& [id, submarine] : submarines) {
+		if (&submarine != player) {
+			double dist = submarine.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
 		try {
-			submarines[i].simulate(delta_t);
-			if (record) submarines[i].remember_position(get_time());
+			submarine.simulate(delta_t, *this);
+			if (record) submarine.remember_position(get_time());
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -939,13 +856,13 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ airplanes ------------------------------
-	for (unsigned i = idxoff; i < airplanes.size(); i += idxmod) {
-		if (&airplanes[i] != player) {
-			double dist = airplanes[i].get_pos().distance(player->get_pos());
+	for (auto& [id, airplane] : airplanes) {
+		if (&airplane != player) {
+			double dist = airplane.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
 		try {
-			airplanes[i].simulate(delta_t);
+			airplane.simulate(delta_t, *this);
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -953,10 +870,10 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ torpedoes ------------------------------
-	for (unsigned i = idxoff; i < torpedoes.size(); i += idxmod) {
+	for (auto& torpedo : torpedoes) {
 		try {
-			torpedoes[i].simulate(delta_t);
-			if (record) torpedoes[i].remember_position(get_time());
+			torpedo.simulate(delta_t, *this);
+			if (record) torpedo.remember_position(get_time());
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -964,9 +881,9 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ depth_charges ------------------------------
-	for (unsigned i = idxoff; i < depth_charges.size(); i += idxmod) {
+	for (auto& depth_charge : depth_charges) {
 		try {
-			depth_charges[i].simulate(delta_t);
+			depth_charge.simulate(delta_t, *this);
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -974,9 +891,9 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ gun_shells ------------------------------
-	for (unsigned i = idxoff; i < gun_shells.size(); i += idxmod) {
+	for (auto& gun_shell : gun_shells) {
 		try {
-			gun_shells[i].simulate(delta_t);
+			gun_shell.simulate(delta_t, *this);
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -984,9 +901,9 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 	}
 
 	// ------------------------------ water_splashes ------------------------------
-	for (unsigned i = idxoff; i < water_splashes.size(); i += idxmod) {
+	for (auto& water_splash : water_splashes) {
 		try {
-			water_splashes[i].simulate(delta_t);
+			water_splash.simulate(delta_t, *this);
 		}
 		catch (sea_object::is_dead_exception& ) {
 			// nothing to do
@@ -995,20 +912,20 @@ void game::simulate_objects_mt(double delta_t, unsigned idxoff, unsigned idxmod,
 
 	// for convoys/particles it doesn't hurt to mix simulate() with compact().
 	// ------------------------------ convoys ------------------------------
-	for (unsigned i = idxoff; i < convoys.size(); i += idxmod) {
-		if (&convoys[i] == nullptr) continue;
-		convoys[i].simulate(delta_t);	// fixme: handle erasing of empty convoys!
+	for (auto& [id, convoy] : convoys) {
+		convoy.simulate(delta_t, *this);	// fixme: handle erasing of empty convoys!
 	}
 
 	// ------------------------------ particles ------------------------------
-	for (unsigned i = idxoff; i < particles.size(); i += idxmod) {
-		if (&particles[i] == nullptr) continue;
-		if (particles[i].is_defunct()) {
-			particles.reset(i);
+	for (unsigned i = 0; i < particles.size(); ++i) {
+		if (particles[i].get() == nullptr) continue;
+		if (particles[i]->is_defunct()) {
+			particles[i] = nullptr;
 		} else {
-			particles[i].simulate(*this, delta_t);
+			particles[i]->simulate(*this, delta_t);
 		}
 	}
+	helper::erase_remove_if(particles, [](const std::unique_ptr<particle>& p) { return p == nullptr; });
 }
 
 
@@ -1041,7 +958,7 @@ void game::add_logbook_entry(const string& s)
 	both objects (factor2) and overall visibility (factor1).
 	Maybe some randomization should be added (quality of crew, experience, overall
 	visibility +- some meters)
-	
+
 	Visibility of ships can be determined by area that is visible and this depends
 	on relative course between watcher and visible object.
 	For ships this shouldn't make much difference (their shape is much higher than
@@ -1049,98 +966,102 @@ void game::add_logbook_entry(const string& s)
 	by an implicit function, rotated by course, roughly proportional to length and with.
 	So we can compute visibiltiy by just multiplying relative coordinates (x, y, 1) with
 	a 3x3 matrix from left and right and evaluate the result.
-	
+
 ******************************************************************************************/
 
-template <class T> inline vector<T*> visible_obj(const game* gm, const ptrvector<T>& v, const sea_object* o)
+template <class T> inline vector<const T*> visible_obj(const game* gm, const std::unordered_map<sea_object_id, T>& v, const sea_object* o)
 {
-	vector<T*> result;
+	vector<const T*> result;
 	const sensor* s = o->get_sensor(o->lookout_system);
 	if (!s) return result;
 	const auto* ls = dynamic_cast<const lookout_sensor*>(s);
 	if (!ls) return result;
 	result.reserve(v.size());
-	for (unsigned i = 0; i < v.size(); ++i) {
+	for (auto& [id, obj] : v) {
 		// do not handle dead or defunct objects!
-		if (&v[i] != nullptr && v[i].is_reference_ok()) {
-			if (ls->is_detected(gm, o, &v[i]))
-				result.push_back(&v[i]);
+		if (obj.is_reference_ok()) {
+			if (ls->is_detected(gm, o, &obj))
+				result.push_back(&obj);
+		}
+	}
+	return result;
+}
+
+template <class T> inline vector<const T*> visible_obj(const game* gm, const std::vector<T>& v, const sea_object* o)
+{
+	vector<const T*> result;
+	const sensor* s = o->get_sensor(o->lookout_system);
+	if (!s) return result;
+	const auto* ls = dynamic_cast<const lookout_sensor*>(s);
+	if (!ls) return result;
+	result.reserve(v.size());
+	for (auto& obj : v) {
+		// do not handle dead or defunct objects!
+		if (obj.is_reference_ok()) {
+			if (ls->is_detected(gm, o, &obj))
+				result.push_back(&obj);
 		}
 	}
 	return result;
 }
 
 
-vector<ship*> game::visible_ships(const sea_object* o) const
+vector<const ship*> game::visible_ships(const sea_object* o) const
 {
 	return visible_obj<ship>(this, ships, o);
 }
 
-vector<submarine*> game::visible_submarines(const sea_object* o) const
+vector<const submarine*> game::visible_submarines(const sea_object* o) const
 {
 	return visible_obj<submarine>(this, submarines, o);
 }
 
-vector<airplane*> game::visible_airplanes(const sea_object* o) const
+vector<const airplane*> game::visible_airplanes(const sea_object* o) const
 {
 	return visible_obj<airplane>(this, airplanes, o);
 }
 
-vector<torpedo*> game::visible_torpedoes(const sea_object* o) const
+vector<const torpedo*> game::visible_torpedoes(const sea_object* o) const
 {
-//testing: draw all torpedoes
-	vector<torpedo*> result;
-	result.reserve(torpedoes.size());
-	// Note!!! all entries of "torpedoes" should be valid pointers here, not
-	// null pointers, but it seems sometimes some are null, leading to
-	// segfault on torpedo impact when not checking for null pointers here!
-	// this is bad, but a check here is cheap...
-	// torpedoes.compress() should remove any null pointers before display
-	// is rendered, but it crashes when drawing trails because of null
-	// pointers...
-	for (unsigned k = 0; k < torpedoes.size(); ++k) {
-		if (&torpedoes[k] != nullptr && torpedoes[k].is_reference_ok()) {
-			result.push_back(&torpedoes[k]);
-		}
-	}
-	return result;
-//	return visible_obj<torpedo>(this, torpedoes, o);
+	return visible_obj<torpedo>(this, torpedoes, o);
 }
 
-vector<depth_charge*> game::visible_depth_charges(const sea_object* o) const
+vector<const depth_charge*> game::visible_depth_charges(const sea_object* o) const
 {
 	return visible_obj<depth_charge>(this, depth_charges, o);
 }
 
-vector<gun_shell*> game::visible_gun_shells(const sea_object* o) const
+vector<const gun_shell*> game::visible_gun_shells(const sea_object* o) const
 {
 	return visible_obj<gun_shell>(this, gun_shells, o);
 }
 
-vector<water_splash*> game::visible_water_splashes(const sea_object* o) const
+vector<const water_splash*> game::visible_water_splashes(const sea_object* o) const
 {
-//testing: draw all 
-	vector<water_splash*> result(water_splashes.size());
-	for (unsigned k = 0; k < water_splashes.size(); ++k)
-		result[k] = &water_splashes[k];
+//testing: draw all
+	vector<const water_splash*> result(water_splashes.size());
+	unsigned k = 0;
+	for (auto& obj : water_splashes) {
+		result[k++] = &obj;
+	}
 	return result;
 //	return visible_obj<water_splash>(this, water_splashes, o);
 }
 
-vector<particle*> game::visible_particles(const sea_object* o ) const
+vector<const particle*> game::visible_particles(const sea_object* o ) const
 {
 	//fixme: this is called for every particle. VERY costly!!!
-	vector<particle*> result;
+	std::vector<const particle*> result;
 	const sensor* s = o->get_sensor(o->lookout_system);
 	if (!s) return result;
 	const auto* ls = dynamic_cast<const lookout_sensor*>(s);
 	if (!ls) return result;
 	result.reserve(particles.size());
 	for (unsigned i = 0; i < particles.size(); ++i) {
-		if (&particles[i] == nullptr) // obsolete test? should be so...
+		if (particles[i] == nullptr) // obsolete test? should be so...
 			THROW(error, "particles[i] is 0!");
-		if (ls->is_detected(this, o, &particles[i]))
-			result.push_back(&particles[i]);
+		if (ls->is_detected(this, o, particles[i].get()))
+			result.push_back(particles[i].get());
 	}
 	return result;
 }
@@ -1156,16 +1077,16 @@ vector<sonar_contact> game::sonar_ships (const sea_object* o ) const
 	result.reserve(ships.size());
 
 	// collect the nearest contacts, limited to some value!
-	vector<pair<double, ship*> > contacts ( MAX_ACUSTIC_CONTACTS, make_pair ( 1e30, (ship*) nullptr ) );
-	for (unsigned k = 0; k < ships.size(); ++k) {
+	vector<pair<double, const ship*> > contacts ( MAX_ACUSTIC_CONTACTS, make_pair ( 1e30, (ship*) nullptr ) );
+	for (auto& [id, ship] : ships) {
 		// do not handle dead/defunct objects
-		if (!ships[k].is_reference_ok()) continue;
+		if (!ship.is_reference_ok()) continue;
 
 		// When the detecting unit is a ship it should not detect itself.
-		if ( o == &ships[k] )
+		if ( o == &ship )
 			continue;
 
-		double d = ships[k].get_pos ().xy ().square_distance ( o->get_pos ().xy () );
+		double d = ship.get_pos ().xy ().square_distance ( o->get_pos ().xy () );
 		unsigned i = 0;
 		for ( ; i < contacts.size (); ++i ) {
 			if ( contacts[i].first > d )
@@ -1176,13 +1097,13 @@ vector<sonar_contact> game::sonar_ships (const sea_object* o ) const
 			for ( unsigned j = contacts.size ()-1; j > i; --j )
 				contacts[j] = contacts[j-1];
 
-			contacts[i] = make_pair ( d, &ships[k] );
+			contacts[i] = make_pair ( d, &ship );
 		}
 	}
 
 	unsigned size = contacts.size ();
 	for (unsigned i = 0; i < size; i++ ) {
-		ship* sh = contacts[i].second;
+		auto* sh = contacts[i].second;
 		if ( sh == nullptr )
 			break;
 
@@ -1200,17 +1121,17 @@ vector<sonar_contact> game::sonar_submarines (const sea_object* o ) const
 	const auto* pss = dynamic_cast<const passive_sonar_sensor*> ( s );
 	if (!pss) return result;
 	result.reserve(submarines.size());
-	for (unsigned k = 0; k < submarines.size(); ++k) {
+	for (auto& [id, submarine] : submarines) {
 		// do not handle dead/defunct objects
-		if (!submarines[k].is_reference_ok()) continue;
+		if (!submarine.is_reference_ok()) continue;
 
 		// When the detecting unit is a submarine it should not
 		// detect itself.
-		if ( o == &submarines[k] )
+		if ( o == &submarine )
 			continue;
 
-		if ( pss->is_detected ( this, o, &submarines[k] ) )
-			result.emplace_back(submarines[k].get_pos().xy(), submarines[k].get_class());
+		if ( pss->is_detected ( this, o, &submarine ) )
+			result.emplace_back(submarine.get_pos().xy(), submarine.get_class());
 	}
 	return result;
 }
@@ -1225,41 +1146,41 @@ vector<sonar_contact> game::sonar_sea_objects(const sea_object* o) const
 	return sships;
 }
 
-vector<submarine*> game::radar_submarines(const sea_object* o) const
+vector<const submarine*> game::radar_submarines(const sea_object* o) const
 {
-	vector<submarine*> result;
+	vector<const submarine*> result;
 	const sensor* s = o->get_sensor ( o->radar_system );
 	if (!s) return result;
 	const auto* ls = dynamic_cast<const radar_sensor*> ( s );
 	if (!ls) return result;
 	result.reserve(submarines.size());
-	for (unsigned k = 0; k < submarines.size(); ++k) {
-		if ( ls->is_detected ( this, o, &submarines[k] ) )
-			result.push_back (&submarines[k]);
+	for (auto& [id, submarine] : submarines) {
+		if ( ls->is_detected ( this, o, &submarine ) )
+			result.push_back (&submarine);
 	}
 	return result;
 }
 
-vector<ship*> game::radar_ships(const sea_object* o) const
+vector<const ship*> game::radar_ships(const sea_object* o) const
 {
-	vector<ship*> result;
+	vector<const ship*> result;
 	const sensor* s = o->get_sensor ( o->radar_system );
 	if (!s) return result;
 	const auto* ls = dynamic_cast<const radar_sensor*> ( s );
 	if (!ls) return result;
 	result.reserve(ships.size());
-	for (unsigned k = 0; k < ships.size(); ++k) {
-		if ( ls->is_detected ( this, o, &ships[k] ) )
-			result.push_back (&ships[k]);
+	for (auto& [id, ship] : ships) {
+		if ( ls->is_detected ( this, o, &ship ) )
+			result.push_back (&ship);
 	}
 	return result;
 }
 
-vector<sea_object*> game::radar_sea_objects(const sea_object* o) const
+vector<const sea_object*> game::radar_sea_objects(const sea_object* o) const
 {
-	vector<ship*> rships = radar_ships(o);
-	vector<submarine*> rsubmarines = radar_submarines(o);
-	vector<sea_object*> result;
+	vector<const ship*> rships = radar_ships(o);
+	vector<const submarine*> rsubmarines = radar_submarines(o);
+	vector<const sea_object*> result;
 	result.reserve(rships.size() + rsubmarines.size());
 	append_vec(result, rships);
 	append_vec(result, rsubmarines);
@@ -1270,8 +1191,8 @@ vector<vector2> game::convoy_positions() const
 {
 	vector<vector2> result;
 	result.reserve(convoys.size());
-	for (unsigned k = 0; k < convoys.size(); ++k) {
-		result.push_back(convoys[k].get_pos());
+	for (auto& [id, convoy] : convoys) {
+		result.push_back(convoy.get_pos());
 	}
 	return result;
 }
@@ -1284,12 +1205,16 @@ pair<double, noise> game::sonar_listen_ships(const ship* listener,
 	// collect all ships for sound strength measurement
 	vector<const ship*> tmpships;
 	tmpships.reserve(ships.size() + submarines.size() /* + torpedoes.size() */ - 1);
-	for (unsigned i = 0; i < ships.size(); ++i)
-		if (&ships[i] != listener)
-			tmpships.push_back(&ships[i]);
-	for (unsigned i = 0; i < submarines.size(); ++i)
-		if (dynamic_cast<const ship*>(&submarines[i]) != listener)
-			tmpships.push_back(&submarines[i]);
+	for (auto& [id, ship] : ships) {
+		if (&ship != listener) {
+			tmpships.push_back(&ship);
+		}
+	}
+	for (auto& [id, submarine] : submarines) {
+		if (dynamic_cast<const ship*>(&submarine) != listener) {
+			tmpships.push_back(&submarine);
+		}
+	}
 	// fixme: add torpedoes here as well... later...
 
 #if 0
@@ -1396,63 +1321,66 @@ pair<double, noise> game::sonar_listen_ships(const ship* listener,
 
 
 
-//
-// create new objects
-//
-void game::spawn_ship(ship* s)
+std::pair<const sea_object_id, ship>& game::spawn_ship(ship&& obj)
 {
-	ships.push_back(s);
+	return *ships.insert(std::make_pair(generate_id(), std::move(obj))).first;
 }
 
-void game::spawn_submarine(submarine* u)
+std::pair<const sea_object_id, submarine>& game::spawn_submarine(submarine&& obj)
 {
-	submarines.push_back(u);
+	return *submarines.insert(std::make_pair(generate_id(), std::move(obj))).first;
 }
 
-void game::spawn_airplane(airplane* a)
+std::pair<const sea_object_id, airplane>& game::spawn_airplane(airplane&& obj)
 {
-	airplanes.push_back(a);
+	return *airplanes.insert(std::make_pair(generate_id(), std::move(obj))).first;
 }
 
-void game::spawn_torpedo(torpedo* t)
+torpedo& game::spawn(torpedo&& obj)
 {
-	torpedoes.push_back(t);
+	torpedoes.push_back(std::move(obj));
+	// add events here
+	return torpedoes.back();
 }
 
-void game::spawn_gun_shell(gun_shell* s, const double &calibre)
+gun_shell& game::spawn(gun_shell&& obj)
 {
-	gun_shells.push_back(s);
 	// vary the sound effect based on the gun size
+	auto calibre = obj.get_caliber();
 	if (calibre <= 120.0)
-		events.push_back(new event_gunfire_light(s->get_pos()));
+		events.push_back(std::make_unique<event_gunfire_light>(obj.get_pos()));
 	else if (calibre <= 200.0)
-		events.push_back(new event_gunfire_medium(s->get_pos()));
+		events.push_back(std::make_unique<event_gunfire_medium>(obj.get_pos()));
 	else
-		events.push_back(new event_gunfire_heavy(s->get_pos()));
+		events.push_back(std::make_unique<event_gunfire_heavy>(obj.get_pos()));
+	gun_shells.push_back(std::move(obj));
+	return gun_shells.back();
 }
 
-void game::spawn_water_splash(water_splash* s)
+depth_charge& game::spawn(depth_charge&& obj)
 {
-	water_splashes.push_back(s);
-	// events.push_back(new event_splash(s->get_pos()));
+	events.push_back(std::make_unique<event_depth_charge_in_water>(obj.get_pos()));
+	depth_charges.push_back(std::move(obj));
+	return depth_charges.back();
 }
 
-void game::spawn_depth_charge(depth_charge* dc)
+water_splash& game::spawn(water_splash&& obj)
 {
-	depth_charges.push_back(dc);
-	// evaluation of event should be only when player is near enough to hear it...
-	events.push_back(new event_depth_charge_in_water(dc->get_pos()));
+	water_splashes.push_back(std::move(obj));
+	// add events here
+	return water_splashes.back();
 }
 
-void game::spawn_convoy(convoy* cv)
+std::pair<const sea_object_id, convoy>& game::spawn(convoy&& cv)
 {
-	convoys.push_back(cv);
+	return *convoys.insert(std::make_pair(generate_id(), std::move(cv))).first;
 }
 
-void game::spawn_particle(particle* pt)
+
+void game::spawn(std::unique_ptr<particle>&& pt)
 {
 	// fixme, maybe limit size of particles
-	particles.push_back(pt);
+	particles.push_back(std::move(pt));
 }
 
 
@@ -1460,15 +1388,15 @@ void game::spawn_particle(particle* pt)
 void game::dc_explosion(const depth_charge& dc)
 {
 	// Create water splash.
-	spawn_water_splash(new depth_charge_water_splash(*this, dc.get_pos().xy().xy0()));
-	events.push_back(new event_depth_charge_exploding(dc.get_pos()));
+	spawn(water_splash::depth_charge(*this, dc.get_pos().xy().xy0()));
+	events.push_back(std::make_unique<event_depth_charge_exploding>(dc.get_pos()));
 
 	// are subs affected?
 	// fixme: ships can be damaged by DCs also...
 	// fixme: ai should not be able to release dcs with a depth less than 30m or so, to
 	// avoid suicide
-	for (unsigned k = 0; k < submarines.size(); ++k) {
-		submarines[k].depth_charge_explosion(dc);
+	for (auto& [id, submarine] : submarines) {
+		submarine.depth_charge_explosion(dc);
 	}
 }
 
@@ -1476,13 +1404,13 @@ void game::torp_explode(const torpedo *t)
 {
 	// each torpedo seems to explode twice, if it's only drawn twice or adds twice the damage is unknown.
 	// fixme!
-	spawn_water_splash(new torpedo_water_splash(*this, t->get_pos().xy().xy0()));
-	events.push_back(new event_torpedo_explosion(t->get_pos()));
+	spawn(water_splash::torpedo(*this, t->get_pos().xy().xy0()));
+	events.push_back(std::make_unique<event_torpedo_explosion>(t->get_pos()));
 }
 
 void game::ship_sunk(const ship* s)
 {
-	events.push_back(new event_ship_sunk());
+	events.push_back(std::make_unique<event_ship_sunk>());
 	ostringstream oss;
 	oss << texts::get(83) << " " << s->get_description ( 2 );
 	date d((unsigned)time);
@@ -1518,13 +1446,13 @@ void game::ping_ASDIC ( list<vector3>& contacts, sea_object* d,
 		pings.emplace_back( d->get_pos ().xy (),
 			ass->get_bearing () + d->get_heading (), time,
 			ass->get_range (), ass->get_detection_cone () );
-		events.push_back(new event_ping(d->get_pos()));
+		events.push_back(std::make_unique<event_ping>(d->get_pos()));
 
 		// fixme: noise from ships can disturb ASDIC or may generate more contacs.
 		// ocean floor echoes ASDIC etc...
-		for (unsigned k = 0; k < submarines.size(); ++k) {
-			if ( ass->is_detected ( this, d, &submarines[k] ) ) {
-				contacts.push_back(submarines[k].get_pos () +
+		for (auto& [id, submarine] : submarines) {
+			if ( ass->is_detected ( this, d, &submarine ) ) {
+				contacts.push_back(submarine.get_pos () +
 					vector3 ( rnd ( 40 ) - 20.0f, rnd ( 40 ) - 20.0f,
 					rnd ( 40 ) - 20.0f ) );
 			}
@@ -1562,23 +1490,23 @@ void game::unregister_job(job* j)
 }
 
 template<class C>
-ship* game::check_units ( torpedo* t, const ptrvector<C>& units )
+ship* check_units ( torpedo* t, std::unordered_map<sea_object_id, C>& units )
 {
 	const vector3& t_pos = t->get_pos();
 	bv_tree::param p0 = t->compute_bv_tree_params();
-	for (unsigned k = 0; k < units.size(); ++k) {
+	for (auto& [id, obj] : units) {
 		//fixme use bv_trees here with special code for magnetic ignition torpedoes
 		//like intersection of sphere around torpedo head with bv tree
-		const vector3& partner_pos = units[k].get_pos();
+		const vector3& partner_pos = obj.get_pos();
 		matrix4 rel_trans = matrix4::trans(partner_pos - t_pos);
-		bv_tree::param p1 = units[k].compute_bv_tree_params();
+		bv_tree::param p1 = obj.compute_bv_tree_params();
 		p1.transform = rel_trans * p1.transform;
 		vector3f contact_point;
 		if (bv_tree::closest_collision(p0, p1, contact_point))
-			return &units[k];
+			return &obj;
 		// old code:
-		//if ( is_collision ( t, units[k] ) )
-		//	return units[k];
+		//if ( is_collision ( t, obj ) )
+		//	return obj;
 	}
 
 	return nullptr;
@@ -1586,14 +1514,14 @@ ship* game::check_units ( torpedo* t, const ptrvector<C>& units )
 
 bool game::check_torpedo_hit(torpedo* t, bool runlengthfailure)
 {
-	ship* s = check_units ( t, ships );
+	auto* s = check_units ( t, ships );
 
 	if ( !s )
 		s = check_units ( t, submarines );
 
 	if ( s ) {
 		if (runlengthfailure) {
-			events.push_back(new event_torpedo_dud_shortrange());
+			events.push_back(std::make_unique<event_torpedo_dud_shortrange>());
 		} else {
 			// Only ships that are alive can be sunk. Already sinking
 			// or destroyed ships cannot be destroyed again.
@@ -1601,19 +1529,19 @@ bool game::check_torpedo_hit(torpedo* t, bool runlengthfailure)
 				return false;
 
 			// now check if torpedo fuse works
-			if (!t->test_contact_fuse()) {
-				events.push_back(new event_torpedo_dud());
+			if (!t->test_contact_fuse(*this)) {
+				events.push_back(std::make_unique<event_torpedo_dud>());
 				return true;
 			}
 
-			if (s->damage(t->get_pos(), t->get_hit_points())) {
+			if (s->damage(t->get_pos(), t->get_hit_points(), *this)) {
 				ship_sunk(s);
 			} else {
-				s->ignite();
+				s->ignite(*this);
 			}
-			
+
 			// explosion of torpedo
-			spawn_particle(new explosion_particle(s->get_pos() + vector3(0, 0, 5)));
+			spawn(std::make_unique<explosion_particle>(s->get_pos() + vector3(0, 0, 5)));
 			torp_explode ( t );
 		}
 		return true;
@@ -1622,25 +1550,25 @@ bool game::check_torpedo_hit(torpedo* t, bool runlengthfailure)
 	return false;
 }
 
-sea_object* game::contact_in_direction(const sea_object* o, const angle& direction) const
+sea_object_id game::contact_in_direction(const sea_object* o, const angle& direction) const
 {
-	sea_object* result = nullptr;
+	sea_object_id result;
 
 	// Try ship first.
 	result = ship_in_direction_from_pos ( o, direction );
 
 	// Now submarines.
-	if ( !result )
+	if ( !result.is_valid() )
 		result = sub_in_direction_from_pos ( o, direction );
 
 	return result;
 }
 
-ship* game::ship_in_direction_from_pos(const sea_object* o, const angle& direction) const
+sea_object_id game::ship_in_direction_from_pos(const sea_object* o, const angle& direction) const
 {
 	const sensor* s = o->get_sensor( o->lookout_system );
 	const lookout_sensor* ls = nullptr;
-	ship* result = nullptr;
+	sea_object_id result;
 
 	if ( s )
 		ls = dynamic_cast<const lookout_sensor*> ( s );
@@ -1648,17 +1576,17 @@ ship* game::ship_in_direction_from_pos(const sea_object* o, const angle& directi
 	if ( ls )
 	{
 		double angle_diff = 30;	// fixme: use range also, use ship width's etc.
-		for (unsigned k = 0; k < ships.size(); ++k) {
+		for (auto& [id, ship] : ships) {
 			// Only a visible and intact submarine can be selected.
-			if ( ls->is_detected ( this, o, &ships[k] ) &&
-				( ships[k].is_alive () ) )
+			if ( ls->is_detected ( this, o, &ship ) &&
+				( ship.is_alive () ) )
 			{
-				vector2 df = ships[k].get_pos().xy () - o->get_pos().xy ();
+				vector2 df = ship.get_pos().xy () - o->get_pos().xy ();
 				double new_ang_diff = (angle(df)).diff(direction);
 				if (new_ang_diff < angle_diff)
 				{
 					angle_diff = new_ang_diff;
-					result = &ships[k];
+					result = id;
 				}
 			}
 		}
@@ -1666,11 +1594,11 @@ ship* game::ship_in_direction_from_pos(const sea_object* o, const angle& directi
 	return result;
 }
 
-submarine* game::sub_in_direction_from_pos(const sea_object* o, const angle& direction) const
+sea_object_id game::sub_in_direction_from_pos(const sea_object* o, const angle& direction) const
 {
 	const sensor* s = o->get_sensor( o->lookout_system );
 	const lookout_sensor* ls = nullptr;
-	submarine* result = nullptr;
+	sea_object_id result;
 
 	if ( s )
 		ls = dynamic_cast<const lookout_sensor*> ( s );
@@ -1678,16 +1606,16 @@ submarine* game::sub_in_direction_from_pos(const sea_object* o, const angle& dir
 	if ( ls )
 	{
 		double angle_diff = 30;	// fixme: use range also, use ship width's etc.
-		for (unsigned k = 0; k < submarines.size(); ++k) {
+		for (auto& [id, submarine] : submarines) {
 			// Only a visible and intact submarine can be selected.
-			if ( ls->is_detected ( this, o, &submarines[k] ) &&
-				( submarines[k].is_alive () ) ) {
-				vector2 df = submarines[k].get_pos ().xy () - o->get_pos(). xy();
+			if ( ls->is_detected ( this, o, &submarine ) &&
+				( submarine.is_alive () ) ) {
+				vector2 df = submarine.get_pos ().xy () - o->get_pos(). xy();
 				double new_ang_diff = (angle(df)).diff(direction);
 				if (new_ang_diff < angle_diff)
 				{
 					angle_diff = new_ang_diff;
-					result = &submarines[k];
+					result = id;
 				}
 			}
 		}
@@ -1699,8 +1627,13 @@ submarine* game::sub_in_direction_from_pos(const sea_object* o, const angle& dir
 
 const torpedo* game::get_torpedo_for_camera_track(unsigned nr) const
 {
-	if (nr < torpedoes.size() && torpedoes[nr].is_reference_ok())
-		return &torpedoes[nr];
+	if (nr < torpedoes.size()) {
+		for (auto& torpedo : torpedoes) {
+			if (torpedo.is_reference_ok()) {
+				return &torpedo;
+			}
+		}
+	}
 	return nullptr;
 }
 
@@ -1716,7 +1649,7 @@ bool game::is_collision(const sea_object* s1, const sea_object* s2) const
 	vector2 p1 = s1->get_pos().xy();
 	vector2 p2 = s2->get_pos().xy();
 	if (p1.square_distance(p2) > br*br) return false;
-	
+
 	// exact collision test
 	// compute direction and their normals of both objects
 	vector2 d1 = s1->get_heading().direction();
@@ -1766,7 +1699,7 @@ bool game::is_collision(const sea_object* s, const vector2& pos) const
 	float br = s->get_bounding_radius();
 	vector2 p = s->get_pos().xy();
 	if (p.square_distance(pos) > br*br) return false;
-	
+
 	// exact collision test
 	// compute direction and their normals
 	vector2 d = s->get_heading().direction();
@@ -1791,19 +1724,77 @@ double game::get_depth_factor ( const vector3& sub ) const
 	return ( 1.0f - 0.5f * sub.z / 400.0f );
 }
 
-vector<sea_object*> game::visible_surface_objects(const sea_object* o) const
+sea_object& game::get_object(sea_object_id id)
 {
-	vector<ship*> vships = visible_ships(o);
-	vector<submarine*> vsubmarines = visible_submarines(o);
-	vector<airplane*> vairplanes = visible_airplanes(o);
+	//fixme need more here?
+	auto it = ships.find(id);
+	if (it == ships.end()) {
+		auto it2 = submarines.find(id);
+		if (it2 == submarines.end()) {
+			THROW(error, "invalid sea_object_id for ship");
+		}
+		return it2->second;
+	}
+	return it->second;
+
+}
+
+
+
+ship& game::get_ship(sea_object_id id)
+{
+	auto it = ships.find(id);
+	if (it == ships.end()) {
+		THROW(error, "invalid sea_object_id for ship");
+	}
+	return it->second;
+}
+
+
+
+convoy& game::get_convoy(sea_object_id id)
+{
+	auto it = convoys.find(id);
+	if (it == convoys.end()) {
+		THROW(error, "invalid sea_object_id for convoy");
+	}
+	return it->second;
+}
+
+
+
+sea_object_id game::get_id(const sea_object& s) const
+{
+	// fixme ugly!
+	for (auto& [id, ship] : ships) {
+		if (&ship == &s) {
+			return id;
+		}
+	}
+	for (auto& [id, submarine] : submarines) {
+		if (&submarine == &s) {
+			return id;
+		}
+	}
+	// fixme more here?
+	THROW(error, "Invalid sea_object to request id");
+}
+
+
+
+vector<const sea_object*> game::visible_surface_objects(const sea_object* o) const
+{
+	auto vships = visible_ships(o);
+	auto vsubmarines = visible_submarines(o);
+	auto vairplanes = visible_airplanes(o);
 
 	// fixme: adding RADAR-detected ships to a VISIBLE-objects function is a bit weird...
 	// this leads to wrong results if radar detected objects are handled differently,
 	// like different display on map, or drawing (not visible!), or for AI!
-	vector<ship*> rships = radar_ships(o);
-	vector<submarine*> rsubmarines = radar_submarines(o);
-	
-	vector<sea_object*> result;
+	auto rships = radar_ships(o);
+	auto rsubmarines = radar_submarines(o);
+
+	vector<const sea_object*> result;
 	result.reserve(vships.size() + vsubmarines.size() + vairplanes.size() +
 		       rships.size() + rsubmarines.size());
 	append_vec(result, vships);
@@ -1814,13 +1805,13 @@ vector<sea_object*> game::visible_surface_objects(const sea_object* o) const
 	return result;
 }
 
-vector<sea_object*> game::visible_sea_objects(const sea_object* o) const
+vector<const sea_object*> game::visible_sea_objects(const sea_object* o) const
 {
-	vector<ship*> vships = visible_ships(o);
-	vector<submarine*> vsubmarines = visible_submarines(o);
-	vector<airplane*> vairplanes = visible_airplanes(o);
-	vector<torpedo*> vtorpedoes = visible_torpedoes(o);
-	vector<sea_object*> result;
+	auto vships = visible_ships(o);
+	auto vsubmarines = visible_submarines(o);
+	auto vairplanes = visible_airplanes(o);
+	auto vtorpedoes = visible_torpedoes(o);
+	vector<const sea_object*> result;
 	result.reserve(vships.size() + vsubmarines.size() + vairplanes.size() + vtorpedoes.size());
 	append_vec(result, vships);
 	append_vec(result, vsubmarines);
@@ -1829,9 +1820,9 @@ vector<sea_object*> game::visible_sea_objects(const sea_object* o) const
 	return result;
 }
 
-ship* game::sonar_acoustical_torpedo_target ( const torpedo* o ) const
+const ship* game::sonar_acoustical_torpedo_target ( const torpedo* o ) const
 {
-	ship* loudest_object = nullptr;
+	const ship* loudest_object = nullptr;
 	double loudest_object_sf = 0.0f;
 	const sensor* s = o->get_sensor ( o->passive_sonar_system );
 	const passive_sonar_sensor* pss = nullptr;
@@ -1840,22 +1831,22 @@ ship* game::sonar_acoustical_torpedo_target ( const torpedo* o ) const
 		pss = dynamic_cast<const passive_sonar_sensor*> ( s );
 
 	if ( pss ) {
-		for (unsigned k = 0; k < ships.size(); ++k) {
+		for (auto& [id, ship] : ships) {
 			double sf = 0.0f;
-			if ( pss->is_detected ( sf, this, o, &ships[k] ) ) {
+			if ( pss->is_detected ( sf, this, o, &ship ) ) {
 				if ( sf > loudest_object_sf ) {
 					loudest_object_sf = sf;
-					loudest_object = &ships[k];
+					loudest_object = &ship;
 				}
 			}
 		}
 
-		for (unsigned k = 0; k < submarines.size(); ++k) {
+		for (auto& [id, submarine] : submarines) {
 			double sf = 0.0f;
-			if ( pss->is_detected ( sf, this, o, &submarines[k] ) ) {
+			if ( pss->is_detected ( sf, this, o, &submarine ) ) {
 				if ( sf > loudest_object_sf ) {
 					loudest_object_sf = sf;
-					loudest_object = &submarines[k];
+					loudest_object = &submarine;
 				}
 			}
 		}
@@ -1925,7 +1916,7 @@ void game::send(command* cmd)
 		ostringstream osscmd;
 		cmd->save(osscmd, *this);
 		string msg = string(MSG_command) + osscmd.str();
-	
+
 		if (servercon) {	// i am client, send command to the server
 			servercon->send_message(msg);
 		} else {		// i am server, send command to all clients
@@ -1947,16 +1938,20 @@ void game::send(command* cmd)
 
 //fixme: it would be better to keep such a vector around and not recompute it for every object that needs it
 //it must be recomputed only when spawn is called or compress removes objects
-vector<ship*> game::get_all_ships() const
+vector<const ship*> game::get_all_ships() const
 {
-	vector<ship*> allships(torpedoes.size() + submarines.size() + ships.size());
+	vector<const ship*> allships(torpedoes.size() + submarines.size() + ships.size());
 	unsigned k = 0;
-	for (unsigned i = 0; i < torpedoes.size(); ++i, ++k)
-		allships[k] = &torpedoes[i];
-	for (unsigned i = 0; i < submarines.size(); ++i, ++k)
-		allships[k] = &submarines[i];
-	for (unsigned i = 0; i < ships.size(); ++i, ++k)
-		allships[k] = &ships[i];
+	//fixme awkward, torpedo is no ship!
+	for (auto& torpedo : torpedoes) {
+		allships[k++] = &torpedo;
+	}
+	for (auto& [id, submarine] : submarines) {
+		allships[k++] = &submarine;
+	}
+	for (auto& [id, ship] : ships) {
+		allships[k++] = &ship;
+	}
 	return allships;
 }
 
@@ -1965,7 +1960,7 @@ vector<ship*> game::get_all_ships() const
 void game::check_collisions()
 {
 	// torpedoes are special... check collision only for impact fuse?
-	vector<ship*> allships = get_all_ships();
+	auto allships = get_all_ships();
 	unsigned m = torpedoes.size();
 
 	// now check for collisions for all ships idx i with partner index > max(m,i)
@@ -1998,12 +1993,12 @@ void game::check_collisions()
 			vector3f contact_point;
 			bool intersects = bv_tree::closest_collision(p0, p1, contact_point);
 			if (intersects) {
-				collision_response(*allships[i], *allships[j], contact_point + actor_pos);
+				collision_response(const_cast<ship&>(*allships[i]), const_cast<ship&>(*allships[j]), contact_point + actor_pos);
 			}
 #endif
 		}
 	}
-		
+
 	// collision response:
 	// the two objects collide at a position P that is relative to their center
 	// (P(a) and P(b)). We have to compute their velocity (direction and strength,
@@ -2102,7 +2097,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
 	double lr = lbrit * (1 - pow( cos(color_elevation+.47), 25));
 	double lg = lbrit * (1 - pow( cos(color_elevation+.39), 20));
 	double lb = lbrit * (1 - pow( cos(color_elevation+.22), 15));
-   
+
 	return {static_cast<float>(lr), static_cast<float>(lg), static_cast<float>(lb)};
 }
 
@@ -2129,7 +2124,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
 	As result the earth takes ~ 366 rotations per year (365d 5h 48m 46.5s / 23h 56m 4.09s = 366.2422)
 	We need the exact values/configuration on 1.1.1939, 0:0am.
 	And we need the configuration of the moon rotational plane at this date and time.
-*/	
+*/
 
 /*
 what has to be fixed for sun/earth/moon simulation:
@@ -2170,7 +2165,7 @@ vector3 game::compute_moon_pos(const vector3& viewpos) const
 	double monthang = 360.0*myfrac(time/MOON_ORBIT_TIME_SYNODIC) + MOON_POS_ADJUST;
 
 	matrix4 moon2earth =
-		matrix4::rot_y(-90.0) * 
+		matrix4::rot_y(-90.0) *
 		matrix4::rot_z(-longang) *
 		matrix4::rot_y(-(yearang + dayang)) *
 		matrix4::rot_z(EARTH_ROT_AXIS_ANGLE) *
@@ -2187,91 +2182,6 @@ vector3 game::compute_moon_pos(const vector3& viewpos) const
 double game::compute_water_height(const vector2& pos) const
 {
 	return mywater->get_height(pos);
-}
-
-
-
-sea_object* game::load_ptr(unsigned nr) const
-{
-	if (nr == 0)
-		return nullptr;
-	if (nr <= submarines.size()) {
-		return &submarines[nr-1];
-	} else if (nr <= submarines.size() + ships.size()) {
-		return &ships[nr-1 - submarines.size()];
-	} else if (nr <= submarines.size() + ships.size() + airplanes.size()) {
-		return &airplanes[nr-1 - submarines.size() - ships.size()];
-	} else {
-		THROW(error, "could not translate nr to submarine, ship or airplane ptr");
-	}
-}
-
-
-
-ship* game::load_ship_ptr(unsigned nr) const
-{
-	if (nr > submarines.size() && nr <= submarines.size() + ships.size()) {
-		return &ships[nr-1 - submarines.size()];
-	}
-	THROW(error, "could not translate nr to ship ptr");
-}
-
-
-
-convoy* game::load_convoy_ptr(unsigned nr) const
-{
-	if (nr == 0)
-		return nullptr;
-	if (nr > convoys.size())
-		THROW(error, "could not translate nr to convoy ptr");
-	return &convoys[nr-1];
-}
-
-
-
-unsigned game::save_ptr(const sea_object* s) const
-{
-	if (!s)
-		return 0;
-	// we can save only airplanes, ships, submarines. Because other sea_objects can't be referenced!
-	const auto* su = dynamic_cast<const submarine*>(s);
-	if (su) {
-		for (unsigned k = 0; k < submarines.size(); ++k) {
-			if (&submarines[k] == su)
-				return k+1;
-		}
-		THROW(error, "could not translate ptr to submarine nr");
-	}
-	const ship* sh = dynamic_cast<const ship*>(s);
-	if (sh) {
-		for (unsigned k = 0; k < ships.size(); ++k) {
-			if (&ships[k] == sh)
-				return submarines.size() + k+1;
-		}
-		THROW(error, "could not translate ptr to ship nr");
-	}
-	const auto* ap = dynamic_cast<const airplane*>(s);
-	if (ap) {
-		for (unsigned k = 0; k < airplanes.size(); ++k) {
-			if (&airplanes[k] == ap)
-				return submarines.size() + ships.size() + k+1;
-		}
-		THROW(error, "could not translate ptr to airplane nr");
-	}
-	THROW(error, "could not translate ptr to submarine, ship or airplane");
-}
-
-
-
-unsigned game::save_ptr(const convoy* c) const
-{
-	if (!c)
-		return 0;
-	for (unsigned k = 0; k < convoys.size(); ++k) {
-		if (&convoys[k] == c)
-			return k+1;
-	}
-	THROW(error, "could not translate convoy ptr to nr");
 }
 
 
@@ -2304,66 +2214,4 @@ void game::unfreeze_time()
 //	printf("time UNfrozen at: %u (%u)\n", freezetime_end, freezetime_end - freezetime_start);
 	freezetime += freezetime_end - freezetime_start;
 	freezetime_start = 0;
-}
-
-
-
-game::simulate_worker::simulate_worker(game& gm_)
-	: thread("simuwork"), gm(gm_), delta_t(0.0), idxoff(0), idxmod(0), done(true)
-{
-}
-
-
-
-void game::simulate_worker::request_abort()
-{
-	std::unique_lock<std::mutex> ml(mtx);
-	thread::request_abort();
-	cond.notify_all();
-}
-
-
-
-void game::simulate_worker::loop()
-{
-	{
-		std::unique_lock<std::mutex> ml(mtx);
-		if (done)
-			cond.wait(ml);
-		if (abort_requested())
-			return;
-	}
-	gm.simulate_objects_mt(delta_t, idxoff, idxmod, record, nearest_contact);
-	{
-		std::unique_lock<std::mutex> ml(mtx);
-		done = true;
-		condfini.notify_all();
-	}
-}
-
-
-
-void game::simulate_worker::work(double dt, unsigned io, unsigned im, bool r)
-{
-	std::unique_lock<std::mutex> ml(mtx);
-	if (!done)
-		THROW(error, "work() called without sync before");
-	done = false;
-	delta_t = dt;
-	idxoff = io;
-	idxmod = im;
-	record = r;
-	nearest_contact = 1e30;
-	cond.notify_all();
-}
-
-
-
-double game::simulate_worker::sync()
-{
-	std::unique_lock<std::mutex> ml(mtx);
-	if (!done) {
-		condfini.wait(ml);
-	}
-	return nearest_contact;
 }

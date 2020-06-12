@@ -68,9 +68,9 @@ void depth_charge::save(xml_elem& parent) const
 
 
 
-void depth_charge::simulate(double delta_time)
+void depth_charge::simulate(double delta_time, game& gm)
 {
-	sea_object::simulate(delta_time);
+	sea_object::simulate(delta_time, gm);
 
 	if (position.z < -explosion_depth) {
 		gm.dc_explosion(*this);
@@ -80,7 +80,7 @@ void depth_charge::simulate(double delta_time)
 
 
 
-void depth_charge::compute_force_and_torque(vector3& F, vector3& T) const
+void depth_charge::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 {
 	// force is in world space!
 	if (position.z > 0) {	// DC's can be thrown, so they can be above water.

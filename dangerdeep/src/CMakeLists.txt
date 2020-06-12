@@ -170,11 +170,10 @@ add_library ( dftdall SHARED
 	postprocessor.h
 	primitives.cpp
 	primitives.h
-	ptrlist.h
-	ptrvector.h
 	random_generator.h
 	sea_object.cpp
 	sea_object.h
+	sea_object_id.h
 	sensors.cpp
 	sensors.h
 	shader.cpp

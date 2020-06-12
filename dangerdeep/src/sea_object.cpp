@@ -65,7 +65,7 @@ void sea_object::meters2degrees(double x, double y, bool& west, unsigned& degx, 
 
 
 
-void sea_object::compute_force_and_torque(vector3& F, vector3& T) const
+void sea_object::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 {
 	// force is in world space!
 	/* general formulas:
@@ -167,10 +167,10 @@ void sea_object::compute_helper_values()
 
 
 
-void sea_object::set_sensor ( sensor_system ss, sensor* s )
+void sea_object::set_sensor ( sensor_system ss, std::unique_ptr<sensor>&& s )
 {
 	if ( ss >= 0 && ss < last_sensor_system ){
-		sensors.reset(size_t(ss), s);
+		sensors[ss] = std::move(s);
 	}
 }
 
@@ -178,14 +178,12 @@ void sea_object::set_sensor ( sensor_system ss, sensor* s )
 
 double sea_object::get_cross_section ( const vector2& d ) const
 {
-	if (mymodel) {
+	if (mymodel.is_valid()) {
 		vector2 r = get_pos().xy() - d;
 		angle diff = angle(r) - get_heading();
 		return mymodel->get_cross_section(diff.value());
 	}
 	return 0.0;
-
-
 }
 
 
@@ -274,7 +272,7 @@ void sea_object::set_skin_layout(const std::string& layout)
 {
 //	cout << "set skin layout = '" << layout << "'\n";
 	if (layout != skin_name) {
-		if (mymodel) {
+		if (mymodel.is_valid()) {
 			if (skin_name.length() > 0)
 				mymodel->unregister_layout(skin_name);
 			mymodel->register_layout(layout);
@@ -286,9 +284,7 @@ void sea_object::set_skin_layout(const std::string& layout)
 
 
 sea_object::sea_object(game& gm_, string  modelname_)
-	: gm(gm_),
-	  modelname(std::move(modelname_)),
-	  mymodel(nullptr),
+	: modelname(std::move(modelname_)),
 	  skin_country(UNKNOWNCOUNTRY),
 	  mass(1.0),//fixme
 	  mass_inv(1.0/mass),
@@ -297,12 +293,11 @@ sea_object::sea_object(game& gm_, string  modelname_)
 	  roll_velocity(0),
 	  alive_stat(alive),
 	  sensors(last_sensor_system),
-	  target(nullptr),
 	  invulnerable(false), country(UNKNOWNCOUNTRY), party(UNKNOWNPARTY),
 	  redetect_time(0)
 {
 	// no specfile, so specfilename is empty, do not call get_rel_path with empty string!
-	mymodel = modelcache().ref(/*data_file().get_rel_path(specfilename) + */ modelname);
+	mymodel = object_handle(modelcache(), /*data_file().get_rel_path(specfilename) + */ modelname);
 	if (!mymodel->get_base_mesh().has_bv_tree()) {
 		mymodel->get_base_mesh().compute_bv_tree();
 	}
@@ -327,9 +322,7 @@ sea_object::sea_object(game& gm_, string  modelname_)
 
 
 sea_object::sea_object(game& gm_, const xml_elem& parent)
-	: gm(gm_),
-	  mymodel(nullptr),
-	  skin_country(UNKNOWNCOUNTRY),
+	: skin_country(UNKNOWNCOUNTRY),
 	  mass(1.0),//fixme
 	  mass_inv(1.0/mass),
 	  turn_velocity(0),
@@ -337,7 +330,6 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 	  roll_velocity(0),
 	  alive_stat(alive),
 	  sensors(last_sensor_system),
-	  target(nullptr),
 	  invulnerable(false), country(UNKNOWNCOUNTRY), party(UNKNOWNPARTY),
 	  redetect_time(0)
 {
@@ -373,7 +365,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 // 		     << "\n";
 	}
 
-	mymodel = modelcache().ref(data_file().get_rel_path(specfilename) + modelname);
+	mymodel = object_handle(modelcache(), data_file().get_rel_path(specfilename) + modelname);
 	if (!mymodel->get_base_mesh().has_bv_tree()) {
 		mymodel->get_base_mesh().compute_bv_tree();
 	}
@@ -396,7 +388,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 	for (unsigned i = 0; i < NR_OF_COUNTRIES; ++i) {
 		if (countrystr == countrycodes[i]) {
 			country = countrycode(i);
-			party = party_of_country(country, gm.get_date());
+			party = party_of_country(country, gm_.get_date());	//fixme the only position where gm_ is used, rather give date on construction!
 		}
 	}
 	xml_elem ds = parent.child("description");
@@ -418,9 +410,9 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 	xml_elem sn = parent.child("sensors");
 	for (auto elem : sn.iterate("sensor")) {
 		string typestr = elem.attr("type");
-		if (typestr == "lookout") set_sensor(lookout_system, new lookout_sensor());
-		else if (typestr == "passivesonar") set_sensor(passive_sonar_system, new passive_sonar_sensor());
-		else if (typestr == "activesonar") set_sensor(active_sonar_system, new active_sonar_sensor());
+		if (typestr == "lookout") set_sensor(lookout_system, std::make_unique<lookout_sensor>());
+		else if (typestr == "passivesonar") set_sensor(passive_sonar_system, std::make_unique<passive_sonar_sensor>());
+		else if (typestr == "activesonar") set_sensor(active_sonar_system, std::make_unique<active_sonar_sensor>());
 		else if (typestr == "radar") {
 			radar_sensor::radar_type type = radar_sensor::radar_type_default;
 			string radar_model = elem.attr("model");
@@ -444,8 +436,8 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 				type  = radar_sensor::radar_german_fumo_391;
 			else
 				THROW(error, "invalid radar type name");
-					
-			set_sensor(radar_system, new radar_sensor(type));
+
+			set_sensor(radar_system, std::make_unique<radar_sensor>(type));
 		}
 		// ignore unknown sensors.
 	}
@@ -458,9 +450,9 @@ sea_object::sea_object(game& gm_, const xml_elem& parent)
 sea_object::~sea_object()
 {
 // 	cout << "d'tor: unregistered layout " << skin_name << "\n";
-	if (skin_name.length() > 0)
-		mymodel->unregister_layout(skin_name);
-	modelcache().unref(mymodel);
+//fixme: must be handled in move c'tor! or just don't unregister until we get the new gpu stuff
+//	if (skin_name.length() > 0)
+//		mymodel->unregister_layout(skin_name);
 }
 
 
@@ -508,10 +500,10 @@ void sea_object::load(const xml_elem& parent)
 //  	cout << "load: registered layout " << skin_name << "\n";
 	// load ai
 	if (myai.get()) {
-		myai->load(gm, parent.child("AI"));
+		myai->load(parent.child("AI"));
 	}
 	// load target
-	target = gm.load_ptr(parent.child("target").attru());
+	target.id = parent.child("target").attru();
 }
 
 
@@ -533,10 +525,10 @@ void sea_object::save(xml_elem& parent) const
 	// save ai
 	if (myai.get()) {
 		xml_elem ae = parent.add_child("AI");
-		myai->save(gm, ae);
+		myai->save(ae);
 	}
 	// save target
-	parent.add_child("target").set_attr(gm.save_ptr(target));
+	parent.add_child("target").set_attr(target.id);
 }
 
 
@@ -550,7 +542,7 @@ string sea_object::get_description(unsigned detail) const
 
 
 
-void sea_object::simulate(double delta_time)
+void sea_object::simulate(double delta_time, game& gm)
 {
 	// check and change states
 	if (alive_stat == defunct) {
@@ -567,8 +559,8 @@ void sea_object::simulate(double delta_time)
 	}
 
 	// check target. heirs should check for "out of range" condition too
-	if (target && !target->is_alive())
-		target = nullptr;
+	if (target.is_valid() && !gm.get_object(target).is_alive())//fixme we need game to check validity!!!
+		target = sea_object_id{};
 
 	// check if list of detected objects needs to be compressed.
 	// needs to be called for every frame and object, because objects can become defunct every frame
@@ -597,7 +589,7 @@ void sea_object::simulate(double delta_time)
 
 	// get force and torque for current time.
 	vector3 force, torque;
-	compute_force_and_torque(force, torque);
+	compute_force_and_torque(force, torque, gm);
 	//DBGOUT6(position, orientation, linear_momentum, angular_momentum, force, torque);
 
 	// compute new position by integrating linear_momentum
@@ -711,7 +703,7 @@ void sea_object::simulate(double delta_time)
 
 
 
-bool sea_object::damage(const vector3& fromwhere, unsigned strength)
+bool sea_object::damage(const vector3& fromwhere, unsigned strength, game& gm)
 {
 	kill();	// fixme crude hack, replace by damage simulation
 	return true;
@@ -736,7 +728,7 @@ void sea_object::set_inactive()
 }
 
 
-#ifdef COD_MODE/* heehee */ 
+#ifdef COD_MODE/* heehee */
 void sea_object::reanimate()
 {
 	log_info("Cheater!");
@@ -796,9 +788,9 @@ vector2 sea_object::get_engine_noise_source () const
 
 void sea_object::display(const texture *caustic_map) const
 {
-	if (mymodel) {
+	if (mymodel.is_valid()) {
 //		cout << "render with skin layout = " << skin_name << "\n";
-		mymodel->set_layout(skin_name);
+		const_cast<model&>(mymodel.get()).set_layout(skin_name);	// hack, replace by new gpu stuff
 		mymodel->display(caustic_map);
 	}
 }
@@ -807,9 +799,9 @@ void sea_object::display(const texture *caustic_map) const
 
 void sea_object::display_mirror_clip() const
 {
-	if (mymodel) {
+	if (mymodel.is_valid()) {
 //		cout << "renderMC with skin layout = " << skin_name << "\n";
-		mymodel->set_layout(skin_name);
+		const_cast<model&>(mymodel.get()).set_layout(skin_name);	// hack, replace by new gpu stuff
 		mymodel->display_mirror_clip();
 	}
 }
@@ -819,7 +811,7 @@ void sea_object::display_mirror_clip() const
 sensor* sea_object::get_sensor ( sensor_system ss )
 {
 	if ( ss >= 0 && ss < last_sensor_system )
-		return &sensors[ss];
+		return sensors[ss].get();
 
 	return nullptr;
 }
@@ -829,20 +821,20 @@ sensor* sea_object::get_sensor ( sensor_system ss )
 const sensor* sea_object::get_sensor ( sensor_system ss ) const
 {
 	if ( ss >= 0 && ss < last_sensor_system )
-		return &sensors[ss];
+		return sensors[ss].get();
 
 	return nullptr;
 }
 
 
 
-void sea_object::compress(std::vector<sea_object*>& vec)
+void sea_object::compress(std::vector<const sea_object*>& vec)
 {
 	// this algorithm keeps the order of objects.
 	unsigned j = 0;
 	for (unsigned i = 0; i < vec.size(); ++i) {
 		if (vec[i]->is_reference_ok()) {
-			sea_object* tmp = vec[i];
+			auto* tmp = vec[i];
 			vec[i] = nullptr;
 			vec[j] = tmp;
 			++j;
@@ -853,23 +845,10 @@ void sea_object::compress(std::vector<sea_object*>& vec)
 
 
 
-void sea_object::compress(std::list<sea_object*>& lst)
+const model& sea_object::get_model() const
 {
-	for (auto it = lst.begin(); it != lst.end(); ) {
-		if ((*it)->is_reference_ok()) {
-			++it;
-		} else {
-			it = lst.erase(it);
-		}
-	}
-}
-
-
-
-model& sea_object::get_model() const
-{
-	if (mymodel)
-		return *mymodel;
+	if (mymodel.is_valid())
+		return mymodel.get();
 	THROW(error, "sea_object::get_model(), no model set");
 }
 

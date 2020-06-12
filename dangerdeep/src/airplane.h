@@ -34,24 +34,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\todo add steering AI and control AI for airplanes.
 class airplane : public sea_object
 {
- private:
-	airplane() = delete;
-	airplane& operator=(const airplane& other) = delete;
-	airplane(const airplane& other) = delete;
-	
  protected:
 	double rollfac, pitchfac;	// rudder state, pitch/roll factor per time.
 
 	bool detect_other_sea_objects() const override { return true; }
 
  public:
+	/// defined to make it storeable in map, don't use
+	airplane() = default;
+
 	// create empty object from specification xml file
 	airplane(game& gm_, const xml_elem& parent);
 
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
 
-	void simulate(double delta_time) override;
+	void simulate(double delta_time, game& gm) override;
 
 	virtual double get_mass() const { return 4000.0; }	// 4 tons.
 	virtual double get_engine_thrust() const { return 20000.0; }

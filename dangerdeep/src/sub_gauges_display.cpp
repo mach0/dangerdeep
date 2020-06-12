@@ -123,7 +123,7 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 			angle mang = indicator_depth->get_angle(m.position_2d) - angle(225);
 			// 135° are 100m
 			if (mang.value()/1.35 < 270) {
-				sub->dive_to_depth(unsigned(mang.value()/1.35));
+				sub->dive_to_depth(unsigned(mang.value()/1.35), ui.get_game());
 			}
 		} else if( indicator_bow_depth_rudder->is_over(m.position_2d)){
 			angle mang(indicator_bow_depth_rudder->get_angle(m.position_2d)-angle(270));

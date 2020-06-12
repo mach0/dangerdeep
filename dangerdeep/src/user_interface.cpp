@@ -364,11 +364,11 @@ void user_interface::display() const
 	// fixme: brightness needs sun_pos, so compute_sun_pos() is called multiple times per frame
 	// but is very costly. we could cache it.
 	mygame->get_water().set_refraction_color(mygame->compute_light_color(mygame->get_player()->get_pos()));
-	displays[current_display].display();
+	displays[current_display]->display();
 
 	// popups
 	if (current_popup > 0)
-		popups[current_popup-1].display();
+		popups[current_popup-1]->display();
 
 	// draw screen selector if visible
 	if (screen_selector_visible) {
@@ -401,8 +401,8 @@ void user_interface::set_time(double tm)
 		bool newdaymode = mygame->is_day_mode();
 		if (newdaymode != daymode) {
 			mygame->freeze_time();
-			displays[current_display].leave();
-			displays[current_display].enter(newdaymode);
+			displays[current_display]->leave();
+			displays[current_display]->enter(newdaymode);
 			mygame->unfreeze_time();
 		}
 		daymode = newdaymode;
@@ -428,11 +428,11 @@ bool user_interface::handle_key_event(const key_data& k)
 		}
 	}
 	if (current_popup > 0) {
-		if (popups[current_popup-1].handle_key_event(k)) {
+		if (popups[current_popup-1]->handle_key_event(k)) {
 			return true;
 		}
 	}
-	return displays[current_display].handle_key_event(k);
+	return displays[current_display]->handle_key_event(k);
 }
 
 
@@ -463,11 +463,11 @@ bool user_interface::handle_mouse_button_event(const mouse_click_data& m)
 		}
 	}
 	if (current_popup > 0) {
-		if (popups[current_popup-1].handle_mouse_button_event(m)) {
+		if (popups[current_popup-1]->handle_mouse_button_event(m)) {
 			return true;
 		}
 	}
-	return displays[current_display].handle_mouse_button_event(m);
+	return displays[current_display]->handle_mouse_button_event(m);
 }
 
 
@@ -531,11 +531,11 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
 		}
 	}
 	if (current_popup > 0) {
-		if (popups[current_popup-1].handle_mouse_motion_event(m)) {
+		if (popups[current_popup-1]->handle_mouse_motion_event(m)) {
 			return true;
 		}
 	}
-	return displays[current_display].handle_mouse_motion_event(m);
+	return displays[current_display]->handle_mouse_motion_event(m);
 }
 
 
@@ -566,24 +566,25 @@ bool user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m)
 		}
 	}
 	if (current_popup > 0) {
-		if (popups[current_popup-1].handle_mouse_wheel_event(m)) {
+		if (popups[current_popup-1]->handle_mouse_wheel_event(m)) {
 			return true;
 		}
 	}
-	return displays[current_display].handle_mouse_wheel_event(m);
+	return displays[current_display]->handle_mouse_wheel_event(m);
 }
 
 
 
 void user_interface::show_target(double vx, double vy, double w, double h, const vector3& viewpos)
 {
-	if (mygame && mygame->get_player()->get_target()) {
+	if (mygame && mygame->get_player()->get_target().is_valid()) {
 		// draw red triangle below target
 		// find screen position of target by projecting its position to screen
 		// coordinates.
+		//@todo/fixme: target could be different than ship, don't request target from sea_object!
 		vector4 tgtscr = (matrix4::get_glf(GL_PROJECTION_MATRIX)
 				  * matrix4::get_glf(GL_MODELVIEW_MATRIX))
-			* (mygame->get_player()->get_target()->get_pos() - viewpos).xyz0();
+			* (mygame->get_ship(mygame->get_player()->get_target()).get_pos() - viewpos).xyz0();
 		if (tgtscr.z > 0) {
 			// only when in front.
 			// transform to screen coordinates, using the projection coordinates
@@ -769,7 +770,7 @@ void user_interface::set_allowed_popup()
 	// 0 is always valid (no popup)
 	if (current_popup == 0) return;
 
-	unsigned mask = displays[current_display].get_popup_allow_mask();
+	unsigned mask = displays[current_display]->get_popup_allow_mask();
 	mask >>= (current_popup-1);
 	while (mask != 0) {
 		// is popup number valid?
@@ -792,7 +793,7 @@ void user_interface::set_current_display(unsigned curdis)
 	}
 	if (mygame)
 		mygame->freeze_time();
-	displays[current_display].leave();
+	displays[current_display]->leave();
 	current_display = curdis;
 
 	// clear both screen buffers
@@ -802,13 +803,13 @@ void user_interface::set_current_display(unsigned curdis)
 	glClear(GL_COLOR_BUFFER_BIT);
 	sys().finish_frame();
 
-	displays[current_display].enter(daymode);
+	displays[current_display]->enter(daymode);
 	if (mygame)
 		mygame->unfreeze_time();
 
 	// check if current popup is still allowed. if not, clear popup
 	if (current_popup > 0) {
-		unsigned mask = displays[current_display].get_popup_allow_mask();
+		unsigned mask = displays[current_display]->get_popup_allow_mask();
 		mask >>= (current_popup-1);
 		if ((mask & 1) == 0)
 			current_popup = 0;

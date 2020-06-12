@@ -40,7 +40,7 @@ double untertrieb (percent of weight?)
 double warhead_weight
 int warhead_explosive	(varois types, hardcoded)
 double arming_distance
-ptrlist<fuse>
+vector<fuse>
 -> per fuse: int type
 => list<type>
 double range_normal    (compute from battery values? no, store also)
@@ -75,6 +75,8 @@ Pi: angle of impact? unsure
 class torpedo : public ship
 {
  public:
+	torpedo() = default;
+
 	/// data about a torpedo fuse
 	class fuse
 	{
@@ -127,11 +129,6 @@ class torpedo : public ship
 				NORMAL = 0, // for G7e, same as SLOW for G7a
 				NR_SPEEDRANGE_TYPES = 3 };
 
- private:
-	torpedo() = delete;
-	torpedo& operator=(const torpedo& other) = delete;
-	torpedo(const torpedo& other) = delete;
-
  protected:
 
 	friend class sub_torpsetup_display;	// to set up values... maybe add get/set functions for them
@@ -162,8 +159,8 @@ class torpedo : public ship
 
 	// specific damage here:
 //	virtual void create_sensor_array ( types t );
-	
-	void compute_force_and_torque(vector3& F, vector3& T) const override;
+
+	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 	void depth_steering_logic();
 	double get_turn_accel_factor() const override { return 50.0; } // rudder area etc.
 	double get_turn_drag_area() const override;
@@ -185,7 +182,7 @@ public:
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
 
-	void simulate(double delta_time) override;
+	void simulate(double delta_time, game& gm) override;
 
 	// sets speed to initial speed, sets position
 	virtual void launch(const vector3& launchpos, angle parenthdg);
@@ -197,10 +194,10 @@ public:
 	double get_torp_speed() const;
 
 	/// fire fuse and test if it works. depends also on angle to target, to be added later as parameter.
-	bool test_contact_fuse() const;
+	bool test_contact_fuse(game& gm) const;
 
 	/// fire fuse and test if it works. depends on distance/angle to target, to be added later as parameter.
-	bool test_magnetic_fuse() const;
+	bool test_magnetic_fuse(game& gm) const;
 };
 
 #endif

@@ -84,7 +84,7 @@ void sub_recogmanual_display::display() const
 			off_x += step_x;
 			off_text_x += step_x;
 		}
-		silhouettes[i].draw(off_x,off_y+step_y*(i%3), colorf(1.0, 1.0, 1.0, 0.75));
+		silhouettes[i]->draw(off_x,off_y+step_y*(i%3), colorf(1.0, 1.0, 1.0, 0.75));
 
 		//fixme: change this after the authentic overlay is implemented
 		font_vtremington12->print(off_text_x, off_text_y+step_y*(i%3), classes[i].c_str(), color(0, 0, 0));
@@ -153,11 +153,11 @@ void sub_recogmanual_display::enter(bool is_day)
 			doc.load();
 			xml_elem elem = doc.child("dftd-ship"); // will this get destroyed on leaving function?
 			elem = elem.child("shipmanual");
-			displacements.push_back(std::make_unique<string>(elem.attr("displacement")));
-			lengths.push_back(std::make_unique<string>(elem.attr("length")));
-			classes.push_back(std::make_unique<string>(elem.attr("class")));
-			weapons.push_back(std::make_unique<string>(elem.attr("weapons")));
-			countries.push_back(std::make_unique<string>(elem.attr("countries")));
+			displacements.push_back(elem.attr("displacement"));
+			lengths.push_back(elem.attr("length"));
+			classes.push_back(elem.attr("class"));
+			weapons.push_back(elem.attr("weapons"));
+			countries.push_back(elem.attr("countries"));
 		} catch (exception& e) { // fixme: remove the try..catch when all silhouette files are on place
 		}
 	}

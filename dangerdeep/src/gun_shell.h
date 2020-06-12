@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define GUN_SHELL_H
 
 #include "sea_object.h"
+class ship;
 
 #define AIR_RESISTANCE 0.05	// factor of velocity that gets subtracted
 				// from it to slow the shell down
@@ -31,27 +32,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\brief Represents a gun shell with simulation of it.
 class gun_shell : public sea_object
 {
- private:
-	gun_shell() = delete;
-	gun_shell& operator=(const gun_shell& other) = delete;
-	gun_shell(const gun_shell& other) = delete;
  protected:
 	vector3 oldpos;		// position at last iteration (for collision detection)
-	double damage_amount;
+	double damage_amount{0};
+	double caliber{0};
 
-	void check_collision();
-	void check_collision_precise(ship& s, const vector3& oldrelpos, const vector3& newrelpos);
-	void check_collision_voxel(ship& s, const vector3f& oldrelpos, const vector3f& newrelpos);
+	void check_collision(game& gm);
+	void check_collision_precise(game& gm, const ship& s, const vector3& oldrelpos, const vector3& newrelpos);
+	void check_collision_voxel(game& gm, const ship& s, const vector3f& oldrelpos, const vector3f& newrelpos);
 
  public:
+	gun_shell() = default;
 	gun_shell(game& gm_);	// for loading
 	gun_shell(game& gm_, const vector3& pos, angle direction, angle elevation,
-		double initial_velocity, double damage);	// for creation
+		double initial_velocity, double damage, double caliber_);	// for creation
 
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
+	auto get_caliber() const { return caliber; }
 
-	void simulate(double delta_time) override;
+	void simulate(double delta_time, game& gm) override;
 	virtual void display() const;
 	float surface_visibility(const vector2& watcher) const override;
 	// acceleration is only gravity and already handled by sea_object

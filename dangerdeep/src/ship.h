@@ -35,12 +35,9 @@ class game;
     Ship attributes are defined via specification XML file. */
 class ship : public sea_object
 {
- private:
-	ship() = delete;
-	ship(const ship& other) = delete;
-	ship& operator= (const ship& other) = delete;
-
  public:
+	ship() = default;	// needed to store it in maps, don't use manually!
+
 	// give negative values for fixed speeds, positive values for knots.
 	enum throttle_status { reversefull=-9, reversehalf=-8, reverse=-7 /* reverse slow */,
 			       aheadlisten=-6, aheadsonar=-5, aheadslow=-4,
@@ -99,6 +96,8 @@ class ship : public sea_object
 		double angle;	///< current rudder angle in degrees, do not use class angle here, we need explicit positive and negative values.
 		double to_angle;///< angle that rudder should move to
 
+		/// To make it storeable in containers, don't use
+		generic_rudder() = default;
 		generic_rudder(const vector3& p, int a, double ma, double ar, double mts)
 			: pos(p), axis(a), max_angle(ma), area(ar), max_turn_speed(mts),
 			  angle(0), to_angle(0) {}
@@ -127,7 +126,7 @@ class ship : public sea_object
 
 	head_to_param head_to_fixed;
 	angle head_to;
-	
+
 	double turn_rate;	// in angle/time (at max. speed/throttle), read from spec file
 	// fixme: value seems to be angle/meter, meaning angle change per m forward motion...
 
@@ -163,7 +162,7 @@ class ship : public sea_object
 	// can be volume * density of water.
 	double max_flooded_mass;
 
-	void compute_force_and_torque(vector3& F, vector3& T) const override; // drag must be already included!
+	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override; // drag must be already included!
 
 	/// implementation of the steering logic: helmsman simulation, or simpler model for torpedoes.
 	virtual void steering_logic();
@@ -194,22 +193,22 @@ class ship : public sea_object
 
 	// pointer to fire particle (0 means ship is not burning)
 	particle* myfire;
-	
+
 	virtual bool causes_spray() const { return true; }
-	
+
 	// some experience values of the crews to fire a grenade with right angle at any
 	// target. This depends on canon type (shot speed, min/max angles etc.) so we need
 	// several ai classes later.
 	static std::map<double, std::map<double, double> > dist_angle_relation;
 	static void fill_dist_angle_relation_map(const double initial_velocity);
-	
+
 	// deck gun
 	struct gun_barrel
 	{
 		double load_time_remaining;
 		angle last_elevation;
 		angle last_azimuth;
-		
+
 		gun_barrel()
 		{
 			load_time_remaining = 0.0;
@@ -217,40 +216,40 @@ class ship : public sea_object
 			last_azimuth = 0;
 		}
 	};
-	
+
 	struct gun_turret
 	{
 		int num_shells_remaining;
 		int shell_capacity;
-		double initial_velocity;		
+		double initial_velocity;
 		int max_declination;
 		int max_inclination;
 		double time_to_man;
 		double time_to_unman;
 		bool is_gun_manned;
 		double manning_time;
-		double shell_damage;	
+		double shell_damage;
 		int start_of_exclusion_radius;
 		int end_of_exclusion_radius;
 		double calibre;
-		
+
 		std::list<struct gun_barrel> gun_barrels;
-		
+
 		gun_turret()
 		{
 			num_shells_remaining = 0;
 			shell_capacity = 0;
-			initial_velocity = 0.0;			
+			initial_velocity = 0.0;
 			max_declination = 0;
 			max_inclination = 0;
 			time_to_man = 0.0;
 			time_to_unman = 0.0;
 			is_gun_manned = false;
 			manning_time = 0.0;
-			shell_damage = 0.0;	
+			shell_damage = 0.0;
 			start_of_exclusion_radius = 0;
 			end_of_exclusion_radius = 0;
-			calibre = 0.0;		
+			calibre = 0.0;
 		}
 	};
 	bool gun_manning_is_changing;
@@ -258,9 +257,9 @@ class ship : public sea_object
 	using gun_turret_itr = std::list<struct gun_turret>::iterator;
 	using const_gun_turret_itr = std::list<struct gun_turret>::const_iterator;
 	using gun_barrel_itr = std::list<struct gun_barrel>::iterator;
-	using const_gun_barrel_itr = std::list<struct gun_barrel>::const_iterator;	
+	using const_gun_barrel_itr = std::list<struct gun_barrel>::const_iterator;
 	double maximum_gun_range;
-	
+
 	int propeller_1_id, propeller_2_id; // for display()
 	int rudder_1_id, rudder_2_id; // for display()
 
@@ -274,21 +273,21 @@ public:
 	// create empty object from specification xml file
 	// construct a sea_object. called by heirs
 	ship(game& gm_, const xml_elem& parent);
-	
+
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;
 
 	virtual shipclass get_class() const { return myclass; }
 
-	void simulate(double delta_time) override;
+	void simulate(double delta_time, game& gm) override;
 
 	virtual void sink();
 
-	virtual void ignite();
+	virtual void ignite(game& gm);
 	bool is_burning() const { return myfire != nullptr; }
 
 	// command interface
-	virtual gun_status fire_shell_at(const vector2& pos);
+	virtual gun_status fire_shell_at(const vector2& pos, game& gm);
 
 	/** set up steering logic so object turns to new course.
 	    @param a - angle to turn to
@@ -305,7 +304,7 @@ public:
 
 	virtual bool has_smoke() const { return !smoke.empty(); }
 
-	bool damage(const vector3& fromwhere, unsigned strength) override;
+	bool damage(const vector3& fromwhere, unsigned strength, game& gm) override;
 	unsigned calc_damage() const override;	// returns damage in percent (100 means dead)
 	// this depends on ship's tonnage, type, draught and depth (subs/sinking ships)
 	virtual unsigned get_tonnage() const { return tonnage; }
@@ -318,18 +317,17 @@ public:
 	virtual bool screw_cavitation() const;	// returns true if screw causes cavitation
 	virtual double get_rudder_pos() const { return rudder.angle; }
 	double get_noise_factor () const override;
-	virtual gun_status fire_shell_at(const sea_object& s);
 
 	// needed for launching torpedoes
 	std::pair<angle, double> bearing_and_range_to(const sea_object* other) const;
 	angle estimate_angle_on_the_bow(angle target_bearing, angle target_heading) const;
-	
+
 	// gun
 	virtual bool has_guns() const { return !gun_turrets.empty(); }
 	virtual bool man_guns();
 	virtual bool unman_guns();
 	virtual bool is_gun_manned();
-	virtual void gun_manning_changed(bool is_gun_manned) {}
+	virtual void gun_manning_changed(bool is_gun_manned, game& gm) {}
 	virtual long num_shells_remaining();
 	virtual double max_gun_range() { return maximum_gun_range; };
 

@@ -84,40 +84,40 @@ submarine_interface::submarine_interface(game& gm) :
 	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
 	displays.resize(nr_of_displays);
-	displays.reset(display_mode_gauges, new sub_gauges_display(*this));
-	displays.reset(display_mode_valves, new sub_valves_display(*this));
-	displays.reset(display_mode_periscope, new sub_periscope_display(*this));
-	displays.reset(display_mode_uzo, new sub_uzo_display(*this));
-	displays.reset(display_mode_bridge, new sub_bridge_display(*this));
-	displays.reset(display_mode_map, new map_display(*this));
-	displays.reset(display_mode_torpedoroom, new sub_torpedo_display(*this));
-	displays.reset(display_mode_damagestatus, new sub_damage_display(*this));
-	displays.reset(display_mode_logbook, new logbook_display(*this));
-	displays.reset(display_mode_captainscabin, new sub_captainscabin_display(*this));
-	displays.reset(display_mode_successes, new sub_soldbuch_display(*this));
-	displays.reset(display_mode_recogmanual, new sub_recogmanual_display(*this));
+	displays[display_mode_gauges] = std::make_unique<sub_gauges_display>(*this);
+	displays[display_mode_valves] = std::make_unique<sub_valves_display>(*this);
+	displays[display_mode_periscope] = std::make_unique<sub_periscope_display>(*this);
+	displays[display_mode_uzo] = std::make_unique<sub_uzo_display>(*this);
+	displays[display_mode_bridge] = std::make_unique<sub_bridge_display>(*this);
+	displays[display_mode_map] = std::make_unique<map_display>(*this);
+	displays[display_mode_torpedoroom] = std::make_unique<sub_torpedo_display>(*this);
+	displays[display_mode_damagestatus] = std::make_unique<sub_damage_display>(*this);
+	displays[display_mode_logbook] = std::make_unique<logbook_display>(*this);
+	displays[display_mode_captainscabin] = std::make_unique<sub_captainscabin_display>(*this);
+	displays[display_mode_successes] = std::make_unique<sub_soldbuch_display>(*this);
+	displays[display_mode_recogmanual] = std::make_unique<sub_recogmanual_display>(*this);
 	switch (player->get_hearing_device_type()) {
 	case submarine::hearing_device_KDB:
-		displays.reset(display_mode_sonar, new sub_kdb_display(*this));
+		displays[display_mode_sonar] = std::make_unique<sub_kdb_display>(*this);
 		break;
 	default:
 	case submarine::hearing_device_GHG:
-		displays.reset(display_mode_sonar, new sub_ghg_display(*this));
+		displays[display_mode_sonar] = std::make_unique<sub_ghg_display>(*this);
 		break;
 	case submarine::hearing_device_BG:
-		displays.reset(display_mode_sonar, new sub_bg_display(*this));
+		displays[display_mode_sonar] = std::make_unique<sub_bg_display>(*this);
 		break;
 	}
-	displays.reset(display_mode_freeview, new freeview_display(*this));
-	displays.reset(display_mode_tdc, new sub_tdc_display(*this));
-	displays.reset(display_mode_torpsetup, new sub_torpsetup_display(*this));
+	displays[display_mode_freeview] = std::make_unique<freeview_display>(*this);
+	displays[display_mode_tdc] = std::make_unique<sub_tdc_display>(*this);
+	displays[display_mode_torpsetup] = std::make_unique<sub_torpsetup_display>(*this);
 
 	// fixme: use texture caches here too...
 	popups.resize(nr_of_popups);
-	popups.reset(popup_mode_control, new sub_control_popup(*this));
-	popups.reset(popup_mode_tdc, new sub_tdc_popup(*this));
-	popups.reset(popup_mode_ecard, new sub_ecard_popup(*this));
-	popups.reset(popup_mode_recogmanual, new sub_recogmanual_popup(*this));
+	popups[popup_mode_control] = std::make_unique<sub_control_popup>(*this);
+	popups[popup_mode_tdc] = std::make_unique<sub_tdc_popup>(*this);
+	popups[popup_mode_ecard] = std::make_unique<sub_ecard_popup>(*this);
+	popups[popup_mode_recogmanual] = std::make_unique<sub_recogmanual_popup>(*this);
 
 	// torpedo cam
 	torpedo_cam_view = std::make_unique<torpedo_camera_display>(*this);
@@ -154,7 +154,7 @@ submarine_interface::submarine_interface(game& gm) :
 	// fixme: later set "current_display" to other default value, like captain's cabin.
 
 	// Important! call enter() here for current display.
-	displays[current_display].enter(gm.is_day_mode());
+	displays[current_display]->enter(gm.is_day_mode());
 
 	add_loading_screen("submarine interface initialized");
 }
@@ -168,14 +168,16 @@ submarine_interface::~submarine_interface()
 
 void submarine_interface::fire_tube(submarine* player, int nr)
 {
-	if (player->get_target() && player->get_target() != player) {
-		bool ok = player->launch_torpedo(nr, player->get_target());
+	//fixme here was a check that we don't target ourselves - but we can't request the ID from a sea_object ptr. This must be avoided elsewhere.
+	if (player->get_target().is_valid()) {
+		auto& mytarget = mygame->get_object(player->get_target());
+		bool ok = player->launch_torpedo(nr, mytarget.get_pos(), *mygame);
 		if (ok) {
 			add_message(texts::get(49));
 			ostringstream oss;
 			oss << texts::get(49);
-			if (player->get_target())
-				oss << " " << texts::get(6) << ": " << player->get_target()->get_description(2);
+			if (player->get_target().is_valid())
+				oss << " " << texts::get(6) << ": " << mytarget.get_description(2);
 			mygame->add_logbook_entry(oss.str());
 			play_sound_effect(SFX_TUBE_LAUNCH, player->get_pos());
 		} else {
@@ -284,20 +286,20 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			player->set_rudder(ship::rudderfullright);
 			add_message(texts::get(36));
 		} else if (is_configured_key(key_command::RUDDER_UP, k)) {
-			player->set_planes_to(-0.5);
+			player->set_planes_to(-0.5, *mygame);
 			add_message(texts::get(37));
 		} else if (is_configured_key(key_command::RUDDER_HARD_UP, k)) {
-			player->set_planes_to(-1.0);
+			player->set_planes_to(-1.0, *mygame);
 			add_message(texts::get(37));
 		} else if (is_configured_key(key_command::RUDDER_DOWN, k)) {
 			add_message(texts::get(38));
-			player->set_planes_to(0.5);
+			player->set_planes_to(0.5, *mygame);
 		} else if (is_configured_key(key_command::RUDDER_HARD_DOWN, k)) {
 			add_message(texts::get(38));
-			player->set_planes_to(1.0);
+			player->set_planes_to(1.0, *mygame);
 		} else if (is_configured_key(key_command::CENTER_RUDDERS, k)) {
 			player->set_rudder(ship::ruddermidships);
-			player->set_planes_to(0);
+			player->set_planes_to(0, *mygame);
 			add_message(texts::get(42));
 
 		// THROTTLE
@@ -345,10 +347,10 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		} else if (is_configured_key(key_command::FIRE_TUBE_6, k)) {
 			fire_tube(player, 5);
 		} else if (is_configured_key(key_command::SELECT_TARGET, k)) {
-			sea_object* tgt = mygame->contact_in_direction(player, get_absolute_bearing());
+			auto tgt = mygame->contact_in_direction(player, get_absolute_bearing());
 			// set initial tdc values, also do that when tube is switched
-			player->set_target(tgt);
-			if (tgt) {
+			player->set_target(tgt, *mygame);
+			if (tgt.is_valid()) {
 				add_message(texts::get(50));
 				mygame->add_logbook_entry(texts::get(50));
 			} else {
@@ -367,10 +369,10 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		} else if (is_configured_key(key_command::CRASH_DIVE, k)) {
 			add_message(texts::get(41));
 			mygame->add_logbook_entry(texts::get(41));
-			player->crash_dive();
+			player->crash_dive(*mygame);
 		} else if (is_configured_key(key_command::GO_TO_SNORKEL_DEPTH, k)) {
 			if (player->has_snorkel () ) {
-				player->dive_to_depth(unsigned(player->get_snorkel_depth()));
+				player->dive_to_depth(unsigned(player->get_snorkel_depth()), *mygame);
 				add_message(texts::get(12));
 				mygame->add_logbook_entry(texts::get(97));
 			}
@@ -392,9 +394,9 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			player->head_to_course(get_absolute_bearing());
 		} else if (is_configured_key(key_command::IDENTIFY_TARGET, k)) {
 			// calculate distance to target for identification detail
-			if (player->get_target()) {
+			if (player->get_target().is_valid()) {
 				ostringstream oss;
-				oss << texts::get(79) << player->get_target()->get_description(2); // fixme
+				oss << texts::get(79) << mygame->get_object(player->get_target()).get_description(2); // fixme
 				add_message( oss.str () );
 				mygame->add_logbook_entry(oss.str());
 			} else {
@@ -403,9 +405,9 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		} else if (is_configured_key(key_command::GO_TO_PERISCOPE_DEPTH, k)) {
 			add_message(texts::get(40));
 			mygame->add_logbook_entry(texts::get(40));
-			player->dive_to_depth(unsigned(player->get_periscope_depth()));
+			player->dive_to_depth(unsigned(player->get_periscope_depth()), *mygame);
 		} else if (is_configured_key(key_command::GO_TO_SURFACE, k)) {
-			player->dive_to_depth(0);
+			player->dive_to_depth(0, *mygame);
 			add_message(texts::get(39));
 			mygame->add_logbook_entry(texts::get(39));
 
@@ -435,8 +437,8 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		} else if (is_configured_key(key_command::FIRE_DECK_GUN, k)) {
 			if (player->has_deck_gun()) {
 				if (!player->is_submerged()) {
-					if (player->get_target() && player->get_target() != player) {
-						int res = player->fire_shell_at(*(player->get_target()));
+					if (player->get_target().is_valid() /*fixme && player->get_target() != player*/) {
+						int res = player->fire_shell_at(mygame->get_object(player->get_target()).get_pos().xy(), *mygame);
 						if (ship::TARGET_OUT_OF_RANGE == res)
 							add_message(texts::get(218));
 						else if (ship::NO_AMMO_REMAINING == res)
@@ -495,7 +497,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 				break;
 #if 1 // fixme test hack
 			case key_code::r:
-				mygame->spawn_particle(new fireworks_particle(mygame->get_player()->get_pos() + vector3(0, 0, 5)));
+				mygame->spawn(std::make_unique<fireworks_particle>(mygame->get_player()->get_pos() + vector3(0, 0, 5)));
 				break;
 #endif
 			default:
@@ -687,7 +689,7 @@ bool submarine_interface::object_visible(sea_object* so,
 void submarine_interface::toggle_popup()
 {
 	if (current_display == display_mode_tdc) {
-		static_cast<sub_tdc_display*>(&displays[current_display])->next_sub_screen(daymode);
+		static_cast<sub_tdc_display&>(*displays[current_display]).next_sub_screen(daymode);
 	} else {
 		user_interface::toggle_popup();
 	}

@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "game.h"
 #include "datadirs.h"
 #include "widget.h"
-#include "ptrvector.h"
 #include "global_data.h"
 #include "log.h"
 
@@ -47,7 +46,7 @@ protected:
 	int page;
 	std::unique_ptr<image> background_daylight;
 	std::unique_ptr<image> background_nightlight;
-	ptrvector<image> silhouettes;
+	std::vector<std::unique_ptr<image>> silhouettes;
 	std::vector<std::string> classes;
 	std::vector<std::string> lengths;
 	std::vector<std::string> displacements;
