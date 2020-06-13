@@ -109,16 +109,11 @@ class bv_tree
 	/// Transform tree data
 	void transform(const matrix4f& mat);
 
-	/// Compute min and max value - fixme obsolete?
+	/// Compute min and max value of all tree nodes
 	void compute_min_max(vector3f& minv, vector3f& maxv) const;
 
-	void debug_dump(unsigned level = 0) const;
-
-	//const spheref& get_sphere() const { return volume; }
-
+	/// For tests
 	void collect_volumes_of_tree_depth(std::vector<spheref>& volumes, unsigned depth) const;
-
-	//bool is_leaf() const { return children[0].get() == nullptr; }
 
 	/// Is the tree undefined?
 	bool empty() const { return nodes.empty(); }

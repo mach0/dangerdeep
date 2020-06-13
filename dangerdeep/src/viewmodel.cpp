@@ -735,7 +735,7 @@ void run_gui()
 
 
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	// command line argument parsing
 	res_x = 1024;

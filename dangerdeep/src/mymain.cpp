@@ -43,9 +43,9 @@ using namespace std;
 #include <windows.h>
 #endif
 
-int mymain(list<string>& args);
+int mymain(std::vector<string>& args);
 
-int call_mymain(list<string>& args)
+int call_mymain(std::vector<string>& args)
 {
 	log_info("***** Log file started *****");
 	int result = 0;
@@ -90,7 +90,7 @@ int call_mymain(list<string>& args)
 int WinMain(HINSTANCE, HINSTANCE, LPSTR cmdline, int)
 {
 	string mycmdline(cmdline);
-	list<string> args;
+	std::vector<string> args;
 	// parse mycmdline
 	while (mycmdline.length() > 0) {
 		string::size_type st = mycmdline.find(" ");
@@ -105,10 +105,10 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR cmdline, int)
 
 int main(int argc, char** argv)
 {
-	list<string> args;
+	std::vector<string> args;
 	//parse argc, argv, do not store program name
-	while (argc > 1) {
-		args.push_front(string(argv[--argc]));
+	for (int i = 1; i < argc; ++i) {
+		args.push_back(std::string(argv[i]));
 	}
 	return call_mymain(args);
 }

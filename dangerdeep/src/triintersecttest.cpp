@@ -39,7 +39,7 @@ using std::vector;
 
 inline double rnd() { return double(rand())/RAND_MAX; }
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	cfg& mycfg = cfg::instance();
 	mycfg.register_option("screen_res_x", 1024);

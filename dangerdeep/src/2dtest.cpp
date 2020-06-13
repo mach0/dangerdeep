@@ -105,7 +105,7 @@ const char* glenum2str( int fmt )
 	}
 }
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	int res_x, res_y, res_area_2d_w, res_area_2d_h, res_area_2d_x, res_area_2d_y;
 //	font* font_arial = 0;
