@@ -84,9 +84,10 @@ int mymain(std::vector<string>& args)
 	params.resolution2d = {1024,768};
 	system_interface::create_instance(new class system_interface(params));
 
-	auto it = ++args.begin();
-	std::unique_ptr<model> modelA(new model(*it++));
-	std::unique_ptr<model> modelB(new model(*it++));
+	std::cout << args[0] << "\n";
+	std::cout << args[1] << "\n";
+	std::unique_ptr<model> modelA(new model(args[0]));
+	std::unique_ptr<model> modelB(new model(args[1]));
 	modelA->register_layout(model::default_layout);
 	modelB->register_layout(model::default_layout);
 	modelA->set_layout(model::default_layout);
@@ -175,18 +176,18 @@ int mymain(std::vector<string>& args)
 			matrix4f transf;
 			if (move_not_rotate) {
 				vector3f t;
-				(&t.x)[axis] = m.relative_motion.x * 0.1f;
+				(&t.x)[axis] = m.relative_motion_2d.x * 0.1f;
 				transf = matrix4f::trans(t);
 			} else {
 				switch (axis) {
 				case 0:
-					transf = matrix4f::rot_x(m.relative_motion.x * 0.1f);
+					transf = matrix4f::rot_x(m.relative_motion_2d.x * 0.1f);
 					break;
 				case 1:
-					transf = matrix4f::rot_y(m.relative_motion.x * 0.1f);
+					transf = matrix4f::rot_y(m.relative_motion_2d.x * 0.1f);
 					break;
 				case 2:
-					transf = matrix4f::rot_z(m.relative_motion.x * 0.1f);
+					transf = matrix4f::rot_z(m.relative_motion_2d.x * 0.1f);
 					break;
 				}
 			}
@@ -206,12 +207,12 @@ int mymain(std::vector<string>& args)
 			}
 			return true;
 		} else if (m.left()) {
-			viewangles.x += m.relative_motion.x;
-			viewangles.y += m.relative_motion.y;
+			viewangles.x += m.relative_motion_2d.x;
+			viewangles.y += m.relative_motion_2d.y;
 			return true;
 		} else if (m.middle()) {
-			viewangles.y += m.relative_motion.x;
-			viewangles.z += m.relative_motion.y;
+			viewangles.y += m.relative_motion_2d.x;
+			viewangles.z += m.relative_motion_2d.y;
 			return true;
 		}
 		return false;

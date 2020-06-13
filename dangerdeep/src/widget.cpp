@@ -730,7 +730,7 @@ bool widget::handle_mouse_motion_event(widget& w, const input_event_handler::mou
 	if (m.buttons_pressed.any()) {
 		w.redraw();
 		if (focussed) {
-			focussed->on_drag(m.position_2d, m.rel_motion_2d, m.buttons_pressed);
+			focussed->on_drag(m.position_2d, m.relative_motion_2d, m.buttons_pressed);
 			return true;
 		}
 	}

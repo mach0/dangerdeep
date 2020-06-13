@@ -229,14 +229,14 @@ bool sub_periscope_display::handle_key_event(const key_data& k)
 
 bool sub_periscope_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
-	if (m.left() && m.rel_motion_2d.y != 0) {
+	if (m.left() && m.relative_motion_2d.y != 0) {
 		// remove y motion, replace by scope raise/lower code
 		auto& gm = ui.get_game();
 		auto* s = dynamic_cast<submarine*>(gm.get_player());
 		s->scope_to_level(s->get_scope_raise_level() - m.relative_motion.y / 100.0f);
 		auto m2{m};
 		m2.relative_motion.y = 0;
-		m2.rel_motion_2d.y = 0;
+		m2.relative_motion_2d.y = 0;
 		return freeview_display::handle_mouse_motion_event(m2);
 	}
 	return freeview_display::handle_mouse_motion_event(m);

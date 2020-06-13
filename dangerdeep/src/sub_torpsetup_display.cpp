@@ -150,7 +150,7 @@ bool sub_torpsetup_display::handle_mouse_motion_event(const mouse_motion_data& m
 	if (m.left()) {
 		if (turnknobdrag != TK_NONE) {
 			float& ang = turnknobang[unsigned(turnknobdrag)];
-			ang += m.rel_motion_2d.x * TK_ANGFAC;
+			ang += m.relative_motion_2d.x * TK_ANGFAC;
 			switch (turnknobdrag) {
 			case TK_PRIMARYRANGE:
 				// 0-360 degrees match to 0-16

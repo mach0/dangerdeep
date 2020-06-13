@@ -997,7 +997,7 @@ bool map_display::handle_mouse_motion_event(const mouse_motion_data& m)
 		mouse_position = m.position_2d;
 		if (m.middle() && key_mod_ctrl(state_of_key_modifiers)) {
 			// move selected objects!
-			vector2 drag = vector2(m.rel_motion_2d) * (1.0 / mapzoom);
+			vector2 drag = vector2(m.relative_motion_2d) * (1.0 / mapzoom);
 			for (auto it : selection) {
 				auto& obj = ui.get_game().get_object(it);
 				vector3 p = obj.get_pos();
@@ -1013,7 +1013,7 @@ bool map_display::handle_mouse_motion_event(const mouse_motion_data& m)
 	// non-editor events.
 	mouse_position = m.position_2d;
 	if (m.middle() && key_mod_ctrl(state_of_key_modifiers)) {
-		vector2 motion(m.rel_motion_2d);
+		vector2 motion(m.relative_motion_2d);
 		motion.y = -motion.y;
 		mapoffset += motion * (1.0 / mapzoom);
 		return true;
