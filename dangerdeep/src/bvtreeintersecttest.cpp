@@ -84,6 +84,7 @@ int mymain(std::vector<string>& args)
 	params.resolution2d = {1024,768};
 	system_interface::create_instance(new class system_interface(params));
 
+	std::cout << "Testing intersection of models:\n";
 	std::cout << args[0] << "\n";
 	std::cout << args[1] << "\n";
 	std::unique_ptr<model> modelA(new model(args[0]));
@@ -111,7 +112,7 @@ int mymain(std::vector<string>& args)
 	bool render_spheres = false;
 	unsigned splevel = 0;
 	matrix4f transformA = matrix4f::one();
-	matrix4f transformB = matrix4f::one();
+	matrix4f transformB = matrix4f::trans(50.0, 50.0, 0.0);
 	matrix4f* curr_transform = &transformA;
 	bool check_tri_tri = false;
 
@@ -199,8 +200,13 @@ int mymain(std::vector<string>& args)
 			// here we transform in world space
 			bv_tree::param p0(mA.get_bv_tree(), mA.vertices, transA);
 			bv_tree::param p1(mB.get_bv_tree(), mB.vertices, transB);
+#if 0
 			std::vector<vector3f> contact_points;
 			intersects = bv_tree::collides(p0, p1, contact_points);
+#else
+			vector3f contact_point;
+			intersects = bv_tree::closest_collision(p0, p1, contact_point);
+#endif
 			if (check_tri_tri) {
 				matrix4f transformAtoB = transB.inverse() * transA;
 				intersects_tri = mA.intersects(mB, transformAtoB);
