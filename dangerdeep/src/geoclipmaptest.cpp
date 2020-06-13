@@ -668,7 +668,7 @@ void run()
     glClearColor(0, 0, 1, 0);
 }
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
     // report critical errors (on Unix/Posix systems)
     install_segfault_handler();

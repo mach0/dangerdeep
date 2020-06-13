@@ -225,7 +225,7 @@ public:
 
 
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	res_x = 1024;
 	bool fullscreen = true;

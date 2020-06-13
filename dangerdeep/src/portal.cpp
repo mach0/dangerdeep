@@ -130,7 +130,7 @@ unsigned level_at(int x, int y, int z)
 }
 
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	// report critical errors (on Unix/Posix systems)
 	install_segfault_handler();

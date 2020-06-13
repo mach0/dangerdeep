@@ -1587,7 +1587,7 @@ bool set_dir(const string& dir, string& setdir)
 
 
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	// report critical errors (on Unix/Posix systems)
 	install_segfault_handler();

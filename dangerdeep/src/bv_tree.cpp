@@ -106,20 +106,34 @@ namespace
 
 	bool is_inside(const vector3f& v, const std::vector<bv_tree::node>& nodes, unsigned node_index)
 	{
-		if (nodes[node_index].volume.is_inside(v)) {
-			if (!nodes[node_index].is_leaf()) {
+		auto& node = nodes[node_index];
+		if (node.volume.is_inside(v)) {
+			if (!node.is_leaf()) {
 				// Check children
 				for (unsigned i = 0; i < 2; ++i) {
-					if (nodes[node_index].tri_idx[i] != bv_tree::node::invalid_index) {
-						if (is_inside(v, nodes, nodes[node_index].tri_idx[i])) {
+					if (node.tri_idx[i] != bv_tree::node::invalid_index) {
+						if (is_inside(v, nodes, node.tri_idx[i])) {
 							return true;
 						}
 					}
 				}
 			}
-			//fixme inside leaf?! true or false? rather true!
+			return true;
 		}
 		return false;
+	}
+
+	void collect_volumes_of_tree_depth(std::vector<spheref>& volumes, unsigned depth, const std::vector<bv_tree::node>& nodes, unsigned node_index)
+	{
+		auto& node = nodes[node_index];
+		if (depth == 0) {
+			volumes.push_back(node.volume);
+			return;
+		}
+		if (!node.is_leaf()) {
+			collect_volumes_of_tree_depth(volumes, depth - 1, nodes, node.tri_idx[0]);
+			collect_volumes_of_tree_depth(volumes, depth - 1, nodes, node.tri_idx[1]);
+		}
 	}
 }
 
@@ -132,12 +146,10 @@ bv_tree::bv_tree(const std::vector<vector3f>& vertices, std::vector<bv_tree::nod
 }
 
 
-#if 0 // fixme where called?
 bool bv_tree::is_inside(const vector3f& v) const
 {
-	return is_inside(v, nodes, unsigned(nodes.size() - 1));
+	return ::is_inside(v, nodes, unsigned(nodes.size() - 1));
 }
-#endif
 
 
 
@@ -255,7 +267,6 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 }
 
 
-
 bool bv_tree::collides(const param& p, const spheref& sp)
 {
 	// if bounding volumes do not intersect, there can't be any collision of leaf elements
@@ -295,30 +306,8 @@ void bv_tree::compute_min_max(vector3f& minv, vector3f& maxv) const
 }
 
 
-#if 0
-void bv_tree::debug_dump(unsigned level) const
-{
-	//fixme
-	for (unsigned i = 0; i < level; ++i)
-		std::cout << "\t";
-	std::cout << "Level " << level << " Sphere " << volume.center << " | " << volume.radius << "\n";
-	for (auto & elem : children)
-		if (elem.get())
-			elem->debug_dump(level + 1);
-}
-#endif
 
-#if 0
 void bv_tree::collect_volumes_of_tree_depth(std::vector<spheref>& volumes, unsigned depth) const
 {
-	//fixme
-	if (depth == 0) {
-		volumes.push_back(volume);
-		return;
-	}
-	if (!is_leaf()) {
-		children[0]->collect_volumes_of_tree_depth(volumes, depth - 1);
-		children[1]->collect_volumes_of_tree_depth(volumes, depth - 1);
-	}
+	::collect_volumes_of_tree_depth(volumes, depth, nodes, unsigned(nodes.size() - 1));
 }
-#endif

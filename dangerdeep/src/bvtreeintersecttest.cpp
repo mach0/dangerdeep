@@ -42,7 +42,7 @@ using std::vector;
 
 inline double rnd() { return double(rand())/RAND_MAX; }
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 	if (args.size() != 2)
 		return -1;
