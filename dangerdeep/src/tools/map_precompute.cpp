@@ -65,7 +65,7 @@ inline void load_tile(ifstream& file, morton_bivector<Sint16>& tile, vector2i tl
 	}
 }
 
-int mymain(list<string>& args)
+int mymain(std::vector<string>& args)
 {
 
 	std::string infile, outdir;
