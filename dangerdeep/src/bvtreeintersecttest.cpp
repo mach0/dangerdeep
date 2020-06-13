@@ -198,7 +198,7 @@ int mymain(list<string>& args)
 			// here we transform in world space
 			bv_tree::param p0(mA.get_bv_tree(), mA.vertices, transA);
 			bv_tree::param p1(mB.get_bv_tree(), mB.vertices, transB);
-			std::list<vector3f> contact_points;
+			std::vector<vector3f> contact_points;
 			intersects = bv_tree::collides(p0, p1, contact_points);
 			if (check_tri_tri) {
 				matrix4f transformAtoB = transB.inverse() * transA;
@@ -260,7 +260,7 @@ int mymain(list<string>& args)
 		glPopMatrix();
 
 		if (render_spheres) {
-			std::list<spheref> volumesA, volumesB;
+			std::vector<spheref> volumesA, volumesB;
 			const bv_tree& b0 = modelA->get_base_mesh().get_bv_tree();
 			const bv_tree& b1 = modelA->get_base_mesh().get_bv_tree();
 			b0.collect_volumes_of_tree_depth(volumesA, splevel);

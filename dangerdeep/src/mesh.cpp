@@ -825,25 +825,12 @@ matrix3 mesh::compute_inertia_tensor(const matrix4f& transmat) const
 void mesh::compute_bv_tree()
 {
 	// build leaf nodes for every triangle of m
-	std::list<bv_tree::leaf_data> leaf_nodes;
+	std::vector<bv_tree::node> leaf_nodes;
 	for (auto& triidx : indices) {
-		bv_tree::leaf_data ld;
-		ld.tri_idx = {triidx[0].get_index(), triidx[1].get_index(), triidx[2].get_index()};
-		leaf_nodes.push_back(ld);
+		leaf_nodes.emplace_back({triidx[0].get_index(), triidx[1].get_index(), triidx[2].get_index()});
 	}
 	// clear memory first
-	bounding_volume_tree.reset();
-	bounding_volume_tree = bv_tree::create(positions, leaf_nodes);
-}
-
-
-
-/// Get the bounding volume tree
-const bv_tree& mesh::get_bv_tree() const
-{
-	if (!has_bv_tree())
-		THROW(error, "bv_tree not existing");
-	return *bounding_volume_tree.get();
+	bounding_volume_tree = bv_tree(positions, std::move(leaf_nodes));
 }
 
 

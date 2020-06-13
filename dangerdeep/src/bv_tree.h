@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define BV_TREE_H
 
 #include <array>
-#include <list>		// note! vector could be faster nowadays.
-#include <memory>
 #include <vector>
 #include "sphere.h"
 #include "matrix4.h"
@@ -35,70 +33,99 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class bv_tree
 {
  public:
-	/// data representing a triangle for tree construction
-	struct leaf_data
+	/// data representing a node (leaf or inner node)
+	struct node
 	{
-		std::array<uint32_t, 3> tri_idx;
-		leaf_data() { tri_idx[0] = tri_idx[1] = tri_idx[2] = uint32_t(-1); }
+		static const unsigned invalid_index{unsigned(-1)};
+		std::array<uint32_t, 3> tri_idx = {invalid_index, invalid_index, invalid_index };
+		spheref volume;
+		bool is_leaf() const { return tri_idx[2] != invalid_index; }
 		const vector3f& get_pos(const std::vector<vector3f>& vertices, unsigned corner) const {
 			return vertices[tri_idx[corner]];
 		}
-		vector3f get_center(const std::vector<vector3f>& vertices) const { return (get_pos(vertices, 0) + get_pos(vertices, 1) + get_pos(vertices, 2)) * (1.f/3); }
+		vector3f get_center(const std::vector<vector3f>& vertices) const {
+			return (get_pos(vertices, 0) + get_pos(vertices, 1) + get_pos(vertices, 2)) * (1.f/3);
+		}
 	};
 
 	/// parameters for collision
 	struct param
 	{
-		const bv_tree& tree;
-		const std::vector<vector3f>& vertices;
-		matrix4f transform;
+		const bv_tree& tree;	///< The tree to work on
+		unsigned node_index;	///< index of tree node
+		const std::vector<vector3f>& vertices;	///< wtf?
+		matrix4f transform;	///< Transformation to use for tree
+		/// return the node for the subtree
+		const node& get_node() const { return tree.nodes[node_index]; }
+		/// Is this a leaf node?
+		bool is_leaf() const { return get_node().is_leaf(); }
+		/// Create param from whole bv tree
 		param(const bv_tree& t, const std::vector<vector3f>& v, const matrix4f& m)
-			: tree(t), vertices(v), transform(std::move(m)) {}
+			: tree(t), vertices(v), transform(std::move(m)) { node_index = unsigned(tree.nodes.size() - 1); }
+		/// Create param with node index
+		param(const bv_tree& t, uint32_t ni, const std::vector<vector3f>& v, const matrix4f& m)
+			: tree(t), node_index(ni), vertices(v), transform(std::move(m)) {}
+		/// Get subnode param
 		param children(unsigned i) const {
-			return param(*tree.children[i], vertices, transform);
+			auto& current_node = get_node();
+			return param(tree, current_node.tri_idx[i], vertices, transform);
 		}
-		spheref get_transformed_sphere() const {
-			return spheref(transform.mul4vec3xlat(tree.volume.center), tree.volume.radius);
+		/// Get transformed volume
+		spheref get_transformed_volume() const {
+			auto& current_node = get_node();
+			return spheref(transform.mul4vec3xlat(current_node.volume.center), current_node.volume.radius);
 		}
+		/// Determine which child is closer
 		unsigned get_index_of_closer_child(const vector3f& pos) const {
-			if (tree.is_leaf())
+			auto& current_node = get_node();
+			if (current_node.is_leaf()) {
 				return 2; // invalid index
-			vector3f cp0 = transform.mul4vec3xlat(tree.children[0]->volume.center);
-			vector3f cp1 = transform.mul4vec3xlat(tree.children[1]->volume.center);
+			}
+			//fixme ugly, a children(u) -> node function is better.
+			vector3f cp0 = transform.mul4vec3xlat(tree.nodes[current_node.tri_idx[0]].volume.center);
+			vector3f cp1 = transform.mul4vec3xlat(tree.nodes[current_node.tri_idx[1]].volume.center);
 			return (cp0.square_distance(pos) < cp1.square_distance(pos)) ? 0 : 1;
 		}
 	};
 
-	bv_tree(const spheref& sph, const leaf_data& ld)
-		: volume(sph), leafdata(ld) {}
-	bv_tree(const spheref& sph, std::unique_ptr<bv_tree> left_tree, std::unique_ptr<bv_tree> right_tree);
-	static std::unique_ptr<bv_tree> create(const std::vector<vector3f>& vertices, std::list<leaf_data>& nodes);
+	/// Create empty tree
+	bv_tree() = default;
+
+	/// Create a bounding volume tree
+	bv_tree(const std::vector<vector3f>& vertices, std::vector<bv_tree::node>&& leaf_nodes);
+
+	/// Check if position is inside the tree
 	bool is_inside(const vector3f& v) const;
 
 	/** determine if two bv_trees intersect each other (are colliding). A list of contact points is computed. */
-	static bool collides(const param& p0, const param& p1, std::list<vector3f>& contact_points);
+	static bool collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points);
+
 	/** determine if two bv_trees intersect each other (are colliding). The closest contact point is computed. */
 	static bool closest_collision(const param& p0, const param& p1, vector3f& contact_point);
-	/** determine if two bv_trees intersect each other (are colliding). */
+
+	/** determine if bv_trees intersects sphere (are colliding). */
 	static bool collides(const param& p, const spheref& sp);
+
+	/// Transform tree data
 	void transform(const matrix4f& mat);
+
+	/// Compute min and max value - fixme obsolete?
 	void compute_min_max(vector3f& minv, vector3f& maxv) const;
+
 	void debug_dump(unsigned level = 0) const;
-	const spheref& get_sphere() const { return volume; }
-	void collect_volumes_of_tree_depth(std::list<spheref>& volumes, unsigned depth) const;
-	bool is_leaf() const { return children[0].get() == nullptr; }
+
+	//const spheref& get_sphere() const { return volume; }
+
+	void collect_volumes_of_tree_depth(std::vector<spheref>& volumes, unsigned depth) const;
+
+	//bool is_leaf() const { return children[0].get() == nullptr; }
+
+	/// Is the tree undefined?
+	bool empty() const { return nodes.empty(); }
 
  protected:
-	spheref volume;
-	leaf_data leafdata;
-	std::unique_ptr<bv_tree> children[2];
-
- private:
-	bv_tree() = delete;
-	bv_tree(const bv_tree& ) = delete;
-	bv_tree(bv_tree&& ) = delete;
-	bv_tree& operator= (const bv_tree& ) = delete;
-	bv_tree& operator= (bv_tree&& ) = delete;
+	/// The nodes of the tree. The root node is always the last one.
+	std::vector<node> nodes;
 };
 
 #endif
