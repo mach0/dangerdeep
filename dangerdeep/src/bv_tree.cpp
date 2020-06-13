@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "bv_tree.h"
 #include "error.h"
 #include "triangle_intersection.h"
+//#define DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
+#include <iostream>
+#endif
 
 namespace
 {
@@ -74,7 +78,9 @@ namespace
 		} else if (deltav.z > deltav.x) {
 			split_axis = 2; // z
 		}
-
+#ifdef DEBUG_OUTPUT
+		std::cout << "Create subtree [" << index_begin << "..." << index_end << "[ deltav " << deltav << " split_axis=" << split_axis << "\n";
+#endif
 		float vcenter[3];
 		bound_sphere.center.to_mem(vcenter);
 		auto index_end_left = index_begin;
@@ -85,12 +91,12 @@ namespace
 			if (vc[split_axis] < vcenter[split_axis]) {
 				// node is left, keep left of split and advance
 				++index_end_left;
-			} else if (index_end_left + 1 < index_end) {
-				// node is right, swap with last node in range and test again
-				std::swap(nodes[index_end_left], nodes[index_end-1]);
+			} else if (index_end_left + 1 < index_begin_right) {
+				// node is right, swap with last node in range that has no side defined and test again
+				std::swap(nodes[index_end_left], nodes[index_begin_right-1]);
 				--index_begin_right;
 			} else {
-				// last node is right
+				// last node in range is right
 				--index_begin_right;
 			}
 		}
@@ -98,8 +104,10 @@ namespace
 			// special case: force division
 			index_end_left = index_begin_right = (index_begin + index_end) / 2;
 		}
+		// Create subtrees for left and right part of nodes
 		auto left_child_index = create_bv_subtree(vertices, nodes, index_begin, index_end_left);
 		auto right_child_index = create_bv_subtree(vertices, nodes, index_begin_right, index_end);
+		// Create new node as parent for the sub trees and use the bounding sphere over all nodes for it
 		nodes.push_back({{left_child_index, right_child_index, bv_tree::node::invalid_index}, bound_sphere});
 		return unsigned(nodes.size() - 1);
 	}
@@ -143,6 +151,12 @@ bv_tree::bv_tree(const std::vector<vector3f>& vertices, std::vector<bv_tree::nod
 	if (!nodes.empty()) {
 		create_bv_subtree(vertices, nodes, 0, unsigned(nodes.size()));
 	}
+	// Note that ships and objects are mostly of box shape we could store an additional bounding box
+	// For a bit more precise checking. It would even be sufficient to check for box intersections
+	// ONLY!
+	// However we have to apply the transformations to each box then and check for intersections which
+	// is a bit of code but not too complicated.
+	// However normally objects don't get that close to each other, so we don't need this acceleration.
 }
 
 

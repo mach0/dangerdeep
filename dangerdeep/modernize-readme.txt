@@ -22,27 +22,25 @@ After each step check functionality.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
 9. Introduce newer system input event handling and migrate to SDL2
--------------WE ARE HERE-----------------
 10. Store sea_objects directly with move semantics, no more pointers, use
     unique_ptr everywhere possible, const sea_object pointers
-11. Fix viewmodel app
+11. Introduced new and faster BV-Tree
+-------------WE ARE HERE-----------------
+12. Fix viewmodel app
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
-12. add new sensors (test if they work!!!) needs test program.
-13. Divide code into separate libraries better (partly done)
+13. add new sensors (test if they work!!!) needs test program.
+14. Divide code into separate libraries better (partly done)
 ------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
-14. Finally adjust rendering
+15. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
 	problem is a name conflict! model/mesh/texture are already used
 	THIS IS THE TOUGHEST CHANGE, A CHANGE ALL OR NOTHING WILL WORK
 	PROJECT!
-15. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
-16. Turn on -Wall
-17. Sound sfx are not loaded (wav expected, ogg provided)
-18. Fix portal rendering
-19. Check bvtree test, causes bad_alloc
-20. New bvtree as vector<node>, with each node is spheref and 3 indices (can be child0,1 or leaf data!)
-    Much faster and better for memory!
+16. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
+17. Turn on -Wall
+18. Sound sfx are not loaded (wav expected, ogg provided)
+19. Fix portal rendering
 
 
 Changes that have been started in code comparison:
@@ -89,21 +87,11 @@ needs it!
 later usage of rigid_body, generic_rudder etc.
 A generic pointer to sea_object may be unnecessary, the objects can report their models for display.
 
-crash in editor when placing new ship directly on top of sub. Still valid?
-bvtree intersections seem very slow!
+BV-Tree collision checks: the number of iterations here is insanely high.
+Maybe there is a faster algorithm or by converting recursion to iteration it
+is faster?
 
 rudder hard left seems not to work!
-
-new bvtree idea: partition node list in on one side or other side like
-quicksort.
-Seems to work in general but painfully slow to detect object intersection.
-Is the iteration so slow or the memory handling because of too many
-intersections?
-If the number of collision points is above a low limit or the centers of the
-main volumes are too close just use the middle between the two centers
-as collision point, or accumulate all collision points, this makes it faster
-In general we need to test and benchmark the bvtree!
-We need to implement the missing functions and run bvtreeintersecttest!
 
 
 Notes

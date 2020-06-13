@@ -81,7 +81,6 @@ class bv_tree
 			if (current_node.is_leaf()) {
 				return 2; // invalid index
 			}
-			//fixme ugly, a children(u) -> node function is better.
 			vector3f cp0 = transform.mul4vec3xlat(tree.nodes[current_node.tri_idx[0]].volume.center);
 			vector3f cp1 = transform.mul4vec3xlat(tree.nodes[current_node.tri_idx[1]].volume.center);
 			return (cp0.square_distance(pos) < cp1.square_distance(pos)) ? 0 : 1;
@@ -97,7 +96,7 @@ class bv_tree
 	/// Check if position is inside the tree
 	bool is_inside(const vector3f& v) const;
 
-	/** determine if two bv_trees intersect each other (are colliding). A list of contact points is computed. */
+	/** determine if two bv_trees intersect each other (are colliding). A list of contact points is computed. Note this can be very slow! */
 	static bool collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points);
 
 	/** determine if two bv_trees intersect each other (are colliding). The closest contact point is computed. */
