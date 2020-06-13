@@ -160,8 +160,8 @@ public:
 
 	void compute_bv_tree();
 	/// return whether the mesh has a bounding volume tree computed
-	bool has_bv_tree() const { return bounding_volume_tree.get() != nullptr; }
-	const bv_tree& get_bv_tree() const;
+	bool has_bv_tree() const { return !bounding_volume_tree.empty(); }
+	const bv_tree& get_bv_tree() const { return bounding_volume_tree; }
 
 	/// slow intersection test on triangle-triangle tests
 	bool intersects(const mesh& other, const matrix4f& transformation_this_to_other) const;
@@ -193,7 +193,7 @@ protected:
 	std::vector<uint8_t> righthanded;	///< Is local coordinate system righthanded?
 	std::vector<std::array<triangle_index, 3>> triangle_adjacency;	///< Adjacency information, computed on demand
 	std::vector<triangle_index> vertex_triangle_adjacency;	///< Adjacency information, computed on demand
-	std::unique_ptr<bv_tree> bounding_volume_tree;	///< The optional tree for collision detection
+	bv_tree bounding_volume_tree;	///< The optional tree for collision detection
 	boxf bounds;			///< Bound values of positions
 	matrix3 inertia_tensor;			///< Inertia tensor for physical simulation
 	double volume;				///< Volume of mesh in cubic meters

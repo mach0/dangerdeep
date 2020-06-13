@@ -23,8 +23,6 @@ After each step check functionality.
 8. Removed SDL types and obsolete SDL.h includes
 9. Introduce newer system input event handling and migrate to SDL2
 -------------WE ARE HERE-----------------
-9a. bvtree creation seems broken
-9b. fix hall of fame
 10. Store sea_objects directly with move semantics, no more pointers, use
     unique_ptr everywhere possible, const sea_object pointers
 11. Fix viewmodel app
@@ -85,24 +83,27 @@ Changes that have been started in code comparison:
 - check clang tidy for readability-qualified-auto, readability-non-const-parameter
 - But why not just use two different classes for the TDC display?
 
-game::save_ptr isn't needed any longer and its usage is a clue where to
-replace pointers! load_ptr becomes obsolete then too!
-ai,convoy,game,sea_object.
 don't store target with every sea_object, only the user interface or player
 needs it!
-make sea_objects moveable...
-This all gives more changes than thought at first and much code is changed
-that is later replaced by new sensor work.
-We need to know the ID from inside the objects or ai needs to store still
-pointers to parent.
-hall of frame is broken, widget hangs!
 
 later usage of rigid_body, generic_rudder etc.
 A generic pointer to sea_object may be unnecessary, the objects can report their models for display.
 
-crash in editor when placing new ship directly on top of sub.
+crash in editor when placing new ship directly on top of sub. Still valid?
+bvtree intersections seem very slow!
 
 rudder hard left seems not to work!
+
+new bvtree idea: partition node list in on one side or other side like
+quicksort.
+Seems to work in general but painfully slow to detect object intersection.
+Is the iteration so slow or the memory handling because of too many
+intersections?
+If the number of collision points is above a low limit or the centers of the
+main volumes are too close just use the middle between the two centers
+as collision point, or accumulate all collision points, this makes it faster
+In general we need to test and benchmark the bvtree!
+We need to implement the missing functions and run bvtreeintersecttest!
 
 
 Notes

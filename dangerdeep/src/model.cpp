@@ -564,7 +564,7 @@ void model::mesh::compute_normals()
 			normal.normalize();
 		}
 	}
-	
+
 	// if we use normal mapping for this mesh, we need tangent values, too!
 	// tangentsy get computed at runtime from normals and tangentsx
 	// tangentsx are computed that way:
@@ -1234,7 +1234,7 @@ void model::mesh::compute_adjacency()
 			unsigned v1 = idx[(j+1)%3];
 			unsigned va = std::min(v0, v1), vb = std::max(v0, v1);
 			adjacency_edge_aux_data aa(i, j, va, vb);
-			std::pair<std::set<adjacency_edge_aux_data>::iterator, bool> pib = 
+			std::pair<std::set<adjacency_edge_aux_data>::iterator, bool> pib =
 				tri_of_vertex[va].insert(aa);
 			vertex_triangle_adjacency[va] = aa.triangle;
 			if (!pib.second) {
@@ -1330,11 +1330,12 @@ matrix3 model::mesh::compute_inertia_tensor(const matrix4f& transmat) const
 void model::mesh::compute_bv_tree()
 {
 	// build leaf nodes for every triangle of m
-	std::list<bv_tree::leaf_data> leaf_nodes;
+	std::vector<bv_tree::node> leaf_nodes;
+	leaf_nodes.reserve(get_nr_of_triangles());
 	std::unique_ptr<triangle_iterator> tit(get_tri_iterator());
 	unsigned tri_index = 0;
 	do {
-		bv_tree::leaf_data ld;
+		bv_tree::node ld;
 		ld.tri_idx[0] = tit->i0();
 		ld.tri_idx[1] = tit->i1();
 		ld.tri_idx[2] = tit->i2();
@@ -1342,23 +1343,13 @@ void model::mesh::compute_bv_tree()
 		++tri_index;
 	} while (tit->next());
 	// clear memory first
-	bounding_volume_tree.reset();
-	bounding_volume_tree = bv_tree::create(vertices, leaf_nodes);
-}
-
-
-
-const bv_tree& model::mesh::get_bv_tree() const
-{
-	if (!has_bv_tree())
-		THROW(error, "bv_tree not existing");
-	return *bounding_volume_tree.get();
+	bounding_volume_tree = bv_tree(vertices, std::move(leaf_nodes));
 }
 
 
 
 model::material::map::map()
-	 
+
 = default;
 
 
@@ -1465,7 +1456,7 @@ void model::material::map::get_all_layout_names(std::set<std::string>& result) c
 
 
 
-model::material::material(std::string  nm) : name(std::move(nm)) 
+model::material::material(std::string  nm) : name(std::move(nm))
 {
 }
 
@@ -1790,7 +1781,7 @@ void model::mesh::display(const texture *caustic_map) const
 	if (mymaterial != nullptr && mymaterial->two_sided) {
 		glEnable(GL_CULL_FACE);
 	}
-	
+
 	// clean up for material
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -2314,7 +2305,7 @@ void model::read_off_file(const string& fn)
 	m->name = basename;
 	m->vertices.resize(nr_vertices);
 	m->indices.resize(3*nr_faces);
-	
+
 	for (i = 0; i < nr_vertices; i++) {
 		float a, b, c;
 		if (3 != fscanf(f, "%f %f %f\n", &a, &b, &c))
@@ -2730,7 +2721,7 @@ unsigned model::get_voxel_closest_to(const vector3f& pos)
 // maybe add a function that returns all voxels within a sphere
 // that way damage can be computed better, as damage is not applied to
 // a point but a full subspace of 3-space.
-// with the usual 5x7x7 partition a voxel for a 20m*100m wide*long ship is ca. 
+// with the usual 5x7x7 partition a voxel for a 20m*100m wide*long ship is ca.
 // 4m*14m in size, so a torpedo can damage several voxels...
 // here it is:
 std::vector<unsigned> model::get_voxels_within_sphere(const vector3f& pos, double radius)

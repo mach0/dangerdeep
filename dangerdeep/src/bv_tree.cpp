@@ -22,146 +22,151 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
 #include "bv_tree.h"
-
-
-#include <memory>
-
+#include "error.h"
 #include "triangle_intersection.h"
 
-//#define PRINT(x) std::cout << x
-#define PRINT(x) do { } while (0)
-
-std::unique_ptr<bv_tree> bv_tree::create(const std::vector<vector3f>& vertices, std::list<leaf_data>& nodes)
+namespace
 {
-	std::unique_ptr<bv_tree> result;
-	// if list has zero entries, return empty pointer
-	if (nodes.empty())
-		return result;
-	// compute bounding box for leaves
-	vector3f bbox_min = nodes.front().get_pos(vertices, 0);
-	vector3f bbox_max = bbox_min;
-	for (auto& node : nodes) {
-		for (unsigned i = 0; i < 3; ++i) {
-			bbox_min = bbox_min.min(node.get_pos(vertices, i));
-			bbox_max = bbox_max.max(node.get_pos(vertices, i));
+	unsigned create_bv_subtree(const std::vector<vector3f>& vertices, std::vector<bv_tree::node>& nodes, unsigned index_begin, unsigned index_end)
+	{
+		if (index_begin == index_end) {
+			THROW(error, "bv_tree create on empty data");
 		}
-	}
-	// new sphere center is center of bbox
-	spheref bound_sphere((bbox_min + bbox_max) * 0.5f, 0.0f);
-	// compute sphere radius by vertex distances to center (more accurate than
-	// approximating by bbox size)
-	for (auto& node : nodes) {
-		for (unsigned i = 0; i < 3; ++i) {
-			float r = node.get_pos(vertices, i).distance(bound_sphere.center);
-			bound_sphere.radius = std::max(r, bound_sphere.radius);
+		// compute bounding box for leaves
+		vector3f bbox_min = nodes[index_begin].get_pos(vertices, 0);
+		vector3f bbox_max = bbox_min;
+		for (auto index = index_begin; index < index_end; ++index) {
+			auto& node = nodes[index];
+			for (unsigned i = 0; i < 3; ++i) {
+				bbox_min = bbox_min.min(node.get_pos(vertices, i));
+				bbox_max = bbox_max.max(node.get_pos(vertices, i));
+			}
 		}
-	}
-	// if list has one entry, return that
-	if (nodes.size() == 1) {
-		result = std::make_unique<bv_tree>(bound_sphere, nodes.front());
-		return result;
-	}
-	//
-	// split leaf node list in two parts
-	//
-	vector3f deltav = bbox_max - bbox_min;
-	// chose axis with longest value range, sort along that axis,
-	// split in center of bound_sphere.
-	PRINT("nodes " << nodes.size() << " boundsph=" << bound_sphere.center << "|" << bound_sphere.radius << "\n");
-	unsigned split_axis = 0; // x - default
-	if (deltav.y > deltav.x) {
-		if (deltav.z > deltav.y) {
+		// new sphere center is center of bbox
+		spheref bound_sphere((bbox_min + bbox_max) * 0.5f, 0.0f);
+		// compute sphere radius by vertex distances to center (more accurate than
+		// approximating by bbox size)
+		for (auto index = index_begin; index < index_end; ++index) {
+			auto& node = nodes[index];
+			for (unsigned i = 0; i < 3; ++i) {
+				float r = node.get_pos(vertices, i).distance(bound_sphere.center);
+				bound_sphere.radius = std::max(r, bound_sphere.radius);
+			}
+		}
+		// if list has one entry, return that
+		if (index_begin + 1 == index_end) {
+			nodes[index_begin].volume = bound_sphere;
+			return index_begin;
+		}
+		//
+		// split leaf node list in two parts
+		//
+		vector3f deltav = bbox_max - bbox_min;
+		// chose axis with longest value range, sort along that axis,
+		// split in center of bound_sphere.
+		unsigned split_axis = 0; // x - default
+		if (deltav.y > deltav.x) {
+			if (deltav.z > deltav.y) {
+				split_axis = 2; // z
+			} else {
+				split_axis = 1; // y
+			}
+		} else if (deltav.z > deltav.x) {
 			split_axis = 2; // z
-		} else {
-			split_axis = 1; // y
 		}
-	} else if (deltav.z > deltav.x) {
-		split_axis = 2; // z
+
+		float vcenter[3];
+		bound_sphere.center.to_mem(vcenter);
+		auto index_end_left = index_begin;
+		auto index_begin_right = index_end;
+		while (index_end_left < index_begin_right) {
+			float vc[3];
+			nodes[index_end_left].get_center(vertices).to_mem(vc);
+			if (vc[split_axis] < vcenter[split_axis]) {
+				// node is left, keep left of split and advance
+				++index_end_left;
+			} else if (index_end_left + 1 < index_end) {
+				// node is right, swap with last node in range and test again
+				std::swap(nodes[index_end_left], nodes[index_end-1]);
+				--index_begin_right;
+			} else {
+				// last node is right
+				--index_begin_right;
+			}
+		}
+		if (index_begin == index_end_left || index_begin_right == index_end) {
+			// special case: force division
+			index_end_left = index_begin_right = (index_begin + index_end) / 2;
+		}
+		auto left_child_index = create_bv_subtree(vertices, nodes, index_begin, index_end_left);
+		auto right_child_index = create_bv_subtree(vertices, nodes, index_begin_right, index_end);
+		nodes.push_back({{left_child_index, right_child_index, bv_tree::node::invalid_index}, bound_sphere});
+		return unsigned(nodes.size() - 1);
 	}
-	PRINT("deltav " << deltav << " split axis " << split_axis << "\n");
-	std::list<leaf_data> left_nodes, right_nodes;
-	float vcenter[3];
-	bound_sphere.center.to_mem(vcenter);
-	while (!nodes.empty()) {
-		float vc[3];
-		nodes.front().get_center(vertices).to_mem(vc);
-		if (vc[split_axis] < vcenter[split_axis])
-			left_nodes.splice(left_nodes.end(), nodes, nodes.begin());
-		else
-			right_nodes.splice(right_nodes.end(), nodes, nodes.begin());
+
+	bool is_inside(const vector3f& v, const std::vector<bv_tree::node>& nodes, unsigned node_index)
+	{
+		if (nodes[node_index].volume.is_inside(v)) {
+			if (!nodes[node_index].is_leaf()) {
+				// Check children
+				for (unsigned i = 0; i < 2; ++i) {
+					if (nodes[node_index].tri_idx[i] != bv_tree::node::invalid_index) {
+						if (is_inside(v, nodes, nodes[node_index].tri_idx[i])) {
+							return true;
+						}
+					}
+				}
+			}
+			//fixme inside leaf?! true or false? rather true!
+		}
+		return false;
 	}
-	if (left_nodes.empty() || right_nodes.empty()) {
-		PRINT("special case\n");
-		// special case: force division
-		auto& empty_list = left_nodes.empty() ? left_nodes : right_nodes;
-		auto& full_list = left_nodes.empty() ? right_nodes : left_nodes;
-		auto it = full_list.begin();
-		for (unsigned i = 0; i < full_list.size() / 2; ++i)
-			++it;
-		empty_list.splice(empty_list.end(), full_list, full_list.begin(), it);
-	}
-	PRINT("left " << left_nodes.size() << " right " << right_nodes.size() << "\n");
-	result = std::make_unique<bv_tree>(bound_sphere, create(vertices, left_nodes), create(vertices, right_nodes));
-	PRINT("final volume " << result->volume.center << "|" << result->volume.radius << "\n");
-	return result;
 }
 
-
-
-bv_tree::bv_tree(const spheref& sph, std::unique_ptr<bv_tree> left_tree, std::unique_ptr<bv_tree> right_tree)
-	: volume(sph)
+bv_tree::bv_tree(const std::vector<vector3f>& vertices, std::vector<bv_tree::node>&& leaf_nodes)
+ :	nodes(std::move(leaf_nodes))
 {
-	children[0] = std::move(left_tree);
-	children[1] = std::move(right_tree);
+	if (!nodes.empty()) {
+		create_bv_subtree(vertices, nodes, 0, unsigned(nodes.size()));
+	}
 }
 
 
-
+#if 0 // fixme where called?
 bool bv_tree::is_inside(const vector3f& v) const
 {
-	if (!volume.is_inside(v))
-		return false;
-	for (auto & elem : children)
-		if (elem.get())
-			if (elem->is_inside(v))
-				return true;
-	return false;
+	return is_inside(v, nodes, unsigned(nodes.size() - 1));
 }
+#endif
 
 
 
-bool bv_tree::collides(const param& p0, const param& p1, std::list<vector3f>& contact_points)
+bool bv_tree::collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points)
 {
 	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	//printf("collision check\n");
-	spheref transformed_volume0 = p0.get_transformed_sphere();
-	spheref transformed_volume1 = p1.get_transformed_sphere();
-	//printf("collision check hit THIS  volume=%f,%f,%f r=%f\n",transformed_volume0.center.x,transformed_volume0.center.y,transformed_volume0.center.z,transformed_volume0.radius);
-	//printf("collision check hit OTHER volume=%f,%f,%f r=%f\n",transformed_volume1.center.x,transformed_volume1.center.y,transformed_volume1.center.z,transformed_volume1.radius);
+	auto transformed_volume0 = p0.get_transformed_volume();
+	auto transformed_volume1 = p1.get_transformed_volume();
 	if (!transformed_volume0.intersects(transformed_volume1)) {
-		//printf("abort\n");
 		return false;
 	}
 
 	// handle case that this is a leaf node
-	if (p0.tree.is_leaf()) {
+	if (p0.is_leaf()) {
 		// we have a leaf node
-		if (p1.tree.is_leaf()) {
+		if (p1.is_leaf()) {
 			// direct face to face collision test
 			// handle transform here
-			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[0]]);
-			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[1]]);
-			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[2]]);
-			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[0]]);
-			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[1]]);
-			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[2]]);
+			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[0]]);
+			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[1]]);
+			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[2]]);
+			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[0]]);
+			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[1]]);
+			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[2]]);
 			// note that degenerated triangles would be a critical problem here, but
 			// they would have a bounding sphere of radius zero and thus we
 			// never would compare with them, so we don't need to check for them
 			// here.
-			//printf("leaf collision\n");
 			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
-			//if (c) printf("tri-tri coll\n");
 			if (c) {
 				// fixme: compute more accurate position here, maybe
 				// weight by triangle area between centers of triangles.
@@ -169,7 +174,6 @@ bool bv_tree::collides(const param& p0, const param& p1, std::list<vector3f>& co
 			}
 			return c;
 		} else {
-			//printf("other is no leaf\n");
 			// other node is no leaf, recurse there, swap roles of this and other
 			bool col1 = collides(p1.children(0), p0, contact_points);
 			bool col2 = collides(p1.children(1), p0, contact_points);
@@ -178,14 +182,12 @@ bool bv_tree::collides(const param& p0, const param& p1, std::list<vector3f>& co
 	}
 
 	// split larger volume of this and other, go recursivly down all children
-	if (p0.tree.volume.radius > p1.tree.volume.radius || p1.tree.is_leaf()) {
-		//printf("go down1\n");
+	if (p0.get_node().volume.radius > p1.get_node().volume.radius || p1.is_leaf()) {
 		// recurse this node, so don't swap roles of this and other
 		bool col1 = collides(p0.children(0), p1, contact_points);
 		bool col2 = collides(p0.children(1), p1, contact_points);
 		return col1 || col2;
 	} else {
-		//printf("go down2\n");
 		// recurse other node - other is no leaf here, swap roles of this and other
 		bool col1 = collides(p1.children(0), p0, contact_points);
 		bool col2 = collides(p1.children(1), p0, contact_points);
@@ -198,35 +200,29 @@ bool bv_tree::collides(const param& p0, const param& p1, std::list<vector3f>& co
 bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& contact_point)
 {
 	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	//printf("collision check\n");
-	spheref transformed_volume0 = p0.get_transformed_sphere();
-	spheref transformed_volume1 = p1.get_transformed_sphere();
-	//printf("collision check hit THIS  volume=%f,%f,%f r=%f\n",transformed_volume0.center.x,transformed_volume0.center.y,transformed_volume0.center.z,transformed_volume0.radius);
-	//printf("collision check hit OTHER volume=%f,%f,%f r=%f\n",transformed_volume1.center.x,transformed_volume1.center.y,transformed_volume1.center.z,transformed_volume1.radius);
+	auto transformed_volume0 = p0.get_transformed_volume();
+	auto transformed_volume1 = p1.get_transformed_volume();
 	if (!transformed_volume0.intersects(transformed_volume1)) {
-		//printf("abort\n");
 		return false;
 	}
 
 	// handle case that this is a leaf node
-	if (p0.tree.is_leaf()) {
+	if (p0.is_leaf()) {
 		// we have a leaf node
-		if (p1.tree.is_leaf()) {
+		if (p1.is_leaf()) {
 			// direct face to face collision test
 			// handle transform here
-			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[0]]);
-			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[1]]);
-			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.tree.leafdata.tri_idx[2]]);
-			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[0]]);
-			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[1]]);
-			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.tree.leafdata.tri_idx[2]]);
+			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[0]]);
+			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[1]]);
+			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[2]]);
+			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[0]]);
+			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[1]]);
+			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[2]]);
 			// note that degenerated triangles would be a critical problem here, but
 			// they would have a bounding sphere of radius zero and thus we
 			// never would compare with them, so we don't need to check for them
 			// here.
-			//printf("leaf collision\n");
 			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
-			//if (c) printf("tri-tri coll\n");
 			if (c) {
 				// fixme: compute more accurate position here, maybe
 				// weight by triangle area between centers of triangles.
@@ -234,7 +230,6 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 			}
 			return c;
 		} else {
-			//printf("other is no leaf\n");
 			// other node is no leaf, recurse there, swap roles of this and other
 			// use logical or to return on first true result
 			unsigned i = p1.get_index_of_closer_child(transformed_volume0.center);
@@ -244,15 +239,13 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 	}
 
 	// split larger volume of this and other, go recursivly down all children
-	if (p0.tree.volume.radius > p1.tree.volume.radius || p1.tree.is_leaf()) {
-		//printf("go down1\n");
+	if (p0.get_node().volume.radius > p1.get_node().volume.radius || p1.is_leaf()) {
 		// recurse this node, so don't swap roles of this and other
 		// use logical or to return on first true result
 		unsigned i = p0.get_index_of_closer_child(transformed_volume1.center);
 		return closest_collision(p0.children(i), p1, contact_point) ||
 			closest_collision(p0.children(1-i), p1, contact_point);
 	} else {
-		//printf("go down2\n");
 		// recurse other node - other is no leaf here, swap roles of this and other
 		// use logical or to return on first true result
 		unsigned i = p1.get_index_of_closer_child(transformed_volume0.center);
@@ -266,15 +259,13 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 bool bv_tree::collides(const param& p, const spheref& sp)
 {
 	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	//printf("collision check\n");
-	spheref transformed_volume = p.get_transformed_sphere();
+	auto transformed_volume = p.get_transformed_volume();
 	if (!transformed_volume.intersects(sp)) {
-		//printf("abort\n");
 		return false;
 	}
 
 	// handle case that this is a leaf node
-	if (p.tree.is_leaf()) {
+	if (p.is_leaf()) {
 		// leaf's bounding sphere and sp intersect, so we have a collision
 		return true;
 	}
@@ -289,26 +280,25 @@ bool bv_tree::collides(const param& p, const spheref& sp)
 
 void bv_tree::transform(const matrix4f& mat)
 {
-	volume.center = mat.mul4vec3xlat(volume.center);
-	for (auto & elem : children)
-		if (elem.get())
-			elem->transform(mat);
+	for (auto& node : nodes) {
+		node.volume.center = mat.mul4vec3xlat(node.volume.center);
+	}
 }
 
 
 
 void bv_tree::compute_min_max(vector3f& minv, vector3f& maxv) const
 {
-	volume.compute_min_max(minv, maxv);
-	for (auto & elem : children)
-		if (elem.get())
-			elem->compute_min_max(minv, maxv);
+	for (auto& node : nodes) {
+		node.volume.compute_min_max(minv, maxv);
+	}
 }
 
 
-
+#if 0
 void bv_tree::debug_dump(unsigned level) const
 {
+	//fixme
 	for (unsigned i = 0; i < level; ++i)
 		std::cout << "\t";
 	std::cout << "Level " << level << " Sphere " << volume.center << " | " << volume.radius << "\n";
@@ -316,11 +306,12 @@ void bv_tree::debug_dump(unsigned level) const
 		if (elem.get())
 			elem->debug_dump(level + 1);
 }
+#endif
 
-
-
-void bv_tree::collect_volumes_of_tree_depth(std::list<spheref>& volumes, unsigned depth) const
+#if 0
+void bv_tree::collect_volumes_of_tree_depth(std::vector<spheref>& volumes, unsigned depth) const
 {
+	//fixme
 	if (depth == 0) {
 		volumes.push_back(volume);
 		return;
@@ -330,3 +321,4 @@ void bv_tree::collect_volumes_of_tree_depth(std::list<spheref>& volumes, unsigne
 		children[1]->collect_volumes_of_tree_depth(volumes, depth - 1);
 	}
 }
+#endif
