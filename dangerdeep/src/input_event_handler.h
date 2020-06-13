@@ -195,10 +195,10 @@ public:
 	/// Mouse motion event data
 	struct mouse_motion_data
 	{
-		vector2f position;		///< Absolute mouse position in screen coordinates -1...1, y axis up
-		vector2f relative_motion;	///< Relative mouse motion, matching screen coordinates
-		vector2i position_2d;		///< Absolute mouse position in 2D pseudo coordinates (1024x768)
-		vector2i rel_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
+		vector2f position;			///< Absolute mouse position in screen coordinates -1...1, y axis up
+		vector2f relative_motion;		///< Relative mouse motion, matching screen coordinates
+		vector2i position_2d;			///< Absolute mouse position in 2D pseudo coordinates (1024x768)
+		vector2i relative_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
 		mouse_button_state buttons_pressed;	///< for each button if pressed
 		bool is_pressed(mouse_button mb) const { return buttons_pressed.is_pressed(mb); }
 		bool left() const { return is_pressed(mouse_button::left); }
@@ -225,7 +225,7 @@ public:
 	struct mouse_wheel_data
 	{
 		vector2f relative_motion;	///< Relative mouse motion, matching screen coordinates
-		vector2i rel_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
+		vector2i relative_motion_2d;		///< Relative motion in 2D pseudo coordinates (1024x768)
 		vector2f position;		///< Absolute mouse position in screen coordinates -1...1, y axis up
 		vector2i position_2d;		///< Absolute mouse position in 2D pseudo coordinates (1024x768)
 		input_action action{input_action::none};		///< whether wheel turned up or down

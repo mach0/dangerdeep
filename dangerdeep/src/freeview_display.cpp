@@ -206,8 +206,8 @@ bool freeview_display::handle_key_event(const key_data& k)
 bool freeview_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
 	if (m.left()) {
-		ui.add_bearing(0.5*m.rel_motion_2d.x);
-		ui.add_elevation(-0.5*m.rel_motion_2d.y);
+		ui.add_bearing(0.5*m.relative_motion_2d.x);
+		ui.add_elevation(-0.5*m.relative_motion_2d.y);
 		//fixme handle clamping of elevation at +-90deg
 		return true;
 	}

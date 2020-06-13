@@ -532,7 +532,7 @@ bool system_interface::finish_frame()
 					input_event_handler::mouse_motion_data md;
 					// Translate motion/position to 2D coordinates
 					md.relative_motion = translate_m(event.motion.xrel, event.motion.yrel);
-					md.rel_motion_2d = translate_m_2d(event.motion.xrel, event.motion.yrel);
+					md.relative_motion_2d = translate_m_2d(event.motion.xrel, event.motion.yrel);
 					md.position = translate_p(event.motion.x, event.motion.y);
 					md.position_2d = translate_p_2d(event.motion.x, event.motion.y);
 					mouse_position = md.position;
@@ -567,7 +567,7 @@ bool system_interface::finish_frame()
 				{
 					input_event_handler::mouse_wheel_data md;
 					md.relative_motion = translate_m(event.wheel.x, event.wheel.y);
-					md.rel_motion_2d = translate_m_2d(event.wheel.x, event.wheel.y);
+					md.relative_motion_2d = translate_m_2d(event.wheel.x, event.wheel.y);
 					md.position = mouse_position;
 					md.position_2d = mouse_position_2d;
 					if (md.relative_motion.y < 0.f)	{

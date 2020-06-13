@@ -498,7 +498,7 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
 				&& m.position_2d.x < p.x + s.x
 				&& m.position_2d.y < p.y + 32))
 			{
-				p += m.rel_motion_2d;
+				p += m.relative_motion_2d;
 				p = p.max(vector2i(0, 0));
 				p = p.min(sys().get_res_2d() - s);
 				screen_selector->set_pos(p);
@@ -520,7 +520,7 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
 				&& m.position_2d.x < p.x + s.x
 				&& m.position_2d.y < p.y + 32 + 8))
 			{
-				p += m.rel_motion_2d;
+				p += m.relative_motion_2d;
 				if (p.x < 0) p.x = 0;
 				if (p.y < 0) p.y = 0;
 				// 2006-11-30 doc1972 negative pos and size of a playlist makes no sence, so we cast

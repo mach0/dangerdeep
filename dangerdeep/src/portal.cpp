@@ -583,11 +583,11 @@ void run()
 	});
 	ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
 		if (m.left()) {
-			viewangles.z -= m.rel_motion_2d.x;
-			viewangles.x -= m.rel_motion_2d.y;
+			viewangles.z -= m.relative_motion_2d.x;
+			viewangles.x -= m.relative_motion_2d.y;
 			return true;
 		} else if (m.right()) {
-			viewangles.y += m.rel_motion_2d.x;
+			viewangles.y += m.relative_motion_2d.x;
 			return true;
 		}
 		return false;
