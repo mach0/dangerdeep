@@ -25,7 +25,7 @@
 #include "datadirs.h"
 #include "fractal.h"
 #include "game.h"
-#include "global_constants.h"
+#include "constant.h"
 #include "global_data.h"
 #include "height_generator.h"
 #include "tile_cache.h"

@@ -2141,16 +2141,16 @@ draw moon with phases (fixme)
 
 vector3 game::compute_sun_pos(const vector3& viewpos) const
 {
-	double yearang = 360.0*myfrac((time+10*86400)/EARTH_ORBIT_TIME);
-	double dayang = 360.0*(viewpos.x/EARTH_PERIMETER + myfrac(time/86400.0));
-	double longang = 360.0*viewpos.y/EARTH_PERIMETER;
+	double yearang = 360.0*myfrac((time+10*86400)/constant::EARTH_ORBIT_TIME);
+	double dayang = 360.0*(viewpos.x/constant::EARTH_PERIMETER + myfrac(time/86400.0));
+	double longang = 360.0*viewpos.y/constant::EARTH_PERIMETER;
 	matrix4 sun2earth =
 		matrix4::rot_y(-90.0) *
 		matrix4::rot_z(-longang) *
 		matrix4::rot_y(-(yearang + dayang)) *
-		matrix4::rot_z(EARTH_ROT_AXIS_ANGLE) *
+		matrix4::rot_z(constant::EARTH_ROT_AXIS_ANGLE) *
 		matrix4::rot_y(yearang) *
-		matrix4::trans(-EARTH_SUN_DISTANCE, 0, 0) *
+		matrix4::trans(-constant::EARTH_SUN_DISTANCE, 0, 0) *
 		matrix4::rot_y(-yearang);
 	return sun2earth.column3(3);
 }
@@ -2159,20 +2159,20 @@ vector3 game::compute_sun_pos(const vector3& viewpos) const
 
 vector3 game::compute_moon_pos(const vector3& viewpos) const
 {
-	double yearang = 360.0*myfrac((time+10*86400)/EARTH_ORBIT_TIME);
-	double dayang = 360.0*(viewpos.x/EARTH_PERIMETER + myfrac(time/86400.0));
-	double longang = 360.0*viewpos.y/EARTH_PERIMETER;
-	double monthang = 360.0*myfrac(time/MOON_ORBIT_TIME_SYNODIC) + MOON_POS_ADJUST;
+	double yearang = 360.0*myfrac((time+10*86400)/constant::EARTH_ORBIT_TIME);
+	double dayang = 360.0*(viewpos.x/constant::EARTH_PERIMETER + myfrac(time/86400.0));
+	double longang = 360.0*viewpos.y/constant::EARTH_PERIMETER;
+	double monthang = 360.0*myfrac(time/constant::MOON_ORBIT_TIME_SYNODIC) + constant::MOON_POS_ADJUST;
 
 	matrix4 moon2earth =
 		matrix4::rot_y(-90.0) *
 		matrix4::rot_z(-longang) *
 		matrix4::rot_y(-(yearang + dayang)) *
-		matrix4::rot_z(EARTH_ROT_AXIS_ANGLE) *
+		matrix4::rot_z(constant::EARTH_ROT_AXIS_ANGLE) *
 		matrix4::rot_y(yearang) *
-		matrix4::rot_z(-MOON_ORBIT_AXIS_ANGLE) *
-		matrix4::rot_y(monthang + MOON_POS_ADJUST) *
-		matrix4::trans(MOON_EARTH_DISTANCE, 0, 0);
+		matrix4::rot_z(-constant::MOON_ORBIT_AXIS_ANGLE) *
+		matrix4::rot_y(monthang + constant::MOON_POS_ADJUST) *
+		matrix4::trans(constant::MOON_EARTH_DISTANCE, 0, 0);
 
 	return moon2earth.column3(3);
 }

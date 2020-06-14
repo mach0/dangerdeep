@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "texture.h"
 #include "game.h"
-#include "global_constants.h"
+#include "constant.h"
 #include "primitives.h"
 
 void water_splash::render_cylinder(double radius_bottom, double radius_top, double height,
@@ -51,7 +51,7 @@ double water_splash::compute_height(double t) const
 		return riseheight * (1.0 - q*q);
 	} else {
 		double q = t - risetime;
-		return riseheight - GRAVITY * 0.5 * q*q;
+		return riseheight - constant::GRAVITY * 0.5 * q*q;
 	}
 }
 
@@ -61,7 +61,7 @@ water_splash::water_splash(game& gm_, const vector3& pos, double risetime_, doub
 	: sea_object(gm_, "gun_shell.ddxml" /* hack */),
 	  risetime(risetime_), riseheight(riseheight_)
 {
-	double falltime = sqrt(riseheight * 2.0 / GRAVITY);
+	double falltime = sqrt(riseheight * 2.0 / constant::GRAVITY);
 	lifetime = risetime + falltime;
 	resttime = lifetime;
 	position = pos;

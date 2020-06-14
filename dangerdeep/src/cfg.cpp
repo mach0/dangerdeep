@@ -92,7 +92,7 @@ void cfg::load(const string& filename)
 				// get key number for this action from table
 				auto nr = key_command::number;
 				for (unsigned i = 0; i < unsigned(key_command::number); ++i) {
-					if (string(key_names[i].name) == keyname) {
+					if (std::string(key_names[i].name) == keyname) {
 						nr = key_command(i);
 					}
 				}
@@ -179,16 +179,16 @@ void cfg::register_option(const string& name, const string& value)
 
 
 
-void cfg::register_key(const string& name, key_code kc, key_mod km)
+void cfg::register_key(const std::string& name, key_code kc, key_mod km)
 {
 	auto nr = key_command::number;
 	for (unsigned i = 0; i < unsigned(key_command::number); ++i) {
-		if (string(key_names[i].name) == name) {
+		if (std::string(key_names[i].name) == name) {
 			nr = key_command(i);
 		}
 	}
 	if (nr == key_command::number)
-		THROW(error, string("register_key with invalid name ")+ name);
+		THROW(error, std::string("register_key with invalid name ")+ name);
 	valk[nr] = key(name, kc, km);
 }
 

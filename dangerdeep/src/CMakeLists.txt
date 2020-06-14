@@ -130,7 +130,6 @@ add_library ( dftdall SHARED
 	geoclipmap.cpp
 	geoclipmap.h
 	gldebug.h
-	global_constants.h
 	global_data.cpp
 	global_data.h
 	gun_shell.cpp

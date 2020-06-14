@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "model.h"
 #include "system_interface.h"
 #include "global_data.h"
-#include "global_constants.h"
+#include "constant.h"
 
 
 
@@ -126,7 +126,7 @@ cout << "windtal      " << windturnaxis.length() << "\n";
 	// lift by wings (fixme: works also if plane is upside down or nearly!)
 	vector3 lift = (localvelocity.y * localvelocity.y * get_lift_factor()) * locz;//fixme: negate locz if locz.z<0
 	// gravity
-	vector3 gravity = vector3(0, 0, get_mass() * (0 - GRAVITY));
+	vector3 gravity = vector3(0, 0, get_mass() * (0 - constant::GRAVITY));
 
 
 	// deceleration by air friction (drag etc.)

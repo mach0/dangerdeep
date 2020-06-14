@@ -37,7 +37,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "gun_shell.h"
 #include "global_data.h"
 #include "log.h"
-#include "global_constants.h"
+#include "constant.h"
 
 using std::vector;
 using std::list;
@@ -139,7 +139,7 @@ void ship::fill_dist_angle_relation_map(const double initial_velocity)
 			for (double dt = 0; dt < 120.0; dt += 0.001) {
 				dist += vdist * dt;
 				z += vz * dt;
-				vz += 0 - GRAVITY * dt;
+				vz += 0 - constant::GRAVITY * dt;
 				if (z <= 0) break;
 			}
 
@@ -156,7 +156,7 @@ void ship::fill_dist_angle_relation_map(const double initial_velocity)
 			for (double dt = 0; dt < 120.0; dt += 0.001) {
 				dist += vdist * dt;
 				z += vz * dt;
-				vz += 0 - GRAVITY * dt;
+				vz += 0 - constant::GRAVITY * dt;
 				if (z <= 0) break;
 			}
 
@@ -887,7 +887,7 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 	// fixme: re-normalization of rotation quaterionions ("orientation")
 	//        should be done frequently...
 
-	double lift_force_sum = 0; // = -GRAVITY * mass;
+	double lift_force_sum = 0; // = -constant::GRAVITY * mass;
 	//double debug_liftforcesum=0,debug_gravityforcesum=0;
 	vector3 dr_torque;
 	const std::vector<model::voxel>& voxel_data = mymodel->get_voxel_data();
@@ -904,11 +904,11 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 	const double volume_scale = /*(tonnage == 0) ? 1.0 :*/ spec_volume / model_volume;
 	const float voxel_vol = voxel_size.x * voxel_size.y * voxel_size.z
 		* volume_scale;
-	const double voxel_vol_force = voxel_vol * GRAVITY * 1000.0; // 1000kg per cubic meter
+	const double voxel_vol_force = voxel_vol * constant::GRAVITY * 1000.0; // 1000kg per cubic meter
 	const matrix4f transmat = orientation.rotmat4() * mymodel->get_base_mesh_transformation()
 		* matrix4f::diagonal(voxel_size);
 	double vol_below_water=0;
-	const double gravity_force = mass * -GRAVITY;
+	const double gravity_force = mass * -constant::GRAVITY;
 	//fixme: split loop to two cores to speed up physics a tiny bit
 	//takes 21-23ms for 1000 times, so whole loop has ca.
 	//52500-57500 cycles. cpu usage is rather low, at
@@ -941,12 +941,12 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 		}
 		double relative_gravity_force = gravity_force * voxel_data[i].relative_mass;
 		// add part because of flooding
-		relative_gravity_force += flooded_mass[i] * -GRAVITY;
+		relative_gravity_force += flooded_mass[i] * -constant::GRAVITY;
 		lift_force_sum += relative_gravity_force;
 		//debug_gravityforcesum+=relative_gravity_force;
 		dr_torque += p.cross(vector3(0, 0, relative_gravity_force));
 	}
-//	std::cout << "mass=" << mass << " lift_force_sum=" << lift_force_sum << " grav=" << -GRAVITY*mass << "\n";
+//	std::cout << "mass=" << mass << " lift_force_sum=" << lift_force_sum << " grav=" << -constant::GRAVITY*mass << "\n";
 //	std::cout << "vol below water=" << vol_below_water << " of " << voxel_data.size() << "\n";
 	//DBGOUT3(debug_liftforcesum,debug_gravityforcesum,mass);
 

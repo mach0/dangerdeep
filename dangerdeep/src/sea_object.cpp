@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ai.h"
 #include "game.h"
 #include "datadirs.h"
-#include "global_constants.h"
+#include "constant.h"
 #include "log.h"
 using std::string;
 using std::list;
@@ -44,8 +44,8 @@ using std::list;
 void sea_object::degrees2meters(bool west, unsigned degx, unsigned minx, bool south,
 	unsigned degy, unsigned miny, double& x, double& y)
 {
-	x = (west ? -1.0 : 1.0)*(double(degx)+double(minx)/60.0)*EARTH_PERIMETER/360.0;
-	y = (south ? -1.0 : 1.0)*(double(degy)+double(miny)/60.0)*EARTH_PERIMETER/360.0;
+	x = (west ? -1.0 : 1.0)*(double(degx)+double(minx)/60.0)*constant::EARTH_PERIMETER/360.0;
+	y = (south ? -1.0 : 1.0)*(double(degy)+double(miny)/60.0)*constant::EARTH_PERIMETER/360.0;
 }
 
 
@@ -53,8 +53,8 @@ void sea_object::degrees2meters(bool west, unsigned degx, unsigned minx, bool so
 void sea_object::meters2degrees(double x, double y, bool& west, unsigned& degx, unsigned& minx, bool& south,
 	unsigned& degy, unsigned& miny)
 {
-	double fracdegrx = fabs(x*360.0/EARTH_PERIMETER);
-	double fracdegry = fabs(y*360.0/EARTH_PERIMETER);
+	double fracdegrx = fabs(x*360.0/constant::EARTH_PERIMETER);
+	double fracdegry = fabs(y*360.0/constant::EARTH_PERIMETER);
 	degx = unsigned(floor(fracdegrx));
 	degy = unsigned(floor(fracdegry));
 	minx = unsigned(60.0 * myfrac(fracdegrx) + 0.5);
@@ -81,7 +81,7 @@ void sea_object::compute_force_and_torque(vector3& F, vector3& T, game& gm) cons
 	   and the length is proportional to the amount of the torque.
 	   In our current model the length would be proportional to the turn acceleration.
 	*/
-	F.z = -GRAVITY * mass;
+	F.z = -constant::GRAVITY * mass;
 }
 
 

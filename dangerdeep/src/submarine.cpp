@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "user_interface.h"
 #include "texts.h"
 #include "global_data.h"
-#include "global_constants.h"
+#include "constant.h"
 #include "log.h"
 
 #include <sstream> //for depthcharge testing
@@ -1344,7 +1344,7 @@ void submarine::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 	// add torque caused from tanks here, force is computed by modifying mass
 	// in simulate()
 	for (const auto & it : tanks) {
-		double grav_force = it.get_fill() * 1000.0 /* water_density */ * -GRAVITY;
+		double grav_force = it.get_fill() * 1000.0 /* water_density */ * -constant::GRAVITY;
 		T += orientation.rotate(it.get_pos().cross(vector3(0, 0, grav_force)));
 	}
 }
