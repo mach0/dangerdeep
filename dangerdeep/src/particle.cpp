@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "primitives.h"
 #include "global_data.h"	// for myfrac etc.
 #include "datadirs.h"
-#include "global_constants.h"
+#include "constant.h"
 
 #ifdef WIN32
 
@@ -689,7 +689,7 @@ double fireworks_particle::get_z(double life_fac) const
 	double z = 30 * (1.0 - life_fac) * get_life_time();
 	if (life_fac <= 2.0/3) {
 		double t = (2.0/3 - life_fac) * get_life_time();
-		z -= GRAVITY * 0.5 * t*t + 15 * (2.0/3 - life_fac) * get_life_time();
+		z -= constant::GRAVITY * 0.5 * t*t + 15 * (2.0/3 - life_fac) * get_life_time();
 	}
 	return z;
 }

@@ -141,7 +141,7 @@ void coastsegment::generate_point_cache(const class coastmap& cm, int x, int y, 
 		pointcache.clear();
 
 		unsigned nrcl = segcls.size();
-		vector<bool> cl_handled(nrcl, false);
+		std::vector<bool> cl_handled(nrcl, false);
 		for (unsigned i = 0; i < nrcl; ++i) {
 			if (cl_handled[i]) continue;
 
@@ -432,7 +432,7 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
 
 
 // returns true if cl is valid
-bool coastmap::find_coastline(int x, int y, vector<vector2i>& points, bool& cyclic)
+bool coastmap::find_coastline(int x, int y, std::vector<vector2i>& points, bool& cyclic)
 {
 	// run backward at the coastline until we reach the border or round an island.
 	// start there creating the coastline. this avoids coastlines that can never be seen.
@@ -570,7 +570,7 @@ vector2i coastmap::compute_segment(const vector2i& p0, const vector2i& p1) const
 
 
 
-void coastmap::divide_and_distribute_cl(const vector<vector2i>& cl, bool clcyclic)
+void coastmap::divide_and_distribute_cl(const std::vector<vector2i>& cl, bool clcyclic)
 {
 	ASSERT(cl.size() >= 2, "div and distri with < 2?");
 
@@ -729,7 +729,7 @@ void coastmap::process_coastline(int x, int y)
 	ASSERT ((mapf(x, y) & 0x80) == 0, "map pos already handled!");
 	
 	// find coastline, avoid "lakes", (inverse of islands), because the triangulation will fault there
-	vector<vector2i> points;
+	std::vector<vector2i> points;
 	bool cyclic;
 	bool valid = find_coastline(x, y, points, cyclic);
 
@@ -739,7 +739,7 @@ void coastmap::process_coastline(int x, int y)
 	if (!valid) return;	// skip
 
 	// create bspline curve
-	vector<vector2> tmp;
+	std::vector<vector2> tmp;
 	tmp.reserve(points.size());
 	for (auto & point : points) {
 		tmp.emplace_back(point.x, point.y);
@@ -808,7 +808,7 @@ void coastmap::process_coastline(int x, int y)
 	auto nrpts = unsigned(tmp.size() * BSPLINE_DETAIL);
 	ASSERT(nrpts >= 2, " nrpts < 2?");
 	tmp.clear();
-	vector<vector2i> spoints;
+	std::vector<vector2i> spoints;
 	spoints.reserve(nrpts);
 	double sscal = double(SEGSCALE) / pixels_per_seg;
 //	cout << "generating " << nrpts << " pts\n";
@@ -874,7 +874,7 @@ void coastmap::process_segment(int sx, int sy)
 		// clear erased segcls.
 		if (erased > 0) {
 			unsigned s = cs.segcls.size();
-			vector<coastsegment::segcl> segcls_new;
+			std::vector<coastsegment::segcl> segcls_new;
 			segcls_new.reserve(s - erased);
 			unsigned j = 0;
 			for (unsigned i = 0; i < s; ++i) {

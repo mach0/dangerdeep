@@ -32,15 +32,6 @@ class ship;
 ///\brief Represents a gun shell with simulation of it.
 class gun_shell : public sea_object
 {
- protected:
-	vector3 oldpos;		// position at last iteration (for collision detection)
-	double damage_amount{0};
-	double caliber{0};
-
-	void check_collision(game& gm);
-	void check_collision_precise(game& gm, const ship& s, const vector3& oldrelpos, const vector3& newrelpos);
-	void check_collision_voxel(game& gm, const ship& s, const vector3f& oldrelpos, const vector3f& newrelpos);
-
  public:
 	gun_shell() = default;
 	gun_shell(game& gm_);	// for loading
@@ -56,6 +47,15 @@ class gun_shell : public sea_object
 	float surface_visibility(const vector2& watcher) const override;
 	// acceleration is only gravity and already handled by sea_object
 	virtual double damage() const { return damage_amount; }
+
+ protected:
+	vector3 oldpos;		// position at last iteration (for collision detection)
+	double damage_amount{0};
+	double caliber{0};
+
+	void check_collision(game& gm);
+	void check_collision_precise(game& gm, const ship& s, const vector3& oldrelpos, const vector3& newrelpos);
+	void check_collision_voxel(game& gm, const ship& s, const vector3f& oldrelpos, const vector3f& newrelpos);
 };
 
 #endif

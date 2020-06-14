@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "system_interface.h"
 #include "log.h"
 #include "datadirs.h"
-#include "global_constants.h"
+#include "constant.h"
 #include <SDL_image.h>
 #include <stdexcept>
 
@@ -196,8 +196,8 @@ vector2f transform_real_to_geo(vector2f& pos)
 	double sn, cn, r;
 	vector2f coord;
 
-	jacobi_amp(pos.y/WGS84_A, WGS84_K, sn, cn);
-	r = sqrt((WGS84_B*WGS84_B)/(1.0-WGS84_K*WGS84_K*cn*cn));
+	jacobi_amp(pos.y/constant::WGS84_A, constant::WGS84_K, sn, cn);
+	r = sqrt((constant::WGS84_B*constant::WGS84_B)/(1.0-constant::WGS84_K*constant::WGS84_K*cn*cn));
 	coord.x = (180.0*pos.x)/(M_PI*r);
 	coord.y = (asin(sn)*180.0)/M_PI;
 
@@ -223,7 +223,7 @@ static double transform_nautic_coord_to_real(const string& s, char minus, char p
 	int mts = atoi(minutes.c_str());
 	if (mts < 0 || mts > 59)
 		THROW(error, string("minutes are not in [0...59] in position string ") + s);
-	return (sign == minus ? -1 : 1) * ((DEGREE_IN_METERS * deg) + (MINUTE_IN_METERS * mts));
+	return (sign == minus ? -1 : 1) * ((constant::DEGREE_IN_METERS * deg) + (constant::MINUTE_IN_METERS * mts));
 }
 
 double transform_nautic_posx_to_real(const string& s)

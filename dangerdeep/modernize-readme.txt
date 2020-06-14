@@ -41,6 +41,7 @@ After each step check functionality.
 17. Turn on -Wall
 18. Sound sfx are not loaded (wav expected, ogg provided)
 19. Fix portal rendering
+. Use physical units!
 
 
 Changes that have been started in code comparison:
@@ -80,6 +81,9 @@ Changes that have been started in code comparison:
 - make every declared variable const that is not changed!
 - check clang tidy for readability-qualified-auto, readability-non-const-parameter
 - But why not just use two different classes for the TDC display?
+- BV Tree should use reserve for nodes, it would be better to give a mesh
+  directly to bvtree and it reserves space for nodes (twice input) and then
+  copies it!
 
 don't store target with every sea_object, only the user interface or player
 needs it!

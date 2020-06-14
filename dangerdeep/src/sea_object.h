@@ -59,7 +59,6 @@ class sea_object
 {
 public:
 	/// defined to make it storeable in map, don't use
-	// fixme why forbid copy? not necessary!
 	sea_object() = default;
 	sea_object(sea_object&& ) = default;
 	sea_object& operator= (sea_object&& ) = default;

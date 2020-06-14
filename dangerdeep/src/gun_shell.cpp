@@ -280,7 +280,6 @@ void gun_shell::simulate(double delta_time, game& gm)
 {
 	check_collision(gm);
 	oldpos = position;
-	//log_debug("GS: position="<<position);
 	sea_object::simulate(delta_time, gm);
 }
 

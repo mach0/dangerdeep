@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "system_interface.h"
 #include "game.h"
 #include "log.h"
-#include "global_constants.h"
+#include "constant.h"
 
 
 
@@ -84,9 +84,9 @@ void depth_charge::compute_force_and_torque(vector3& F, vector3& T, game& gm) co
 {
 	// force is in world space!
 	if (position.z > 0) {	// DC's can be thrown, so they can be above water.
-		F.z = -GRAVITY * mass;
+		F.z = -constant::GRAVITY * mass;
 	} else {
 		double vm = velocity.z/DEPTH_CHARGE_SINK_SPEED;
-		F.z = (-GRAVITY + GRAVITY*vm*vm) * mass;
+		F.z = (-constant::GRAVITY + constant::GRAVITY*vm*vm) * mass;
 	}
 }
