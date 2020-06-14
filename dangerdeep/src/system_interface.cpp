@@ -285,16 +285,29 @@ key_code get_key_code(SDL_Keycode sym)
 
 key_mod get_key_mod(uint16_t mod)
 {
-	int km = int(key_mod::none);
-	switch (mod) {
-	case KMOD_LSHIFT:	km |= int(key_mod::lshift); break;
-	case KMOD_RSHIFT:	km |= int(key_mod::rshift); break;
-	case KMOD_LCTRL:	km |= int(key_mod::lctrl); break;
-	case KMOD_RCTRL:	km |= int(key_mod::rctrl); break;
-	case KMOD_LALT:		km |= int(key_mod::lalt); break;
-	case KMOD_RALT:		km |= int(key_mod::ralt); break;
+	auto km = key_mod::none;
+	if (mod & KMOD_LSHIFT) {
+		km = km | key_mod::lshift;
 	}
-	return key_mod(km);
+	if (mod & KMOD_RSHIFT) {
+		km = km | key_mod::rshift;
+	}
+	if (mod & KMOD_CAPS) {
+		km = km | key_mod::shift;
+	}
+	if (mod & KMOD_LCTRL) {
+		km = km | key_mod::lctrl;
+	}
+	if (mod & KMOD_RCTRL) {
+		km = km | key_mod::rctrl;
+	}
+	if (mod & KMOD_LALT) {
+		km = km | key_mod::lalt;
+	}
+	if (mod & KMOD_RALT) {
+		km = km | key_mod::ralt;
+	}
+	return km;
 }
 
 
