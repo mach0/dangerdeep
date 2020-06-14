@@ -9,9 +9,6 @@ After each step check functionality.
 3. Use C++11 thread/mutex/condition_variable
 	DONE
 4. Compare basic classes between branches for differences!
-	use meld with directories to compare.
-	See below for more details.
-	New classes like gpu interface copied to master branch
 	DONE - remaining topics are GL related, except bivector
 5. use new C++ features for XML reader etc.
 	DONE
@@ -21,12 +18,26 @@ After each step check functionality.
 	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
 	DONE in widgets, maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
+	DONE
 9. Introduce newer system input event handling and migrate to SDL2
+	DONE
 10. Store sea_objects directly with move semantics, no more pointers, use
     unique_ptr everywhere possible, const sea_object pointers
+	DONE
 11. Introduced new and faster BV-Tree
+	DONE
+12. Split tdc display in two classes (two displays) - need to extend display
+  list by one display and special handling to switch displays, for easier
+  transition to new elem2d class
+	DONE
 -------------WE ARE HERE-----------------
-12. Fix viewmodel app
+. Introduce elem2d helper for displays and convert code to them (makes
+  transition to new gpu code easier)
+  Much boring work but can be tested in master easily.
+  We can add elem2d class and elements and convert display for display
+  with checking between each of them!
+. Make finer libraries (basic, core, media, displays, rest)
+12. Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
 13. add new sensors (test if they work!!!) needs test program.
 14. Divide code into separate libraries better (partly done)
