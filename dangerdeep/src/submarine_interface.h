@@ -64,6 +64,7 @@ public:
 		display_mode_sonar,
 		display_mode_freeview,
 		display_mode_tdc,
+		display_mode_tdc2,
 		display_mode_torpsetup,
 		display_mode_recogmanual,
 		nr_of_displays

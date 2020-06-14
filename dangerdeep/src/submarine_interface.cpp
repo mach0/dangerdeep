@@ -60,6 +60,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "logbook_display.h"
 #include "freeview_display.h"
 #include "sub_tdc_display.h"
+#include "sub_tdc2_display.h"
 #include "sub_torpsetup_display.h"
 #include "sub_kdb_display.h"
 #include "sub_ghg_display.h"
@@ -110,6 +111,7 @@ submarine_interface::submarine_interface(game& gm) :
 	}
 	displays[display_mode_freeview] = std::make_unique<freeview_display>(*this);
 	displays[display_mode_tdc] = std::make_unique<sub_tdc_display>(*this);
+	displays[display_mode_tdc2] = std::make_unique<sub_tdc2_display>(*this);
 	displays[display_mode_torpsetup] = std::make_unique<sub_torpsetup_display>(*this);
 
 	// fixme: use texture caches here too...
@@ -655,7 +657,11 @@ void submarine_interface::goto_freeview()
 
 void submarine_interface::goto_TDC()
 {
-	set_current_display(display_mode_tdc);
+	if (current_display == display_mode_tdc) {
+		set_current_display(display_mode_tdc2);
+	} else {
+		set_current_display(display_mode_tdc);
+	}
 }
 
 
@@ -689,7 +695,9 @@ bool submarine_interface::object_visible(sea_object* so,
 void submarine_interface::toggle_popup()
 {
 	if (current_display == display_mode_tdc) {
-		static_cast<sub_tdc_display&>(*displays[current_display]).next_sub_screen(daymode);
+		set_current_display(display_mode_tdc2);
+	} else if (current_display == display_mode_tdc2) {
+		set_current_display(display_mode_tdc);
 	} else {
 		user_interface::toggle_popup();
 	}

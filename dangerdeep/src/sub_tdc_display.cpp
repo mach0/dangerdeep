@@ -73,29 +73,8 @@ sub_tdc_display::scheme_screen1::scheme_screen1(bool day)
 
 
 
-sub_tdc_display::scheme_screen2::scheme_screen2(bool day)
-{
-	const string x = day ? "TDCScreen2_Daylight" : "TDCScreen2_Redlight";
-	background = std::make_unique<image>(get_image_dir() + x + "_base_image.jpg");
-	for (unsigned i = 0; i < 6; ++i) {
-		tubelight[i].set(x + "_tube" + str(i+1) + "_on.png", tubelightcoordx[i], 605);
-	}
-	firebutton.set(x + "_FireButton_ON.png", 68, 92);
-	automode[0].set(x + "_AutoManualKnob_automode.png", 900, 285);
-	automode[1].set(x + "_AutoManualKnob_manualmode.png", 900, 285);
-	gyro_360.set(x + "_HGyro_pointer_main_rotating.png", 383, 406, 431, 455);
-	gyro_10.set(x + "_HGyro_pointer_refinement_rotating.png", 188, 378, 212, 455);
-	brightness.set(x + "_Brightness_dial_pointer_rotating.png", 897, 478, 911, 526);
-	target_course_360.set(x + "_VGyro_pointer_main_rotating.png", 695, 373, 721, 453);
-	target_course_10.set(x + "_VGyro_pointer_refinement_rotating.png", 696, 152, 721, 233);
-	target_range_ptr.set(x + "_Zielentfernung_pointer_rotating.png", 317, 98, 341, 194);
-	target_range_mkr.set(x + "_Zielentfernung_user_marker_rotating.png", 325, 295, 341, 194);
-}
-
-
-
 sub_tdc_display::sub_tdc_display(user_interface& ui_)
-	: user_display(ui_), show_screen1(true), tubeselected_time(0.0)
+	: user_display(ui_), tubeselected_time(0.0)
 {
 }
 
@@ -108,49 +87,22 @@ bool sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
 	auto& si = dynamic_cast<submarine_interface&>(ui);
 	tdc& TDC = sub->get_tdc();
 
-	if (show_screen1) {
-		if (m.down() && m.left()) {
-			if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
-			const scheme_screen1& s = *myscheme1;
-			// check if mouse is over parallax display
-			int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
-			if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
-			    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
-			    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
-			    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
-				auto v = vector2(m.position_2d - s.parallax_ptr.center);
-				v.y = -v.y;
-				angle userang(v);
-				double usera = userang.value_pm180() / 6;
-				if (usera < -25) usera = -25;
-				if (usera > 25) usera = 25;
-				TDC.set_additional_parallaxangle(usera);
-			}
-		}
-	} else {
-		if (m.down() && m.left()) {
-			if (!myscheme2.get()) THROW(error, "sub_tdc_display without scheme!");
-			const scheme_screen2& s = *myscheme2;
-
-			// check if mouse is over tube indicators
-			unsigned nrtubes = sub->get_nr_of_bow_tubes() + sub->get_nr_of_stern_tubes();
-			for (unsigned i = 0; i < nrtubes; ++i) {
-				if (s.tubelight[i].is_mouse_over(m.position_2d)) {
-					si.select_tube(i);
-					log_debug("Torpedo tube selected: #" << i+1);
-					tubeselected_time = gm.get_time();
-				}
-			}
-
-			// fire button
-			if (s.firebutton.is_mouse_over(m.position_2d)) {
-				si.fire_tube(sub, si.get_selected_tube());
-			}
-
-			// auto mode
-			else if (s.automode[0].is_mouse_over(m.position_2d)) {
-				TDC.set_auto_mode(!TDC.auto_mode_enabled());
-			}
+	if (m.down() && m.left()) {
+		if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
+		const scheme_screen1& s = *myscheme1;
+		// check if mouse is over parallax display
+		int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
+		if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
+		    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
+		    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
+		    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
+			auto v = vector2(m.position_2d - s.parallax_ptr.center);
+			v.y = -v.y;
+			angle userang(v);
+			double usera = userang.value_pm180() / 6;
+			if (usera < -25) usera = -25;
+			if (usera > 25) usera = 25;
+			TDC.set_additional_parallaxangle(usera);
 		}
 	}
 	return true;
@@ -164,26 +116,24 @@ bool sub_tdc_display::handle_mouse_motion_event(const mouse_motion_data& m)
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 	tdc& TDC = sub->get_tdc();
 
-	if (show_screen1) {
-		if (m.left()) {
-			if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
-			const scheme_screen1& s = *myscheme1;
-			// check if mouse is over parallax display, fixme: same code as above, group it!
-			int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
-			if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
-			    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
-			    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
-			    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
-				auto v = vector2(m.position_2d - s.parallax_ptr.center);
-				v.y = -v.y;
-				angle userang(v);
-				double usera = userang.value_pm180() / 6;
-				if (usera < -25) usera = -25;
-				if (usera > 25) usera = 25;
-				TDC.set_additional_parallaxangle(usera);
-			}
-			return true;
+	if (m.left()) {
+		if (!myscheme1.get()) THROW(error, "sub_tdc_display without scheme!");
+		const scheme_screen1& s = *myscheme1;
+		// check if mouse is over parallax display, fixme: same code as above, group it!
+		int parasz = s.parallax_ptr.center.y - s.parallax_ptr.left_top.y + 20;
+		if (m.position_2d.x >= s.parallax_ptr.center.x - parasz
+		    && m.position_2d.x <= s.parallax_ptr.center.x + parasz
+		    && m.position_2d.y >= s.parallax_ptr.center.y - parasz
+		    && m.position_2d.y <= s.parallax_ptr.center.y + parasz) {
+			auto v = vector2(m.position_2d - s.parallax_ptr.center);
+			v.y = -v.y;
+			angle userang(v);
+			double usera = userang.value_pm180() / 6;
+			if (usera < -25) usera = -25;
+			if (usera > 25) usera = 25;
+			TDC.set_additional_parallaxangle(usera);
 		}
+		return true;
 	}
 	return false;
 }
@@ -199,108 +149,53 @@ void sub_tdc_display::display() const
 
 	const tdc& TDC = player->get_tdc();
 
-	if (show_screen1) {
-		if (!myscheme1.get()) THROW(error, "sub_tdc_display::display without scheme!");
-		const scheme_screen1& s = *myscheme1;
+	if (!myscheme1.get()) THROW(error, "sub_tdc_display::display without scheme!");
+	const scheme_screen1& s = *myscheme1;
 
-		// draw torpedo speed dial (15deg = 0, 5knots = 30deg)
-		// torpedo speed (depends on selected tube!), but TDC is already set accordingly
-		s.torp_speed.draw(sea_object::ms2kts(TDC.get_torpedo_speed()) * 330.0/55 + 15);
+	// draw torpedo speed dial (15deg = 0, 5knots = 30deg)
+	// torpedo speed (depends on selected tube!), but TDC is already set accordingly
+	s.torp_speed.draw(sea_object::ms2kts(TDC.get_torpedo_speed()) * 330.0/55 + 15);
 
-		// angle on the bow finer value, note use real fmod here...
-		s.aob_inner.draw(fmod(TDC.get_angle_on_the_bow().value_pm180(), 10.0) * -36.0);
+	// angle on the bow finer value, note use real fmod here...
+	s.aob_inner.draw(fmod(TDC.get_angle_on_the_bow().value_pm180(), 10.0) * -36.0);
 
-		// background
-		s.background->draw(0, 0);
+	// background
+	s.background->draw(0, 0);
 
-		// angle on the bow coarse value
-		s.aob_ptr.draw(TDC.get_angle_on_the_bow().value_pm180());
+	// angle on the bow coarse value
+	s.aob_ptr.draw(TDC.get_angle_on_the_bow().value_pm180());
 
-		// spread angle, fixme: add. lead angle is not right...
-		// this means angle of spread when firing multiple torpedoes... this has to be (re)defined
-		// the captain could fake additional lead angle by manipulating bearing etc.
-		// this should be done to compensate ship turning or zig-zagging
-		s.spread_ang_ptr.draw(0.0 /*TDC.get_spread_angle().value()*/ /20 * 180.0 - 90);
-		s.spread_ang_mkr.draw(15.0/*TDC.get_user_spread_angle().value()*/ /20 * 180.0 - 90);	//fixme
+	// spread angle, fixme: add. lead angle is not right...
+	// this means angle of spread when firing multiple torpedoes... this has to be (re)defined
+	// the captain could fake additional lead angle by manipulating bearing etc.
+	// this should be done to compensate ship turning or zig-zagging
+	s.spread_ang_ptr.draw(0.0 /*TDC.get_spread_angle().value()*/ /20 * 180.0 - 90);
+	s.spread_ang_mkr.draw(15.0/*TDC.get_user_spread_angle().value()*/ /20 * 180.0 - 90);	//fixme
 
-		// fire solution quality
-		double quality = 0.333; // per cent, fixme, request from sub! depends on crew
-		s.firesolution->draw(268 - int(187*quality + 0.5), 418);
+	// fire solution quality
+	double quality = 0.333; // per cent, fixme, request from sub! depends on crew
+	s.firesolution->draw(268 - int(187*quality + 0.5), 418);
 
-		// parallax angle (fixme: why should the user set an angle? extra-correction here? is like
-		// additional lead angle...)
-		// 6 pointer degrees for 1 real degree, marker - 90
-		double parang = TDC.get_parallax_angle().value_pm180();
-		// clamp value (maybe tweak value so that pointer shakes when reaching the limit?)
-		if (parang < -26) parang = -26;
-		if (parang > 26) parang = 26;
-		s.parallax_ptr.draw(parang * 6);
-		s.parallax_mkr.draw(TDC.get_additional_parallaxangle().value_pm180() * 6 - 90);
+	// parallax angle (fixme: why should the user set an angle? extra-correction here? is like
+	// additional lead angle...)
+	// 6 pointer degrees for 1 real degree, marker - 90
+	double parang = TDC.get_parallax_angle().value_pm180();
+	// clamp value (maybe tweak value so that pointer shakes when reaching the limit?)
+	if (parang < -26) parang = -26;
+	if (parang > 26) parang = 26;
+	s.parallax_ptr.draw(parang * 6);
+	s.parallax_mkr.draw(TDC.get_additional_parallaxangle().value_pm180() * 6 - 90);
 
-		// torpedo run time
-		double t = TDC.get_torpedo_runtime();
-		s.torptime_sec.draw(myfmod(t, 60) * 6);
-		s.torptime_min.draw(myfmod(t, 3600) * 0.1);
+	// torpedo run time
+	double t = TDC.get_torpedo_runtime();
+	s.torptime_sec.draw(myfmod(t, 60) * 6);
+	s.torptime_min.draw(myfmod(t, 3600) * 0.1);
 
-		// target bearing (influenced by quality!)
-		s.target_pos.draw((TDC.get_bearing() - player->get_heading()).value());
+	// target bearing (influenced by quality!)
+	s.target_pos.draw((TDC.get_bearing() - player->get_heading()).value());
 
-		// target speed
-		s.target_speed.draw(15 + sea_object::ms2kts(TDC.get_target_speed()) * 330.0/55);
-
-	} else {
-		if (!myscheme2.get()) THROW(error, "sub_tdc_display::display without scheme!");
-		const scheme_screen2& s = *myscheme2;
-
-		// background
-		s.background->draw(0, 0);
-
-		unsigned selected_tube = dynamic_cast<const submarine_interface&>(ui).get_selected_tube();
-
-		// draw tubes if ready
-		const double blink_duration = 3.0;
-		const double blink_period_duration = 0.25;
-		for (unsigned i = 0; i < 6; ++i) {
-			if (player->is_tube_ready(i)) {
-				if (selected_tube != i || gm.get_time() > tubeselected_time + blink_duration ||
-				    (unsigned(floor((gm.get_time() - tubeselected_time) / blink_period_duration)) & 1)) {
-					s.tubelight[i].draw();
-				}
-			}
-		}
-
-		// fire button
-		if (player->is_tube_ready(selected_tube) && TDC.solution_valid()) {
-			s.firebutton.draw();
-		}
-
-		// automatic fire solution on / off switch
-		s.automode[TDC.auto_mode_enabled() ? 0 : 1].draw();
-
-		// draw gyro pointers
-		angle leadangle = TDC.get_lead_angle();
-		s.gyro_360.draw(leadangle.value());
-		s.gyro_10.draw(myfmod(leadangle.value(), 10.0) * 36.0);
-
-		// target values (influenced by quality!)
-		double tgtcourse = TDC.get_target_course().value();
-		s.target_course_360.draw(tgtcourse);
-		s.target_course_10.draw(myfmod(tgtcourse, 10.0) * 36.0);
-
-		// target range
-		double tgtrange = TDC.get_target_distance();
-		// clamp displayed value
-		if (tgtrange < 300) tgtrange = 300;
-		if (tgtrange > 11000) tgtrange = 11000;
-		// compute non-linear dial value
-		tgtrange = sqrt(12.61855670103 * tgtrange - 3685.567010309);
-		s.target_range_ptr.draw(tgtrange);
-		//fixme: get tgt range marker also... or store it in this screen class?
-		//hmm no the TDC needs to now user input, so store it there...
-
-		// fixme: show some sensible value
-		s.brightness.draw(45);
-	}
+	// target speed
+	s.target_speed.draw(15 + sea_object::ms2kts(TDC.get_target_speed()) * 330.0/55);
 
 	ui.draw_infopanel(true);
 	sys().unprepare_2d_drawing();
@@ -308,21 +203,9 @@ void sub_tdc_display::display() const
 
 
 
-void sub_tdc_display::next_sub_screen(bool is_day)
-{
-	show_screen1 = !show_screen1;
-	leave();
-	enter(is_day);
-}
-
-
-
 void sub_tdc_display::enter(bool is_day)
 {
-	if (show_screen1)
-		myscheme1 = std::make_unique<scheme_screen1>(is_day);
-	else
-		myscheme2 = std::make_unique<scheme_screen2>(is_day);
+	myscheme1 = std::make_unique<scheme_screen1>(is_day);
 }
 
 
@@ -330,5 +213,4 @@ void sub_tdc_display::enter(bool is_day)
 void sub_tdc_display::leave()
 {
 	myscheme1.reset();
-	myscheme2.reset();
 }

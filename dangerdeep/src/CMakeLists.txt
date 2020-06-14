@@ -219,6 +219,8 @@ add_library ( dftdall SHARED
 	sub_soldbuch_display.h
 	sub_tdc_display.cpp
 	sub_tdc_display.h
+	sub_tdc2_display.cpp
+	sub_tdc2_display.h
 	sub_tdc_popup.cpp
 	sub_tdc_popup.h
 	sub_torpedo_display.cpp
