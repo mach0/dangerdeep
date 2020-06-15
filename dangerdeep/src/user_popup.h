@@ -23,8 +23,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef USER_POPUP_H
 #define USER_POPUP_H
 
-#include <list>
+#include "image.h"
 #include "input_event_handler.h"
+class user_interface;
 
 class user_popup : public input_event_handler
 {
@@ -35,19 +36,33 @@ private:
 	user_popup& operator= (const user_popup& ) = delete;
 
 protected:
-	// display position. (fixme: could vary for each display - maybe store there)
-	unsigned x, y;
+	/// the display needs to know its parent (user_interface) to access common data
+	user_interface& ui;
 
-	// the display needs to know its parent (user_interface) to access common data
-	class user_interface& ui;
-
-	user_popup(class user_interface& ui_) : ui(ui_) {}
+	/// Constructor
+	user_popup(user_interface& ui_) : ui(ui_) {}
 
 public:
-	// needed for correct destruction of heirs.
+	/// Destructor. needed for correct destruction of heirs.
 	virtual ~user_popup() = default;
-	// very basic. Just draw display and handle input.
+	/// Display method - very basic. Just draw display and handle input.
 	virtual void display() const = 0;
+
+protected:
+	/// A 2D image element
+	class elem2D
+	{
+	public:
+		/// Construct static element
+		elem2D(vector2i pos, const std::string& filename_day, const std::string& filename_night = std::string());
+		/// Draw element normally/static
+		void draw(bool is_day) const;
+
+	protected:
+		std::unique_ptr<image> tex_day;	///< Texture data
+		std::unique_ptr<image> tex_night;	///< Texture data (optional)
+		vector2i position;			///< Position on the screen
+	};
 };
 
 #endif /* USER_POPUP_H */

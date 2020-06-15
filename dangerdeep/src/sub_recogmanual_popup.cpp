@@ -18,17 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "sub_recogmanual_popup.h"
+#include "datadirs.h"
+#include "game.h"
+#include "global_data.h"
 #include "user_interface.h"
-#include <memory>
-#include <utility>
-
-
-using namespace std;
 
 sub_recogmanual_popup::widget_button_next::widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_)
 	: widget_button(x, y, w, h, text_, parent_, bg_image_), direction(dir), page(att_page)
 {
 }
+
+
 
 void sub_recogmanual_popup::widget_button_next::draw() const
 {
@@ -44,25 +44,28 @@ void sub_recogmanual_popup::widget_button_next::draw() const
 
 }
 
+
+
 void sub_recogmanual_popup::widget_button_next::on_release ()
 {
 	pressed = false;
 	page+=direction;
 }
 
-sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
-	: user_popup(ui_), page(0), btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"), btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
-{
-	x = 0;
-	y = 49;
-	background_daylight = std::make_unique<image>(get_image_dir() + "shiprecog_popup_daylight.png");
-	background_nightlight = std::make_unique<image>(get_image_dir() + "shiprecog_popup_redlight.png");
 
-	std::list<string> ship_ids = data_file_handler::instance().get_ship_list();
+
+sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
+ :	user_popup(ui_),
+	page(0),
+	background(elem2D({0, 49}, get_image_dir() + "shiprecog_popup_daylight.png", get_image_dir() + "shiprecog_popup_redlight.png")),
+	btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"),
+	btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
+{
+
+	auto ship_ids = data_file_handler::instance().get_ship_list();
 	for (auto & ship_id : ship_ids) {
 		try {
-			unique_ptr<image> img(new image(data_file_handler::instance().get_path(ship_id) + ship_id + "_silhouette.png"));
-			silhouettes.push_back(unique_ptr<image>(std::move(img)));
+			silhouettes.push_back(std::make_unique<image>(data_file_handler::instance().get_path(ship_id) + ship_id + "_silhouette.png"));
 
 			xml_doc doc(data_file_handler::instance().get_filename(ship_id));
 			doc.load();
@@ -73,7 +76,7 @@ sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
 			classes.push_back(elem.attr("class"));
 			weapons.push_back(elem.attr("weapons"));
 			countries.push_back(elem.attr("countries"));
-		} catch (exception& e) { // fixme: remove the try..catch when all silhouette files are on place
+		} catch (std::exception& e) { // fixme: remove the try..catch when all silhouette files are on place
 		}
 	}
 }
@@ -119,13 +122,10 @@ bool sub_recogmanual_popup::handle_mouse_wheel_event(const mouse_wheel_data& m)
 
 void sub_recogmanual_popup::display() const
 {
+	bool is_day = ui.get_game().is_day_mode();
+	background.draw(is_day);
+
 	sys().prepare_2d_drawing();
-	auto& gm = ui.get_game();
-	bool is_day = gm.is_day_mode();
-	if (is_day)
-		background_daylight->draw(x, y);
-	else
-		background_nightlight->draw(x, y);
 
 	int off_x = 15;
 	int off_y = 82;
@@ -139,9 +139,9 @@ void sub_recogmanual_popup::display() const
 
 		//fixme: change this after the authentic overlay is implemented
 		font_vtremington12->print(off_text_x, off_text_y+step_y*(i%3), classes[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+15+step_y*(i%3), string("Length: ")+lengths[i]+string("   Displacement:")+displacements[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+30+step_y*(i%3), string("Countries: ")+countries[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+45+step_y*(i%3), string("Weapons: ")+weapons[i], color(0, 0, 0));
+		font_vtremington12->print(off_text_x, off_text_y+15+step_y*(i%3), std::string("Length: ")+lengths[i]+std::string("   Displacement:")+displacements[i], color(0, 0, 0));
+		font_vtremington12->print(off_text_x, off_text_y+30+step_y*(i%3), std::string("Countries: ")+countries[i], color(0, 0, 0));
+		font_vtremington12->print(off_text_x, off_text_y+45+step_y*(i%3), std::string("Weapons: ")+weapons[i], color(0, 0, 0));
 	}
 
 	btn_left.draw();
