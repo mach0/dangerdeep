@@ -46,7 +46,6 @@ public:
 		~key() = default;
 		key(std::string ac, key_code kc, key_mod km) :
 			action(std::move(ac)), keycode(kc), keymod(km & key_mod::basic) {}
-		std::string get_name() const;
 		bool equal(key_code kc, key_mod km) const;
 	};
 private:

@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "cfg.h"
 #include "keys.h"
-#include "global_data.h"
-#include "system_interface.h"
 #include "log.h"
 #include <sstream>
 #include "xml.h"
@@ -32,11 +30,6 @@ using namespace std;
 
 
 cfg* cfg::myinst = nullptr;
-
-string cfg::key::get_name() const
-{
-	return sys().get_key_name(keycode, keymod);
-}
 
 
 
