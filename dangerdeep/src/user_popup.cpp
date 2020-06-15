@@ -17,22 +17,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Submarine tdc popup.
+// Base interface for user screen popups.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_TDC_POPUP_H
-#define SUB_TDC_POPUP_H
-
 #include "user_popup.h"
+#include "system_interface.h"
 
-class sub_tdc_popup : public user_popup
+user_popup::elem2D::elem2D(vector2i pos, const std::string& filename_day, const std::string& filename_night)
+ :	position(pos)
 {
-protected:
-	elem2D background;
+	tex_day = std::make_unique<image>(filename_day);
+	if (!filename_night.empty()) {
+		tex_night = std::make_unique<image>(filename_night);
+	}
+}
 
-public:
-	sub_tdc_popup(class user_interface& ui_);
-	void display() const override;
-};
 
-#endif /* SUB_TDC_POPUP_H */
+
+void user_popup::elem2D::draw(bool is_day) const
+{
+	sys().prepare_2d_drawing();
+	if (is_day || tex_night.get() == nullptr) {
+		tex_day->draw(position.x, position.y);
+	} else {
+		tex_night->draw(position.x, position.y);
+	}
+	sys().unprepare_2d_drawing();
+}

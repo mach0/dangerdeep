@@ -21,13 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_RECOGMANUAL_POPUP_H
 
 #include "user_popup.h"
-#include "image.h"
-#include "system_interface.h"
-#include "game.h"
-#include "datadirs.h"
 #include "widget.h"
-#include "global_data.h"
-#include "log.h"
 
 class sub_recogmanual_popup : public user_popup
 {
@@ -44,8 +38,7 @@ protected:
 	};
 
 	int page;
-	std::unique_ptr<image> background_daylight;
-	std::unique_ptr<image> background_nightlight;
+	elem2D background;
 	std::vector<std::unique_ptr<image>> silhouettes;
 	std::vector<std::string> classes;
 	std::vector<std::string> lengths;

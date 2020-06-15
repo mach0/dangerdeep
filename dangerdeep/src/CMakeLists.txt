@@ -256,6 +256,7 @@ add_library ( dftdall SHARED
 	user_display.h
 	user_interface.cpp
 	user_interface.h
+	user_popup.cpp
 	user_popup.h
 	vertexbufferobject.cpp
 	vertexbufferobject.h

@@ -23,21 +23,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SUB_ECARD_POPUP_H
 #define SUB_ECARD_POPUP_H
 
-#include <memory>
 #include "user_popup.h"
-#include "image.h"
 
 class sub_ecard_popup : public user_popup
 {
-protected:
-	std::unique_ptr<image> background_daylight;
-	std::unique_ptr<image> background_nightlight;
-
 public:
 	sub_ecard_popup(class user_interface& ui_);
-	~sub_ecard_popup() override;
-
 	void display() const override;
+
+protected:
+	elem2D background;
 };
 
 #endif /* SUB_ECARD_POPUP_H */

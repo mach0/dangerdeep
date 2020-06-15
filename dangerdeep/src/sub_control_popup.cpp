@@ -20,46 +20,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Submarine control popup.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "sub_control_popup.h"
-
-
-#include <memory>
-
-#include <utility>
-
-#include "system_interface.h"
-#include "global_data.h"
-#include "game.h"
-#include "keys.h"
-#include "cfg.h"
 #include "datadirs.h"
+#include "game.h"
+#include "sub_control_popup.h"
 #include "user_interface.h"
 
 
-
-sub_control_popup::sub_control_popup(user_interface& ui_) : user_popup(ui_)
+sub_control_popup::sub_control_popup(user_interface& ui_)
+ :	user_popup(ui_),
+	background(elem2D({8, 134}, get_image_dir() + "popup_TDC_daylight.jpg|png", get_image_dir() + "popup_TDC_redlight.jpg|png"))
 {
-	x = 8;
-	y = 134;
-	background_daylight = std::make_unique<image>(get_image_dir() + "popup_TDC_daylight.jpg|png");
-	background_nightlight = std::make_unique<image>(get_image_dir() + "popup_TDC_redlight.jpg|png");
 }
 
 
 
-sub_control_popup::~sub_control_popup()
-= default;
 
 
 
 void sub_control_popup::display() const
 {
-	sys().prepare_2d_drawing();
-	auto& gm = ui.get_game();
-	bool is_day = gm.is_day_mode();
-	if (is_day)
-		background_daylight->draw(x, y);
-	else
-		background_nightlight->draw(x, y);
-	sys().unprepare_2d_drawing();
+	bool is_day = ui.get_game().is_day_mode();
+	background.draw(is_day);
 }
