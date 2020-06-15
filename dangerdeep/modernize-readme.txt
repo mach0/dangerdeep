@@ -2,56 +2,48 @@ Steps to adjust existing, working code base to code modernization state.
 ===================================================================================================
 After each step check functionality.
 
+----------- STEPS DONE ------------------------
 1. Migrate SCons -> CMake, build all executables
-	DONE, later split to finer libraries
 2. Use clang to modernize code automatically
-	DONE for modernizer checks (more error checks may be sensible)
 3. Use C++11 thread/mutex/condition_variable
-	DONE
 4. Compare basic classes between branches for differences!
-	DONE - remaining topics are GL related, except bivector
 5. use new C++ features for XML reader etc.
-	DONE
 6. use key enum class!
-	DONE
 7. make use of new C++ features for widgets etc. (no plain new/delete)
 	widgets now use unique_ptr and lambda/c++ caller instead of the old caller_arg templates.
-	DONE in widgets, maybe there are more ways to modernize the widget classes
+	maybe there are more ways to modernize the widget classes
 8. Removed SDL types and obsolete SDL.h includes
-	DONE
 9. Introduce newer system input event handling and migrate to SDL2
-	DONE
 10. Store sea_objects directly with move semantics, no more pointers, use
     unique_ptr everywhere possible, const sea_object pointers
-	DONE
 11. Introduced new and faster BV-Tree
-	DONE
 12. Split tdc display in two classes (two displays) - need to extend display
   list by one display and special handling to switch displays, for easier
   transition to new elem2d class
-	DONE
+13. Introduce elem2D class for popups (cleaner shorter code, easier
+    transition to new GPU interface)
+14. Split to more libraries
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)
   Much boring work but can be tested in master easily.
   We can add elem2d class and elements and convert display for display
   with checking between each of them!
-. Make finer libraries (basic, core, media, displays, rest)
-12. Fix viewmodel app (no model can be seen, no background)
+. Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
-13. add new sensors (test if they work!!!) needs test program.
-14. Divide code into separate libraries better (partly done)
+. add new sensors (test if they work!!!) needs test program.
+. Divide code into separate libraries better (partly done)
 ------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
-15. Finally adjust rendering
+. Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
 	interface references but uses old rendering code...
 	problem is a name conflict! model/mesh/texture are already used
 	THIS IS THE TOUGHEST CHANGE, A CHANGE ALL OR NOTHING WILL WORK
 	PROJECT!
-16. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
-17. Turn on -Wall
-18. Sound sfx are not loaded (wav expected, ogg provided)
-19. Fix portal rendering
+. or earlier: get rid of all the configuration options, we use SSE and all modern stuff automatically!
+. Turn on -Wall
+. Sound sfx are not loaded (wav expected, ogg provided)
+. Fix portal rendering
 . Use physical units!
 
 

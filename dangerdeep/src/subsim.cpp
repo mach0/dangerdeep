@@ -1254,21 +1254,20 @@ void configure_key(widget_list* wkeys)
 		widget_text* keyname;
 		key_command keynr;
 		void on_key(key_code kc, key_mod km) override {
-			//fixme this doesn't provide the modifiers! we need a key_event here instead!
-			//easy! just overload the handle_key method!!!
 			if (kc == key_code::ESCAPE) {
 				close(0);
 				return;
 			}
 			cfg::instance().set_key(keynr, kc, km);
-			keyname->set_text(cfg::instance().getkey(keynr).get_name());
+			keyname->set_text(sys().get_key_name(kc, km));
 			redraw();
 		}
 		confkey_widget(int x, int y, int w, int h, const string& text_, widget* parent_,
 			       const std::string& backgrimg, unsigned sel) :
 			widget(x, y, w, h, text_, parent_, backgrimg), keynr(key_command(sel)) // fixme later use key_command in widget directly!
 			{
-				keyname = &add_child(std::make_unique<widget_text>(40, 80, 432, 40, cfg::instance().getkey(keynr).get_name()));
+				auto k = cfg::instance().getkey(keynr);
+				keyname = &add_child(std::make_unique<widget_text>(40, 80, 432, 40, sys().get_key_name(k.keycode, k.keymod)));
 				add_child(std::make_unique<widget_text>(40, 120, 432, 40, texts::get(217)));
 			}
 		~confkey_widget() override = default;
@@ -1279,7 +1278,8 @@ void configure_key(widget_list* wkeys)
 	wks = wks.substr(0, wks.find("\t"));
 	w.add_child(std::make_unique<widget_text>(40, 40, 432, 32, wks));
 	widget::run(w, 0, true);
-	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + cfg::instance().getkey(key_command(sel)).get_name());
+	auto k = cfg::instance().getkey(key_command(sel));
+	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + sys().get_key_name(k.keycode, k.keymod));
 }
 
 
@@ -1292,7 +1292,7 @@ void menu_configure_keys()
 
 	for (unsigned i = 600; i < 600 + unsigned(key_command::number); ++i) {
 		cfg::key k = cfg::instance().getkey(key_command(i-600));
-		wkeys.append_entry(texts::get(i) + string("\t") + k.get_name());
+		wkeys.append_entry(texts::get(i) + string("\t") + sys().get_key_name(k.keycode, k.keymod));
 	}
 
 	// fixme: handle undefined keys!
