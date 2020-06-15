@@ -186,6 +186,16 @@ namespace helper
 		return *it_result;
 	}
 
+	/// Replace substring and return replaced
+	inline std::string replace_first(std::string s, const std::string& pattern, const std::string& replace_with)
+	{
+		auto pos = s.find(pattern);
+		if (pos != std::string::npos) {
+			s.replace(pos, pattern.length(), replace_with);
+		}
+		return s;
+	}
+
 	/// Knots to meters per second
 	template<typename T> T kts2ms(T knots) { return T(knots*1852.0/3600.0); }
 	/// meters per second to knots

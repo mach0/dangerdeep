@@ -17,42 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// user display: submarine's ghg (Gruppenhorchgerät) hearing device
+// user display: submarine's ghg (Gruppenhorchgeraet) hearing device
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_ghg_display.h"
-#include "cfg.h"
-#include "game.h"
 #include "global_data.h"
-#include "image.h"
-#include "keys.h"
-#include "submarine.h"
-#include "submarine_interface.h"
-#include "system_interface.h"
-#include "texture.h"
-#include <memory>
 
-#include <sstream>
-#include <utility>
-
-using namespace std;
-
-static const double TK_ANGFAC = 360.0/512.0;
-
-sub_ghg_display::scheme::scheme(bool day)
+namespace
 {
-	const string x = day ? "GHG_daylight" : "GHG_redlight";
-	background = std::make_unique<image>(get_image_dir() + x + "_background.jpg|png");
-	direction_ptr.set(x + "_pointer.png", 242, 89, 376, 372);
-	direction_knob.set(x + "_knob.png", 306, 516, 373, 583);
-	volume_dial.set(x + "_volume_dial.png", 711, 470, 849, 605);
-	volume_knob.set(x + "_volumeknob.png", 783, 550);
+	const double TK_ANGFAC = 360.0/512.0;
+	enum element_type {
+		et_direction_ptr = 0,
+		et_direction_knob = 1,
+		et_volume_dial = 2,
+		et_volume_knob = 3,
+	};
 }
 
 
 
 sub_ghg_display::sub_ghg_display(user_interface& ui_)
-	: user_display(ui_), turnknobdrag(TK_NONE), turnknobang(TK_NR)
+ :	user_display(ui_, "sub_ghg")
+ ,	turnknobdrag(TK_NONE)
+ ,	turnknobang(TK_NR)
 {
 }
 
@@ -62,14 +49,11 @@ bool sub_ghg_display::handle_mouse_button_event(const mouse_click_data& m)
 {
 	if (m.down()) {
 		// check if mouse is over turn knobs
-		if (!myscheme.get()) THROW(error, "sub_ghg_display without scheme!");
-		const scheme& s = *myscheme;
-		// check if mouse is over turn knobs
 		turnknobdrag = TK_NONE;
-		if (s.direction_knob.is_mouse_over(m.position_2d, 64)) {
+		if (element_for_id(et_direction_knob).is_mouse_over(m.position_2d, 64)) {
 			turnknobdrag = TK_DIRECTION;
 			return true;
-		} else if (s.volume_knob.is_mouse_over(m.position_2d)) {
+		} else if (element_for_id(et_volume_knob).is_mouse_over(m.position_2d)) {
 			turnknobdrag = TK_VOLUME;
 			return true;
 		}
@@ -111,40 +95,16 @@ bool sub_ghg_display::handle_mouse_motion_event(const mouse_motion_data& m)
 
 void sub_ghg_display::display() const
 {
-	sys().prepare_2d_drawing();
+	element_for_id(et_volume_dial).set_angle(-turnknobang[TK_VOLUME]-18.0f);
+	element_for_id(et_direction_ptr).set_angle(turnknobang[TK_DIRECTION]*0.5 /* fixme: get angle from player*/);
+	element_for_id(et_direction_knob).set_angle(turnknobang[TK_DIRECTION]);
+	draw_elements();
 
 	// get hearing device angle from submarine, if it has one
-
-	if (!myscheme.get()) THROW(error, "sub_ghg_display::display without scheme!");
-	const scheme& s = *myscheme;
-
-	s.volume_dial.draw(-turnknobang[TK_VOLUME]-18.0f);
-	s.background->draw(0, 0);
-	s.volume_knob.draw();
-	s.direction_ptr.draw(turnknobang[TK_DIRECTION]*0.5 /* fixme: get angle from player*/);
-	s.direction_knob.draw(turnknobang[TK_DIRECTION]);
 
 	// test hack: test signal strengths
 // 	angle sonar_ang = angle(turnknobang[TK_DIRECTION]*0.5) + player->get_heading();
 // 	vector<double> noise_strengths = gm.sonar_listen_ships(player, sonar_ang);
 // 	printf("noise strengths, global ang=%f, L=%f M=%f H=%f U=%f\n",
 // 	       sonar_ang.value(), noise_strengths[0], noise_strengths[1], noise_strengths[2], noise_strengths[3]);
-
-	ui.draw_infopanel();
-
-	sys().unprepare_2d_drawing();
-}
-
-
-
-void sub_ghg_display::enter(bool is_day)
-{
-	myscheme = std::make_unique<scheme>(is_day);
-}
-
-
-
-void sub_ghg_display::leave()
-{
-	myscheme.reset();
 }

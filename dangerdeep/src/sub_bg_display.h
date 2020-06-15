@@ -24,43 +24,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_BG_DISPLAY_H
 
 #include "user_display.h"
-#include "image.h"
 #include <vector>
 
+/// Display for the Balkongeraet hearing device
 class sub_bg_display : public user_display
 {
-	class scheme {
-	public:
-		std::unique_ptr<image> background;
-		rotat_tex direction_ptr;
-		fix_tex turn_wheel[6];
-		scheme(bool day);
-	protected:
-		scheme();
-		scheme(const scheme& );
-		scheme& operator= (const scheme& );
-	};
+public:
+	sub_bg_display(class user_interface& ui_);
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	void display() const override;
 
+protected:
 	enum turnknobtype {
 		TK_NONE = -1,
 		TK_DIRECTION = 0,
 		TK_NR = 1
 	};
 
-	std::unique_ptr<scheme> myscheme;
-
 	turnknobtype turnknobdrag;
 	std::vector<float> turnknobang;
-
- public:
-	sub_bg_display(class user_interface& ui_);
-
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	void display() const override;
-
-	void enter(bool is_day) override;
-	void leave() override;
 };
 
 #endif

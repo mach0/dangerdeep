@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// user display: submarine's ghg (Gruppenhorchgerät) hearing device
+// user display: submarine's ghg (Gruppenhorchgeraet) hearing device
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #ifndef SUB_GHG_DISPLAY_H
@@ -27,22 +27,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "image.h"
 #include <vector>
 
+/// Display for the Gruppenhorchgeraet hearing device
 class sub_ghg_display : public user_display
 {
-	class scheme {
-	public:
-		std::unique_ptr<image> background;
-		rotat_tex direction_ptr;
-		rotat_tex direction_knob;
-		rotat_tex volume_dial;
-		fix_tex volume_knob;
-		scheme(bool day);
-	protected:
-		scheme();
-		scheme(const scheme& );
-		scheme& operator= (const scheme& );
-	};
+public:
+	sub_ghg_display(class user_interface& ui_);
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	void display() const override;
 
+protected:
 	enum turnknobtype {
 		TK_NONE = -1,
 		TK_DIRECTION = 0,
@@ -50,20 +44,8 @@ class sub_ghg_display : public user_display
 		TK_NR = 2
 	};
 
-	std::unique_ptr<scheme> myscheme;
-
 	turnknobtype turnknobdrag;
 	std::vector<float> turnknobang;
-
- public:
-	sub_ghg_display(class user_interface& ui_);
-
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	void display() const override;
-
-	void enter(bool is_day) override;
-	void leave() override;
 };
 
 #endif

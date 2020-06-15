@@ -45,6 +45,7 @@ After each step check functionality.
 . Sound sfx are not loaded (wav expected, ogg provided)
 . Fix portal rendering
 . Use physical units!
+. xml reader could use std::optional
 
 
 Changes that have been started in code comparison:

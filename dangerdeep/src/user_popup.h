@@ -59,7 +59,7 @@ protected:
 		void draw(bool is_day) const;
 
 	protected:
-		std::unique_ptr<image> tex_day;	///< Texture data
+		std::unique_ptr<image> tex_day;		///< Texture data
 		std::unique_ptr<image> tex_night;	///< Texture data (optional)
 		vector2i position;			///< Position on the screen
 	};
