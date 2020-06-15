@@ -34,7 +34,7 @@ using std::string;
 
 xml_elem xml_elem::child(const std::string& name) const
 {
-	TiXmlElement* e = elem->FirstChildElement(name);
+	auto* e = elem->FirstChildElement(name);
 	if (!e) THROW(xml_elem_error, name, doc_name());
 	return xml_elem(e);
 }
@@ -43,7 +43,7 @@ xml_elem xml_elem::child(const std::string& name) const
 
 bool xml_elem::has_child(const std::string& name) const
 {
-	TiXmlElement* e = elem->FirstChildElement(name);
+	auto* e = elem->FirstChildElement(name);
 	return e != nullptr;
 }
 
@@ -60,7 +60,7 @@ xml_elem xml_elem::add_child(const std::string& name)
 
 const std::string& xml_elem::doc_name() const
 {
-	TiXmlDocument* doc = elem->GetDocument();
+	auto* doc = elem->GetDocument();
 	// extra-Paranoia... should never happen
 	if (!doc) THROW(xml_error, std::string("can't get document name for node ") + elem->ValueStr(), "???");
 	return doc->ValueStr();
@@ -77,7 +77,7 @@ bool xml_elem::has_attr(const std::string& name) const
 
 std::string xml_elem::attr(const std::string& name) const
 {
-	const std::string* tmp = elem->Attribute(name);
+	const auto* tmp = elem->Attribute(name);
 	if (tmp) return *tmp;
 	return std::string();
 }
@@ -86,7 +86,7 @@ std::string xml_elem::attr(const std::string& name) const
 
 int xml_elem::attri(const std::string& name) const
 {
-	const std::string* tmp = elem->Attribute(name);
+	const auto* tmp = elem->Attribute(name);
 	if (tmp) return atoi(tmp->c_str());
 	return 0;
 }
@@ -102,7 +102,7 @@ unsigned xml_elem::attru(const std::string& name) const
 
 double xml_elem::attrf(const std::string& name) const
 {
-	const std::string* tmp = elem->Attribute(name);
+	const auto* tmp = elem->Attribute(name);
 	if (tmp) return atof(tmp->c_str());
 	return 0.0;
 }
@@ -119,6 +119,13 @@ vector3 xml_elem::attrv3() const
 vector2 xml_elem::attrv2() const
 {
 	return {attrf("x"), attrf("y")};
+}
+
+
+
+vector2i xml_elem::attrv2i() const
+{
+	return {attri("x"), attri("y")};
 }
 
 
@@ -244,7 +251,7 @@ void xml_elem::add_child_text(const std::string& txt)
 
 const std::string& xml_elem::child_text() const
 {
-	TiXmlNode* ntext = elem->FirstChild();
+	auto* ntext = elem->FirstChild();
 	if (!ntext)
 		THROW(xml_error, std::string("child of ") + get_name() + std::string(" is no text node"), doc_name());
 	return ntext->ValueStr();
@@ -320,7 +327,7 @@ void xml_doc::save()
 
 xml_elem xml_doc::first_child()
 {
-	TiXmlElement* e = doc->FirstChildElement();
+	auto* e = doc->FirstChildElement();
 	if (!e) THROW(xml_elem_error, "<first-child>", doc->ValueStr());
 	return {e};
 }
@@ -329,7 +336,7 @@ xml_elem xml_doc::first_child()
 
 xml_elem xml_doc::child(const std::string& name)
 {
-	TiXmlElement* e = doc->FirstChildElement(name);
+	auto* e = doc->FirstChildElement(name);
 	if (!e) THROW(xml_elem_error, name, doc->ValueStr());
 	return {e};
 }

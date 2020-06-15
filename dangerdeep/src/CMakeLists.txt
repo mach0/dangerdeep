@@ -246,6 +246,7 @@ add_library(dftdgameui STATIC
 	submarine_interface.h
 	torpedo_camera_display.cpp
 	torpedo_camera_display.h
+	user_display.cpp
 	user_display.h
 	user_interface.cpp
 	user_interface.h

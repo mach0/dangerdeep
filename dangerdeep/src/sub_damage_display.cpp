@@ -195,6 +195,7 @@ bool sub_damage_display::handle_mouse_motion_event(const mouse_motion_data& m)
 
 void sub_damage_display::enter(bool /*is_day*/)
 {
+	//fixme use elem2d for the first two!
 	damage_screen_background = std::make_unique<image>(get_image_dir() + "damage_screen_backg.jpg");
 	sub_damage_scheme_all = std::make_unique<image>(get_image_dir() + "sub_damage_scheme_all.png");
 	repairlight = std::make_unique<texture>(get_texture_dir() + "repairlight.png");

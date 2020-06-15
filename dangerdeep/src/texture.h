@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define TEXTURE_H
 
 #ifdef WIN32
-// 2006-12-01 doc1972 added check to prevent double definition. 
+// 2006-12-01 doc1972 added check to prevent double definition.
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif /* WIN32_LEAN_AND_MEAN */
@@ -131,7 +131,7 @@ protected:
 	GLenum dimension;
 	mapping_mode mapping; // how GL draws the texture (GL_NEAREST, GL_LINEAR, etc.)
 	clamping_mode clamping; // how GL handles the border (GL_REPEAT, GL_CLAMP_TO_EDGE)
-	
+
 	void sdl_init(SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw, unsigned sh,
 		      bool makenormalmap = false, float detailh = 1.0f, bool rgb2grey = false);
 
@@ -149,7 +149,7 @@ protected:
 	static unsigned mem_freed;
 
 	texture() = default;
-	
+
 	struct dds_data {
 	    GLsizei  width;
 	    GLsizei  height;
@@ -195,7 +195,7 @@ __declspec( align( 1 ) )
 	__attribute__ ((packed))
 #endif
 	DDSHEAD;
-	
+
 	void load_dds(const std::string& filename, dds_data& target);
 
 
@@ -238,7 +238,7 @@ public:
 	texture(unsigned w, unsigned h,
 		int format_, mapping_mode mapping_,
 		clamping_mode clamp, bool force_no_compression = false);
-	
+
 	// load a compressed DDS file (DXT1, DXT3, DXT5)
 	texture(const std::string& filename, bool dummy, mapping_mode mapping_ = NEAREST, clamping_mode clamp = REPEAT);
 

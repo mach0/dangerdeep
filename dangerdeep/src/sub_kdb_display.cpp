@@ -124,7 +124,7 @@ bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
    He takes his time to search the whole compass around, say, 1 minute.
    While doing that he listens for signals, and if he detects one, he tries to localize it
    as good as he can, then reports the signal (angle, strength (?) = distance, type)
-   "Escort detected in 30° (off bow), weak signal" -> far away destroyer etc
+   "Escort detected in 30Â° (off bow), weak signal" -> far away destroyer etc
    Problems: when a signal is very close (a hunting escort), you don't want the sonarman
    to listen/detect signals all around the clock, but to track that signal. When should
    he start tracking one specific signal? when to stop that? should the captain ask
@@ -231,34 +231,34 @@ void sub_kdb_display::display() const
 	// distance, but with opposite direction. If that direction gives weaker signal on
 	// second try, reverse direction (same as global search, but with less step length).
 	// If we found two angles where the signal gets weaker in between, try from the strongest
-	// and reverse direction with 1° steps iterativly.
-	// Example: strongest signal at 33°, initial angle at 50°, initial direction right/
-	// clockwise. Operator turns at 60° and hears that signal is weaker, so he uses
-	// 50° as initial angle and left/counter-clockwise as initial direction.
-	// He turns left 10° to 40°, signal gets stronger.
-	// He turns left 10° to 30°, signal gets stronger.
-	// He turns left 10° to 20°, signal gets weaker. So he changes direction, back at 30°. Stepping down to 5°.
-	// He turns right 5° to 35°, signal gets stronger.
-	// He turns right 5° to 40°, signal gets weaker. So he changes direction, back at 35°. Stepping down to 1°.
-	// He turns left 1° to 34°, signal gets stronger.
-	// He turns left 1° to 33°, signal gets stronger.
-	// He turns left 1° to 32°, signal gets weaker. So he turns back to strongest signal and stops. -> 33°
-	// Example2: strongest signal at 29°, initial angle at 50°, initial direction right/
-	// clockwise. Operator turns at 60° and hears that signal is weaker, so he uses
-	// 50° as initial angle and left/counter-clockwise as initial direction.
-	// He turns left 10° to 40°, signal gets stronger.
-	// He turns left 10° to 30°, signal gets stronger.
-	// He turns left 10° to 20°, signal gets weaker. So he changes direction, back at 30°. Stepping down to 5°.
-	// He turns right 5° to 35°, signal gets weaker. So initial direction wrong, turn left.
-	// He turns left 5° to 25°, signal gets weaker. So he changes direction, back at 30°. Stepping down to 1°.
-	// He turns right 1° to 31°, signal gets weaker. So initial direction wrong, turn left.
-	// He turns left 1° to 29°, signal gets stronger.
-	// He turns left 1° to 28°, signal gets weaker. So he turns back to strongest signal and stops. -> 29°
-	// We could simulate four steps. 30°, 10°, 5°, 1°.
+	// and reverse direction with 1Â° steps iterativly.
+	// Example: strongest signal at 33Â°, initial angle at 50Â°, initial direction right/
+	// clockwise. Operator turns at 60Â° and hears that signal is weaker, so he uses
+	// 50Â° as initial angle and left/counter-clockwise as initial direction.
+	// He turns left 10Â° to 40Â°, signal gets stronger.
+	// He turns left 10Â° to 30Â°, signal gets stronger.
+	// He turns left 10Â° to 20Â°, signal gets weaker. So he changes direction, back at 30Â°. Stepping down to 5Â°.
+	// He turns right 5Â° to 35Â°, signal gets stronger.
+	// He turns right 5Â° to 40Â°, signal gets weaker. So he changes direction, back at 35Â°. Stepping down to 1Â°.
+	// He turns left 1Â° to 34Â°, signal gets stronger.
+	// He turns left 1Â° to 33Â°, signal gets stronger.
+	// He turns left 1Â° to 32Â°, signal gets weaker. So he turns back to strongest signal and stops. -> 33Â°
+	// Example2: strongest signal at 29Â°, initial angle at 50Â°, initial direction right/
+	// clockwise. Operator turns at 60Â° and hears that signal is weaker, so he uses
+	// 50Â° as initial angle and left/counter-clockwise as initial direction.
+	// He turns left 10Â° to 40Â°, signal gets stronger.
+	// He turns left 10Â° to 30Â°, signal gets stronger.
+	// He turns left 10Â° to 20Â°, signal gets weaker. So he changes direction, back at 30Â°. Stepping down to 5Â°.
+	// He turns right 5Â° to 35Â°, signal gets weaker. So initial direction wrong, turn left.
+	// He turns left 5Â° to 25Â°, signal gets weaker. So he changes direction, back at 30Â°. Stepping down to 1Â°.
+	// He turns right 1Â° to 31Â°, signal gets weaker. So initial direction wrong, turn left.
+	// He turns left 1Â° to 29Â°, signal gets stronger.
+	// He turns left 1Â° to 28Â°, signal gets weaker. So he turns back to strongest signal and stops. -> 29Â°
+	// We could simulate four steps. 30Â°, 10Â°, 5Â°, 1Â°.
 	// fixme 2:
-	// but user would turn sonar in rather small steps (1° ?)
-	// so simulation is simpler: turn apparatus in 1-3° steps and recognize peak, localize
-	// peak afterwards in smaller steps (1°).
+	// but user would turn sonar in rather small steps (1Â° ?)
+	// so simulation is simpler: turn apparatus in 1-3Â° steps and recognize peak, localize
+	// peak afterwards in smaller steps (1Â°).
 
 	ui.draw_infopanel();
 

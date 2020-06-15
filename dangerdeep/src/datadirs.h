@@ -38,6 +38,7 @@ inline std::string get_mission_dir() { return get_data_dir() + "missions/"; }
 inline std::string get_map_dir() { return get_data_dir() + "maps/"; }
 inline std::string get_shader_dir() { return get_data_dir() + "shaders/"; }
 inline std::string get_menu_dir() { return get_data_dir() + "menus/"; }
+inline std::string get_display_dir() { return get_data_dir() + "displays/"; }
 
 // Note! call this at most once and very early in main()!
 void set_data_dir(const std::string& datadir);

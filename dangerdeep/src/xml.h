@@ -72,6 +72,7 @@ class xml_elem
 	double attrf(const std::string& name = "value") const;
 	vector3 attrv3() const;
 	vector2 attrv2() const;
+	vector2i attrv2i() const;
 	quaternion attrq() const;
 	angle attra() const;
 	bool attrb(const std::string& name = "value") const;
