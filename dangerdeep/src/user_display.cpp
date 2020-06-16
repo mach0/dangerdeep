@@ -28,42 +28,42 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 user_display::user_display(class user_interface& ui_, const char* display_name)
  :	ui(ui_)
 {
-	// test hack until all displays are converted
-	if (display_name == nullptr) return;
-
-	auto display_dir = get_display_dir() + display_name + "/";
-	xml_doc display_config(display_dir + "layout.xml");
-	display_config.load();
-	for (auto elem : display_config.child("dftd-display").iterate("element")) {
-		auto pos = elem.attrv2i();
-		auto id = -1;
-		if (elem.has_attr("id")) {
-			id = elem.attri("id");
-		}
-		std::string filename_day;
-		if (!elem.has_child("day")) {
-			THROW(error, std::string(display_name) + ", invalid display def xml file, day node missing");
-		}
-		filename_day = elem.child("day").child_text();
-		std::string filename_night;
-		if (elem.has_child("night")) {
-			filename_night = elem.child("night").child_text();
-		}
-		if (elem.has_child("center")) {
-			auto elem_center = elem.child("center");
-			auto centerpos = elem_center.attrv2i();
-			elements.emplace_back(pos, centerpos, display_dir + filename_day, display_dir + filename_night);
-		} else if (elem.has_child("phases")) {
-			auto elem_phases = elem.child("phases");
-			auto nr = elem_phases.attru("nr");
-			auto offset = elem_phases.attru("offset");
-			elements.emplace_back(pos, nr, offset, display_dir + filename_day, display_dir + filename_night);
-		} else {
-			// normal static element
-			elements.emplace_back(pos, display_dir + filename_day, display_dir + filename_night);
-		}
-		if (id != -1) {
-			id_to_element[id] = unsigned(elements.size() - 1);
+	// if displays use no elements they give nullptr as definition
+	if (display_name != nullptr) {
+		auto display_dir = get_display_dir() + display_name + "/";
+		xml_doc display_config(display_dir + "layout.xml");
+		display_config.load();
+		for (auto elem : display_config.child("dftd-display").iterate("element")) {
+			auto pos = elem.attrv2i();
+			auto id = -1;
+			if (elem.has_attr("id")) {
+				id = elem.attri("id");
+			}
+			std::string filename_day;
+			if (!elem.has_child("day")) {
+				THROW(error, std::string(display_name) + ", invalid display def xml file, day node missing");
+			}
+			filename_day = elem.child("day").child_text();
+			std::string filename_night;
+			if (elem.has_child("night")) {
+				filename_night = elem.child("night").child_text();
+			}
+			if (elem.has_child("center")) {
+				auto elem_center = elem.child("center");
+				auto centerpos = elem_center.attrv2i();
+				elements.emplace_back(pos, centerpos, display_dir + filename_day, display_dir + filename_night);
+			} else if (elem.has_child("phases")) {
+				auto elem_phases = elem.child("phases");
+				auto nr = elem_phases.attru("nr");
+				auto offset = elem_phases.attru("offset");
+				elements.emplace_back(pos, nr, offset, display_dir + filename_day, display_dir + filename_night);
+			} else {
+				// normal static element
+				elements.emplace_back(pos, display_dir + filename_day, display_dir + filename_night);
+			}
+			if (id != -1) {
+				id_to_element[id] = unsigned(elements.size() - 1);
+			}
 		}
 	}
 }

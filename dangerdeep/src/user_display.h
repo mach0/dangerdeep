@@ -46,7 +46,7 @@ protected:
 	// the display needs to know its parent (user_interface) to access common data
 	class user_interface& ui;
 
-	user_display(class user_interface& ui_, const char* display_name = nullptr/*fixme empty default until all displays are converted*/);
+	user_display(class user_interface& ui_, const char* display_name = nullptr /* when no elements are used */);
 
 #if 1 // fixme remove!
 	// commonly used helper classes

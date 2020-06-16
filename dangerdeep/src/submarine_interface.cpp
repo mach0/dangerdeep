@@ -245,8 +245,9 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		auto* player = dynamic_cast<submarine*>(mygame->get_player());
 
 		// SCREENS
-		if(k.keycode == key_code::b) goto_valves();
-		if (is_configured_key(key_command::SHOW_GAUGES_SCREEN, k)) {
+		if(is_configured_key(key_command::SHOW_VALVES_SCREEN, k)) {
+			goto_valves();
+		} else if (is_configured_key(key_command::SHOW_GAUGES_SCREEN, k)) {
 			goto_gauges();
 		} else if (is_configured_key(key_command::SHOW_PERISCOPE_SCREEN, k)) {
 			goto_periscope();
@@ -268,6 +269,8 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			goto_freeview();
 		} else if (is_configured_key(key_command::SHOW_TDC_SCREEN, k)) {
 			goto_TDC();
+		} else if (is_configured_key(key_command::SHOW_TDC2_SCREEN, k)) {
+			goto_TDC2();
 		} else if (is_configured_key(key_command::SHOW_TORPSETUP_SCREEN, k)) {
 			goto_torpedosettings();
 		} else if (is_configured_key(key_command::SHOW_TORPEDO_CAMERA, k)) {
@@ -657,11 +660,14 @@ void submarine_interface::goto_freeview()
 
 void submarine_interface::goto_TDC()
 {
-	if (current_display == display_mode_tdc) {
-		set_current_display(display_mode_tdc2);
-	} else {
-		set_current_display(display_mode_tdc);
-	}
+	set_current_display(display_mode_tdc);
+}
+
+
+
+void submarine_interface::goto_TDC2()
+{
+	set_current_display(display_mode_tdc2);
 }
 
 
@@ -691,17 +697,6 @@ bool submarine_interface::object_visible(sea_object* so,
 	return true;
 }
 */
-
-void submarine_interface::toggle_popup()
-{
-	if (current_display == display_mode_tdc) {
-		set_current_display(display_mode_tdc2);
-	} else if (current_display == display_mode_tdc2) {
-		set_current_display(display_mode_tdc);
-	} else {
-		user_interface::toggle_popup();
-	}
-}
 
 void submarine_interface::display() const
 {
