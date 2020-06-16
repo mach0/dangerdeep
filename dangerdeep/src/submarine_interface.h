@@ -107,11 +107,10 @@ public:
 	void goto_sonar();
 	void goto_freeview();
 	void goto_TDC();
+	void goto_TDC2();
 	void goto_torpedosettings();
 	void goto_recogmanual();
 	void goto_valves();
-
-	void toggle_popup() override;
 
 	submarine_interface(class game& gm);
 	~submarine_interface() override;

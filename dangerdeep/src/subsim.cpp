@@ -1804,7 +1804,11 @@ int mymain(std::vector<string>& args)
 	mycfg.register_key(key_names[unsigned(key_command::SHOW_DAMAGE_CONTROL_SCREEN)].name, key_code::F7, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::SHOW_LOGBOOK_SCREEN)].name, key_code::F8, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::SHOW_SUCCESS_RECORDS_SCREEN)].name, key_code::F9, key_mod::none);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_FREEVIEW_SCREEN)].name, key_code::F10, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_FREEVIEW_SCREEN)].name, key_code::F10, key_mod::shift|key_mod::ctrl);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC_SCREEN)].name, key_code::F10, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC2_SCREEN)].name, key_code::F11, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPSETUP_SCREEN)].name, key_code::F12, key_mod::none);
+	mycfg.register_key(key_names[unsigned(key_command::SHOW_VALVES_SCREEN)].name, key_code::F1, key_mod::ctrl);
 	mycfg.register_key(key_names[unsigned(key_command::RUDDER_LEFT)].name, key_code::LEFT, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::RUDDER_HARD_LEFT)].name, key_code::LEFT, key_mod::shift);
 	mycfg.register_key(key_names[unsigned(key_command::RUDDER_RIGHT)].name, key_code::RIGHT, key_mod::none);
@@ -1850,9 +1854,7 @@ int mymain(std::vector<string>& args)
 	mycfg.register_key(key_names[unsigned(key_command::FIRE_DECK_GUN)].name, key_code::g, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_RELATIVE_BEARING)].name, key_code::r, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_MAN_DECK_GUN)].name, key_code::g, key_mod::shift);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TDC_SCREEN)].name, key_code::F11, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::TOGGLE_POPUP)].name, key_code::TAB, key_mod::none);
-	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPSETUP_SCREEN)].name, key_code::F12, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::SHOW_TORPEDO_CAMERA)].name, key_code::k, key_mod::none);
 	mycfg.register_key(key_names[unsigned(key_command::TAKE_SCREENSHOT)].name,  key_code::PRINTSCREEN, key_mod::none);
 
