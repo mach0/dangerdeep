@@ -20,52 +20,58 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's gauges
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "system_interface.h"
-#include "image.h"
-#include "texture.h"
 #include "game.h"
 #include "submarine.h"
 #include "sub_gauges_display.h"
-
-
-#include <memory>
-
-#include <utility>
-
 #include "user_interface.h"
-#include "global_data.h"
 
-sub_gauges_display::indicator::indicator(const sdl_image& s, unsigned x_, unsigned y_, unsigned w_, unsigned h_)
-	: mytex(s, x_, y_, w_, h_, texture::LINEAR, texture::CLAMP),
-	  x(x_), y(y_), w(w_), h(h_)
+namespace
 {
+	enum element_type {
+		et_compass = 1,
+		et_bow_depth_rudder = 2,
+		et_stern_depth_rudder = 3,
+		et_depth = 4,
+		et_knots = 5,
+		et_main_rudder = 6,
+		et_machine_telegraph = 7,
+		et_battery = 8,
+		et_compressor = 9,
+		et_diesel = 10
+	};
+
+	const submarine::gauges_type get_gauges_type(user_interface& ui)
+	{
+		return static_cast<submarine*>(ui.get_game().get_player())->get_gauges_type();
+	}
+	const char* get_type(user_interface& ui)
+	{
+		auto gt = get_gauges_type(ui);
+		if (gt == submarine::gauges_type::VII) return "sub_gauges_VII";
+		return "sub_gauges_II";
+	}
+
+	int throttle_to_value(submarine::throttle_status ts)
+	{
+		switch(ts) {
+		case submarine::reversefull: return 0;
+		case submarine::reversehalf: return 1;
+		case submarine::reverse: return 2;
+		case submarine::aheadlisten: return 10;
+		case submarine::aheadslow: return 11;
+		case submarine::aheadhalf: return 12;
+		case submarine::aheadfull: return 13;
+		case submarine::aheadflank: return 14;
+		case submarine::stop:	return 7;
+		default: return 6;	// some otherwise unused value
+		}
+	}
 }
 
 
 
-void sub_gauges_display::indicator::display(double angle) const
-{
-	mytex.draw_rot(x+w/2, y+h/2, angle, w/2, h/2);
-}
-
-
-
-bool sub_gauges_display::indicator::is_over(vector2i pos) const
-{
-	return (pos.x >= int(x) && pos.y >= int(y) && pos.x < int(x+w) && pos.y < int(y+h));
-}
-
-
-
-angle sub_gauges_display::indicator::get_angle(vector2i pos) const
-{
-	// need to negate y, because onscreen y is down
-	return angle(vector2(pos.x - int(x + w/2), int(y + h/2) - pos.y));
-}
-
-
-
-sub_gauges_display::sub_gauges_display(user_interface& ui_) : user_display(ui_), throttle_angle(0)
+sub_gauges_display::sub_gauges_display(user_interface& ui_)
+ :	user_display(ui_, get_type(ui_))
 {
 }
 
@@ -74,39 +80,14 @@ sub_gauges_display::sub_gauges_display(user_interface& ui_) : user_display(ui_),
 void sub_gauges_display::display() const
 {
 	auto* player = dynamic_cast<submarine*> ( ui.get_game().get_player () );
-	sys().prepare_2d_drawing();
-
-	controlscreen->draw(0, 0);
-
-	// the absolute numbers here depend on the graphics!
-	indicator_compass->display(-player->get_heading().value());
-//	indicator_battery->display(0);
-//	indicator_compressor->display(0);
-//	indicator_diesel->display(0);
-	indicator_bow_depth_rudder->display(player->get_bow_rudder()*-2.0);
-	indicator_stern_depth_rudder->display(-player->get_stern_rudder()*-2.0);
-	indicator_depth->display(player->get_depth()*1.36-136.0);
-	indicator_knots->display(fabs(player->get_speed())*22.33512-131);
-	indicator_main_rudder->display(player->get_rudder_pos()*2.25);
-	compute_throttle_angle(player->get_throttle());
-	indicator_mt->display(throttle_angle);
-
-/*	// kept as text reference for tooltips/popups.
-	angle player_speed = player->get_speed()*360.0/sea_object::kts2ms(36);
-	angle player_depth = -player->get_pos().z;
-	draw_gauge(gm, 1, 0, 0, 256, player->get_heading(), texts::get(1),
-		player->get_head_to());
-	draw_gauge(gm, 2, 256, 0, 256, player_speed, texts::get(4));
-	draw_gauge(gm, 4, 2*256, 0, 256, player_depth, texts::get(5));
-	draw_clock(gm, 3*256, 0, 256, gm.get_time(), texts::get(61));
-	draw_manometer_gauge ( gm, 1, 0, 256, 256, player->get_fuel_level (),
-		texts::get(101));
-	draw_manometer_gauge ( gm, 1, 256, 256, 256, player->get_battery_level (),
-		texts::get(102));
-*/
-	ui.draw_infopanel(true);
-
-	sys().unprepare_2d_drawing();
+	element_for_id(et_compass).set_value(-player->get_heading().value());
+	element_for_id(et_bow_depth_rudder).set_value(player->get_bow_rudder());
+	element_for_id(et_stern_depth_rudder).set_value(player->get_stern_rudder());
+	element_for_id(et_depth).set_value(player->get_depth());
+	element_for_id(et_knots).set_value(player->get_speed());
+	element_for_id(et_main_rudder).set_value(player->get_rudder_pos());
+	element_for_id(et_machine_telegraph).set_value(throttle_to_value(player->get_throttle()));
+	draw_elements();
 }
 
 
@@ -116,27 +97,20 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 	if (m.down()) {
 		// fixme: actions are executed, but no messages are sent...
 		auto* sub = dynamic_cast<submarine*>(ui.get_game().get_player());
-		//if mouse is over control c, compute angle a, set matching command, fixme
-		if (indicator_compass->is_over(m.position_2d)) {
-			sub->head_to_course(indicator_compass->get_angle(m.position_2d));
-		} else if (indicator_depth->is_over(m.position_2d)) {
-			angle mang = indicator_depth->get_angle(m.position_2d) - angle(225);
-			// 135� are 100m
-			if (mang.value()/1.35 < 270) {
-				sub->dive_to_depth(unsigned(mang.value()/1.35), ui.get_game());
-			}
-		} else if( indicator_bow_depth_rudder->is_over(m.position_2d)){
-			angle mang(indicator_bow_depth_rudder->get_angle(m.position_2d)-angle(270));
-			double pos = myclamp(mang.value_pm180() / 60.0, -1.0, 1.0);
-			sub->set_bow_depth_rudder(-pos);
-		} else if( indicator_stern_depth_rudder->is_over(m.position_2d)){
-			angle mang(angle(90) - indicator_stern_depth_rudder->get_angle(m.position_2d));
-			double pos = myclamp(mang.value_pm180() / 60.0, -1.0, 1.0);
-			sub->set_stern_depth_rudder(-pos);
-		} else if (indicator_mt->is_over(m.position_2d)) {
-			// 270� in 15 steps, 45�-315�, so 18� per step.
-			unsigned opt = unsigned( ((indicator_mt->get_angle(m.position_2d) - angle(45)).value()) / 18.0);
-			if (opt >= 15) opt = 14;
+		//if mouse is over control c, compute angle a, set matching command
+		if (element_for_id(et_compass).is_mouse_over(m.position_2d)) {
+			sub->head_to_course(element_for_id(et_compass).get_value(m.position_2d));
+		} else if (element_for_id(et_depth).is_mouse_over(m.position_2d)) {
+			sub->dive_to_depth(element_for_id(et_depth).get_value_uint(m.position_2d), ui.get_game());
+		} else if (element_for_id(et_bow_depth_rudder).is_mouse_over(m.position_2d)){
+			auto angle_for_rudder = element_for_id(et_bow_depth_rudder).get_value(m.position_2d);
+			sub->set_bow_depth_rudder(-std::clamp(angle_for_rudder / sub->get_bow_rudder_max_angle(), -1.0, 1.0));
+		} else if (element_for_id(et_stern_depth_rudder).is_mouse_over(m.position_2d)){
+			auto angle_for_rudder = element_for_id(et_stern_depth_rudder).get_value(m.position_2d);
+			sub->set_stern_depth_rudder(-std::clamp(angle_for_rudder / sub->get_stern_rudder_max_angle(), -1.0, 1.0));
+		} else if (element_for_id(et_machine_telegraph).is_mouse_over(m.position_2d)) {
+			// 270째 in 15 steps, 45째-315째, so 18째 per step.
+			auto opt = element_for_id(et_machine_telegraph).get_value_uint(m.position_2d);
 			switch (opt) {
 			case 0: sub->set_throttle(ship::reversefull); break;
 			case 1: sub->set_throttle(ship::reversehalf); break;
@@ -159,79 +133,4 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 		return true;
 	}
 	return false;
-}
-
-
-
-int sub_gauges_display::compute_throttle_angle(int throttle_pos) const
-{
-	int throttle_goal;
-
-	switch(submarine::throttle_status(throttle_pos)){
-	case submarine::reversefull: throttle_goal = -125; break;
-	case submarine::reversehalf: throttle_goal = -107; break;
-	case submarine::reverse: throttle_goal = -90; break;
-	case submarine::aheadlisten: throttle_goal = 54; break;
-	case submarine::aheadslow: throttle_goal = 72; break;
-	case submarine::aheadhalf: throttle_goal = 90; break;
-	case submarine::aheadfull: throttle_goal = 108; break;
-	case submarine::aheadflank: throttle_goal = 126; break;
-	case submarine::stop:
-	default: throttle_goal = 0;
-	}
-
-	if( throttle_angle < throttle_goal )
-		++throttle_angle;
-	else if( throttle_angle > throttle_goal )
-		--throttle_angle;
-
-	return throttle_angle;
-}
-
-
-
-void sub_gauges_display::enter(bool is_day)
-{
-	if (is_day)
-		controlscreen = std::make_unique<image>(get_image_dir() + "daylight_typevii_controlscreen_background.jpg");
-	else
-		controlscreen = std::make_unique<image>(get_image_dir() + "redlight_typevii_controlscreen_background.jpg");
-
-	sdl_image compassi(get_image_dir() + "compass_outer_masked.png");
-	sdl_image dials(get_image_dir() + (is_day ? "daylight_controlscreen_pointers.png" : "redlight_controlscreen_pointers.png"));
-	//fusebox lights are missing here
-	// old controlscreen layers, will now belong to TypeIIA/B uboat controlscreen
-	// new ones are for TypeVII uboat controlscreen
-	//	indicators.resize(nr_of_indicators);
-	//	indicator_compass->set(compassi, (SDL_Surface*)0, 35, 451, 226, 226);
-	//	indicator_battery->set(dialsday, dialsnight, 276, 358, 58, 58);
-	//	indicator_compressor->set(dialsday, dialsnight, 353, 567, 76, 76);
-	//	indicator_diesel->set(dialsday, dialsnight, 504, 567, 76, 76);
-	//	indicator_bow_depth_rudder->set(dialsday, dialsnight, 693, 590, 88, 88);
-	//	indicator_stern_depth_rudder->set(dialsday, dialsnight, 881, 590, 88, 88);
-	//	indicator_depth->set(dialsday, dialsnight, 420, 295, 168, 168);
-	//	indicator_knots->set(dialsday, dialsnight, 756, 44, 94, 94);
-	//	indicator_main_rudder->set(dialsday, dialsnight, 788, 429, 96, 96);
-	//	indicator_mt->set(dialsday, dialsnight, 426, 37, 158, 158);
-	indicator_compass = std::make_unique<indicator>(compassi, 87, 378, 338, 338);
-	indicator_bow_depth_rudder = std::make_unique<indicator>(dials, 563, 550, 148, 148);
-	indicator_stern_depth_rudder = std::make_unique<indicator>(dials, 795, 550, 148, 148);
-	indicator_depth = std::make_unique<indicator>(dials, 391, 50, 270, 270);
-	indicator_knots = std::make_unique<indicator>(dials, 782, 95, 132, 132);
-	indicator_main_rudder = std::make_unique<indicator>(dials, 681, 337, 152, 152);
-	indicator_mt = std::make_unique<indicator>(dials, 88, 93, 173, 173);
-}
-
-
-
-void sub_gauges_display::leave()
-{
-	controlscreen.reset();
-	indicator_compass.reset();
-	indicator_bow_depth_rudder.reset();
-	indicator_stern_depth_rudder.reset();
-	indicator_depth.reset();
-	indicator_knots.reset();
-	indicator_main_rudder.reset();
-	indicator_mt.reset();
 }

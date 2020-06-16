@@ -270,8 +270,14 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 	battery_recharge_value_a = bt.attrf("recharge_a");
 	battery_recharge_value_t = bt.attrf("recharge_t");
 	if (parent.has_child("torpedomanage")) { // fixme: later all subs should have it!!
-	xml_elem tm = parent.child("torpedomanage");
-	torpedomanage_sidetopimg = tm.attr("image");
+		xml_elem tm = parent.child("torpedomanage");
+		torpedomanage_sidetopimg = tm.attr("image");
+	}
+	if (parent.has_child("gauges")) {
+		auto spec_gauges_type = parent.child("gauges").child_text();
+		if (spec_gauges_type == "VII") {
+			gauges = gauges_type::VII;
+		}
 	}
 
 	// set all common damageable parts to "no damage", fixme move to ship?, replace by damage editor data reading
@@ -1257,7 +1263,7 @@ bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
 
 	// if tubenr is < 0, choose a tube
 	if (tubenr < 0) {	// check if target is behind
-		auto& mytarget = gm.get_object(target);
+		//auto& mytarget = gm.get_object(target);
 		angle a = angle(targetpos.xy() - get_pos().xy())
 			- get_heading(); // + trp_addleadangle;
 		usebowtubes = (a.ui_abs_value180() <= 90.0);

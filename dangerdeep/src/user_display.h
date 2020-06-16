@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef USER_DISPLAY_H
 #define USER_DISPLAY_H
 
-#include <list>
+#include "angle.h"
 #include "texture.h"	// fixme replace by "gpu_interface.h"
 #include "datadirs.h"
 #include "input_event_handler.h"
@@ -112,11 +112,9 @@ protected:
 		/// Construct static element
 		elem2D(const vector2i& pos, const std::string& filename_day, const std::string& filename_night = std::string());
 		/// Construct rotateable element
-		elem2D(const vector2i& pos, const vector2i& ctr, const std::string& filename_day, const std::string& filename_night = std::string());
+		elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, const std::string& filename_day, const std::string& filename_night = std::string());
 		/// Construct static element with N angles/phases
 		elem2D(const vector2i& pos, unsigned phases, unsigned offset, const std::string& filename_day, const std::string& filename_night = std::string());
-		/// Set the angle to use for rotation in [0...360[
-		void set_angle(float angle_) const;
 		/// Set the phase to use for subimage in [0...1[
 		void set_phase(float phase_) const;
 		/// Draw element (rotated/phased if defined)
@@ -135,6 +133,12 @@ protected:
 		const vector2i& get_position() const { return position; }
 		/// For storage in vector
 		elem2D() = default;
+		/// Set the value
+		void set_value(double v) const;
+		/// Get the value
+		double get_value(const vector2i& mpos) const;
+		/// Get the value as unsigned
+		unsigned get_value_uint(const vector2i& mpos) const;
 
 	protected:
 		vector2i position;		///< Position (left/top) of the element on screen
@@ -142,7 +146,11 @@ protected:
 		//vector2i size;		///< Drawing size (taken from image initially)
 		bool rotateable{false};	///< Is this a rotateable element?
 		bool has_night{false};	///< Does night image data exist?
-		mutable float angle{0.f};			///< The angle to use for rotateable elements, mutable because called by const display()
+		mutable double value{0.0};		///< The value to convert to angle
+		angle start_angle;		///< For rotating elements the start angle
+		double start_value{0.0};	///< For rotating elements the value at start angle
+		angle end_angle;		///< For rotating elements the end angle
+		double end_value{1.0};		///< For rotating elements the value at end angle
 		mutable unsigned phase{0};			///< The subimage (phase) to use, mutable because called by const display()
 		std::vector<std::string> filenames_day;// obsolete with new gpu interface
 		std::vector<std::string> filenames_night;	// obsolete with new gpu interface
@@ -150,6 +158,8 @@ protected:
 		//std::vector<image> data_night;		///< Image data for night (optional)
 		//std::vector<gpu::texture> tex;		///< Texture data (only used when display is active!)
 		std::vector<std::unique_ptr<texture>> tex;	///< Texture data (only used when display is active!) // obsolete with new gpu interface
+
+		double get_angle_range() const;			///< Compute range of angles between start and end
 	};
 
 	std::vector<elem2D> elements;		///< Elements to use for drawing
@@ -160,7 +170,7 @@ protected:
 public:
 	// needed for correct destruction of heirs.
 	virtual ~user_display() = default;
-	// very basic. Just draw display and handle input.
+	// very basic. Just draw display
 	virtual void display() const = 0;
 	// mask contains one bit per popup (at most 31 popups)
 	virtual unsigned get_popup_allow_mask() const { return 0; }

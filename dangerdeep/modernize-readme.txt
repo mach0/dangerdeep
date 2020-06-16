@@ -23,6 +23,8 @@ After each step check functionality.
 13. Introduce elem2D class for popups (cleaner shorter code, easier
     transition to new GPU interface)
 14. Split to more libraries
+15. Introduced elem2D for popups and define them in data files
+. fixme swap gauges VII and rest!
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)
@@ -46,8 +48,8 @@ After each step check functionality.
 . Fix portal rendering
 . Use physical units!
 . xml reader could use std::optional
-. Popup elements could be data files as well
-
+. using namespace std remove with clang-tidy google-build-using-namespace
+. replace myfmod with helper::mod
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list
