@@ -95,9 +95,9 @@ bool sub_ghg_display::handle_mouse_motion_event(const mouse_motion_data& m)
 
 void sub_ghg_display::display() const
 {
-	element_for_id(et_volume_dial).set_angle(-turnknobang[TK_VOLUME]-18.0f);
-	element_for_id(et_direction_ptr).set_angle(turnknobang[TK_DIRECTION]*0.5 /* fixme: get angle from player*/);
-	element_for_id(et_direction_knob).set_angle(turnknobang[TK_DIRECTION]);
+	element_for_id(et_volume_dial).set_value(-turnknobang[TK_VOLUME]-18.0f);//fixme scaling!
+	element_for_id(et_direction_ptr).set_value(turnknobang[TK_DIRECTION]*0.5 /* fixme: get angle from player*/);
+	element_for_id(et_direction_knob).set_value(turnknobang[TK_DIRECTION]);
 	draw_elements();
 
 	// get hearing device angle from submarine, if it has one

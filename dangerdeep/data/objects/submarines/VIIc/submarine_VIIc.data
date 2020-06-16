@@ -23,6 +23,7 @@
     <near lang="de">U-Boot Typ VIIc</near>
     <near lang="it">Sommergibile Tipo VIIc</near>
   </description>
+  <gauges>VII</gauges>
   <motion maxspeed="17.7" maxrevspeed="5" acceleration="0.6" turnrate="0.2">
     <submerged maxspeed="7.6" safedepth="220" maxdepth="240"/>
   </motion>

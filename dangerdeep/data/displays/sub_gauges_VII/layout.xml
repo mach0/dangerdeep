@@ -1,0 +1,91 @@
+<dftd-display name="sub_gauges_display">
+	<element x="0" y="0">
+		<day>daylight_controlscreen_background.jpg</day>
+		<night>redlight_controlscreen_background.jpg</night>
+	</element>
+	<element x="41" y="458" id="1">
+		<size x="212" y="212"/>
+		<day>compass_outer_masked.png</day>
+	</element>
+	<element x="693" y="590" id="2">
+		<size x="88" y="88"/>
+		<scale pointer="270">
+			<start angle="180" value="-30"/>
+			<end angle="0" value="30"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_bow_depth_rudder.png</day>
+		<night>redlight_controlscreen_pointers_bow_depth_rudder.png</night>
+	</element>
+	<element x="881" y="590" id="3">
+		<size x="88" y="88"/>
+		<scale pointer="90">
+			<start angle="0" value="30"/>
+			<end angle="180" value="-30"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_stern_depth_rudder.png</day>
+		<night>redlight_controlscreen_pointers_stern_depth_rudder.png</night>
+	</element>
+	<element x="420" y="295" id="4">
+		<size x="168" y="168"/>
+		<scale pointer="270">
+			<start angle="220" value="0"/>
+			<end angle="119" value="260"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_depth.png</day>
+		<night>redlight_controlscreen_pointers_depth.png</night>
+	</element>
+	<element x="756" y="44" id="5">
+		<size x="94" y="94"/>
+		<scale pointer="0">
+			<start angle="228" value="0"/>
+			<end angle="132" value="22"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_knots.png</day>
+		<night>redlight_controlscreen_pointers_knots.png</night>
+	</element>
+	<element x="788" y="429" id="6">
+		<size x="96" y="96"/>
+		<scale pointer="0">
+			<start angle="220" value="-40"/>
+			<end angle="140" value="40"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_main_rudder.png</day>
+		<night>redlight_controlscreen_pointers_main_rudder.png</night>
+	</element>
+	<element x="426" y="37" id="7">
+		<size x="158" y="158"/>
+		<scale pointer="0">
+			<start angle="40" value="0"/>
+			<end angle="320" value="14"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_mt.png</day>
+		<night>redlight_controlscreen_pointers_mt.png</night>
+	</element>
+	<element x="276" y="358" id="8">
+		<size x="58" y="58"/>
+		<scale pointer="315">
+			<start angle="270" value="0"/>
+			<end angle="90" value="1"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_battery.png</day>
+		<night>redlight_controlscreen_pointers_battery.png</night>
+	</element>
+	<element x="353" y="567" id="9">
+		<size x="76" y="76"/>
+		<scale pointer="0">
+			<start angle="240" value="0"/>
+			<end angle="120" value="1"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_compressor.png</day>
+		<night>redlight_controlscreen_pointers_compressor.png</night>
+	</element>
+	<element x="504" y="567" id="10">
+		<size x="76" y="76"/>
+		<scale pointer="0">
+			<start angle="240" value="0"/>
+			<end angle="120" value="1"/>
+		</scale>
+		<day>daylight_controlscreen_pointers_diesel.png</day>
+		<night>redlight_controlscreen_pointers_diesel.png</night>
+	</element>
+</dftd-display>
