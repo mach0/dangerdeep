@@ -46,6 +46,7 @@ After each step check functionality.
 . Fix portal rendering
 . Use physical units!
 . xml reader could use std::optional
+. Popup elements could be data files as well
 
 
 Changes that have been started in code comparison:

@@ -20,8 +20,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Base interface for user screen popups.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "user_popup.h"
+#include "datadirs.h"
+#include "game.h"
 #include "system_interface.h"
+#include "user_interface.h"
+#include "user_popup.h"
+#include "xml.h"
 
 user_popup::elem2D::elem2D(vector2i pos, const std::string& filename_day, const std::string& filename_night)
  :	position(pos)
@@ -36,11 +40,48 @@ user_popup::elem2D::elem2D(vector2i pos, const std::string& filename_day, const 
 
 void user_popup::elem2D::draw(bool is_day) const
 {
-	sys().prepare_2d_drawing();
 	if (is_day || tex_night.get() == nullptr) {
 		tex_day->draw(position.x, position.y);
 	} else {
 		tex_night->draw(position.x, position.y);
+	}
+}
+
+
+
+user_popup::user_popup(user_interface& ui_, const char* popup_name)
+ :	ui(ui_)
+{
+	// if popups use no elements they give nullptr as definition
+	if (popup_name != nullptr) {
+		auto popup_dir = get_popup_dir() + popup_name + "/";
+		xml_doc popup_config(popup_dir + "layout.xml");
+		popup_config.load();
+		for (auto elem : popup_config.child("dftd-popup").iterate("element")) {
+			auto pos = elem.attrv2i();
+			// IDs are not used yet
+			std::string filename_day;
+			if (!elem.has_child("day")) {
+				THROW(error, std::string(popup_name) + ", invalid popup def xml file, day node missing");
+			}
+			filename_day = elem.child("day").child_text();
+			std::string filename_night;
+			if (elem.has_child("night")) {
+				filename_night = elem.child("night").child_text();
+			}
+			elements.emplace_back(pos, popup_dir + filename_day, popup_dir + filename_night);
+		}
+	}
+}
+
+
+
+void user_popup::display() const
+{
+	sys().prepare_2d_drawing();
+	bool is_day = ui.get_game().is_day_mode();
+	for (auto& elem : elements) {
+		elem.draw(is_day);
 	}
 	sys().unprepare_2d_drawing();
 }

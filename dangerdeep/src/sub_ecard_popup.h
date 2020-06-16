@@ -29,10 +29,6 @@ class sub_ecard_popup : public user_popup
 {
 public:
 	sub_ecard_popup(class user_interface& ui_);
-	void display() const override;
-
-protected:
-	elem2D background;
 };
 
 #endif /* SUB_ECARD_POPUP_H */
