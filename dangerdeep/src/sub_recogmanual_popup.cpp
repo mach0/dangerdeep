@@ -55,9 +55,8 @@ void sub_recogmanual_popup::widget_button_next::on_release ()
 
 
 sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
- :	user_popup(ui_),
+ :	user_popup(ui_, "sub_recogmanual"),
 	page(0),
-	background(elem2D({0, 49}, get_image_dir() + "shiprecog_popup_daylight.png", get_image_dir() + "shiprecog_popup_redlight.png")),
 	btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"),
 	btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
 {
@@ -122,8 +121,8 @@ bool sub_recogmanual_popup::handle_mouse_wheel_event(const mouse_wheel_data& m)
 
 void sub_recogmanual_popup::display() const
 {
-	bool is_day = ui.get_game().is_day_mode();
-	background.draw(is_day);
+	// display background
+	user_popup::display();
 
 	sys().prepare_2d_drawing();
 

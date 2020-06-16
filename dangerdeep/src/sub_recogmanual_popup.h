@@ -38,7 +38,6 @@ protected:
 	};
 
 	int page;
-	elem2D background;
 	std::vector<std::unique_ptr<image>> silhouettes;
 	std::vector<std::string> classes;
 	std::vector<std::string> lengths;
