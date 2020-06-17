@@ -112,7 +112,7 @@ protected:
 		/// Construct static element
 		elem2D(const vector2i& pos, const std::string& filename_day, const std::string& filename_night = std::string());
 		/// Construct rotateable element
-		elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, const std::string& filename_day, const std::string& filename_night = std::string());
+		elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, angle rotation_offset_, const std::string& filename_day, const std::string& filename_night = std::string());
 		/// Construct static element with N angles/phases
 		elem2D(const vector2i& pos, unsigned phases, unsigned offset, const std::string& filename_day, const std::string& filename_night = std::string());
 		/// Set the phase to use for subimage in [0...1[
@@ -136,9 +136,9 @@ protected:
 		/// Set the value
 		void set_value(double v) const;
 		/// Get the value
-		double get_value(const vector2i& mpos) const;
+		std::optional<double> get_value(const vector2i& mpos) const;
 		/// Get the value as unsigned
-		unsigned get_value_uint(const vector2i& mpos) const;
+		std::optional<unsigned> get_value_uint(const vector2i& mpos) const;
 
 	protected:
 		vector2i position;		///< Position (left/top) of the element on screen
@@ -151,6 +151,7 @@ protected:
 		double start_value{0.0};	///< For rotating elements the value at start angle
 		angle end_angle;		///< For rotating elements the end angle
 		double end_value{1.0};		///< For rotating elements the value at end angle
+		angle rotation_offset;		///< The offset to use for display
 		mutable unsigned phase{0};			///< The subimage (phase) to use, mutable because called by const display()
 		std::vector<std::string> filenames_day;// obsolete with new gpu interface
 		std::vector<std::string> filenames_night;	// obsolete with new gpu interface

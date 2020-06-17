@@ -80,13 +80,13 @@ sub_gauges_display::sub_gauges_display(user_interface& ui_)
 void sub_gauges_display::display() const
 {
 	auto* player = dynamic_cast<submarine*> ( ui.get_game().get_player () );
-	element_for_id(et_compass).set_value(-player->get_heading().value());
+	element_for_id(et_compass).set_value(360.0-player->get_heading().value());
 	element_for_id(et_bow_depth_rudder).set_value(player->get_bow_rudder());
 	element_for_id(et_stern_depth_rudder).set_value(player->get_stern_rudder());
 	element_for_id(et_depth).set_value(player->get_depth());
-	element_for_id(et_knots).set_value(player->get_speed());
+	element_for_id(et_knots).set_value(helper::ms2kts(player->get_speed()));
 	element_for_id(et_main_rudder).set_value(player->get_rudder_pos());
-	element_for_id(et_machine_telegraph).set_value(throttle_to_value(player->get_throttle()));
+	element_for_id(et_machine_telegraph).set_value(double(throttle_to_value(player->get_throttle())) + 0.5);
 	draw_elements();
 }
 
@@ -99,18 +99,28 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 		auto* sub = dynamic_cast<submarine*>(ui.get_game().get_player());
 		//if mouse is over control c, compute angle a, set matching command
 		if (element_for_id(et_compass).is_mouse_over(m.position_2d)) {
-			sub->head_to_course(element_for_id(et_compass).get_value(m.position_2d));
+			const auto compass_angle = element_for_id(et_compass).get_value(m.position_2d);
+			if (compass_angle.has_value()) {
+				sub->head_to_course(compass_angle.value());
+			}
 		} else if (element_for_id(et_depth).is_mouse_over(m.position_2d)) {
-			sub->dive_to_depth(element_for_id(et_depth).get_value_uint(m.position_2d), ui.get_game());
+			const auto depth = element_for_id(et_depth).get_value_uint(m.position_2d);
+			if (depth.has_value()) {
+				sub->dive_to_depth(depth.value(), ui.get_game());
+			}
 		} else if (element_for_id(et_bow_depth_rudder).is_mouse_over(m.position_2d)){
 			auto angle_for_rudder = element_for_id(et_bow_depth_rudder).get_value(m.position_2d);
-			sub->set_bow_depth_rudder(-std::clamp(angle_for_rudder / sub->get_bow_rudder_max_angle(), -1.0, 1.0));
+			if (angle_for_rudder.has_value()) {
+				sub->set_bow_depth_rudder(-std::clamp(angle_for_rudder.value() / sub->get_bow_rudder_max_angle(), -1.0, 1.0));
+			}
 		} else if (element_for_id(et_stern_depth_rudder).is_mouse_over(m.position_2d)){
 			auto angle_for_rudder = element_for_id(et_stern_depth_rudder).get_value(m.position_2d);
-			sub->set_stern_depth_rudder(-std::clamp(angle_for_rudder / sub->get_stern_rudder_max_angle(), -1.0, 1.0));
+			if (angle_for_rudder.has_value()) {
+				sub->set_stern_depth_rudder(-std::clamp(angle_for_rudder.value() / sub->get_stern_rudder_max_angle(), -1.0, 1.0));
+			}
 		} else if (element_for_id(et_machine_telegraph).is_mouse_over(m.position_2d)) {
 			// 270° in 15 steps, 45°-315°, so 18° per step.
-			auto opt = element_for_id(et_machine_telegraph).get_value_uint(m.position_2d);
+			auto opt = element_for_id(et_machine_telegraph).get_value_uint(m.position_2d).value_or(15U);
 			switch (opt) {
 			case 0: sub->set_throttle(ship::reversefull); break;
 			case 1: sub->set_throttle(ship::reversehalf); break;
@@ -127,6 +137,7 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 			case 6: // use electric engines
 			case 8: // attention
 			case 9: // diesel engines
+			default:
 				break;
 			}
 		}

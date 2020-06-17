@@ -54,9 +54,9 @@
 	</element>
 	<element x="426" y="37" id="7">
 		<size x="158" y="158"/>
-		<scale pointer="0">
-			<start angle="40" value="0"/>
-			<end angle="320" value="14"/>
+		<scale pointer="180">
+			<start angle="30" value="0"/>
+			<end angle="330" value="15"/>
 		</scale>
 		<day>daylight_controlscreen_pointers_mt.png</day>
 		<night>redlight_controlscreen_pointers_mt.png</night>
