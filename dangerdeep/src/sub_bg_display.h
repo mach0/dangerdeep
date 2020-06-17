@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_BG_DISPLAY_H
 
 #include "user_display.h"
-#include <vector>
 
 /// Display for the Balkongeraet hearing device
 class sub_bg_display : public user_display
@@ -36,14 +35,7 @@ public:
 	void display() const override;
 
 protected:
-	enum turnknobtype {
-		TK_NONE = -1,
-		TK_DIRECTION = 0,
-		TK_NR = 1
-	};
-
-	turnknobtype turnknobdrag;
-	std::vector<float> turnknobang;
+	int which_element_is_turned{-1};
 };
 
 #endif

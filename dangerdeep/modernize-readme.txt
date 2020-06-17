@@ -25,7 +25,8 @@ After each step check functionality.
 14. Split to more libraries
 15. Introduced elem2D for popups and define them in data files
 . gauge VII integrate new compass!
-. user_display offer larger click area! as size value...
+. test BG,GHG displays
+. move other screens to use elem2d at least for background, periscope i.e. for slider!
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)

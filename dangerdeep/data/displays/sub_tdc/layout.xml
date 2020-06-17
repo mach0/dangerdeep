@@ -34,7 +34,6 @@
 	</element>
 	<element x="820" y="104" id="6">
 		<center x="846" y="201"/>
-		<click r="100"/>
 		<scale pointer="0">
 			<start angle="210" value="-25"/>
 			<end angle="150" value="25"/>

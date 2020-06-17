@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 namespace
 {
-	const double TK_ANGFAC = 360.0/512.0;
 	enum element_type {
+		et_none = -1,
 		et_direction_ptr = 0,
 		et_direction_knob = 1,
 		et_volume_dial = 2,
@@ -38,8 +38,6 @@ namespace
 
 sub_ghg_display::sub_ghg_display(user_interface& ui_)
  :	user_display(ui_, "sub_ghg")
- ,	turnknobdrag(TK_NONE)
- ,	turnknobang(TK_NR)
 {
 }
 
@@ -47,18 +45,17 @@ sub_ghg_display::sub_ghg_display(user_interface& ui_)
 
 bool sub_ghg_display::handle_mouse_button_event(const mouse_click_data& m)
 {
+	which_element_is_turned = et_none;
 	if (m.down()) {
 		// check if mouse is over turn knobs
-		turnknobdrag = TK_NONE;
-		if (element_for_id(et_direction_knob).is_mouse_over(m.position_2d, 64)) {
-			turnknobdrag = TK_DIRECTION;
+		if (element_for_id(et_direction_knob).is_mouse_over(m.position_2d)) {
+			which_element_is_turned = et_direction_knob;
 			return true;
-		} else if (element_for_id(et_volume_knob).is_mouse_over(m.position_2d)) {
-			turnknobdrag = TK_VOLUME;
+		} else if (element_for_id(et_volume_knob).is_mouse_over(m.position_2d, 128)) {
+			which_element_is_turned = et_volume_knob;
 			return true;
 		}
 	} else if (m.up()) {
-		turnknobdrag = TK_NONE;
 		return true;
 	}
 	return false;
@@ -68,23 +65,11 @@ bool sub_ghg_display::handle_mouse_button_event(const mouse_click_data& m)
 
 bool sub_ghg_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
+	// fixme here and for sub_bg just use the elements directly, like with kdb!
 	if (m.left()) {
-		if (turnknobdrag != TK_NONE) {
-			float& ang = turnknobang[unsigned(turnknobdrag)];
-			ang += m.position_2d.x * TK_ANGFAC;
-			switch (turnknobdrag) {
-			case TK_DIRECTION:
-				// 0-360*4 degrees match to 0-360
-				ang = myclamp(ang, -320.0f, 320.0f);
-				//sub->set_ghg_direction(ang*0.5); // fixme: set angle of player
-				break;
-			case TK_VOLUME:
-				// 0-288 degrees match to 5-85 degrees angle
-				ang = myclamp(ang, 0.0f, 252.0f);
-				break;
-			default:	// can never happen
-				break;
-			}
+		if (which_element_is_turned != et_none) {
+			auto& elem = element_for_id(which_element_is_turned);
+			elem.set_value(angle(elem.get_value() + m.relative_motion.x * 100.0).value());
 			return true;
 		}
 	}
@@ -95,9 +80,8 @@ bool sub_ghg_display::handle_mouse_motion_event(const mouse_motion_data& m)
 
 void sub_ghg_display::display() const
 {
-	element_for_id(et_volume_dial).set_value(-turnknobang[TK_VOLUME]-18.0f);//fixme scaling!
-	element_for_id(et_direction_ptr).set_value(turnknobang[TK_DIRECTION]*0.5 /* fixme: get angle from player*/);
-	element_for_id(et_direction_knob).set_value(turnknobang[TK_DIRECTION]);
+	element_for_id(et_direction_ptr).set_value(element_for_id(et_direction_knob).get_value());
+	element_for_id(et_volume_dial).set_value(element_for_id(et_volume_knob).get_value());
 	draw_elements();
 
 	// get hearing device angle from submarine, if it has one
