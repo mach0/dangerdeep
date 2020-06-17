@@ -24,9 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_KDB_DISPLAY_H
 
 #include "user_display.h"
-#include "image.h"
-#include <vector>
-#include "sonar.h" // fixme: only for testing!
 
 /// Display for the KDB hearing device
 class sub_kdb_display : public user_display

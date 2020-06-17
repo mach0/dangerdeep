@@ -79,6 +79,7 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 		optional = true;
 		visible = elem.attrb("visible");
 	}
+	// Without scale tag we assume that we can rotate freely 360 degrees and the value is the angle (0...360)
 	if (elem.has_child("scale")) {
 		// If a scale tag is given the value is limited and scaled
 		auto elem_scale = elem.child("scale");
@@ -100,13 +101,22 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 		rotateable = true;
 	} else if (elem.has_child("slider")) {
 		// one of the coordinates for draw can be variable (take it from value)
-		slide_x = elem.child("slider").attri("x");	// for now only X sliding possible
+		const auto elem_slider = elem.child("slider");
+		slide_x = elem_slider.attri("x");	// for now only X sliding possible
 		start_value = 0.0;
 		end_value = 1.0;
 		can_slide = true;
+		if (elem_slider.has_attr("start")) {
+			start_value = elem_slider.attrf("start");
+		}
+		if (elem_slider.has_attr("end")) {
+			end_value = elem_slider.attrf("end");
+		}
 	}
-	if (rotateable && elem.has_child("click")) {
-		click_radius = elem.child("click").attri("r");
+	if (rotateable) {
+		// Compute radius wher we can click on
+		const auto delta = position - center;
+		click_radius = std::max(std::abs(delta.x), std::abs(delta.y));
 	}
 	if (rotateable || !elem.has_child("phases")) {
 		filenames_day.push_back(display_dir + filename_day);
@@ -114,23 +124,34 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 		tex.resize(1);
 	} else {
 		auto elem_phases = elem.child("phases");
-		auto phases = elem_phases.attru("nr");
-		auto offset = elem_phases.attru("offset");
+		std::vector<std::string> phase_names;
+		if (elem_phases.has_child("phase")) {
+			// phases defined by own names
+			for (auto elem_phase : elem_phases.iterate("phase")) {
+				phase_names.push_back(elem_phase.child_text());
+			}
+		} else {
+			auto phases = elem_phases.attru("nr");
+			auto offset = elem_phases.attru("offset");
+			for (unsigned i = 0; i < phases; ++i) {
+				phase_names.push_back(helper::str(offset + i));
+			}
+		}
 		if (elem_phases.has_attr("by_angle")) {
 			end_angle = elem.attrf("by_angle");
 			start_angle = 0.0;
 			start_value = 0.0;
-			end_value = double(phases);
+			end_value = double(phase_names.size());
 			rotation_offset = 0.0;
 			phase_by_value = true;
 		}
-		filenames_day.resize(phases);
-		filenames_night.resize(phases);
-		tex.resize(phases);
-		for (unsigned i = 0; i < phases; ++i) {
-			filenames_day[i] = display_dir + helper::replace_first(filename_day, "%u", helper::str(offset + i));
+		filenames_day.resize(phase_names.size());
+		filenames_night.resize(phase_names.size());
+		tex.resize(phase_names.size());
+		for (unsigned i = 0; i < unsigned(phase_names.size()); ++i) {
+			filenames_day[i] = display_dir + helper::replace_first(filename_day, "%u", phase_names[i]);
 			if (has_night) {
-				filenames_night[i] = display_dir + helper::replace_first(filename_night, "%u", helper::str(offset + i));
+				filenames_night[i] = display_dir + helper::replace_first(filename_night, "%u", phase_names[i]);
 			}
 		}
 	}
@@ -138,9 +159,9 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 
 
 
-void user_display::elem2D::set_phase(float phase_) const
+void user_display::elem2D::set_phase(unsigned phase_) const
 {
-	phase = std::min(unsigned(tex.size() * phase_), unsigned(tex.size() - 1));
+	phase = std::min(nr_of_phases() - 1, phase_);
 }
 
 
@@ -186,7 +207,7 @@ void user_display::elem2D::set_draw_size(const vector2i& sz)
 void user_display::elem2D::init(bool is_day)
 {
 	// init all textures
-	for (auto i = 0U; i < unsigned(tex.size()); ++i) {
+	for (auto i = 0U; i < nr_of_phases(); ++i) {
 		tex[i] = std::make_unique<texture>((is_day || !has_night || filenames_night[i].empty()) ? filenames_day[i] : filenames_night[i]);
 	}
 }
@@ -196,7 +217,7 @@ void user_display::elem2D::init(bool is_day)
 void user_display::elem2D::deinit()
 {
 	// delete all textures
-	for (auto i = 0U; i < unsigned(tex.size()); ++i) {
+	for (auto i = 0U; i < nr_of_phases(); ++i) {
 		tex[i] = nullptr;
 	}
 }
@@ -208,8 +229,15 @@ void user_display::elem2D::set_value(double v) const
 	value = std::clamp(v, std::min(start_value, end_value), std::max(start_value, end_value));
 	if (phase_by_value) {
 		// we have phases, set phase by value if desired
-		phase = std::min(unsigned(tex.size() - 1), unsigned(std::floor(value)));
+		phase = std::min(nr_of_phases() - 1, unsigned(std::floor(value)));
 	}
+}
+
+
+
+void user_display::elem2D::set_angle(angle a) const
+{
+	set_value(helper::interpolate(start_value, end_value, (a - start_angle).value() / get_angle_range()));
 }
 
 

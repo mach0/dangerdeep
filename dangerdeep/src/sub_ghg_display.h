@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_GHG_DISPLAY_H
 
 #include "user_display.h"
-#include "image.h"
-#include <vector>
 
 /// Display for the Gruppenhorchgeraet hearing device
 class sub_ghg_display : public user_display
@@ -37,15 +35,7 @@ public:
 	void display() const override;
 
 protected:
-	enum turnknobtype {
-		TK_NONE = -1,
-		TK_DIRECTION = 0,
-		TK_VOLUME = 1,
-		TK_NR = 2
-	};
-
-	turnknobtype turnknobdrag;
-	std::vector<float> turnknobang;
+	int which_element_is_turned{-1};
 };
 
 #endif

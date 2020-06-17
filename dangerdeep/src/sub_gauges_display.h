@@ -25,11 +25,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "user_display.h"
 
-#include "texture.h"
-#include "image.h"
-#include "angle.h"
-#include <vector>
-
 ///\brief Class for display and input of submarine's main gauges.
 ///\ingroup displays
 class sub_gauges_display : public user_display

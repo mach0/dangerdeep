@@ -112,8 +112,10 @@ protected:
 	public:
 		/// Construct from data file
 		elem2D(const xml_elem& elem, const std::string& display_dir, const std::string& prefix_day, const std::string& prefix_night);
-		/// Set the phase to use for subimage in [0...1[
-		void set_phase(float phase_) const;
+		/// Get number of phases
+		auto nr_of_phases() const { return unsigned(tex.size()); }
+		/// Set the phase to use for subimage in [0...numphases[
+		void set_phase(unsigned phase_) const;
 		/// Draw element (rotated/phased if defined)
 		void draw() const;
 		/// Is Mouse over element? Does not check for rotation, just uses 2D area.
@@ -132,6 +134,8 @@ protected:
 		elem2D() = default;
 		/// Set the value
 		void set_value(double v) const;
+		/// Set the angle in valid range and thus value
+		void set_angle(angle a) const;
 		/// Get the set value
 		auto get_value() const { return value; }
 		/// Set the value defined by mouse position @return new set value if valid
@@ -140,6 +144,8 @@ protected:
 		std::optional<unsigned> set_value_uint(const vector2i& mpos) const;
 		/// Get the ID
 		auto get_id() const { return id; }
+		/// Set visibility
+		void set_visible(bool b) const { if (optional) visible = b; }
 
 	protected:
 		int id{-1};			///< ID for manipulation
@@ -156,7 +162,7 @@ protected:
 		angle rotation_offset;		///< The offset to use for display
 		mutable unsigned phase{0};			///< The subimage (phase) to use, mutable because called by const display()
 		bool optional{false};				///< Is the element not always visible?
-		bool visible{true};				///< Should the element get drawn?
+		mutable bool visible{true};			///< Should the element get drawn?
 		bool phase_by_value{false};			///< Set phase by value?
 		int click_radius{0};			///< Click area around center if > 0, as +/- value for x/y
 		bool can_slide{false};				///< Can element slide?

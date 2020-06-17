@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_TDC_DISPLAY_H
 
 #include "user_display.h"
-#include "image.h"
-#include <vector>
 
 /// Display for submarine's TDC (torpedo data computer) screen 1
 class sub_tdc_display : public user_display
