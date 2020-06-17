@@ -24,7 +24,8 @@ After each step check functionality.
     transition to new GPU interface)
 14. Split to more libraries
 15. Introduced elem2D for popups and define them in data files
-. fixme swap gauges VII and rest!
+. gauge VII integrate new compass!
+. user_display offer larger click area! as size value...
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)

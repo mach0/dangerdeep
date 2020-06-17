@@ -28,33 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 #include "sonar.h" // fixme: only for testing!
 
+/// Display for the KDB hearing device
 class sub_kdb_display : public user_display
 {
-	class scheme {
-	public:
-		std::unique_ptr<image> background;
-		rotat_tex direction_ptr;
-		fix_tex turn_wheel[6];
-		fix_tex volume_knob[6];
-		scheme(bool day);
-	protected:
-		scheme();
-		scheme(const scheme& );
-		scheme& operator= (const scheme& );
-	};
-
-	enum turnknobtype {
-		TK_NONE = -1,
-		TK_DIRECTION = 0,
-		TK_VOLUME = 1,
-		TK_NR = 2
-	};
-
-	std::unique_ptr<scheme> myscheme;
-
-	turnknobtype turnknobdrag;
-	std::vector<float> turnknobang;
-
  public:
 	sub_kdb_display(class user_interface& ui_);
 
@@ -62,8 +38,8 @@ class sub_kdb_display : public user_display
 	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
 	void display() const override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	int which_element_is_turned{-1};
 };
 
 #endif

@@ -21,43 +21,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_kdb_display.h"
-#include "cfg.h"
 #include "game.h"
-#include "global_data.h"
-#include "image.h"
-#include "keys.h"
-#include "submarine.h"
-#include "submarine_interface.h"
-#include "system_interface.h"
-#include "texture.h"
-#include <memory>
+#include "user_interface.h"
 
-#include <sstream>
-#include <utility>
-
-using namespace std;
-
-static const double TK_ANGFAC = 360.0/512.0;
-static const unsigned TK_PHASES = 6;
-
-sub_kdb_display::scheme::scheme(bool day)
+namespace
 {
-	const string x = day ? "KDB_daylight" : "KDB_redlight";
-	background = std::make_unique<image>(get_image_dir() + x + "_background.jpg");
-	direction_ptr.set(x + "_pointer.png", 323, 122, 377, 373);
-
-	for (unsigned i = 0; i < TK_PHASES; ++i) {
-		ostringstream osn;
-		osn << (i+1) ;
-		turn_wheel[i].set(x + "_gauge" + osn.str() + ".png", 166, 682);
-		volume_knob[i].set(x + "_knob" + osn.str() + ".png", 683, 667);
-	}
+	enum element_type {
+		et_none = -1,
+		et_pointer = 0,
+		et_turn_wheel = 1,
+		et_volume_knob = 2
+	};
 }
 
-
-
 sub_kdb_display::sub_kdb_display(user_interface& ui_)
-	: user_display(ui_), turnknobdrag(TK_NONE), turnknobang(TK_NR)
+	: user_display(ui_, "sub_kdb")
 {
 }
 
@@ -65,21 +43,17 @@ sub_kdb_display::sub_kdb_display(user_interface& ui_)
 
 bool sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
 {
+	which_element_is_turned = et_none;
 	if (m.down()) {
 		// check if mouse is over turn knobs
-		if (!myscheme.get()) THROW(error, "sub_bg_display without scheme!");
-		const scheme& s = *myscheme;
-		// check if mouse is over turn knobs
-		turnknobdrag = TK_NONE;
-		if (s.volume_knob[0].is_mouse_over(m.position_2d)) {
-			turnknobdrag = TK_VOLUME;
+		if (element_for_id(et_volume_knob).is_mouse_over(m.position_2d)) {
+			which_element_is_turned = et_volume_knob;
 			return true;
-		} else if (s.turn_wheel[0].is_mouse_over(m.position_2d, 128)) {
-			turnknobdrag = TK_DIRECTION;
+		} else if (element_for_id(et_turn_wheel).is_mouse_over(m.position_2d, 128)) {
+			which_element_is_turned = et_turn_wheel;
 			return true;
 		}
 	} else if (m.up()) {
-		turnknobdrag = TK_NONE;
 		return true;
 	}
 	return false;
@@ -90,22 +64,9 @@ bool sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
 bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
 {
 	if (m.left()) {
-		if (turnknobdrag != TK_NONE) {
-			float& ang = turnknobang[unsigned(turnknobdrag)];
-			ang += m.position_2d.x * TK_ANGFAC;
-			switch (turnknobdrag) {
-			case TK_DIRECTION:
-				// bring to 0...360 degree value
-				ang = myfmod(ang, 720.0f);
-				//sub->set_kdb_direction(ang); // fixme: set angle of player
-				break;
-			case TK_VOLUME:
-				// 0-360 degrees possible
-				ang = myclamp(ang, 0.0f, 360.0f);
-				break;
-			default:	// can never happen
-				break;
-			}
+		if (which_element_is_turned != et_none) {
+			auto& elem = element_for_id(which_element_is_turned);
+			elem.set_value(angle(elem.get_value() + m.relative_motion.x * 100.0).value());
 			return true;
 		}
 	}
@@ -149,7 +110,7 @@ bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
    step.
 */
 
-pair<angle, double> find_peak_noise(angle startangle, double step, double maxstep, game& gm)
+std::pair<angle, double> find_peak_noise(angle startangle, double step, double maxstep, game& gm)
 {
 	auto* player = dynamic_cast<submarine*>(gm.get_player());
 	angle ang_peak = startangle;
@@ -178,7 +139,7 @@ pair<angle, double> find_peak_noise(angle startangle, double step, double maxste
 		startangle += step;
 	}
 
-	return make_pair(ang_peak, peak_val);
+	return std::make_pair(ang_peak, peak_val);
 }
 
 
@@ -189,17 +150,12 @@ void sub_kdb_display::display() const
 	auto& gm = ui.get_game();
 //	auto* player = dynamic_cast<submarine*>(gm.get_player());
 
-	sys().prepare_2d_drawing();
-
 	// get hearing device angle from submarine, if it has one
 
-	if (!myscheme.get()) THROW(error, "sub_kdb_display::display without scheme!");
-	const scheme& s = *myscheme;
+	//element_for_id(et_volume_knob).set_phase();
+	element_for_id(et_pointer).set_value(element_for_id(et_turn_wheel).get_value());	//fixme get from player's device
 
-	s.background->draw(0, 0);
-	s.volume_knob[unsigned(myfmod(-turnknobang[TK_VOLUME]*0.5f, 90.0f)) * TK_PHASES / 90].draw();
-	s.turn_wheel[unsigned(myfmod(-turnknobang[TK_DIRECTION] * 2.0f, 90.0f)) * TK_PHASES / 90].draw();
-	s.direction_ptr.draw(turnknobang[TK_DIRECTION] * 0.5f /* fixme: get angle from player*/);
+	draw_elements();
 
 	// fixme: some/most of this code should be moved to sonar.cpp
 
@@ -213,7 +169,7 @@ void sub_kdb_display::display() const
 	//printf("ship class is %i\n", cls);
 
 	// find peak value.
-	pair<angle, double> pkc = find_peak_noise(angle(0), 3.0, 360.0, gm);
+	auto pkc = find_peak_noise(angle(0), 3.0, 360.0, gm);
 // 	printf("peak found (%f) somewhere near %f\n", pkc.second, pkc.first.value());
 	pkc = find_peak_noise(pkc.first, 1.0, 6.0, gm);
 // 	printf("peak found (%f) closer, somewhere near %f\n", pkc.second, pkc.first.value());
@@ -259,22 +215,4 @@ void sub_kdb_display::display() const
 	// but user would turn sonar in rather small steps (1° ?)
 	// so simulation is simpler: turn apparatus in 1-3° steps and recognize peak, localize
 	// peak afterwards in smaller steps (1°).
-
-	ui.draw_infopanel();
-
-	sys().unprepare_2d_drawing();
-}
-
-
-
-void sub_kdb_display::enter(bool is_day)
-{
-	myscheme = std::make_unique<scheme>(is_day);
-}
-
-
-
-void sub_kdb_display::leave()
-{
-	myscheme.reset();
 }

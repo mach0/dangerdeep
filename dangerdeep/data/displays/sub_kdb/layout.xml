@@ -1,0 +1,22 @@
+<dftd-display name="sub_kdb_display">
+	<element x="0" y="0">
+		<day>KDB_daylight_background.jpg</day>
+		<night>KDB_redlight_background.jpg</night>
+	</element>
+	<element x="323" y="122" id="0">
+		<center x="377" y="373"/>
+		<day>KDB_daylight_pointer.png</day>
+		<night>KDB_redlight_pointer.png</night>
+	</element>
+	<element x="166" y="682" id="1">
+		<phases nr="6" offset="1"/>
+		<day>KDB_daylight_gauge%u.png</day>
+		<night>KDB_redlight_gauge%u.png</night>
+	</element>
+	<element x="683" y="667" id="2">
+		<phases nr="6" offset="1" by_angle="360"/>
+		<day>KDB_daylight_knob%u.png</day>
+		<night>KDB_redlight_knob%u.png</night>
+	</element>
+</dftd-display>
+
