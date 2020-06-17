@@ -111,7 +111,7 @@ protected:
 	{
 	public:
 		/// Construct from data file
-		elem2D(const xml_elem& elem, const std::string& display_dir);
+		elem2D(const xml_elem& elem, const std::string& display_dir, const std::string& prefix_day, const std::string& prefix_night);
 		/// Set the phase to use for subimage in [0...1[
 		void set_phase(float phase_) const;
 		/// Draw element (rotated/phased if defined)

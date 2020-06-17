@@ -1,25 +1,22 @@
 <dftd-display name="sub_ghg_display">
+	<day>GHG_daylight_</day>
+	<night>GHG_redlight_</night>
 	<element x="711" y="470" id="2">
 		<center x="849" y="605"/>
-		<day>GHG_daylight_volume_dial.png</day>
-		<night>GHG_redlight_volume_dial.png</night>
+		<file>volume_dial.png</file>
 	</element>
 	<element x="0" y="0">
-		<day>GHG_daylight_background.jpg|png</day>
-		<night>GHG_redlight_background.jpg|png</night>
+		<file>background.jpg|png</file>
 	</element>
 	<element x="783" y="550" id="3">
-		<day>GHG_daylight_volumeknob.png</day>
-		<night>GHG_redlight_volumeknob.png</night>
+		<file>volumeknob.png</file>
 	</element>
 	<element x="242" y="89" id="0">
 		<center x="376" y="372"/>
-		<day>GHG_daylight_pointer.png</day>
-		<night>GHG_redlight_pointer.png</night>
+		<file>pointer.png</file>
 	</element>
 	<element x="306" y="516" id="1">
 		<center x="373" y="583"/>
-		<day>GHG_daylight_knob.png</day>
-		<night>GHG_redlight_knob.png</night>
+		<file>knob.png</file>
 	</element>
 </dftd-display>

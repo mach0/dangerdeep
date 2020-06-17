@@ -33,8 +33,17 @@ user_display::user_display(class user_interface& ui_, const char* display_name)
 		auto display_dir = get_display_dir() + display_name + "/";
 		xml_doc display_config(display_dir + "layout.xml");
 		display_config.load();
-		for (auto elem : display_config.child("dftd-display").iterate("element")) {
-			elements.emplace_back(elem, display_dir);
+		const auto display_node = display_config.child("dftd-display");
+		std::string prefix_day;
+		std::string prefix_night;
+		if (display_node.has_child("day")) {
+			prefix_day = display_node.child("day").child_text();
+		}
+		if (display_node.has_child("night")) {
+			prefix_night = display_node.child("night").child_text();
+		}
+		for (auto elem : display_node.iterate("element")) {
+			elements.emplace_back(elem, display_dir, prefix_day, prefix_night);
 			const auto id = elements.back().get_id();
 			if (id != -1) {
 				id_to_element[id] = unsigned(elements.size() - 1);
@@ -45,21 +54,26 @@ user_display::user_display(class user_interface& ui_, const char* display_name)
 
 
 
-user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_dir)
+user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_dir, const std::string& prefix_day, const std::string& prefix_night)
 {
 	position = elem.attrv2i();
 	if (elem.has_attr("id")) {
 		id = elem.attri("id");
 	}
 	std::string filename_day;
-	if (!elem.has_child("day")) {
-		THROW(xml_error, "invalid display def xml file, day node missing", elem.doc_name());
-	}
-	filename_day = elem.child("day").child_text();
 	std::string filename_night;
-	if (elem.has_child("night")) {
-		filename_night = elem.child("night").child_text();
+	if (elem.has_child("file")) {
+		filename_day = prefix_day + elem.child("file").child_text();
+		filename_night = prefix_night + elem.child("file").child_text();
 		has_night = true;
+	} else if (!elem.has_child("day")) {
+		THROW(xml_error, "invalid display def xml file, day or file node missing", elem.doc_name());
+	} else {
+		filename_day = elem.child("day").child_text();
+		if (elem.has_child("night")) {
+			filename_night = elem.child("night").child_text();
+			has_night = true;
+		}
 	}
 	if (elem.has_attr("visible")) {
 		optional = true;
