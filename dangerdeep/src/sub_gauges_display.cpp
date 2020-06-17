@@ -99,28 +99,28 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
 		auto* sub = dynamic_cast<submarine*>(ui.get_game().get_player());
 		//if mouse is over control c, compute angle a, set matching command
 		if (element_for_id(et_compass).is_mouse_over(m.position_2d)) {
-			const auto compass_angle = element_for_id(et_compass).get_value(m.position_2d);
+			const auto compass_angle = element_for_id(et_compass).set_value(m.position_2d);
 			if (compass_angle.has_value()) {
 				sub->head_to_course(compass_angle.value());
 			}
 		} else if (element_for_id(et_depth).is_mouse_over(m.position_2d)) {
-			const auto depth = element_for_id(et_depth).get_value_uint(m.position_2d);
+			const auto depth = element_for_id(et_depth).set_value_uint(m.position_2d);
 			if (depth.has_value()) {
 				sub->dive_to_depth(depth.value(), ui.get_game());
 			}
 		} else if (element_for_id(et_bow_depth_rudder).is_mouse_over(m.position_2d)){
-			auto angle_for_rudder = element_for_id(et_bow_depth_rudder).get_value(m.position_2d);
+			auto angle_for_rudder = element_for_id(et_bow_depth_rudder).set_value(m.position_2d);
 			if (angle_for_rudder.has_value()) {
 				sub->set_bow_depth_rudder(-std::clamp(angle_for_rudder.value() / sub->get_bow_rudder_max_angle(), -1.0, 1.0));
 			}
 		} else if (element_for_id(et_stern_depth_rudder).is_mouse_over(m.position_2d)){
-			auto angle_for_rudder = element_for_id(et_stern_depth_rudder).get_value(m.position_2d);
+			auto angle_for_rudder = element_for_id(et_stern_depth_rudder).set_value(m.position_2d);
 			if (angle_for_rudder.has_value()) {
 				sub->set_stern_depth_rudder(-std::clamp(angle_for_rudder.value() / sub->get_stern_rudder_max_angle(), -1.0, 1.0));
 			}
 		} else if (element_for_id(et_machine_telegraph).is_mouse_over(m.position_2d)) {
 			// 270° in 15 steps, 45°-315°, so 18° per step.
-			auto opt = element_for_id(et_machine_telegraph).get_value_uint(m.position_2d).value_or(15U);
+			auto opt = element_for_id(et_machine_telegraph).set_value_uint(m.position_2d).value_or(15U);
 			switch (opt) {
 			case 0: sub->set_throttle(ship::reversefull); break;
 			case 1: sub->set_throttle(ship::reversehalf); break;

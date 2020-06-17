@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "datadirs.h"
 #include "input_event_handler.h"
 class image;
+class xml_elem;
 
 ///\defgroup displays In-game user interface screens
 ///\brief Base class for a single screen of the ingame user interface.
@@ -109,12 +110,8 @@ protected:
 	class elem2D
 	{
 	public:
-		/// Construct static element
-		elem2D(const vector2i& pos, const std::string& filename_day, const std::string& filename_night = std::string());
-		/// Construct rotateable element
-		elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, angle rotation_offset_, const std::string& filename_day, const std::string& filename_night = std::string());
-		/// Construct static element with N angles/phases
-		elem2D(const vector2i& pos, unsigned phases, unsigned offset, const std::string& filename_day, const std::string& filename_night = std::string());
+		/// Construct from data file
+		elem2D(const xml_elem& elem, const std::string& display_dir);
 		/// Set the phase to use for subimage in [0...1[
 		void set_phase(float phase_) const;
 		/// Draw element (rotated/phased if defined)
@@ -135,12 +132,17 @@ protected:
 		elem2D() = default;
 		/// Set the value
 		void set_value(double v) const;
-		/// Get the value
-		std::optional<double> get_value(const vector2i& mpos) const;
-		/// Get the value as unsigned
-		std::optional<unsigned> get_value_uint(const vector2i& mpos) const;
+		/// Get the set value
+		auto get_value() const { return value; }
+		/// Set the value defined by mouse position @return new set value if valid
+		std::optional<double> set_value(const vector2i& mpos) const;
+		/// Set the value as unsigned defined by mouse position @return new set value if valid
+		std::optional<unsigned> set_value_uint(const vector2i& mpos) const;
+		/// Get the ID
+		auto get_id() const { return id; }
 
 	protected:
+		int id{-1};			///< ID for manipulation
 		vector2i position;		///< Position (left/top) of the element on screen
 		vector2i center;		///< Center of the element on screen (used for rotation)
 		//vector2i size;		///< Drawing size (taken from image initially)
@@ -150,9 +152,15 @@ protected:
 		angle start_angle;		///< For rotating elements the start angle
 		double start_value{0.0};	///< For rotating elements the value at start angle
 		angle end_angle;		///< For rotating elements the end angle
-		double end_value{1.0};		///< For rotating elements the value at end angle
+		double end_value{360.0};	///< For rotating elements the value at end angle
 		angle rotation_offset;		///< The offset to use for display
 		mutable unsigned phase{0};			///< The subimage (phase) to use, mutable because called by const display()
+		bool optional{false};				///< Is the element not always visible?
+		bool visible{true};				///< Should the element get drawn?
+		bool phase_by_value{false};			///< Set phase by value?
+		int click_radius{0};			///< Click area around center if > 0, as +/- value for x/y
+		bool can_slide{false};				///< Can element slide?
+		int slide_x;					///< Position to change x to when value is full
 		std::vector<std::string> filenames_day;// obsolete with new gpu interface
 		std::vector<std::string> filenames_night;	// obsolete with new gpu interface
 		//std::vector<image> data_day;			///< Image data (always set)
