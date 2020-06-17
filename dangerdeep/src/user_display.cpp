@@ -52,25 +52,31 @@ user_display::user_display(class user_interface& ui_, const char* display_name)
 			angle end_angle;
 			double start_value{0.0};
 			double end_value{360.0};
+			angle rotation_offset;
 			if (elem.has_child("scale")) {
 				// If a scale tag is given the value is limited and scaled
 				auto elem_scale = elem.child("scale");
 				auto elem_start = elem_scale.child("start");
 				auto elem_end = elem_scale.child("end");
-				auto pointer_angle = elem_scale.attrf("pointer");
-				start_angle = angle(elem_start.attrf("angle")) - pointer_angle;
+				rotation_offset = -angle(elem_scale.attrf("pointer"));
+				start_angle = angle(elem_start.attrf("angle"));
 				start_value = elem_start.attrf("value");
-				end_angle = angle(elem_end.attrf("angle")) - pointer_angle;
+				end_angle = angle(elem_end.attrf("angle"));
 				end_value = elem_end.attrf("value");
 			}
+			vector2i centerpos;
+			bool has_center{false};
 			if (elem.has_child("center")) {
 				auto elem_center = elem.child("center");
-				auto centerpos = elem_center.attrv2i();
-				elements.emplace_back(pos, centerpos, start_angle, start_value, end_angle, end_value, display_dir + filename_day, display_dir + filename_night);
+				centerpos = elem_center.attrv2i();
+				has_center = true;
 			} else if (elem.has_child("size")) {
 				auto elem_size = elem.child("size");
-				auto centerpos = pos + elem_size.attrv2i() / 2;
-				elements.emplace_back(pos, centerpos, start_angle, start_value, end_angle, end_value, display_dir + filename_day, display_dir + filename_night);
+				centerpos = pos + elem_size.attrv2i() / 2;
+				has_center = true;
+			}
+			if (has_center) {
+				elements.emplace_back(pos, centerpos, start_angle, start_value, end_angle, end_value, rotation_offset, display_dir + filename_day, display_dir + filename_night);
 			} else if (elem.has_child("phases")) {
 				auto elem_phases = elem.child("phases");
 				auto nr = elem_phases.attru("nr");
@@ -99,7 +105,7 @@ user_display::elem2D::elem2D(const vector2i& pos, const std::string& filename_da
 
 
 
-user_display::elem2D::elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, const std::string& filename_day, const std::string& filename_night)
+user_display::elem2D::elem2D(const vector2i& pos, const vector2i& ctr, angle start_angle_, double start_value_, angle end_angle_, double end_value_, angle rotation_offset_, const std::string& filename_day, const std::string& filename_night)
  :	position(pos)
  ,	center(ctr)
  ,	rotateable(true)
@@ -108,6 +114,7 @@ user_display::elem2D::elem2D(const vector2i& pos, const vector2i& ctr, angle sta
  ,	start_value(start_value_)
  ,	end_angle(end_angle_)
  ,	end_value(end_value_)
+ ,	rotation_offset(rotation_offset_)
 {
 	filenames_day.push_back(filename_day);
 	filenames_night.push_back(filename_night);
@@ -143,8 +150,8 @@ void user_display::elem2D::set_phase(float phase_) const
 void user_display::elem2D::draw() const
 {
 	if (rotateable) {
-		// fixme: maybe rotate around pixel center (x/y + 0.5)
-		const auto display_angle = start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
+		// rotation around pixel center (offset +0.5) could be sensible but it looks correct that way.
+		const auto display_angle = rotation_offset + start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
 		tex[phase]->draw_rot(center.x, center.y, display_angle.value(), center.x - position.x, center.y - position.y);
 	} else {
 		tex[phase]->draw(position.x, position.y);
@@ -196,30 +203,37 @@ void user_display::elem2D::set_value(double v) const
 
 
 
-double user_display::elem2D::get_value(const vector2i& pos) const
+std::optional<double> user_display::elem2D::get_value(const vector2i& pos) const
 {
 	// need to negate y, because onscreen y is down
 	const auto a = angle(vector2(pos.x - center.x, center.y - pos.y)) - start_angle;
-	return helper::interpolate(start_value, end_value, a.value() / get_angle_range());
+	if (a.value() > get_angle_range()) {
+		return std::nullopt;
+	}
+	return helper::interpolate(start_value, end_value, std::min(1.0, a.value() / get_angle_range()));
 }
 
 
 
-unsigned user_display::elem2D::get_value_uint(const vector2i& pos) const
+std::optional<unsigned> user_display::elem2D::get_value_uint(const vector2i& pos) const
 {
-	return unsigned(std::floor(std::max(0.0, get_value(pos)) + 0.5));
+	const auto v = get_value(pos);
+	if (!v.has_value() || v.value() < 0.0 || v.value() >= end_value) {
+		return std::nullopt;
+	}
+	return unsigned(std::floor(v.value()));
 }
 
 
 
 double user_display::elem2D::get_angle_range() const
 {
-	auto range = start_angle.diff(end_angle);
+	auto range = end_angle - start_angle;
 	// if start and end angle match use full range
-	if (range < 1.0) {
-		range = 360.0;
+	if (range.value() < 1.0) {
+		return 360.0;
 	}
-	return range;
+	return range.value();
 }
 
 
