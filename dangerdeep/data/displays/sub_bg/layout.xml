@@ -1,17 +1,16 @@
 <dftd-display name="sub_bg_display">
+	<day>BG_daylight_</day>
+	<night>BG_redlight_</night>
 	<element x="0" y="0">
-		<day>BG_daylight_background.jpg</day>
-		<night>BG_redlight_background.jpg</night>
+		<file>background.jpg</file>
 	</element>
 	<element x="341" y="153" id="0">
 		<center x="373" y="346"/>
-		<day>BG_daylight_pointer.png</day>
-		<night>BG_redlight_pointer.png</night>
+		<file>pointer.png</file>
 	</element>
 	<element x="110" y="641" id="1">
 		<phases nr="6" offset="1"/>
-		<day>BG_daylight_knob_pos%u.png</day>
-		<night>BG_redlight_knob_pos%u.png</night>
+		<file>knob_pos%u.png</file>
 	</element>
 </dftd-display>
 

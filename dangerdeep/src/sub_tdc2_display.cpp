@@ -75,7 +75,7 @@ sub_tdc2_display::scheme_screen2::scheme_screen2(bool day)
 
 
 sub_tdc2_display::sub_tdc2_display(user_interface& ui_)
-	: user_display(ui_), tubeselected_time(0.0)
+	: user_display(ui_, "sub_tdc2"), tubeselected_time(0.0)
 {
 }
 
