@@ -134,7 +134,7 @@ public:
 		std::string name;
 		unsigned flotilla{1};
 		std::string submarineid;
-		std::string photo;
+		unsigned photo{0};
 
 		std::string soldbuch_nr;
 		std::string gasmask_size;

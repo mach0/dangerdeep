@@ -20,25 +20,14 @@
 #ifndef SUB_VALVES_DISPLAY_H
 #define SUB_VALVES_DISPLAY_H
 
-#include "system_interface.h"
-#include "image.h"
-#include "game.h"
 #include "user_display.h"
-#include "user_interface.h"
 
-class sub_valves_display : public user_display {
-
-protected:
-
-	std::unique_ptr<image> background;
-	std::vector<image> valves_bl, valves_tr;
+/// A display for submarine's valves
+class sub_valves_display : public user_display
+{
 public:
 	sub_valves_display(class user_interface& ui_);
-
 	void display() const override;
-
-	void enter(bool is_day) override;
-	void leave() override;
 };
 
 #endif

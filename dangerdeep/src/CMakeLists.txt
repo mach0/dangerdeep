@@ -279,37 +279,32 @@ add_executable ( dangerdeep subsim.cpp )
 target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdall dftdbasic dftdmedia dftdgamecore dftdgameui tinyxml oglext )
 
 if ( DFTD_BUILD_TOOLS )
-	set ( viewmodel_src viewmodel.cpp )
-	add_executable ( viewmodel      ${viewmodel_src} )
+	add_executable ( viewmodel      viewmodel.cpp )
 	target_link_libraries ( viewmodel dftdbasic dftdall dftdgameui dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( modelmeasure_src modelmeasure.cpp )
-	add_executable ( modelmeasure   ${modelmeasure_src} )
+	add_executable ( modelmeasure   modelmeasure.cpp )
 	target_link_libraries ( modelmeasure dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( oceantest_src oceantest.cpp )
-	add_executable ( oceantest      ${oceantest_src} )
+	add_executable ( oceantest      oceantest.cpp )
 	target_link_libraries ( oceantest dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( bspline_src bspline_test.cpp )
-	add_executable ( bsplinetest    ${bspline_src} )
+	add_executable ( bsplinetest    bspline_test.cpp )
 	target_link_libraries ( bsplinetest dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( portal_src portal.cpp )
-	add_executable ( portal         ${portal_src} )
+	add_executable ( portal         portal.cpp )
 	target_link_libraries ( portal dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( treegen_src treegentest.cpp )
-	add_executable ( treegentest    ${treegen_src} )
+	add_executable ( treegentest    treegentest.cpp )
 	target_link_libraries ( treegentest dftdbasic dftdall dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( bvtreetest_src bvtreeintersecttest.cpp )
-	add_executable ( bvtreetest     ${bvtreetest_src} )
+	add_executable ( bvtreetest     bvtreeintersecttest.cpp )
 	target_link_libraries ( bvtreetest dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
-	set ( mapprecompute_src         tools/map_precompute.cpp )
-	add_executable ( map_precompute ${mapprecompute_src} )
+	add_executable ( map_precompute tools/map_precompute.cpp )
 	target_link_libraries ( map_precompute dftdbasic dftdall dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+
+	add_executable ( test_display test_display.cpp )
+	target_link_libraries ( test_display dftdbasic dftdall dftdmedia dftdgameui tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	if ( FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST )
 	    set ( videoplay_src videoplaytest.cpp )

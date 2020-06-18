@@ -24,89 +24,77 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "font.h"
 #include "game.h"
 #include "global_data.h"
-#include "image.h"
 #include "submarine_interface.h"
 #include "system_interface.h"
 #include "texts.h"
-#include "texture.h"
-#include "torpedo.h"
-#include <fstream>
-#include <memory>
 
-#include <sstream>
-#include <utility>
-
-using namespace std;
-
-
-
-void sub_captainscabin_display::goto_successes()
+namespace
 {
-	(dynamic_cast<submarine_interface&>(ui)).goto_successes();
-}
+	enum element_type {
+		et_begin = 0,
+		et_successes = 0,
+		et_logbook = 1,
+		et_torpedoes = 2,
+		et_recogmanual = 3,
+		et_end = 4
+	};
 
-void sub_captainscabin_display::goto_logbook()
-{
-	(dynamic_cast<submarine_interface&>(ui)).goto_logbook();
-}
-
-void sub_captainscabin_display::goto_torpedoes()
-{
-	(dynamic_cast<submarine_interface&>(ui)).goto_torpedomanagement();
-}
-
-void sub_captainscabin_display::goto_recogmanual()
-{
-	(dynamic_cast<submarine_interface&>(ui)).goto_recogmanual();
-}
-
-sub_captainscabin_display::clickable_area::clickable_area(const vector2i& tl, const vector2i& br,
-							  int descr,
-							  void (sub_captainscabin_display::*func)(),
-							  color dc)
-	: topleft(tl), bottomright(br), description(descr), action(func), desc_color(dc)
-{
-}
-
-bool sub_captainscabin_display::clickable_area::is_mouse_over(vector2i pos) const
-{
-	return (pos.x >= topleft.x && pos.x <= bottomright.x &&
-		pos.y >= topleft.y && pos.y <= bottomright.y);
-}
-
-void sub_captainscabin_display::clickable_area::do_action(sub_captainscabin_display& obj)
-{
-	(obj.*action)();
-}
-
-sub_captainscabin_display::sub_captainscabin_display(user_interface& ui_) :
-	user_display(ui_)
-{
-	clickable_areas.emplace_back(vector2i(0, 540), vector2i(292,705), 272, &sub_captainscabin_display::goto_successes, color(255, 224, 224));
-	clickable_areas.emplace_back(vector2i(415, 495), vector2i(486,520), 255, &sub_captainscabin_display::goto_logbook, color(224, 224, 255));
-	clickable_areas.emplace_back(vector2i(713, 176), vector2i(862, 575), 253, &sub_captainscabin_display::goto_torpedoes, color(224, 255, 224));
-	clickable_areas.emplace_back(vector2i(405, 430), vector2i(462,498), 273, &sub_captainscabin_display::goto_recogmanual, color(255, 224, 224));
-}
-
-void sub_captainscabin_display::display() const
-{
-//	submarine* sub = dynamic_cast<submarine*>(gm.get_player());
-
-	// draw background
-	sys().prepare_2d_drawing();
-
-	background->draw(0, 0);
-
-	for (const auto & it : clickable_areas) {
-		if (it.is_mouse_over(mouse_position)) {
-			font_vtremington12->print_hc(mouse_position.x, mouse_position.y - font_arial->get_height(),
-					     texts::get(it.get_description()),
-					     it.get_description_color(), true);
-			break;
+	void do_action(submarine_interface& s, element_type t)
+	{
+		switch (t) {
+		case et_successes:	s.goto_successes(); break;
+		case et_logbook:	s.goto_logbook(); break;
+		case et_torpedoes:	s.goto_torpedomanagement(); break;
+		case et_recogmanual:	s.goto_recogmanual(); break;
+		default:	THROW(error, "invalid element type");
 		}
 	}
 
-	ui.draw_infopanel();
+	int get_description(element_type t)
+	{
+		switch (t) {
+		case et_successes:	return 272;
+		case et_logbook:	return 255;
+		case et_torpedoes:	return 253;
+		case et_recogmanual:	return 273;
+		default:	THROW(error, "invalid element type");
+		}
+	}
+
+	color get_color(element_type t)
+	{
+		switch (t) {
+		case et_successes:	return color(255, 224, 224);
+		case et_logbook:	return color(224, 224, 255);
+		case et_torpedoes:	return color(224, 255, 224);
+		case et_recogmanual:	return color(255, 224, 224);
+		default:	THROW(error, "invalid element type");
+		}
+	}
+}
+
+
+
+sub_captainscabin_display::sub_captainscabin_display(user_interface& ui_) :
+	user_display(ui_, "sub_captainscabin")
+{
+}
+
+
+
+void sub_captainscabin_display::display() const
+{
+	draw_elements();
+
+	sys().prepare_2d_drawing();
+	for (int i = et_begin; i != et_end; ++i) {
+		if (element_for_id(i).is_mouse_over(mouse_position)) {
+			font_vtremington12->print_hc(mouse_position.x, mouse_position.y - font_arial->get_height(),
+					     texts::get(get_description(element_type(i))),
+					     get_color(element_type(i)), true);
+			break;
+		}
+	}
 	sys().unprepare_2d_drawing();
 }
 
@@ -120,9 +108,9 @@ bool sub_captainscabin_display::handle_mouse_button_event(const mouse_click_data
 	} else if (m.up()) {
 		mouse_position = m.position_2d;
 		if (m.left()) {
-			for (auto& it : clickable_areas) {
-				if (it.is_mouse_over(mouse_position)) {
-					it.do_action(*this);
+			for (int i = et_begin; i != et_end; ++i) {
+				if (element_for_id(i).is_mouse_over(mouse_position)) {
+					do_action(static_cast<submarine_interface&>(ui), element_type(i));
 					return true;
 				}
 			}
@@ -137,17 +125,4 @@ bool sub_captainscabin_display::handle_mouse_motion_event(const mouse_motion_dat
 {
 	mouse_position = m.position_2d;
 	return false;
-}
-
-
-
-void sub_captainscabin_display::enter(bool is_day)
-{
-	background = std::make_unique<image>(get_image_dir() + "captainscabin_main_"
-				   + (is_day ? "daylight" : "redlight") + ".jpg");
-}
-
-void sub_captainscabin_display::leave()
-{
-	background.reset();
 }

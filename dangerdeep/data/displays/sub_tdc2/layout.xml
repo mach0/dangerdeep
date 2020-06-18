@@ -4,25 +4,25 @@
 	<element x="0" y="0">
 		<file>base_image.jpg</file>
 	</element>
-	<element x="81" y="605" id="0" visible="false">
+	<element x="81" y="605" id="0" visible="0">
 		<file>tube1_on.png</file>
 	</element>
-	<element x="203" y="605" id="1" visible="false">
+	<element x="203" y="605" id="1" visible="0">
 		<file>tube2_on.png</file>
 	</element>
-	<element x="324" y="605" id="2" visible="false">
+	<element x="324" y="605" id="2" visible="0">
 		<file>tube3_on.png</file>
 	</element>
-	<element x="446" y="605" id="3" visible="false">
+	<element x="446" y="605" id="3" visible="0">
 		<file>tube4_on.png</file>
 	</element>
-	<element x="569" y="605" id="4" visible="false">
+	<element x="569" y="605" id="4" visible="0">
 		<file>tube5_on.png</file>
 	</element>
-	<element x="693" y="605" id="5" visible="false">
+	<element x="693" y="605" id="5" visible="0">
 		<file>tube6_on.png</file>
 	</element>
-	<element x="68" y="92" id="6" visible="false">
+	<element x="68" y="92" id="6" visible="0">
 		<file>FireButton_ON.png</file>
 	</element>
 	<element x="900" y="285" id="7">

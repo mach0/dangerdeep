@@ -1,0 +1,6 @@
+<dftd-display name="sub_bridge_display">
+	<element x="0" y="0" id="0">
+		<scaled x="1024" y="768"/>
+		<day>glasses.png</day>
+	</element>
+</dftd-display>

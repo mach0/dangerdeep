@@ -30,37 +30,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "objcache.h"
 #include "log.h"
 
+/// A display to manage torpedo storage and transfer for submarines
 class sub_torpedo_display : public user_display
 {
+public:
+	sub_torpedo_display(class user_interface& ui_);
+	void display() const override;
+	bool handle_mouse_button_event(const mouse_click_data& ) override;
+	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
+
+protected:
 	// source tube nr for manual torpedo transfer, used for drag & drop drawing
 	unsigned torptranssrc;
-
-	// textures for drawing the screen
-	std::unique_ptr<texture> torpempty;
-	std::unique_ptr<texture> torpload;
-	std::unique_ptr<texture> torpunload;
-	std::unique_ptr<texture> torp1fat1;
-	std::unique_ptr<texture> torp1lut1;
-	std::unique_ptr<texture> torp1lut2;
-	std::unique_ptr<texture> torp1;
-	std::unique_ptr<texture> torp1practice;
-	std::unique_ptr<texture> torp2;
-	std::unique_ptr<texture> torp3afat2;
-	std::unique_ptr<texture> torp3alut1;
-	std::unique_ptr<texture> torp3alut2;
-	std::unique_ptr<texture> torp3fat2;
-	std::unique_ptr<texture> torp3;
-	std::unique_ptr<texture> torp4;
-	std::unique_ptr<texture> torp5b;
-	std::unique_ptr<texture> torp5;
-	std::unique_ptr<texture> torp6lut1;
-//	std::auto_ptr<texture> torp11;
-	std::unique_ptr<texture> submodelVIIc;
-	std::unique_ptr<image> background;
-	std::unique_ptr<image> subtopsideview;
-	rotat_tex pointer_seconds;
-	rotat_tex pointer_minutes;
-	rotat_tex pointer_hours;
 
 	class desc_text
 	{
@@ -85,22 +67,9 @@ class sub_torpedo_display : public user_display
 
 	objcachet<texture>::reference notepadsheet;
 
-	const texture& torptex(const std::string& torpname) const;
-
 	std::vector<vector2i> get_tubecoords(class submarine* sub) const;
 
 	unsigned get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const;
-
-public:
-	sub_torpedo_display(class user_interface& ui_);
-
-	void display() const override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
-
-	void enter(bool is_day) override;
-	void leave() override;
 };
 
 #endif

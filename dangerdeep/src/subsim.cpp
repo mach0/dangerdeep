@@ -868,7 +868,7 @@ bool choose_player_info(game::player_info& pi, const std::string& subtype, const
 		pi.name = wplayername.get_text();
 		pi.flotilla = availableflotillas[std::max(0, wflotilla_.get_selected())].nr;
 		pi.submarineid = wsubnumber_.get_selected_entry();
-		pi.photo = wplayerphoto.get_current_imagename().substr(std::string("player_photo").length());
+		pi.photo = atoi(wplayerphoto.get_current_imagename().substr(std::string("player_photo").length()).c_str()); //fixme unstable
 		//log_debug(player_name<<","<<player_flotilla<<","<<player_subnumber<<","<<player_photo);
 		return true;
 	}

@@ -52,6 +52,16 @@ namespace
 		et_target_pos = 10,
 		et_target_speed = 11
 	};
+
+	void check_for_parallax(const vector2i& mpos, const user_display::elem2D& elem, tdc& TDC)
+	{
+		if (elem.is_mouse_over(mpos)) {
+			const auto dir = elem.set_value(mpos);
+			if (dir.has_value()) {
+				TDC.set_additional_parallaxangle(dir.value());
+			}
+		}
+	}
 }
 
 
@@ -70,13 +80,7 @@ bool sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
 	tdc& TDC = sub->get_tdc();
 
 	if (m.down() && m.left()) {
-		// check if mouse is over parallax display
-		if (element_for_id(et_parallax_ptr).is_mouse_over(m.position_2d)) {
-			const auto dir = element_for_id(et_parallax_ptr).set_value(m.position_2d);
-			if (dir.has_value()) {
-				TDC.set_additional_parallaxangle(dir.value());
-			}
-		}
+		check_for_parallax(m.position_2d, element_for_id(et_parallax_ptr), TDC);
 		return true;
 	}
 	return false;
@@ -91,13 +95,7 @@ bool sub_tdc_display::handle_mouse_motion_event(const mouse_motion_data& m)
 	tdc& TDC = sub->get_tdc();
 
 	if (m.left()) {
-		// check if mouse is over parallax display, fixme: same code as above, group it!
-		if (element_for_id(et_parallax_ptr).is_mouse_over(m.position_2d)) {
-			const auto dir = element_for_id(et_parallax_ptr).set_value(m.position_2d);
-			if (dir.has_value()) {
-				TDC.set_additional_parallaxangle(dir.value());
-			}
-		}
+		check_for_parallax(m.position_2d, element_for_id(et_parallax_ptr), TDC);
 		return true;
 	}
 	return false;

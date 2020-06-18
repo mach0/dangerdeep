@@ -24,36 +24,77 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "font.h"
 #include "game.h"
 #include "global_data.h"
-#include "image.h"
-#include "log.h"
 #include "primitives.h"
 #include "system_interface.h"
 #include "texts.h"
-#include "texture.h"
-#include "torpedo.h"
+//#include "torpedo.h"
 #include "user_interface.h"
 #include <fstream>
-#include <iomanip>
-#include <memory>
 
-#include <sstream>
-#include <utility>
+namespace
+{
+	const unsigned ILLEGAL_TUBE = unsigned(-1);
 
-using namespace std;
+	enum element_type
+	{
+		et_torpempty = 0,
+		et_torpload = 1,
+		et_torpunload = 2,
+		et_torp1fat1 = 3,
+		et_torp1lut1 = 4,
+		et_torp1lut2 = 5,
+		et_torp1 = 6,
+		et_torp1practice = 7,
+		et_torp2 = 8,
+		et_torp3afat2 = 9,
+		et_torp3alut1 = 10,
+		et_torp3alut2 = 11,
+		et_torp3fat2 = 12,
+		et_torp3 = 13,
+		et_torp4 = 14,
+		et_torp5b = 15,
+		et_torp5 = 16,
+		et_torp6lut1 = 17,
+		et_torp11 = 666,	// missing as well as more torpedo types
 
-#define ILLEGAL_TUBE 0xffffffff
+		//et_submodelVIIc = 0,
+		et_hours = 18,
+		et_minutes = 19,
+		et_seconds = 20,
+	};
+
+	element_type element_by_spec(const std::string& torpname)
+	{
+		if (torpname == "TI") return et_torp1;
+		if (torpname == "TI_FaTI") return et_torp1fat1;
+		if (torpname == "TI_LuTI") return et_torp1lut1;
+		if (torpname == "TI_LuTII") return et_torp1lut2;
+		if (torpname == "TII") return et_torp2;
+		if (torpname == "TIII") return et_torp3;
+		if (torpname == "TIII_FaTII") return et_torp3fat2;
+		if (torpname == "TIIIa_FaTII") return et_torp3afat2;
+		if (torpname == "TIIIa_LuTI") return et_torp3alut1;
+		if (torpname == "TIIIa_LuTII") return et_torp3alut2;
+		if (torpname == "TIV") return et_torp4;
+		if (torpname == "TV") return et_torp5;
+		if (torpname == "TVb") return et_torp5b;
+		if (torpname == "TVI_LuTI") return et_torp6lut1;
+		if (torpname == "TXI") return et_torp1practice;
+		THROW(error, std::string("illegal torpedo type ") + torpname);
+	}
+}
 
 
 
 sub_torpedo_display::desc_text::desc_text(const std::string& filename)
 {
-	ifstream ifs(filename.c_str(), ios::in);
+	std::ifstream ifs(filename.c_str(), std::ios::in);
 	if (ifs.fail())
-		THROW(error, string("couldn't open ") + filename);
+		THROW(error, std::string("couldn't open ") + filename);
 
 	// read lines.
 	while (!ifs.eof()) {
-		string s;
+		std::string s;
 		getline(ifs, s);
 		txtlines.push_back(s);
 	}
@@ -61,11 +102,11 @@ sub_torpedo_display::desc_text::desc_text(const std::string& filename)
 
 
 
-string sub_torpedo_display::desc_text::str(unsigned startline, unsigned nrlines) const
+std::string sub_torpedo_display::desc_text::str(unsigned startline, unsigned nrlines) const
 {
 	startline = std::min(startline, unsigned(txtlines.size()));
 	unsigned endline = std::min(startline + nrlines, unsigned(txtlines.size()));
-	string result;
+	std::string result;
 	for (unsigned i = startline; i < endline; ++i)
 		result += txtlines[i] + "\n";
 	return result;
@@ -78,65 +119,45 @@ void sub_torpedo_display::draw_torpedo(class game& gm, bool usebow,
 {
 	if (usebow) {
 		if (st.status == 0) {	// empty
-			torpempty->draw(pos.x, pos.y);
+			element_for_id(et_torpempty).draw_at_position(pos);
 		} else if (st.status == 1) {	// reloading
-			torptex(st.specfilename).draw(pos.x, pos.y);
-			torpload->draw(pos.x, pos.y);
+			element_for_id(element_by_spec(st.specfilename)).draw_at_position(pos);
+			element_for_id(et_torpload).draw_at_position(pos);
 		} else if (st.status == 2) {	// unloading
-			torpempty->draw(pos.x, pos.y);
-			torpunload->draw(pos.x, pos.y);
+			element_for_id(et_torpempty).draw_at_position(pos);
+			element_for_id(et_torpunload).draw_at_position(pos);
 		} else {		// loaded
-			torptex(st.specfilename).draw(pos.x, pos.y);
+			element_for_id(element_by_spec(st.specfilename)).draw_at_position(pos);
 		}
 	} else {
 		if (st.status == 0) {	// empty
-			torpempty->draw_hm(pos.x, pos.y);
+			element_for_id(et_torpempty).draw_hm_at_position(pos);
 		} else if (st.status == 1) {	// reloading
-			torptex(st.specfilename).draw_hm(pos.x, pos.y);
-			torpload->draw_hm(pos.x, pos.y);
+			element_for_id(element_by_spec(st.specfilename)).draw_hm_at_position(pos);
+			element_for_id(et_torpload).draw_hm_at_position(pos);
 		} else if (st.status == 2) {	// unloading
-			torpempty->draw_hm(pos.x, pos.y);
-			torpunload->draw_hm(pos.x, pos.y);
+			element_for_id(et_torpempty).draw_hm_at_position(pos);
+			element_for_id(et_torpunload).draw_hm_at_position(pos);
 		} else {		// loaded
-			torptex(st.specfilename).draw_hm(pos.x, pos.y);
+			element_for_id(element_by_spec(st.specfilename)).draw_hm_at_position(pos);
 		}
 	}
 }
 
 
 
-const texture& sub_torpedo_display::torptex(const string& torpname) const
+std::vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
 {
-	if (torpname == "TI") return *torp1;
-	if (torpname == "TI_FaTI") return *torp1fat1;
-	if (torpname == "TI_LuTI") return *torp1lut1;
-	if (torpname == "TI_LuTII") return *torp1lut2;
-	if (torpname == "TII") return *torp2;
-	if (torpname == "TIII") return *torp3;
-	if (torpname == "TIII_FaTII") return *torp3fat2;
-	if (torpname == "TIIIa_FaTII") return *torp3afat2;
-	if (torpname == "TIIIa_LuTI") return *torp3alut1;
-	if (torpname == "TIIIa_LuTII") return *torp3alut2;
-	if (torpname == "TIV") return *torp4;
-	if (torpname == "TV") return *torp5;
-	if (torpname == "TVb") return *torp5b;
-	if (torpname == "TVI_LuTI") return *torp6lut1;
-	if (torpname == "TXI") return *torp1practice;
-	THROW(error, string("illegal torpedo type ") + torpname);
-}
-
-
-
-vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
-{
-	vector<vector2i> tubecoords(sub->get_torpedoes().size());
-	pair<unsigned, unsigned> bow_tube_indices = sub->get_bow_tube_indices();
-	pair<unsigned, unsigned> stern_tube_indices = sub->get_stern_tube_indices();
-	pair<unsigned, unsigned> bow_reserve_indices = sub->get_bow_reserve_indices();
-	pair<unsigned, unsigned> stern_reserve_indices = sub->get_stern_reserve_indices();
-	pair<unsigned, unsigned> bow_deckreserve_indices = sub->get_bow_deckreserve_indices();
-	pair<unsigned, unsigned> stern_deckreserve_indices = sub->get_stern_deckreserve_indices();
+	std::vector<vector2i> tubecoords(sub->get_torpedoes().size());
+	const auto bow_tube_indices = sub->get_bow_tube_indices();
+	const auto stern_tube_indices = sub->get_stern_tube_indices();
+	const auto bow_reserve_indices = sub->get_bow_reserve_indices();
+	const auto stern_reserve_indices = sub->get_stern_reserve_indices();
+	const auto bow_deckreserve_indices = sub->get_bow_deckreserve_indices();
+	const auto stern_deckreserve_indices = sub->get_stern_deckreserve_indices();
 	unsigned k = bow_tube_indices.second - bow_tube_indices.first;
+	// Note that these coordinates should be defined as clickable areas in the layout.xml
+	// dump that out to a file for all possible tubes to have the data.
 	for (unsigned i = bow_tube_indices.first; i < bow_tube_indices.second; ++i) {
 		tubecoords[i] = vector2i(23, 188+(i-k/2)*13);
 	}
@@ -165,7 +186,7 @@ vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
 
 
 
-unsigned sub_torpedo_display::get_tube_below_mouse(const vector<vector2i>& tubecoords) const
+unsigned sub_torpedo_display::get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const
 {
 	for (unsigned i = 0; i < tubecoords.size(); ++i) {
 		if (mouse_position.x >= tubecoords[i].x && mouse_position.x < tubecoords[i].x+128 &&
@@ -179,9 +200,16 @@ unsigned sub_torpedo_display::get_tube_below_mouse(const vector<vector2i>& tubec
 
 
 sub_torpedo_display::sub_torpedo_display(user_interface& ui_) :
-	user_display(ui_), torptranssrc(ILLEGAL_TUBE), desc_texts(get_data_dir()),
+	user_display(ui_, "sub_torpedo"), torptranssrc(ILLEGAL_TUBE), desc_texts(get_data_dir()),
 	torp_desc_line(0), notepadsheet(texturecache(), "notepadsheet.png")
 {
+	// adjust filename for one element
+	const auto* pl = static_cast<const submarine*>(ui.get_game().get_player());
+	/* fixme set submarine spec filename!
+	element_for_id(et_blubb).set_filename(get_data_dir()
+					      + data_file().get_rel_path(pl->get_specfilename())
+					      + pl->get_torpedomanage_img_name());
+					      */
 }
 
 
@@ -192,25 +220,29 @@ void sub_torpedo_display::display() const
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
 
 	double hours = 0.0, minutes = 0.0, seconds = 0.0;
+	element_for_id(et_seconds).set_value(std::floor(seconds));
+	element_for_id(et_minutes).set_value(minutes);
+	element_for_id(et_hours).set_value(hours);
+
+	// draw background and sub model
+	draw_elements();
 
 	// draw background
 	sys().prepare_2d_drawing();
 
-	background->draw(0, 0);
-
 	// draw sub model
-	if (subtopsideview.get())//fixme later do not accept empty data
-	subtopsideview->draw(0, 0);
+	//if (subtopsideview.get())//fixme later do not accept empty data
+	//subtopsideview->draw(0, 0);
 
 	// tube handling. compute coordinates for display and mouse use
-	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
-	vector<vector2i> tubecoords = get_tubecoords(sub);
-	pair<unsigned, unsigned> bow_tube_indices = sub->get_bow_tube_indices();
-	pair<unsigned, unsigned> stern_tube_indices = sub->get_stern_tube_indices();
-	pair<unsigned, unsigned> bow_reserve_indices = sub->get_bow_reserve_indices();
-	pair<unsigned, unsigned> stern_reserve_indices = sub->get_stern_reserve_indices();
-	pair<unsigned, unsigned> bow_deckreserve_indices = sub->get_bow_deckreserve_indices();
-	pair<unsigned, unsigned> stern_deckreserve_indices = sub->get_stern_deckreserve_indices();
+	const auto& torpedoes = sub->get_torpedoes();
+	std::vector<vector2i> tubecoords = get_tubecoords(sub);
+	const auto bow_tube_indices = sub->get_bow_tube_indices();
+	const auto stern_tube_indices = sub->get_stern_tube_indices();
+	const auto bow_reserve_indices = sub->get_bow_reserve_indices();
+	const auto stern_reserve_indices = sub->get_stern_reserve_indices();
+	const auto bow_deckreserve_indices = sub->get_bow_deckreserve_indices();
+	const auto stern_deckreserve_indices = sub->get_stern_deckreserve_indices();
 
 	// draw tubes
 	for (unsigned i = bow_tube_indices.first; i < bow_tube_indices.second; ++i)
@@ -229,8 +261,9 @@ void sub_torpedo_display::display() const
 	// draw transfer graphics if needed
 	if (torptranssrc != ILLEGAL_TUBE && torpedoes[torptranssrc].status ==
 	    submarine::stored_torpedo::st_loaded) {
-		torptex(torpedoes[torptranssrc].specfilename).draw(mouse_position.x-124/2, mouse_position.y-12/2,
-									       colorf(1,1,1,0.5));
+		element_for_id(element_by_spec(torpedoes[torptranssrc].specfilename)).draw_at_position({
+			mouse_position.x-124/2, mouse_position.y-12/2}); //fixme evil hack, and halftransparent missing!
+									//       colorf(1,1,1,0.5));
 		primitives::line(vector2f(tubecoords[torptranssrc].x+124/2,
 					  tubecoords[torptranssrc].y+12/2),
 				 vector2f(mouse_position), color::white()).render();
@@ -240,9 +273,10 @@ void sub_torpedo_display::display() const
 	unsigned tb = get_tube_below_mouse(tubecoords);
 	if (tb != ILLEGAL_TUBE) {
 		// display type info.
+		//fixme load all info first and just store it!
 		if (torpedoes[tb].status == submarine::stored_torpedo::st_loaded) {
 			desc_text* torpdesctext = nullptr;
-			string sfn = torpedoes[tb].specfilename;
+			auto sfn = torpedoes[tb].specfilename;
 			try {
 				torpdesctext = desc_texts.ref(data_file().get_rel_path(sfn) + sfn + "_"
 							      + texts::get_language_code() + ".txt");
@@ -261,6 +295,7 @@ void sub_torpedo_display::display() const
 			hours = torpedoes[tb].remaining_time/3600;
 			minutes = (torpedoes[tb].remaining_time - floor(hours)*3600)/60;
 			seconds = torpedoes[tb].remaining_time - floor(hours)*3600 - floor(minutes)*60;
+			//fixme do that BEFORE rendering above!!!!
 		}
 		if (left_mouse_button_pressed) {
 			// display remaining time if possible
@@ -273,20 +308,12 @@ void sub_torpedo_display::display() const
 			}
 		}
 	}
-	pointer_seconds.draw(floor(seconds)*6);
-	pointer_minutes.draw(minutes*6);
-	pointer_hours.draw(hours*30);
-
 
 	// draw deck gun ammo remaining
-	if (true == sub->has_deck_gun())
-	{
-		char a[10];
-		sprintf(a, "%ld", sub->num_shells_remaining());
-		font_vtremington12->print(400, 85, a, color(0,0,0));
+	if (sub->has_deck_gun()) {
+		font_vtremington12->print(400, 85, helper::str(sub->num_shells_remaining()), color(0,0,0));
 	}
 
-	ui.draw_infopanel();
 	sys().unprepare_2d_drawing();
 }
 
@@ -298,7 +325,7 @@ bool sub_torpedo_display::handle_mouse_button_event(const mouse_click_data& m)
 	// increase/decrease torp_desc_line when clicking on desc text area or using mouse wheel
 	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	const vector<submarine::stored_torpedo>& torpedoes = sub->get_torpedoes();
+	const auto& torpedoes = sub->get_torpedoes();
 	if (m.down() && m.left()) {
 		torptranssrc = get_tube_below_mouse(get_tubecoords(sub));
 		if (torptranssrc != ILLEGAL_TUBE) {
@@ -345,78 +372,4 @@ bool sub_torpedo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
 		return true;
 	}
 	return false;
-}
-
-
-
-void sub_torpedo_display::enter(bool is_day)
-{
-	torpempty = std::make_unique<texture>(get_image_dir() + "torpmanage_emptytube.png");
-	torpload = std::make_unique<texture>(get_image_dir() + "torpmanage_tubeload.png");
-	torpunload = std::make_unique<texture>(get_image_dir() + "torpmanage_tubeunload.png");
-	torp1fat1 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp1fat1.png");
-	torp1lut1 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp1lut1.png");
-	torp1lut2 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp1lut2.png");
-	torp1 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp1.png");
-	torp1practice = std::make_unique<texture>(get_image_dir() + "torpmanage_torp1practice.png");
-	torp2 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp2.png");
-	torp3afat2 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp3afat2.png");
-	torp3alut1 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp3alut1.png");
-	torp3alut2 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp3alut2.png");
-	torp3fat2 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp3fat2.png");
-	torp3 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp3.png");
-	torp4 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp4.png");
-	torp5b = std::make_unique<texture>(get_image_dir() + "torpmanage_torp5b.png");
-	torp5 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp5.png");
-	torp6lut1 = std::make_unique<texture>(get_image_dir() + "torpmanage_torp6lut1.png");
-	if (is_day)
-		background = std::make_unique<image>(get_image_dir() + "tmanage_cleanbase_daylight.jpg");
-	else
-		background = std::make_unique<image>(get_image_dir() + "tmanage_cleanbase_redlight.jpg");
-	const auto* pl = dynamic_cast<const submarine*>(ui.get_game().get_player());
-	// fixme: catch errors for load, later do not accept missing images
-	try {
-	log_debug("loading '" << get_data_dir() + data_file().get_rel_path(pl->get_specfilename()) + pl->get_torpedomanage_img_name());
-	subtopsideview = std::make_unique<image>(get_data_dir()
-				       + data_file().get_rel_path(pl->get_specfilename())
-				       + pl->get_torpedomanage_img_name());
-	}
-	catch (std::exception& e) {
-		std::cout << "ERROR: " << e.what() << "\n";
-	}
-	catch (...) {}
-	pointer_seconds.set("tmanage_seconds_pointer.png", 863, 524, 868, 621);
-	pointer_minutes.set("tmanage_minutes_pointer.png", 864, 528, 868, 621);
-	pointer_hours.set("tmanage_hours_pointer.png", 863, 548, 868, 621);
-}
-
-
-
-void sub_torpedo_display::leave()
-{
-	torpempty.reset();
-	torpload.reset();
-	torpunload.reset();
-	torp1fat1.reset();
-	torp1lut1.reset();
-	torp1lut2.reset();
-	torp1.reset();
-	torp1practice.reset();
-	torp2.reset();
-	torp3afat2.reset();
-	torp3alut1.reset();
-	torp3alut2.reset();
-	torp3fat2.reset();
-	torp3.reset();
-	torp4.reset();
-	torp5b.reset();
-	torp5.reset();
-	torp6lut1.reset();
-	background.reset();
-	subtopsideview.reset();
-/*
-	pointer_seconds.reset();
-	pointer_minutes.reset();
-	pointer_seconds.reset();
-*/
 }

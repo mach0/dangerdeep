@@ -76,7 +76,7 @@ protected:
 	virtual vector3 get_viewpos(class game& gm) const;
 
 public:
-	freeview_display(class user_interface& ui_);
+	freeview_display(class user_interface& ui_, const char* display_name = nullptr /* when no elements are used */);
 	~freeview_display() override;
 
 	void display() const override;

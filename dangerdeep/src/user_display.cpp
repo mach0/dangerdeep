@@ -67,6 +67,7 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 		filename_night = prefix_night + elem.child("file").child_text();
 		has_night = true;
 	} else if (!elem.has_child("day")) {
+		//fixme allow that when end x,y are given as clickable area!
 		THROW(xml_error, "invalid display def xml file, day or file node missing", elem.doc_name());
 	} else {
 		filename_day = elem.child("day").child_text();
@@ -113,12 +114,14 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 			end_value = elem_slider.attrf("end");
 		}
 	}
+	//fixme for bridge we need a resize tag, causing linear texture mode <scaled>, and <tiles> with xy size!
 	if (rotateable) {
 		// Compute radius wher we can click on
 		const auto delta = position - center;
 		click_radius = std::max(std::abs(delta.x), std::abs(delta.y));
 	}
 	if (rotateable || !elem.has_child("phases")) {
+		//fixme when clickable, do nothing here
 		filenames_day.push_back(display_dir + filename_day);
 		filenames_night.push_back(display_dir + filename_night);
 		tex.resize(1);
@@ -168,6 +171,9 @@ void user_display::elem2D::set_phase(unsigned phase_) const
 
 void user_display::elem2D::draw() const
 {
+	//fixme with tiles tex[phase]->draw_tiles(position.x, position.y, 1024, 768);
+	//fixme with scaled tex[phase]->draw(position.x, position.y, 1024, 768);
+	//fixme if clickable do nothing here
 	if (rotateable) {
 		// rotation around pixel center (offset +0.5) could be sensible but it looks correct that way.
 		const auto display_angle = rotation_offset + start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
@@ -178,6 +184,20 @@ void user_display::elem2D::draw() const
 			position.x;
 		tex[phase]->draw(pos_x, position.y);
 	}
+}
+
+
+
+void user_display::elem2D::draw_at_position(const vector2i& user_position) const
+{
+	tex[phase]->draw(user_position.x, user_position.y);
+}
+
+
+
+void user_display::elem2D::draw_hm_at_position(const vector2i& user_position) const
+{
+	tex[phase]->draw_hm(user_position.x, user_position.y);
 }
 
 

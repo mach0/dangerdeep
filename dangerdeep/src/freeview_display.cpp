@@ -122,8 +122,8 @@ void freeview_display::post_display() const
 
 
 
-freeview_display::freeview_display(user_interface& ui_) :
-	user_display(ui_), aboard(false), withunderwaterweapons(true), drawbridge(false),
+freeview_display::freeview_display(user_interface& ui_, const char* display_name) :
+	user_display(ui_, display_name), aboard(false), withunderwaterweapons(true), drawbridge(false),
 	conning_tower(nullptr)
 {
 	auto* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );

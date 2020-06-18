@@ -28,23 +28,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector3.h"
 #include "submarine.h"
 
+/// A display to show and control sub's damage
 class sub_damage_display : public user_display
 {
-	vector2i mouse_position;	// last mouse position, needed for popup display
-	std::unique_ptr<image> damage_screen_background;
-	std::unique_ptr<image> sub_damage_scheme_all;
-	texture::ptr repairlight, repairmedium, repairheavy, repaircritical, repairwrecked;
-	objcachet<texture>::reference notepadsheet;
 public:
 	sub_damage_display(class user_interface& ui_);
-
-	virtual void display_popup (int x, int y, const std::string& text, bool atleft, bool atbottom) const;
-
 	void display() const override;
 	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	vector2i mouse_position;	// last mouse position, needed for popup display
+	objcachet<texture>::reference notepadsheet;
 };
 
 #endif /* SUB_DAMAGE_DISPLAY_H */

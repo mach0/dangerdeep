@@ -1,0 +1,9 @@
+<dftd-display name="sub_uzo_display">
+	<element x="-427" y="715" id="0">
+		<slider x="-2305" start="0" end="360"/>
+		<file>tempscale.png</file>
+	</element>
+	<element x="0" y="0">
+		<day>uzo.png</day>
+	</element>
+</dftd-display>

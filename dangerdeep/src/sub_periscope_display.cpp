@@ -24,19 +24,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "cfg.h"
 #include "game.h"
 #include "global_data.h"
-#include "image.h"
 #include "keys.h"
 #include "primitives.h"
 #include "submarine.h"
 #include "submarine_interface.h"
 #include "system_interface.h"
-#include "texture.h"
-#include <iostream>
-#include <memory>
 
-#include <utility>
+namespace
+{
+	enum element_type {
+		et_direction = 0,
+		et_hours = 1,
+		et_minutes = 2
+	};
 
-using std::cout;
+}
 
 
 void sub_periscope_display::pre_display() const
@@ -133,45 +135,17 @@ void sub_periscope_display::post_display() const
 		ui.show_target(pd.x, pd.y, pd.w, pd.h, get_viewpos(gm));
 	}
 
-	sys().prepare_2d_drawing();
-
-	// draw compass bar. at most 230 pixel can be seen (of 1878 total width), center is at x=667 on screen
-	// so 360*230/1878 = 44.1 degrees can be seen
-	// visible area on screen is centerpos +- 115
-	// as first translate bearing to pixel pos
-	int w = int(compassbar_tex->get_width());
-	unsigned h = compassbar_tex->get_height();
-	int centerpixelpos = int((ui.get_relative_bearing().value() * w + 0.5) / 360);
-	// now draw the bar once or twice. center at x=667. visible area is 667+-115
-	if (centerpixelpos <= 115) {
-		int xi = 667 - w - centerpixelpos;
-		compassbar_tex->draw_subimage(xi, 586, w, h, 0, 0, w, h);
-	}
-	int xi = 667 - centerpixelpos;
-	compassbar_tex->draw_subimage(xi, 586, w, h, 0, 0, w, h);
-	if (centerpixelpos > w - 115) {
-		int xi = 667 + w - centerpixelpos;
-		compassbar_tex->draw_subimage(xi, 586, w, h, 0, 0, w, h);
-	}
-
-	// draw background
-	background->draw(0, 0);
-
-	// draw clock pointers
-	double t = gm.get_time();
-	double hourang = 360.0*myfrac(t / (86400/2));
-	double minuteang = 360*myfrac(t / 3600);
-	clock_hours_pointer->draw_rot(946, 294, hourang);
-	clock_minutes_pointer->draw_rot(946, 294, minuteang);
-
-	ui.draw_infopanel(true);
-	sys().unprepare_2d_drawing();
+	element_for_id(et_direction).set_value(ui.get_relative_bearing().value());
+	const auto tm = gm.get_time();
+	element_for_id(et_hours).set_value(helper::mod(tm, 86400.0/2));
+	element_for_id(et_minutes).set_value(helper::mod(tm, 3600.0));
+	draw_elements();
 }
 
 
 
 sub_periscope_display::sub_periscope_display(user_interface& ui_)
-	: freeview_display(ui_), zoomed(false), use_hqsfx(false)
+ :	freeview_display(ui_, "sub_periscope")
 {
 	add_pos = vector3(0, 0, 8);//fixme, depends on sub
 	aboard = true;
@@ -203,11 +177,6 @@ sub_periscope_display::sub_periscope_display(user_interface& ui_)
 	*/
 	blurtex = std::make_unique<texture>(get_texture_dir() + "blurtest.png", texture::LINEAR, texture::REPEAT);
 }
-
-
-
-sub_periscope_display::~sub_periscope_display()
-= default;
 
 
 
@@ -274,29 +243,4 @@ unsigned sub_periscope_display::get_popup_allow_mask() const
 		(1 << submarine_interface::popup_mode_tdc) |
 		(1 << submarine_interface::popup_mode_ecard) |
 		(1 << submarine_interface::popup_mode_recogmanual);
-}
-
-
-
-void sub_periscope_display::enter(bool is_day)
-{
-	if (is_day)
-		background = std::make_unique<image>(get_image_dir() + "periscope_daylight.jpg|png");
-	else
-		background = std::make_unique<image>(get_image_dir() + "periscope_redlight.jpg|png");
-
-	clock_minutes_pointer = std::make_unique<texture>(get_image_dir() + "clock_minutes_pointer.png");
-	clock_hours_pointer = std::make_unique<texture>(get_image_dir() + "clock_hours_pointer.png");
-
-	compassbar_tex = std::make_unique<texture>(get_image_dir() + "periscope_compassbar.png", texture::NEAREST, texture::CLAMP);
-}
-
-
-
-void sub_periscope_display::leave()
-{
-	background.reset();
-	clock_minutes_pointer.reset();
-	clock_hours_pointer.reset();
-	compassbar_tex.reset();
 }

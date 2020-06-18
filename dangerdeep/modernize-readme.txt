@@ -27,6 +27,21 @@ After each step check functionality.
 . gauge VII integrate new compass!
 . test BG,GHG displays
 . move other screens to use elem2d at least for background, periscope i.e. for slider!
+ log->bg [OK]
+ shipssunk->clouds [OK]
+ bridge->glasses [OK]
+ cabin->bg,areas [OK]
+ soldbuch->diverse [OK]
+ periscope->multiple [OK,test]
+ damage->bg,statii [fixmes]
+ torpedo->many [started]
+ valve->diverse,later [OK]
+ uzo->uzo,compass [OK]
+ torpedo_display->generate coordinates for N tubes later!
+ user_display xml reader needs improvements
+ -> try gpu merge then
+    what is different gpu to main?!
+. visible=-1 should mean optional=false,visible=0!
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)
@@ -52,6 +67,9 @@ After each step check functionality.
 . xml reader could use std::optional
 . using namespace std remove with clang-tidy google-build-using-namespace
 . replace myfmod with helper::mod
+. Move insignia and player fotos to own subdirectories
+. Integrate valves screen elements to display and make use of them
+. Finish testdisplay app
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list
