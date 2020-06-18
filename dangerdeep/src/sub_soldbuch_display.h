@@ -25,21 +25,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "user_display.h"
 
+/// Display for the Soldbuch of a submarine captain
 class sub_soldbuch_display : public user_display
 {
-protected:
-	std::unique_ptr<image> background;
-	std::unique_ptr<image> player_photo;
-	std::unique_ptr<image> primary_overlay;
-	std::unique_ptr<image> stamps;
-
 public:
 	sub_soldbuch_display(class user_interface& ui_);
-
 	void display() const override;
-
-	void enter(bool is_day) override;
-	void leave() override;
 };
 
 #endif

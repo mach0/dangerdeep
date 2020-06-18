@@ -35,77 +35,7 @@ class xml_elem;
 ///\ingroup displays
 class user_display : public input_event_handler
 {
-private:
-	// no empty construction, no copy
-	user_display() = delete;
-	user_display(user_display& ) = delete;
-	user_display& operator= (const user_display& ) = delete;
-
-protected:
-	// common functions: draw_infopanel(class game& gm)
-
-	// the display needs to know its parent (user_interface) to access common data
-	class user_interface& ui;
-
-	user_display(class user_interface& ui_, const char* display_name = nullptr /* when no elements are used */);
-
-#if 1 // fixme remove!
-	// commonly used helper classes
-	class rotat_tex {
-	public:
-		rotat_tex()  = default;
-		std::unique_ptr<texture> tex;
-		vector2i left_top;
-		vector2i center;
-		void draw(double angle) const {
-			// fixme: maybe rotate around pixel center (x/y + 0.5)
-			tex->draw_rot(center.x, center.y, angle, center.x - left_top.x, center.y - left_top.y);
-		}
-		void set(texture* tex_, int left_, int top_, int centerx_, int centery_) {
-			tex.reset(tex_);
-			left_top = {left_, top_};
-			center = {centerx_, centery_};
-		}
-		void set(const std::string& filename, int left_, int top_, int centerx_, int centery_) {
-			set(new texture(get_image_dir() + filename), left_, top_, centerx_, centery_);
-		}
-		bool is_mouse_over(vector2i pos, int tolerance = 0) const {
-			return (pos.x + tolerance >= left_top.x && pos.y + tolerance >= left_top.y
-				&& pos.x - tolerance < left_top.x + int(tex->get_width())
-				&& pos.y - tolerance < left_top.y + int(tex->get_height()));
-		}
-	protected:
-		rotat_tex(const rotat_tex& );
-		rotat_tex& operator= (const rotat_tex& );
-	};
-
-	class fix_tex {
-	public:
-		fix_tex()  = default;
-		std::unique_ptr<texture> tex;
-		vector2i left_top;
-		void draw() const {
-			tex->draw(left_top.x, left_top.y);
-		}
-		void set(texture* tex_, int left_, int top_) {
-			tex.reset(tex_);
-			left_top.x = left_;
-			left_top.y = top_;
-		}
-		void set(const std::string& filename, int left_, int top_) {
-			set(new texture(get_image_dir() + filename), left_, top_);
-		}
-		bool is_mouse_over(vector2i pos, int tolerance = 0) const {
-			return (pos.x + tolerance >= left_top.x && pos.y + tolerance >= left_top.y
-				&& pos.x - tolerance < left_top.x + int(tex->get_width())
-				&& pos.y - tolerance < left_top.y + int(tex->get_height()));
-		}
-	protected:
-		fix_tex(const fix_tex& );
-		fix_tex& operator= (const fix_tex& );
-	};
-#endif
-
+public:
 	/// A 2D image element for normal or rotated image elements
 	class elem2D
 	{
@@ -118,6 +48,10 @@ protected:
 		void set_phase(unsigned phase_) const;
 		/// Draw element (rotated/phased if defined)
 		void draw() const;
+		/// Draw at user defined position (only first phase, not rotated)
+		void draw_at_position(const vector2i& user_position) const;
+		/// Draw at user defined position (only first phase, not rotated), Horizontally Mirrored (hm)
+		void draw_hm_at_position(const vector2i& user_position) const;
 		/// Is Mouse over element? Does not check for rotation, just uses 2D area.
 		bool is_mouse_over(const vector2i& mpos, int tolerance = 0) const;
 		/// Define drawing dimensions
@@ -144,8 +78,12 @@ protected:
 		std::optional<unsigned> set_value_uint(const vector2i& mpos) const;
 		/// Get the ID
 		auto get_id() const { return id; }
+		/// Get visibility
+		auto is_visible() const { return visible; }
 		/// Set visibility
 		void set_visible(bool b) const { if (optional) visible = b; }
+		/// Change filename for the element
+		void set_filename(const std::string& fn, bool day = true, unsigned phase = 0);
 
 	protected:
 		int id{-1};			///< ID for manipulation
@@ -177,12 +115,6 @@ protected:
 		double get_angle_range() const;			///< Compute range of angles between start and end
 	};
 
-	std::vector<elem2D> elements;		///< Elements to use for drawing
-	std::unordered_map<unsigned, unsigned> id_to_element;	///< Mapping IDs from definition to elements
-	const elem2D& element_for_id(unsigned id) const;	///< Deliver element for a given ID
-	void draw_elements() const;
-
-public:
 	// needed for correct destruction of heirs.
 	virtual ~user_display() = default;
 	// very basic. Just draw display
@@ -194,6 +126,23 @@ public:
 	virtual void enter(bool is_day);
 	/// overload with code that deinits data for that display, like freeing images
 	virtual void leave();
+
+protected:
+	// common functions: draw_infopanel(class game& gm)
+	user_display(class user_interface& ui_, const char* display_name = nullptr /* when no elements are used */);
+
+	// the display needs to know its parent (user_interface) to access common data
+	class user_interface& ui;
+	std::vector<elem2D> elements;		///< Elements to use for drawing
+	std::unordered_map<unsigned, unsigned> id_to_element;	///< Mapping IDs from definition to elements
+	const elem2D& element_for_id(unsigned id) const;	///< Deliver element for a given ID
+	void draw_elements() const;
+
+private:
+	// no empty construction, no copy
+	user_display() = delete;
+	user_display(user_display& ) = delete;
+	user_display& operator= (const user_display& ) = delete;
 };
 
 #endif /* USER_DISPLAY_H */

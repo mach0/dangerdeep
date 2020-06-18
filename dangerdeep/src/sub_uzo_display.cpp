@@ -21,20 +21,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "system_interface.h"
-#include "image.h"
-#include "texture.h"
 #include "game.h"
 #include "submarine.h"
 #include "sub_uzo_display.h"
-
-
-#include <memory>
-
-#include <utility>
-
 #include "submarine_interface.h"
 #include "keys.h"
 #include "cfg.h"
+
+namespace
+{
+	enum element_type {
+		et_direction = 0
+	};
+}
 
 
 
@@ -101,33 +100,16 @@ void sub_uzo_display::post_display() const
 		ui.show_target(pd.x, pd.y, pd.w, pd.h, get_viewpos(gm));
 	}
 
-	sys().prepare_2d_drawing();
-
-	int tex_w = compass->get_width();
-	int tex_h = compass->get_height();
-
-	int bearing = int(tex_w*ui.get_relative_bearing().value()/360);
-
-	if( bearing>dx && bearing<tex_w-dx){
-		compass->draw_subimage(xi, yi, comp_size, tex_h, bearing-dx, 0, comp_size, tex_h);
-	} else {
-		int dx1=0,dx2=0;
-		if( bearing<dx ){ dx1=dx-bearing; dx2=dx+bearing; } else if( bearing>tex_w-dx ){ dx1=dx+(tex_w-bearing); dx2=comp_size-dx; }
-		compass->draw_subimage(xi, yi, dx1, tex_h, tex_w-(dx1), 0, dx1, tex_h);
-		compass->draw_subimage(xi+dx1, yi, dx2, tex_h, 0, 0, dx2, tex_h );
-	}
-
-	uzotex->draw(0, 0, 1024, 768);
-	ui.draw_infopanel(true);
-
-	sys().unprepare_2d_drawing();
+	element_for_id(et_direction).set_value(ui.get_relative_bearing().value());
+	draw_elements();
 }
 
 
 
-sub_uzo_display::sub_uzo_display(user_interface& ui_) : freeview_display(ui_), zoomed(false)
+sub_uzo_display::sub_uzo_display(user_interface& ui_)
+ :	freeview_display(ui_, "sub_uzo")
 {
-	auto* sub = dynamic_cast<submarine*>( ui_.get_game().get_player() );
+	auto* sub = static_cast<submarine*>( ui_.get_game().get_player() );
 	add_pos = sub->get_uzo_position();
 	aboard = true;
 	withunderwaterweapons = false;
@@ -170,28 +152,4 @@ unsigned sub_uzo_display::get_popup_allow_mask() const
 {
 	return
 		(1 << submarine_interface::popup_mode_ecard);
-}
-
-
-
-void sub_uzo_display::enter(bool is_day)
-{
-	uzotex = std::make_unique<texture>(get_texture_dir() + "uzo.png");
-	if (is_day)
-		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_daylight.png");
-	else
-		compass = std::make_unique<texture>(get_texture_dir() + "uzo_compass_redlight.png");
-
-	comp_size = int(compass->get_width()/3.6);
-	dx = int(comp_size*0.5);
-	xi = 512-dx;
-	yi=705;
-}
-
-
-
-void sub_uzo_display::leave()
-{
-	uzotex.reset();
-	compass.reset();
 }

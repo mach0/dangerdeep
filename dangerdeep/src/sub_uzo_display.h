@@ -25,23 +25,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "freeview_display.h"
 
+/// The submarines U-Boot Zieloptik (UZO) display
 class sub_uzo_display : public freeview_display
 {
-	void pre_display() const override;
-	projection_data get_projection_data(class game& gm) const override;
-	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
-	void post_display() const override;
-
-	texture::ptr uzotex;
-	texture::ptr compass;
-
-	int comp_size;
-	int xi;
-	int yi;
-	int dx;
-
-	bool zoomed;	// use 1,5x (false) or 6x (true) zoom
-
 public:
 	sub_uzo_display(class user_interface& ui_);
 
@@ -51,8 +37,13 @@ public:
 
 	unsigned get_popup_allow_mask() const override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	void pre_display() const override;
+	projection_data get_projection_data(class game& gm) const override;
+	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
+	void post_display() const override;
+
+	bool zoomed{false};	// use 1,5x (false) or 6x (true) zoom
 };
 
 #endif

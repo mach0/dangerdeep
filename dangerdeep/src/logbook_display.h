@@ -28,25 +28,21 @@ class image;
 
 class logbook_display : public user_display
 {
-protected:
-	const vector2i page_left_offset;
-	const vector2i page_right_offset;
-	const vector2i page_size;
-	std::unique_ptr<image> background;
-	unsigned current_page;
-	mutable unsigned nr_of_pages;
-
-	void next_page();
-	void previous_page();
-
 public:
 	logbook_display(class user_interface& ui_);
 	void display() const override;
 	bool handle_key_event(const key_data& ) override;
 	bool handle_mouse_button_event(const mouse_click_data& ) override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	const vector2i page_left_offset;
+	const vector2i page_right_offset;
+	const vector2i page_size;
+	unsigned current_page{0};
+	mutable unsigned nr_of_pages{1};
+
+	void next_page();
+	void previous_page();
 };
 
 #endif

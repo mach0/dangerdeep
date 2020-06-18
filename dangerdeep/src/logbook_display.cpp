@@ -40,17 +40,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <sstream>
 #include <utility>
 
-using namespace std;
 
 
 
 logbook_display::logbook_display(class user_interface& ui_)
-	: user_display(ui_),
+	: user_display(ui_, "logbook"),
 	  page_left_offset(76, 118),
 	  page_right_offset(554, 118),
-	  page_size(400, 500),
-	  current_page(0),
-	  nr_of_pages(1)
+	  page_size(400, 500)
 {
 }
 
@@ -76,7 +73,7 @@ void logbook_display::display() const
 {
 	// compute size of entries (number of lines for each entry)
 	const logbook& lb = ui.get_game().get_players_logbook();
-	vector<unsigned> lines_per_entry;
+	std::vector<unsigned> lines_per_entry;
 	unsigned total_lines = 0;
 	lines_per_entry.reserve(lb.size());
 	for (const auto & it : lb) {
@@ -90,7 +87,7 @@ void logbook_display::display() const
 
 	// now compute distribution of entries over pages
 	// for each entry compute starting page and line
-	vector<pair<unsigned, unsigned> > entry_page_and_line;
+	std::vector<std::pair<unsigned, unsigned> > entry_page_and_line;
 	entry_page_and_line.reserve(lb.size());
 	unsigned cur_page = 0, cur_line = 0;
 	int first_entry_cp_left = -1, last_entry_cp_left = -1;
@@ -118,8 +115,9 @@ void logbook_display::display() const
 	// render [first_entry_cp_left/right...last_entry_cp_left/right[
 	// for current page... note: older entries may wrap, argh!
 
+	draw_elements();
+
 	sys().prepare_2d_drawing();
-	background->draw(0, 0);
 
 	// print rest of part from previous double page, if available
 	if ((first_entry_cp_left > 0 && entry_page_and_line[first_entry_cp_left].second > 0) ||
@@ -135,7 +133,7 @@ void logbook_display::display() const
 			i = unsigned(first_entry_cp_left-1);
 		}
 		unsigned maxlines = lines_per_page - entry_page_and_line[i].second;
-		const string& et = *(lb.get_entry(i));
+		const std::string& et = *(lb.get_entry(i));
 		unsigned textoff = font_jphsl->get_nr_of_lines_wrapped(page_size.x, et, maxlines).second;
 		font_jphsl->print_wrapped(page_left_offset.x,
 					  page_left_offset.y,
@@ -143,7 +141,7 @@ void logbook_display::display() const
 	}
 
 	for (int i = first_entry_cp_left; i < last_entry_cp_left; ++i) {
-		const string& et = *(lb.get_entry(i));
+		const std::string& et = *(lb.get_entry(i));
 		unsigned maxh = (lines_per_page - entry_page_and_line[i].second) * font_jphsl->get_height();
 		unsigned textptr =
 			font_jphsl->print_wrapped(page_left_offset.x,
@@ -158,7 +156,7 @@ void logbook_display::display() const
 		}
 	}
 	for (int i = first_entry_cp_right; i < last_entry_cp_right; ++i) {
-		const string& et = *(lb.get_entry(i));
+		const std::string& et = *(lb.get_entry(i));
 		unsigned maxh = (lines_per_page - entry_page_and_line[i].second) * font_jphsl->get_height();
 		font_jphsl->print_wrapped(page_right_offset.x,
 					  page_right_offset.y + entry_page_and_line[i].second * font_jphsl->get_height(),
@@ -166,10 +164,10 @@ void logbook_display::display() const
 	}
 
 	// Display page number.
-	ostringstream oss1;
+	std::ostringstream oss1;
 	oss1 << current_page + 1;
 	font_jphsl->print(260, 635, oss1.str(), color(10, 10, 10));
-	ostringstream oss2;
+	std::ostringstream oss2;
 	oss2 << current_page + 2;
 	font_jphsl->print(760, 635, oss2.str(), color(10, 10, 10));
 
@@ -177,7 +175,7 @@ void logbook_display::display() const
 	font_jphsl->print(160, 635, "<<", color(10, 10, 10));
 	font_jphsl->print(860, 635, ">>", color(10, 10, 10));
 
-	ui.draw_infopanel();
+	// ui.draw_infopanel(); // already done in draw_elements
 
 	sys().unprepare_2d_drawing();
 }
@@ -210,18 +208,4 @@ bool logbook_display::handle_mouse_button_event(const mouse_click_data& m)
 		return true;
 	}
 	return false;
-}
-
-
-
-void logbook_display::enter(bool /*is_day*/)
-{
-	background = std::make_unique<image>(get_image_dir() + "shipslog_main_daylight.jpg");
-}
-
-
-
-void logbook_display::leave()
-{
-	background.reset();
 }

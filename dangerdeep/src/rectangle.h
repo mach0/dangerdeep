@@ -67,7 +67,7 @@ public:
 	/// Check if coordinate is inside rectangle
 	bool is_inside(const vector2t<D>& p) const
 	{
-		return !is_empty && p.x >= minpos.x && p.y >= minpos.y && p.x <= maxpos.x && p.y <= maxpos.y; 
+		return !is_empty && p.x >= minpos.x && p.y >= minpos.y && p.x <= maxpos.x && p.y <= maxpos.y;
 	}
 	/// Compute rectangle from bound of two other rectanglees
 	rectangle_t(const rectangle_t& a, const rectangle_t& b) : is_empty(false)
@@ -112,6 +112,14 @@ public:
 		}
 		return copy;
 	}
+	/// Get values
+	D x() const { return minpos.x; }
+	/// Get values
+	D y() const { return minpos.y; }
+	/// Get values
+	D w() const { return maxpos.x - minpos.x; }
+	/// Get values
+	D h() const { return maxpos.y - minpos.y; }
 };
 
 typedef rectangle_t<double> rectangle;

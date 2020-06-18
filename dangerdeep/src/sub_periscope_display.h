@@ -24,37 +24,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_PERISCOPE_DISPLAY_H
 
 #include "freeview_display.h"
-#include "image.h"
 #include "shader.h"
-#include <vector>
+#include "texture.h"
 
+/// A display for submarine's periscope
 class sub_periscope_display : public freeview_display
 {
-	void pre_display() const override;
-	projection_data get_projection_data(class game& gm) const override;
-	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
-	void post_display() const override;
-
-	std::unique_ptr<image> background;
-	texture::ptr compassbar_tex;
-	texture::ptr clock_hours_pointer;
-	texture::ptr clock_minutes_pointer;
-
-	bool zoomed;	// use 1,5x (false) or 6x zoom (true)
-
-	bool use_hqsfx;
-	texture::ptr viewtex;
-	texture::ptr blurtex;
-	std::unique_ptr<glsl_shader_setup> glsl_blurview;
-	unsigned loc_blur_texc_offset;
-	unsigned loc_tex_view;
-	unsigned loc_tex_blur;
-
-	vector3 get_viewpos(class game& gm) const override;
-
 public:
 	sub_periscope_display(class user_interface& ui_);
-	~sub_periscope_display() override;
 
 	//overload for zoom key handling ('y') and TDC input
 	bool handle_key_event(const key_data& ) override;
@@ -64,8 +41,23 @@ public:
 
 	unsigned get_popup_allow_mask() const override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	void pre_display() const override;
+	projection_data get_projection_data(class game& gm) const override;
+	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
+	void post_display() const override;
+
+	bool zoomed{false};	// use 1,5x (false) or 6x zoom (true)
+
+	bool use_hqsfx{false};
+	texture::ptr viewtex;
+	texture::ptr blurtex;
+	std::unique_ptr<glsl_shader_setup> glsl_blurview;
+	unsigned loc_blur_texc_offset;
+	unsigned loc_tex_view;
+	unsigned loc_tex_blur;
+
+	vector3 get_viewpos(class game& gm) const override;
 };
 
 #endif

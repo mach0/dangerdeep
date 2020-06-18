@@ -59,7 +59,7 @@ void ships_sunk_display::previous_page(unsigned nrships)
 
 
 ships_sunk_display::ships_sunk_display(user_interface& ui_) :
-	user_display(ui_), first_displayed_object(0)
+	user_display(ui_, "ships_sunk")
 {
 }
 
@@ -67,11 +67,11 @@ ships_sunk_display::ships_sunk_display(user_interface& ui_) :
 
 void ships_sunk_display::display() const
 {
+	// Draw background image.
+	draw_elements();
+
 	auto& gm = ui.get_game();
 	sys().prepare_2d_drawing();
-
-	// Draw background image.
-	cloudsbackgr->draw_tiles(0, 0, 1024, 768);
 
 	unsigned j = first_displayed_object;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
@@ -158,18 +158,4 @@ bool ships_sunk_display::handle_mouse_button_event(const mouse_click_data& m)
 		return true;
 	}
 	return false;
-}
-
-
-
-void ships_sunk_display::enter(bool /*is_day*/)
-{
-	cloudsbackgr = std::make_unique<texture>(get_texture_dir() + "cloudsbackgr.jpg");
-}
-
-
-
-void ships_sunk_display::leave()
-{
-	cloudsbackgr.reset();
 }
