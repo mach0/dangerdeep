@@ -49,6 +49,7 @@ add_library(dftdbasic STATIC
 	message_queue.h
 	#model_state.cpp
 	#model_state.h
+	objcache.h
 	object_store.h
 	parser.cpp
 	parser.h
@@ -191,6 +192,21 @@ add_library(dftdmedia STATIC
 )
 target_link_libraries ( dftdmedia ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
 
+# todo distribute correctly - cfg/keys need global_data and that needs a lot more
+add_library(dftdall STATIC
+	credits.cpp
+	credits.h
+	global_data.cpp
+	global_data.h
+	height_generator_map.cpp	# only geoclipmaptest, delete that later
+	height_generator_map.h		# only geoclipmaptest, delete that later
+	highscorelist.cpp
+	highscorelist.h
+	tree_generator.h
+	dftdtester/tests.cpp
+)
+target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia )
+
 add_library(dftdgameui STATIC
 	coastmap.cpp
 	coastmap.h
@@ -255,23 +271,8 @@ add_library(dftdgameui STATIC
 	widget.cpp	# fixme needs text, is not really part of the game ui
 	widget.h
 )
-target_link_libraries ( dftdgameui ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia dftdgamecore )
-
-# todo distribute correctly - cfg/keys need global_data and that needs a lot more
-add_library(dftdall STATIC
-	credits.cpp
-	credits.h
-	global_data.cpp
-	global_data.h
-	height_generator_map.cpp	# only geoclipmaptest, delete that later
-	height_generator_map.h		# only geoclipmaptest, delete that later
-	highscorelist.cpp
-	highscorelist.h
-	objcache.h
-	tree_generator.h
-	dftdtester/tests.cpp
-)
-target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia dftdgamecore )
+target_link_libraries ( dftdgameui ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia dftdgamecore dftdall )
+# fixme need to link dftdall for add_loading_screen in global_data etc.
 
 
 add_executable ( dangerdeep subsim.cpp )
@@ -304,12 +305,10 @@ if ( DFTD_BUILD_TOOLS )
 	target_link_libraries ( map_precompute dftdbasic dftdall dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 
 	add_executable ( test_display test_display.cpp )
-	target_link_libraries ( test_display dftdbasic dftdall dftdmedia dftdgameui tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	target_link_libraries ( test_display ${LIBS} ${CMAKE_DL_LIBS} dftdall dftdbasic dftdmedia dftdgamecore dftdgameui tinyxml oglext )
 
 	if ( FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST )
-	    set ( videoplay_src videoplaytest.cpp )
-	    add_executable ( videoplay  ${videoplay_src} )
+	    add_executable ( videoplay  videoplaytest.cpp )
 	    target_link_libraries ( videoplay dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
 	endif ()
-
 endif ()

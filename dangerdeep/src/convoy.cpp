@@ -356,17 +356,17 @@ void convoy::simulate(double delta_time, game& gm)
 	// check for ships to be erased
 	for (auto it = merchants.begin(); it != merchants.end(); ) {
 		auto it2 = it; ++it;
-		if (!it2->first.is_valid())
+		if (!gm.is_valid(it2->first))
 			merchants.erase(it2);
 	}
 	for (auto it = warships.begin(); it != warships.end(); ) {
 		auto it2 = it; ++it;
-		if (!it2->first.is_valid())
+		if (!gm.is_valid(it2->first))
 			warships.erase(it2);
 	}
 	for (auto it = escorts.begin(); it != escorts.end(); ) {
 		auto it2 = it; ++it;
-		if (!it2->first.is_valid())
+		if (!gm.is_valid(it2->first))
 			escorts.erase(it2);
 	}
 

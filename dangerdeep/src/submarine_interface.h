@@ -60,6 +60,7 @@ public:
 		display_mode_damagestatus,
 		display_mode_captainscabin,
 		display_mode_logbook,
+		display_mode_soldbuch,
 		display_mode_successes,
 		display_mode_sonar,
 		display_mode_freeview,
@@ -103,6 +104,7 @@ public:
 	void goto_damagecontrol();
 	void goto_captainscabin();
 	void goto_logbook();
+	void goto_soldbuch();
 	void goto_successes();
 	void goto_sonar();
 	void goto_freeview();

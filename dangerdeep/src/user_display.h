@@ -48,20 +48,14 @@ public:
 		void set_phase(unsigned phase_) const;
 		/// Draw element (rotated/phased if defined)
 		void draw() const;
-		/// Draw at user defined position (only first phase, not rotated)
-		void draw_at_position(const vector2i& user_position) const;
-		/// Draw at user defined position (only first phase, not rotated), Horizontally Mirrored (hm)
-		void draw_hm_at_position(const vector2i& user_position) const;
+		/// Get texture for user defined drawing
+		auto& get_texture() const { return *tex[phase]; }
 		/// Is Mouse over element? Does not check for rotation, just uses 2D area.
 		bool is_mouse_over(const vector2i& mpos, int tolerance = 0) const;
-		/// Define drawing dimensions
-		void set_draw_size(const vector2i& sz);
 		/// Initialize texture
 		void init(bool is_day);
 		/// Deinitialize texture
 		void deinit();
-		/// Request size
-		//const vector2i& get_size() const { return size; }
 		/// Get position
 		const vector2i& get_position() const { return position; }
 		/// For storage in vector
@@ -72,6 +66,8 @@ public:
 		void set_angle(angle a) const;
 		/// Get the set value
 		auto get_value() const { return value; }
+		/// Get the range of valid values
+		auto get_value_range() const { return std::make_pair(start_value, end_value); }
 		/// Set the value defined by mouse position @return new set value if valid
 		std::optional<double> set_value(const vector2i& mpos) const;
 		/// Set the value as unsigned defined by mouse position @return new set value if valid
@@ -84,12 +80,14 @@ public:
 		void set_visible(bool b) const { if (optional) visible = b; }
 		/// Change filename for the element
 		void set_filename(const std::string& fn, bool day = true, unsigned phase = 0);
+		/// Get size - only valid after initialization or when defined in layout!
+		auto get_size() const { return size; }
 
 	protected:
 		int id{-1};			///< ID for manipulation
 		vector2i position;		///< Position (left/top) of the element on screen
 		vector2i center;		///< Center of the element on screen (used for rotation)
-		//vector2i size;		///< Drawing size (taken from image initially)
+		vector2i size;		///< Size used when no image exists (click only)
 		bool rotateable{false};	///< Is this a rotateable element?
 		bool has_night{false};	///< Does night image data exist?
 		mutable double value{0.0};		///< The value to convert to angle

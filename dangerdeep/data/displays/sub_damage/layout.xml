@@ -6,18 +6,13 @@
 		<day>sub_damage_scheme_all.png</day>
 	</element>
 	<element x="0" y="0" id="0" visible="-1">
-		<day>repairlight.png</day>
-	</element>
-	<element x="0" y="0" id="1" visible="-1">
-		<day>repairmedium.png</day>
-	</element>
-	<element x="0" y="0" id="2" visible="-1">
-		<day>repairheavy.png</day>
-	</element>
-	<element x="0" y="0" id="3" visible="-1">
-		<day>repaircritical.png</day>
-	</element>
-	<element x="0" y="0" id="4" visible="-1">
-		<day>repairwrecked.png</day>
+		<phases>
+			<phase>light</phase>
+			<phase>medium</phase>
+			<phase>heavy</phase>
+			<phase>critical</phase>
+			<phase>wrecked</phase>
+		</phases>
+		<day>repair%u.png</day>
 	</element>
 </dftd-display>

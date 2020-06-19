@@ -61,23 +61,23 @@ void sub_recogmanual_display::widget_button_next::on_release ()
 }
 
 sub_recogmanual_display::sub_recogmanual_display(user_interface& ui_) :
-	user_display(ui_), page(0), btn_left(82, 681, 11, 31, -1, page, "", "BG_btn_left.png"), btn_right(931, 681, 11, 31, 1, page, "", "BG_btn_right.png")
+	user_display(ui_, "sub_recogmanual"), page(0), btn_left(82, 681, 11, 31, -1, page, "", "BG_btn_left.png"), btn_right(931, 681, 11, 31, 1, page, "", "BG_btn_right.png")
 {
 }
 
 void sub_recogmanual_display::display() const
 {
+	// display background
+	draw_elements();
+
+	sys().prepare_2d_drawing();
+
 	int off_x = 82;
 	int off_y = 82;
 	int off_text_x = 112;
 	int off_text_y = 237;
 	int step_y = 199;
 	int step_x = 450;
-
-	// draw background
-	sys().prepare_2d_drawing();
-
-	background->draw(0, 0);
 
 	for (int i=page*3; (i<page*3+6)&&(i<(int)silhouettes.size()); i++) {
 		if (i==page*3+3) {
@@ -95,7 +95,6 @@ void sub_recogmanual_display::display() const
 
 	btn_left.draw();
 	btn_right.draw();
-	ui.draw_infopanel();
 	sys().unprepare_2d_drawing();
 }
 
@@ -140,7 +139,7 @@ bool sub_recogmanual_display::handle_mouse_wheel_event(const mouse_wheel_data& m
 
 void sub_recogmanual_display::enter(bool is_day)
 {
-	background = std::make_unique<image>(get_image_dir() + "shiprecogmanual_background.jpg");
+	user_display::enter(is_day);
 
 	std::list<string> ship_ids = data_file_handler::instance().get_ship_list();
 	for (auto & ship_id : ship_ids) {
@@ -165,7 +164,7 @@ void sub_recogmanual_display::enter(bool is_day)
 
 void sub_recogmanual_display::leave()
 {
-	background.reset();
+	user_display::leave();
 	silhouettes.clear();
 	displacements.clear();
 	lengths.clear();

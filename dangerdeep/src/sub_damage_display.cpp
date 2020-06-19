@@ -75,11 +75,7 @@ namespace {
 	};
 
 	enum element_type {
-		et_light = 0,
-		et_medium = 1,
-		et_heavy = 2,
-		et_critical = 3,
-		et_wrecked = 4
+		et_repairstate = 0,
 	};
 
 	void display_popup (const texture& notepadsheet, int x, int y, const std::string& text, bool atleft, bool atbottom)
@@ -121,12 +117,13 @@ void sub_damage_display::display() const
 			if (r.x() == 0) continue;	// display test hack fixme
 		int x = r.x() + r.w()/2 - 16, y = r.y() + r.h()/2 - 16 + ydrawdiff;
 		if (parts[i].status > 0.0) {
-			auto t = et_wrecked;
-			if (parts[i].status <= 0.25) t = et_light;
-			else if (parts[i].status <= 0.50) t = et_medium;
-			else if (parts[i].status <= 0.75) t = et_heavy;
-			else if (parts[i].status < 1.00) t = et_critical;
-			element_for_id(t).draw_at_position({x, y});
+			unsigned t = 4;
+			if (parts[i].status <= 0.25) t = 0;
+			else if (parts[i].status <= 0.50) t = 1;
+			else if (parts[i].status <= 0.75) t = 2;
+			else if (parts[i].status < 1.00) t = 3;
+			element_for_id(et_repairstate).set_phase(t);
+			element_for_id(et_repairstate).get_texture().draw({x, y});
 		}
 	}
 

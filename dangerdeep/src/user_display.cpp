@@ -62,23 +62,32 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 	}
 	std::string filename_day;
 	std::string filename_night;
+	bool has_file{true};
 	if (elem.has_child("file")) {
 		filename_day = prefix_day + elem.child("file").child_text();
 		filename_night = prefix_night + elem.child("file").child_text();
 		has_night = true;
-	} else if (!elem.has_child("day")) {
-		//fixme allow that when end x,y are given as clickable area!
-		THROW(xml_error, "invalid display def xml file, day or file node missing", elem.doc_name());
-	} else {
+	} else if (elem.has_child("day")) {
 		filename_day = elem.child("day").child_text();
 		if (elem.has_child("night")) {
 			filename_night = elem.child("night").child_text();
 			has_night = true;
 		}
+	} else if (elem.has_child("end")) {
+		has_file = false;
+		size = elem.child("end").attrv2i() - position;
+	} else {
+		THROW(xml_error, "invalid display def xml file, day or file or end node missing", elem.doc_name());
 	}
 	if (elem.has_attr("visible")) {
-		optional = true;
-		visible = elem.attrb("visible");
+		const auto visible_flag = elem.attri("visible");
+		if (visible_flag >= 0) {
+			optional = true;
+			visible = visible_flag > 0;
+		} else {
+			optional = false;
+			visible = false;
+		}
 	}
 	// Without scale tag we assume that we can rotate freely 360 degrees and the value is the angle (0...360)
 	if (elem.has_child("scale")) {
@@ -114,17 +123,17 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 			end_value = elem_slider.attrf("end");
 		}
 	}
-	//fixme for bridge we need a resize tag, causing linear texture mode <scaled>, and <tiles> with xy size!
 	if (rotateable) {
 		// Compute radius wher we can click on
 		const auto delta = position - center;
 		click_radius = std::max(std::abs(delta.x), std::abs(delta.y));
 	}
 	if (rotateable || !elem.has_child("phases")) {
-		//fixme when clickable, do nothing here
-		filenames_day.push_back(display_dir + filename_day);
-		filenames_night.push_back(display_dir + filename_night);
-		tex.resize(1);
+		if (has_file) {
+			filenames_day.push_back(display_dir + filename_day);
+			filenames_night.push_back(display_dir + filename_night);
+			tex.resize(1);
+		}
 	} else {
 		auto elem_phases = elem.child("phases");
 		std::vector<std::string> phase_names;
@@ -171,33 +180,18 @@ void user_display::elem2D::set_phase(unsigned phase_) const
 
 void user_display::elem2D::draw() const
 {
-	//fixme with tiles tex[phase]->draw_tiles(position.x, position.y, 1024, 768);
-	//fixme with scaled tex[phase]->draw(position.x, position.y, 1024, 768);
-	//fixme if clickable do nothing here
-	if (rotateable) {
-		// rotation around pixel center (offset +0.5) could be sensible but it looks correct that way.
-		const auto display_angle = rotation_offset + start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
-		tex[phase]->draw_rot(center.x, center.y, display_angle.value(), center.x - position.x, center.y - position.y);
-	} else {
-		const auto pos_x = can_slide ?
-			int(std::floor(0.5 + helper::interpolate(double(position.x), double(slide_x), (value - start_value) / (end_value - start_value)))) :
-			position.x;
-		tex[phase]->draw(pos_x, position.y);
+	if (!tex.empty() && visible) {
+		if (rotateable) {
+			// rotation around pixel center (offset +0.5) could be sensible but it looks correct that way.
+			const auto display_angle = rotation_offset + start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
+			tex[phase]->draw_rot(center.x, center.y, display_angle.value(), center.x - position.x, center.y - position.y);
+		} else {
+			const auto pos_x = can_slide ?
+				int(std::floor(0.5 + helper::interpolate(double(position.x), double(slide_x), (value - start_value) / (end_value - start_value)))) :
+				position.x;
+			tex[phase]->draw(pos_x, position.y);
+		}
 	}
-}
-
-
-
-void user_display::elem2D::draw_at_position(const vector2i& user_position) const
-{
-	tex[phase]->draw(user_position.x, user_position.y);
-}
-
-
-
-void user_display::elem2D::draw_hm_at_position(const vector2i& user_position) const
-{
-	tex[phase]->draw_hm(user_position.x, user_position.y);
 }
 
 
@@ -208,6 +202,10 @@ bool user_display::elem2D::is_mouse_over(const vector2i& pos, int tolerance) con
 		return (pos.x + tolerance >= center.x - click_radius && pos.y + tolerance >= center.y - click_radius
 			&& pos.x - tolerance < center.x + click_radius + int(tex[phase]->get_width())
 			&& pos.y - tolerance < center.y + click_radius + int(tex[phase]->get_height()));
+	} else if (tex.empty()) {
+		return (pos.x + tolerance >= position.x && pos.y + tolerance >= position.y
+			&& pos.x - tolerance < position.x + size.x
+			&& pos.y - tolerance < position.y + size.y);
 	} else {
 		return (pos.x + tolerance >= position.x && pos.y + tolerance >= position.y
 			&& pos.x - tolerance < position.x + int(tex[phase]->get_width())
@@ -217,19 +215,13 @@ bool user_display::elem2D::is_mouse_over(const vector2i& pos, int tolerance) con
 
 
 
-void user_display::elem2D::set_draw_size(const vector2i& sz)
-{
-	//fixme?! needed by bridge and damage - but why?
-}
-
-
-
 void user_display::elem2D::init(bool is_day)
 {
 	// init all textures
 	for (auto i = 0U; i < nr_of_phases(); ++i) {
-		tex[i] = std::make_unique<texture>((is_day || !has_night || filenames_night[i].empty()) ? filenames_day[i] : filenames_night[i]);
+		tex[i] = std::make_unique<texture>((is_day || !has_night || filenames_night[i].empty()) ? filenames_day[i] : filenames_night[i], texture::LINEAR);
 	}
+	size = {int(tex[0]->get_width()), int(tex[0]->get_height())};
 }
 
 
@@ -316,7 +308,6 @@ void user_display::draw_elements() const
 	for (auto& e : elements) {
 		e.draw();
 	}
-	//fixme every display?
 	ui.draw_infopanel();
 	sys().unprepare_2d_drawing();
 }

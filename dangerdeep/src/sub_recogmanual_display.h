@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class sub_recogmanual_display : public user_display
 {
 protected:
-
 	class widget_button_next : public widget_button
 	{
 	protected:
@@ -43,15 +42,14 @@ protected:
 	};
 
 	int page;
-	widget_button_next btn_left;
-	widget_button_next btn_right;
-	std::unique_ptr<image> background;
 	std::vector<std::unique_ptr<image>> silhouettes;
 	std::vector<std::string> classes;
 	std::vector<std::string> lengths;
 	std::vector<std::string> displacements;
 	std::vector<std::string> weapons;
 	std::vector<std::string> countries;
+	widget_button_next btn_left;
+	widget_button_next btn_right;
 
 public:
 	sub_recogmanual_display(class user_interface& ui_);

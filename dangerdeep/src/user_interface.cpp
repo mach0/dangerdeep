@@ -577,7 +577,7 @@ bool user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m)
 
 void user_interface::show_target(double vx, double vy, double w, double h, const vector3& viewpos)
 {
-	if (mygame && mygame->get_player()->get_target().is_valid()) {
+	if (mygame && mygame->is_valid(mygame->get_player()->get_target())) {
 		// draw red triangle below target
 		// find screen position of target by projecting its position to screen
 		// coordinates.

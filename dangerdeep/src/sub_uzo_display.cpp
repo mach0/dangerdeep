@@ -95,7 +95,7 @@ void sub_uzo_display::set_modelview_matrix(game& gm, const vector3& viewpos) con
 void sub_uzo_display::post_display() const
 {
 	auto& gm = ui.get_game();
-	if (gm.get_player()->get_target().is_valid()) {
+	if (gm.is_valid(gm.get_player()->get_target())) {
 		projection_data pd = get_projection_data(gm);
 		ui.show_target(pd.x, pd.y, pd.w, pd.h, get_viewpos(gm));
 	}

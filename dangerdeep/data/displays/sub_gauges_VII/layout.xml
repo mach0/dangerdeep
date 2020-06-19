@@ -4,8 +4,8 @@
 	<element x="0" y="0">
 		<file>background.jpg</file>
 	</element>
-	<element x="41" y="458" id="1">
-		<size x="212" y="212"/>
+	<element x="35" y="451" id="1">
+		<size x="225" y="225"/>
 		<day>compass_outer_masked.png</day>
 	</element>
 	<element x="693" y="590" id="2">
@@ -79,5 +79,23 @@
 			<end angle="120" value="1"/>
 		</scale>
 		<file>pointers_diesel.png</file>
+	</element>
+	<element x="20" y="205" visible="0" id="11">
+		<day>fuseboxlight1.png</day>
+	</element>
+	<element x="82" y="205" visible="0" id="12">
+		<day>fuseboxlight2.png</day>
+	</element>
+	<element x="144" y="205" visible="0" id="13">
+		<day>fuseboxlight3.png</day>
+	</element>
+	<element x="20" y="271" visible="0" id="14">
+		<day>fuseboxlight4.png</day>
+	</element>
+	<element x="82" y="271" visible="0" id="15">
+		<day>fuseboxlight5.png</day>
+	</element>
+	<element x="144" y="271" visible="0" id="16">
+		<day>fuseboxlight6.png</day>
 	</element>
 </dftd-display>

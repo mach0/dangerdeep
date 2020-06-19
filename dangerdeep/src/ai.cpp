@@ -125,7 +125,7 @@ void ai::save(xml_elem& parentnode) const
 void ai::relax(ship& parent, game& gm)
 {
 	has_contact = false;
-	state = followme.is_valid() ? followobject : followpath;
+	state = gm.is_valid(followme) ? followobject : followpath;
 	parent.set_throttle(ship::aheadsonar);
 	attackrun = false;
 }
@@ -137,9 +137,9 @@ void ai::attack_contact(const vector3& c)
 	state = attackcontact;
 }
 
-void ai::follow(sea_object_id t)
+void ai::follow(game& gm, sea_object_id t)
 {
-	state = followme.is_valid() ? followobject : followpath;
+	state = gm.is_valid(followme) ? followobject : followpath;
 }
 
 void ai::act(ship& parent, class game& gm, double delta_time)
@@ -230,7 +230,7 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
 				parent.man_guns();
 		}
 		attack_contact(nearest_contact->get_pos());
-		if (myconvoy.is_valid()) gm.get_convoy(myconvoy).add_contact(nearest_contact->get_pos());
+		if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(nearest_contact->get_pos());
 		parent.set_throttle(ship::aheadflank);
 		attackrun = true;
 	}
@@ -248,7 +248,7 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
 			gm.ping_ASDIC(contacts, &parent, true);
 			if (contacts.size() > 0) {
 				// fixme: choose best contact!
-				if (myconvoy.is_valid()) gm.get_convoy(myconvoy).add_contact(contacts.front());
+				if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(contacts.front());
 				attack_contact(contacts.front());
 			}
 		}
@@ -274,7 +274,7 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
 			gm.ping_ASDIC(contacts, &parent, false, angle(delta));
 			if (contacts.size() > 0) {	// update contact
 				// fixme: choose best contact!
-				if (myconvoy.is_valid()) gm.get_convoy(myconvoy).add_contact(contacts.front());
+				if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(contacts.front());
 				attack_contact(contacts.front());
 			}
 			set_zigzag((cd > 500 && cd < 2500) ? true : false); // zig-zag near the sub - fixme test hack, doesn't work
@@ -300,7 +300,7 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
 
 void ai::act_dumb(ship& parent, game& gm, double delta_time)
 {
-	if (state == followobject && followme.is_valid()) {
+	if (state == followobject && gm.is_valid(followme)) {
 		set_course_to_pos(parent, gm, gm.get_object(followme).get_pos().xy());
 	} else if (state == followpath) {
 		if (waypoints.size() > 0) {

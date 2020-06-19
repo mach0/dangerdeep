@@ -264,6 +264,8 @@ public:
 	// 2d drawing must be turned on for this functions
 	void draw(int x, int y, const colorf& col = colorf(1,1,1,1)) const;
 	void draw_hm(int x, int y, const colorf& col = colorf(1,1,1,1)) const;	// horizontally mirrored
+	void draw(const vector2i& p, const colorf& col = colorf(1,1,1,1)) const { draw(p.x, p.y, col); }
+	void draw_hm(const vector2i& p, const colorf& col = colorf(1,1,1,1)) const { draw_hm(p.x, p.y, col); }
 	void draw_vm(int x, int y, const colorf& col = colorf(1,1,1,1)) const;	// vertically mirrored
 	void draw(int x, int y, int w, int h, const colorf& col = colorf(1,1,1,1)) const;
 	void draw_hm(int x, int y, int w, int h, const colorf& col = colorf(1,1,1,1)) const;	// horizontally mirrored
