@@ -245,7 +245,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	// fixme: we need exact sunrise and fall times for a day. (also moon state is needed
 	// later) The compute_sun_pos func is not enough
 	switch (timeofday) {
-		case 0: time += myfmod(20+10*rnd(), 24)*3600; break;	// night
+		case 0: time += helper::mod(20+10*rnd(), 24.0)*3600; break;	// night
 		case 1: time += ( 6+ 2*rnd())*3600; break;		// dawn
 		case 2: time += ( 8+10*rnd())*3600; break;		// day
 		case 3: time += (18+ 2*rnd())*3600; break;		// dusk

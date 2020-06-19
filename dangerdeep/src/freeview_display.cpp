@@ -305,7 +305,7 @@ void freeview_display::draw_objects(game& gm, const vector3& viewpos,
 	}
 
 #if 0
-	double tt = myfmod(gm.get_time(), 10.0);
+	double tt = helper::mod(gm.get_time(), 10.0);
 	water_splash wsp(vector3(), gm.get_time() - tt);
 	glPushMatrix();
 	glTranslatef(-viewpos.x, -viewpos.y, -viewpos.z);
@@ -634,7 +634,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
 	// ******* water ***************************************************************
 	//ui.get_water().update_foam(1.0/25.0);  //fixme: deltat needed here
-	//ui.get_water().spawn_foam(vector2(myfmod(gm.get_time(),256.0),0));
+	//ui.get_water().spawn_foam(vector2(helper::mod(gm.get_time(),256.0),0));
 	/* to render water below surface correctly, we have to do here:
 	   - switch to front culling when below the water surface
 	   - cull nothing if we are near the surface and we can see sky AND underwater space
