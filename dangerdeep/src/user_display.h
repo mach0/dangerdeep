@@ -134,7 +134,7 @@ protected:
 	std::vector<elem2D> elements;		///< Elements to use for drawing
 	std::unordered_map<unsigned, unsigned> id_to_element;	///< Mapping IDs from definition to elements
 	const elem2D& element_for_id(unsigned id) const;	///< Deliver element for a given ID
-	void draw_elements() const;
+	void draw_elements(bool with_info_panel = true) const;
 
 private:
 	// no empty construction, no copy

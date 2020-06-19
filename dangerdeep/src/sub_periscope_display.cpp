@@ -137,8 +137,8 @@ void sub_periscope_display::post_display() const
 
 	element_for_id(et_direction).set_value(ui.get_relative_bearing().value());
 	const auto tm = gm.get_time();
-	element_for_id(et_hours).set_value(helper::mod(tm, 86400.0/2));
-	element_for_id(et_minutes).set_value(helper::mod(tm, 3600.0));
+	element_for_id(et_hours).set_value(helper::mod(tm, 86400.0/2) / 3600.0);
+	element_for_id(et_minutes).set_value(helper::mod(tm, 3600.0) / 60.0);
 	draw_elements();
 }
 

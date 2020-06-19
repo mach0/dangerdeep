@@ -58,7 +58,7 @@ public:
 	}
 	void display() const override
 	{
-		user_display::draw_elements();
+		user_display::draw_elements(false /* no infopanel */);
 	}
 };
 
@@ -66,8 +66,17 @@ public:
 
 int mymain(std::vector<string>& args)
 {
-	if (args.size() != 1) {
+	if (args.size() < 1 || args.size() > 2) {
 		return -1;
+	}
+	bool is_day = true;
+	if (args.size() == 2) {
+		if (args[1] == "day") {
+			is_day = true;
+		}
+		if (args[1] == "night") {
+			is_day = false;
+		}
 	}
 
 	system_interface::parameters params;
@@ -80,6 +89,7 @@ int mymain(std::vector<string>& args)
 
 	user_interface& ui = *(user_interface*)nullptr;	//fixme we need a stub here that delivers valid data! at least for all calls
 	test_display td(ui, args[0].c_str());
+	td.enter(is_day);
 
 	// allow change of every element by mouse click, variate all values by time, until ESC pressed
 
