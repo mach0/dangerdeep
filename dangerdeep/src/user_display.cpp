@@ -65,8 +65,10 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 	bool has_file{true};
 	if (elem.has_child("file")) {
 		filename_day = prefix_day + elem.child("file").child_text();
-		filename_night = prefix_night + elem.child("file").child_text();
-		has_night = true;
+		if (!prefix_night.empty()) {
+			filename_night = prefix_night + elem.child("file").child_text();
+			has_night = true;
+		}
 	} else if (elem.has_child("day")) {
 		filename_day = elem.child("day").child_text();
 		if (elem.has_child("night")) {

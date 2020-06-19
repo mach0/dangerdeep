@@ -26,16 +26,16 @@ After each step check functionality.
 15. Introduced elem2D for popups and define them in data files
 16. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
 17. Introduced test application for a user display (very handy!)
-logbook [OK][]
-ships_sunk [OK][]
-sub_bg [OK][]
+logbook [OK][OK]
+ships_sunk [OK][OK]
+sub_bg [OK][?]
 sub_bridge [OK][OK]
 sub_captainscabin [OK][OK]
-sub_damage [OK][]
+sub_damage [OK][?]
 sub_gauges_II [depth,kn wrong angles, depthrudder wrong pointer dir][]
 sub_gauges_VII [kn shift center a bit][]
-sub_ghg [volume scale wrong dir][]
-sub_kdb [OK][]
+sub_ghg [volume scale wrong dir][?]
+sub_kdb [OK][OK]
 sub_periscope [OK][OK]
 sub_recogmanual [OK][OK]
 sub_soldbuch [OK][textpos?]
@@ -44,12 +44,10 @@ sub_tdc2 [zielentf marker 180deg offset, zielentf is not quadratic][]
 sub_torpedo [pointer has phases? rotat center more down/right,Background MISSING][]
 sub_torpsetup [primaryrange,drehwinkel wrong turn dir,torpspeed wrong dir][]
 sub_uzo [OK][OK]
-sub_valves [OK,incomplete][]
- torpedo_display->generate coordinates for N tubes later!
-
- -> try gpu merge then - what is different gpu to main?!
+sub_valves [OK,incomplete][OK,incomplete]
 -------------WE ARE HERE-----------------
-. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
+. BVTree collision test is painfully slow, if we run into a ship the game nearly stops
+. try gpu merge then - what is different gpu to main?!
 . Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
 . add new sensors (test if they work!!!) needs test program.
@@ -72,7 +70,9 @@ sub_valves [OK,incomplete][]
 . Move insignia and player fotos to own subdirectories
 . Integrate valves screen elements to display and make use of them (accessible via captainscabin)
 . remove global_data, at least the helper functions and use them in helper.h
-.game::get_id must die.
+. game::get_id must die.
+. torpedo_display->generate coordinates for N tubes later and store them in layout.xml
+. Instead of stored_torpedo already store torpedo objects?
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list

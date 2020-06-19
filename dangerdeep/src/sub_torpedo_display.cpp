@@ -261,7 +261,6 @@ void sub_torpedo_display::display() const
 	// draw transfer graphics if needed
 	if (torptranssrc != ILLEGAL_TUBE && torpedoes[torptranssrc].status ==
 	    submarine::stored_torpedo::st_loaded) {
-		//fixme request size of element! must be set by loading!
 		auto& elem = element_for_id(element_by_spec(torpedoes[torptranssrc].specfilename));
 		const auto sz = elem.get_size();
 		elem.get_texture().draw(mouse_position - sz/2, colorf(1,1,1,0.5));
