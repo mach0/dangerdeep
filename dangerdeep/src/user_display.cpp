@@ -221,7 +221,10 @@ void user_display::elem2D::init(bool is_day)
 	for (auto i = 0U; i < nr_of_phases(); ++i) {
 		tex[i] = std::make_unique<texture>((is_day || !has_night || filenames_night[i].empty()) ? filenames_day[i] : filenames_night[i], texture::LINEAR);
 	}
-	size = {int(tex[0]->get_width()), int(tex[0]->get_height())};
+	// Determine size from image if there is one (only use first phase for size)
+	if (!tex.empty()) {
+		size = {int(tex[0]->get_width()), int(tex[0]->get_height())};
+	}
 }
 
 
@@ -302,13 +305,15 @@ const user_display::elem2D& user_display::element_for_id(unsigned id) const
 
 
 
-void user_display::draw_elements() const
+void user_display::draw_elements(bool with_info_panel) const
 {
 	sys().prepare_2d_drawing();
 	for (auto& e : elements) {
 		e.draw();
 	}
-	ui.draw_infopanel();
+	if (with_info_panel) {
+		ui.draw_infopanel();
+	}
 	sys().unprepare_2d_drawing();
 }
 

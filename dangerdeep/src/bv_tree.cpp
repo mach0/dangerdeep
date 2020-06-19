@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "error.h"
 #include "triangle_intersection.h"
 //#define DEBUG_OUTPUT
+#undef DEBUG_OUTPUT
 #ifdef DEBUG_OUTPUT
 #include <iostream>
 #endif

@@ -24,30 +24,30 @@ After each step check functionality.
     transition to new GPU interface)
 14. Split to more libraries
 15. Introduced elem2D for popups and define them in data files
-. gauge VII integrate new compass! [OK, test]
-. test BG,GHG displays
-. move other screens to use elem2d at least for background, periscope i.e. for slider! [OK]
-. solve fixmes in user_display, scaling, click etc. <<<<<<<<<<<<<<
- log->bg [READY]
- shipssunk->clouds [OK] NEVER USED!!! should be additionally available to soldbuch!!! [test]
- bridge->glasses [READY]
- cabin->bg,areas [READY]
- soldbuch->diverse [OK] text a bit too far down, rest ok!
- periscope->multiple [OK,test] buggy slider!
- damage->bg,statii [OK] test if it works!
- torpedo->many [OK] looks a bit wrong and background sub missing, fixmes remain
- valve->diverse,later [OK]
- uzo->uzo,compass [READY]
- recogmanual [OK]
+16. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
+17. Introduced test application for a user display (very handy!)
+logbook [OK][]
+ships_sunk [OK][]
+sub_bg [OK][]
+sub_bridge [OK][OK]
+sub_captainscabin [OK][OK]
+sub_damage [OK][]
+sub_gauges_II [depth,kn wrong angles, depthrudder wrong pointer dir][]
+sub_gauges_VII [kn shift center a bit][]
+sub_ghg [volume scale wrong dir][]
+sub_kdb [OK][]
+sub_periscope [OK][OK]
+sub_recogmanual [OK][OK]
+sub_soldbuch [OK][textpos?]
+sub_tdc [torp+targetspeed wrong offset,torpspeed wrong dir, temp? to 45?, lagenwinkel works both sides? faecherwinkel no limit][]
+sub_tdc2 [zielentf marker 180deg offset, zielentf is not quadratic][]
+sub_torpedo [pointer has phases? rotat center more down/right,Background MISSING][]
+sub_torpsetup [primaryrange,drehwinkel wrong turn dir,torpspeed wrong dir][]
+sub_uzo [OK][OK]
+sub_valves [OK,incomplete][]
  torpedo_display->generate coordinates for N tubes later!
- user_display xml reader needs improvements
- -> try gpu merge then
-    what is different gpu to main?!
-    Textur draw getit
-    Textur Default linear
-    Testapp nutzen!
-.get_texture() for elements and all draw_at_pos etc must die.
-.game::get_id must die.
+
+ -> try gpu merge then - what is different gpu to main?!
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
 . Fix viewmodel app (no model can be seen, no background)
@@ -71,8 +71,8 @@ After each step check functionality.
 . replace myfmod with helper::mod
 . Move insignia and player fotos to own subdirectories
 . Integrate valves screen elements to display and make use of them (accessible via captainscabin)
-. Finish testdisplay app
 . remove global_data, at least the helper functions and use them in helper.h
+.game::get_id must die.
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list
