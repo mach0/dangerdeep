@@ -255,6 +255,8 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 				// weight by triangle area between centers of triangles.
 				contact_point = (v0t+v1t+v2t+v3t+v4t+v5t)*(1.f/6);
 			}
+			// If we give false here the whole tree will get checked...
+			// But then mission immediatly stops.
 			return c;
 		} else {
 			// other node is no leaf, recurse there, swap roles of this and other

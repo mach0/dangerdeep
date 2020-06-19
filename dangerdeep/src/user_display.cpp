@@ -98,6 +98,9 @@ user_display::elem2D::elem2D(const xml_elem& elem, const std::string& display_di
 		auto elem_start = elem_scale.child("start");
 		auto elem_end = elem_scale.child("end");
 		rotation_offset = -angle(elem_scale.attrf("pointer"));
+		if (elem_scale.has_attr("clockwise")) {
+			clockwise = elem_scale.attrb("clockwise");
+		}
 		start_angle = angle(elem_start.attrf("angle"));
 		start_value = elem_start.attrf("value");
 		end_angle = angle(elem_end.attrf("angle"));
@@ -186,7 +189,7 @@ void user_display::elem2D::draw() const
 		if (rotateable) {
 			// rotation around pixel center (offset +0.5) could be sensible but it looks correct that way.
 			const auto display_angle = rotation_offset + start_angle + (get_angle_range() * (value - start_value) / (end_value - start_value));
-			tex[phase]->draw_rot(center.x, center.y, display_angle.value(), center.x - position.x, center.y - position.y);
+			tex[phase]->draw_rot(center.x, center.y, clockwise ? display_angle.value() : -display_angle.value(), center.x - position.x, center.y - position.y);
 		} else {
 			const auto pos_x = can_slide ?
 				int(std::floor(0.5 + helper::interpolate(double(position.x), double(slide_x), (value - start_value) / (end_value - start_value)))) :
@@ -284,6 +287,15 @@ std::optional<unsigned> user_display::elem2D::set_value_uint(const vector2i& pos
 
 
 
+void user_display::elem2D::set_filename(const std::string& fn, bool day, unsigned phase)
+{
+	if (phase < nr_of_phases()) {
+		(day ? filenames_day : filenames_night)[phase] = fn;
+	}
+}
+
+
+
 double user_display::elem2D::get_angle_range() const
 {
 	auto range = end_angle - start_angle;
@@ -297,6 +309,17 @@ double user_display::elem2D::get_angle_range() const
 
 
 const user_display::elem2D& user_display::element_for_id(unsigned id) const
+{
+	auto it = id_to_element.find(id);
+	if (it == id_to_element.end()) {
+		THROW(error, "invalid display definition, id not found");
+	}
+	return elements[it->second];
+}
+
+
+
+user_display::elem2D& user_display::element_for_id(unsigned id)
 {
 	auto it = id_to_element.find(id);
 	if (it == id_to_element.end()) {

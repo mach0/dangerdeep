@@ -3,14 +3,18 @@
 	<night>TDCScreen1_Redlight_</night>
 	<element x="406" y="83" id="0">
 		<center x="512" y="187"/>
-		<scale pointer="15"><!-- fixme not correct -->
-			<start angle="0" value="0"/>
-			<end angle="330" value="55"/>
+		<scale pointer="0" clockwise="0">
+			<start angle="15" value="0"/>
+			<end angle="345" value="55"/>
 		</scale>
 		<file>TorpGeschwindigkeit_innerdial_rotating.png</file>
 	</element>
 	<element x="417" y="456" id="1">
 		<center x="512" y="550"/>
+		<scale pointer="180">
+			<start angle="0" value="0"/><!--can rotate in two sides, not correct so-->
+			<end angle="360" value="360"/>
+		</scale>
 		<file>AngleOnBow_innerdial_rotating.png</file>
 	</element>
 	<element x="0" y="0">
@@ -22,14 +26,22 @@
 	</element>
 	<element x="799" y="502" id="3">
 		<center x="846" y="527"/>
+		<scale pointer="90">
+			<start angle="0" value="0"/>
+			<end angle="180" value="20"/>
+		</scale>
 		<file>Facherwinkel_pointer_rotating.png</file>
 	</element>
 	<element x="950" y="512" id="4">
 		<center x="846" y="527"/>
+		<scale pointer="90">
+			<start angle="0" value="0"/>
+			<end angle="180" value="20"/>
+		</scale>
 		<file>Facherwinkel_usermarker_rotating.png</file>
 	</element>
 	<element x="268" y="418" id="5">
-		<slider x="187"/>
+		<slider x="81"/>
 		<file>firesolution_slidingscale_pointer.png</file>
 	</element>
 	<element x="820" y="104" id="6">
@@ -62,9 +74,9 @@
 	</element>
 	<element x="484" y="62" id="11">
 		<center x="511" y="187"/>
-		<scale pointer="15"><!-- fixme not correct -->
-			<start angle="0" value="0"/>
-			<end angle="330" value="55"/>
+		<scale pointer="0">
+			<start angle="15" value="0"/>
+			<end angle="345" value="55"/>
 		</scale>
 		<file>ZielTorpGeschwindigkeit_pointer_rotating.png</file>
 	</element>

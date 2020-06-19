@@ -32,11 +32,11 @@
 		</scale>
 		<file>pointers_depth.png</file>
 	</element>
-	<element x="756" y="44" id="5">
+	<element x="757" y="45" id="5">
 		<size x="94" y="94"/>
 		<scale pointer="0">
 			<start angle="228" value="0"/>
-			<end angle="132" value="22"/>
+			<end angle="130" value="22"/>
 		</scale>
 		<file>pointers_knots.png</file>
 	</element>

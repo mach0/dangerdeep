@@ -7,7 +7,7 @@
 	</element>
 	<element x="541" y="77" id="1">
 		<center x="636" y="172"/>
-		<scale pointer="0">
+		<scale pointer="0" clockwise="0">
 			<start angle="0" value="0"/>
 			<end angle="330" value="55"/>
 		</scale>
@@ -15,7 +15,7 @@
 	</element>
 	<element x="231" y="508" id="2">
 		<center x="381" y="658"/>
-		<scale pointer="0">
+		<scale pointer="0" clockwise="0">
 			<start angle="0" value="1600"/>
 			<end angle="320" value="3200"/>
 		</scale>
@@ -23,7 +23,7 @@
 	</element>
 	<element x="469" y="508" id="3">
 		<center x="619" y="658"/>
-		<scale pointer="0">
+		<scale pointer="0" clockwise="0">
 			<start angle="0" value="0"/>
 			<end angle="324" value="180"/>
 		</scale>

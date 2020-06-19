@@ -61,6 +61,8 @@ namespace
 		et_hours = 18,
 		et_minutes = 19,
 		et_seconds = 20,
+
+		et_subtopsideview = 21
 	};
 
 	element_type element_by_spec(const std::string& torpname)
@@ -205,11 +207,9 @@ sub_torpedo_display::sub_torpedo_display(user_interface& ui_) :
 {
 	// adjust filename for one element
 	const auto* pl = static_cast<const submarine*>(ui.get_game().get_player());
-	/* fixme set submarine spec filename!
-	element_for_id(et_blubb).set_filename(get_data_dir()
+	element_for_id(et_subtopsideview).set_filename(get_data_dir()
 					      + data_file().get_rel_path(pl->get_specfilename())
 					      + pl->get_torpedomanage_img_name());
-					      */
 }
 
 
