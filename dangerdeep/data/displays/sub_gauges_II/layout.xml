@@ -10,7 +10,7 @@
 	</element>
 	<element x="563" y="550" id="2">
 		<size x="148" y="148"/>
-		<scale pointer="0">
+		<scale pointer="270">
 			<start angle="212" value="-30"/>
 			<end angle="328" value="30"/>
 		</scale>
@@ -18,13 +18,13 @@
 	</element>
 	<element x="795" y="550" id="3">
 		<size x="148" y="148"/>
-		<scale pointer="0">
+		<scale pointer="90">
 			<start angle="32" value="-30"/>
 			<end angle="148" value="30"/>
 		</scale>
 		<file>pointers_stern_depth_rudder.png</file>
 	</element>
-	<element x="391" y="50" id="4">
+	<element x="390" y="52" id="4">
 		<size x="270" y="270"/>
 		<scale pointer="0">
 			<start angle="225" value="0"/>
@@ -32,11 +32,11 @@
 		</scale>
 		<file>pointers_depth.png</file>
 	</element>
-	<element x="782" y="95" id="5">
+	<element x="779" y="96" id="5"><!--y=95 center 845,162-->
 		<size x="132" y="132"/>
 		<scale pointer="0">
-			<start angle="222" value="0"/>
-			<end angle="132" value="22"/>
+			<start angle="229" value="0"/>
+			<end angle="131" value="22"/>
 		</scale>
 		<file>pointers_knots.png</file>
 	</element>

@@ -89,6 +89,7 @@ public:
 		vector2i center;		///< Center of the element on screen (used for rotation)
 		vector2i size;		///< Size used when no image exists (click only)
 		bool rotateable{false};	///< Is this a rotateable element?
+		bool clockwise{true};		///< Is rotation clockwise (default)?
 		bool has_night{false};	///< Does night image data exist?
 		mutable double value{0.0};		///< The value to convert to angle
 		angle start_angle;		///< For rotating elements the start angle
@@ -134,6 +135,7 @@ protected:
 	std::vector<elem2D> elements;		///< Elements to use for drawing
 	std::unordered_map<unsigned, unsigned> id_to_element;	///< Mapping IDs from definition to elements
 	const elem2D& element_for_id(unsigned id) const;	///< Deliver element for a given ID
+	elem2D& element_for_id(unsigned id);	///< Deliver element for a given ID
 	void draw_elements(bool with_info_panel = true) const;
 
 private:

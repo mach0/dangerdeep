@@ -26,27 +26,10 @@ After each step check functionality.
 15. Introduced elem2D for popups and define them in data files
 16. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
 17. Introduced test application for a user display (very handy!)
-logbook [OK][OK]
-ships_sunk [OK][OK]
-sub_bg [OK][?]
-sub_bridge [OK][OK]
-sub_captainscabin [OK][OK]
-sub_damage [OK][?]
-sub_gauges_II [depth,kn wrong angles, depthrudder wrong pointer dir][]
-sub_gauges_VII [kn shift center a bit][]
-sub_ghg [volume scale wrong dir][?]
-sub_kdb [OK][OK]
-sub_periscope [OK][OK]
-sub_recogmanual [OK][OK]
-sub_soldbuch [OK][textpos?]
-sub_tdc [torp+targetspeed wrong offset,torpspeed wrong dir, temp? to 45?, lagenwinkel works both sides? faecherwinkel no limit][]
-sub_tdc2 [zielentf marker 180deg offset, zielentf is not quadratic][]
-sub_torpedo [pointer has phases? rotat center more down/right,Background MISSING][]
-sub_torpsetup [primaryrange,drehwinkel wrong turn dir,torpspeed wrong dir][]
-sub_uzo [OK][OK]
-sub_valves [OK,incomplete][OK,incomplete]
 -------------WE ARE HERE-----------------
+. Displays open issues: sub_tdc AngleOnTheBow can turn both directions, sub_tdc2 target distance non-linear gauge!
 . BVTree collision test is painfully slow, if we run into a ship the game nearly stops
+  Maybe if there is no triangle intersection but the closest spheres intersect the whole tree is iterated - we need to stop there
 . try gpu merge then - what is different gpu to main?!
 . Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
@@ -316,3 +299,27 @@ Rendering: what needs to be changed
 - 2d drawing		DONE
 - displays
 
+
+
+16.)
+====
+State of displays:
+logbook [OK][OK]
+ships_sunk [OK][OK]
+sub_bg [OK][?]
+sub_bridge [OK][OK]
+sub_captainscabin [OK][OK]
+sub_damage [OK][?]
+sub_gauges_II [OK][?]
+sub_gauges_VII [OK][OK]
+sub_ghg [OK][?]
+sub_kdb [OK][OK]
+sub_periscope [OK][OK]
+sub_recogmanual [OK][OK]
+sub_soldbuch [OK][OK]
+sub_tdc [lagenwinkel turns both directions][]
+sub_tdc2 [targetrange is not quadratic][]
+sub_torpedo [Background MISSING][]
+sub_torpsetup [OK][]
+sub_uzo [OK][OK]
+sub_valves [OK,incomplete][OK,incomplete]

@@ -74,7 +74,7 @@
 	</element>
 	<element x="325" y="295" id="16">
 		<center x="341" y="194"/>
-		<scale pointer="0">
+		<scale pointer="180">
 			<start angle="11" value="3"/>
 			<end angle="342" value="100"/>
 			<!-- fixme nonlinear, but more than quadratic -->--

@@ -4,6 +4,9 @@
 		<day>tmanage_cleanbase_daylight.jpg</day>
 		<night>tmanage_cleanbase_redlight.jpg</night>
 	</element>
+	<element x="0" y="0" id="21">
+		<day>tmanage_cleanbase_redlight.jpg</day><!--some existing file, is replaced ingame-->
+	</element>
 	<element x="0" y="0" visible="-1" id="0">
 		<file>emptytube.png</file>
 	</element>
@@ -59,17 +62,16 @@
 		<file>torp6lut1.png</file>
 	</element>
 	<!-- torp t11 missing yet -->
-
-	<element x="863" y="548" visible="0" id="18">
-		<center x="868" y="621"/>
+	<element x="864" y="548" id="18">
+		<center x="870" y="620"/>
 		<day>tmanage_hours_pointer.png</day>
 	</element>
-	<element x="864" y="528" visible="0" id="19">
-		<center x="868" y="621"/>
+	<element x="865" y="527" id="19">
+		<center x="870" y="620"/>
 		<day>tmanage_minutes_pointer.png</day>
 	</element>
-	<element x="863" y="524" visible="0" id="20">
-		<center x="868" y="621"/>
+	<element x="864" y="524" id="20">
+		<center x="870" y="620"/>
 		<day>tmanage_seconds_pointer.png</day>
 	</element>
 </dftd-display>
