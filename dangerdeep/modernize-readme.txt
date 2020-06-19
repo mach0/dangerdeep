@@ -49,15 +49,11 @@ After each step check functionality.
 .get_texture() for elements and all draw_at_pos etc must die.
 .game::get_id must die.
 -------------WE ARE HERE-----------------
-. Introduce elem2d helper for displays and convert code to them (makes
-  transition to new gpu code easier)
-  Much boring work but can be tested in master easily.
-  We can add elem2d class and elements and convert display for display
-  with checking between each of them!
+. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
 . Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
 . add new sensors (test if they work!!!) needs test program.
-. Divide code into separate libraries better (partly done)
+. Divide code into separate libraries better (partly done) remove dftdall library.
 ------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
 . Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
@@ -74,8 +70,9 @@ After each step check functionality.
 . using namespace std remove with clang-tidy google-build-using-namespace
 . replace myfmod with helper::mod
 . Move insignia and player fotos to own subdirectories
-. Integrate valves screen elements to display and make use of them
+. Integrate valves screen elements to display and make use of them (accessible via captainscabin)
 . Finish testdisplay app
+. remove global_data, at least the helper functions and use them in helper.h
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list

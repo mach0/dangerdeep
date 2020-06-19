@@ -126,8 +126,8 @@ void sub_tdc_display::display() const
 	element_for_id(et_parallax_ptr).set_value(TDC.get_parallax_angle().value_pm180());
 	element_for_id(et_parallax_mkr).set_value(TDC.get_parallax_angle().value_pm180());
 	const auto t = TDC.get_torpedo_runtime();
-	element_for_id(et_torptime_sec).set_value(myfmod(t, 60));
-	element_for_id(et_torptime_min).set_value(myfmod(t, 3600));
+	element_for_id(et_torptime_sec).set_value(helper::mod(t, 60.0));
+	element_for_id(et_torptime_min).set_value(helper::mod(t, 3600.0));
 	element_for_id(et_target_pos).set_value((TDC.get_bearing() - player->get_heading()).value());
 	element_for_id(et_target_speed).set_value(sea_object::ms2kts(TDC.get_target_speed()));
 	// fixme all click radii, min/max values etc are missing!

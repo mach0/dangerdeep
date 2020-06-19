@@ -643,7 +643,7 @@ void ship::simulate(double delta_time, game& gm)
 		double v = velocity.length();
 		if (v > 0.1) {
 			double produce_time = 2.0/v;
-			double t = myfmod(gm.get_time(), produce_time);
+			double t = helper::mod(gm.get_time(), produce_time);
 			if (t + delta_time >= produce_time) {
 				vector3 forward = velocity.normal();
 				vector3 sideward = forward.cross(vector3(0, 0, 1)).normal() * 2.0;//speed 2.0 m/s
@@ -662,7 +662,7 @@ void ship::simulate(double delta_time, game& gm)
 			case 1: produce_time = smoke_particle::get_produce_time(); break;
 			case 2: produce_time = smoke_particle_escort::get_produce_time(); break;
 			}
-			double t = myfmod(gm.get_time(), produce_time);
+			double t = helper::mod(gm.get_time(), produce_time);
 			if (t + delta_time >= produce_time) {
 				std::unique_ptr<particle> p = nullptr;
 				// handle orientation here!

@@ -546,8 +546,8 @@ void map_display::display() const
 	sys().prepare_2d_drawing();
 
 	float delta = MAPGRIDSIZE*mapzoom;
-	float sx = myfmod(512, delta)-myfmod(offset.x, MAPGRIDSIZE)*mapzoom;
-	float sy = 768.0 - (myfmod(384.0f, delta)-myfmod(offset.y, MAPGRIDSIZE)*mapzoom);
+	float sx = helper::mod(512.f, delta)-helper::mod(offset.x, double(MAPGRIDSIZE))*mapzoom;
+	float sy = 768.0 - (helper::mod(384.0f, delta)-helper::mod(offset.y, double(MAPGRIDSIZE))*mapzoom);
 	int lx = int(1024/delta)+2, ly = int(768/delta)+2;
 
 	// draw grid

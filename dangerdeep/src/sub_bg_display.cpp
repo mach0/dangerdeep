@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's bg hearing device
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "global_data.h"	// for myfmod
 #include "sub_bg_display.h"
 
 namespace

@@ -268,7 +268,7 @@ void sky::set_time(double tm)
 {
 	mytime = tm;
 
-	tm = myfmod(tm, 86400.0);
+	tm = helper::mod(tm, 86400.0);
 	double cf = myfrac(tm/CLOUD_ANIMATION_CYCLE_TIME) - cloud_animphase;
 	if (fabs(cf) < (1.0/(3600.0*256.0))) cf = 0.0;
 	if (cf < 0) cf += 1.0;
