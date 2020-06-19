@@ -32,23 +32,33 @@ public:
 	void set_time(double t)
 	{
 		// show value range every N seconds
-		const auto secs = 5.0;
-		const auto f = helper::mod(t, secs) / secs;
+		const auto secs_range = 5.0;
+		const auto secs_start_end = 1.0;
+		const auto secs_mod = secs_range + secs_start_end * 2;
+		const auto value_factor = std::clamp((helper::mod(t, secs_mod) - secs_start_end) / secs_range, 0.0, 1.0);
+		const auto secs_visible = 3.0;
+		const bool visible = helper::mod(t, secs_visible * 2) >= secs_visible;
 		for (auto& elem : elements) {
 			// switch also phases, visibility etc.
+			// show start value for 1 sec, then range over values, then end value for 1 sec
+			elem.set_phase(unsigned(std::floor(helper::mod(t, double(elem.nr_of_phases())))));
+			const auto vr = elem.get_value_range();
+			elem.set_value(helper::interpolate(vr.first, vr.second, value_factor));
+			elem.set_visible(visible);
 		}
-	}
-	void draw_elements() const override
-	{
-		user_display::draw_elements();
 	}
 	void check_mouse(const vector2i& mpos)
 	{
 		for (auto& elem : elements) {
 			if (elem.is_mouse_over(mpos)) {
+				//fixme
 				elem.set_value(mpos);
 			}
 		}
+	}
+	void display() const override
+	{
+		user_display::draw_elements();
 	}
 };
 
@@ -105,7 +115,7 @@ int mymain(std::vector<string>& args)
 
 	while (!doquit) {
 		td.set_time(sys().millisec() / 1000.0);
-		td.draw_elements();
+		td.display();
 		sys().finish_frame();
 	}
 

@@ -1558,7 +1558,7 @@ sea_object_id game::contact_in_direction(const sea_object* o, const angle& direc
 	result = ship_in_direction_from_pos ( o, direction );
 
 	// Now submarines.
-	if ( !result.is_valid() )
+	if ( !is_valid(result) )
 		result = sub_in_direction_from_pos ( o, direction );
 
 	return result;
@@ -1736,7 +1736,6 @@ sea_object& game::get_object(sea_object_id id)
 		return it2->second;
 	}
 	return it->second;
-
 }
 
 
@@ -1765,7 +1764,7 @@ convoy& game::get_convoy(sea_object_id id)
 
 sea_object_id game::get_id(const sea_object& s) const
 {
-	// fixme ugly!
+	// fixme ugly! should only be available in game_editor later!
 	for (auto& [id, ship] : ships) {
 		if (&ship == &s) {
 			return id;
@@ -2214,4 +2213,23 @@ void game::unfreeze_time()
 //	printf("time UNfrozen at: %u (%u)\n", freezetime_end, freezetime_end - freezetime_start);
 	freezetime += freezetime_end - freezetime_start;
 	freezetime_start = 0;
+}
+
+
+
+bool game::is_valid(sea_object_id id) const
+{
+	if (id == sea_object_id::invalid) {
+		return false;
+	}
+	// Only ships or submarines can be targeted (later airplanes)
+	auto it = ships.find(id);
+	if (it == ships.end()) {
+		auto it2 = submarines.find(id);
+		if (it2 == submarines.end()) {
+			return false;
+		}
+		return it2->second.is_reference_ok();
+	}
+	return it->second.is_reference_ok();
 }

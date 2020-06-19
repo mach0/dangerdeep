@@ -534,7 +534,7 @@ void submarine::simulate(double delta_time, game& gm)
 	// ------------- simulate the TDC ------------------------------------------
 	TDC.update_heading(get_heading());
 	TDC.simulate(delta_time);
-	if (target.is_valid()) {
+	if (gm.is_valid(target)) {
 		// fixme: limit update of bearing to each 5-30 secs or so,
 		// quality depends on duration of observance and quality of crew!
 		if (TDC.auto_mode_enabled()) {
@@ -603,7 +603,7 @@ void submarine::simulate(double delta_time, game& gm)
 void submarine::set_target(sea_object_id s, game& gm)
 {
 	sea_object::set_target(s, gm);
-	if (!target.is_valid()) return;
+	if (!gm.is_valid(target)) return;
 
 	TDC.set_torpedo_data(kts2ms(30), 7500);	// fixme!!!!
 	// the values below should be modified by quality of guessed target data

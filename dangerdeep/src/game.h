@@ -276,7 +276,7 @@ public:
 	sea_object& get_object(sea_object_id id);	// ship,sub,airplane
 	ship& get_ship(sea_object_id id);
 	convoy& get_convoy(sea_object_id id);
-	sea_object_id get_id(const sea_object& ) const;	// fixme to make it compile
+	sea_object_id get_id(const sea_object& ) const;	// fixme move to editor later!
 
 	// compute visibility data
 	//fixme: remove the single functions, they're always called together
@@ -405,6 +405,9 @@ public:
 
 	/// return random float number [0...1] determining game behaviour
 	float randomf() { return random_gen.rndf(); }
+
+	/// Check if sea_object_id is valid
+	bool is_valid(sea_object_id id) const;
 };
 
 #endif

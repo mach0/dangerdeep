@@ -149,17 +149,17 @@ private:
 
 public:
 	virtual void attack_contact(const vector3& c);
-	virtual void act(ship& parent, class game& gm, double delta_time);
+	virtual void act(ship& parent, game& gm, double delta_time);
 
 private:
 	// various ai's and helper functions, fixme replace with subclasses
 	virtual void set_zigzag(bool stat = true);
-	virtual void act_escort(ship& parent, class game& g, double delta_time);
-	virtual void act_dumb(ship& parent, class game& g, double delta_time);
-	virtual void act_convoy(ship& parent, class game& g, double delta_time);
-	virtual bool set_course_to_pos(ship& parent, class game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
-	virtual void relax(ship& parent, class game& gm);	// follow path/object, remove contact info
-	virtual void follow(sea_object_id t = {});	// follows path if t is 0
+	virtual void act_escort(ship& parent, game& g, double delta_time);
+	virtual void act_dumb(ship& parent, game& g, double delta_time);
+	virtual void act_convoy(ship& parent, game& g, double delta_time);
+	virtual bool set_course_to_pos(ship& parent, game& gm, const vector2& pos);	// steer parent to pos, returns true if direct turn is possible
+	virtual void relax(ship& parent, game& gm);	// follow path/object, remove contact info
+	virtual void follow(game& gm, sea_object_id t = {});	// follows path if t is 0
 	void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };
 

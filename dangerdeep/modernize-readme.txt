@@ -24,24 +24,30 @@ After each step check functionality.
     transition to new GPU interface)
 14. Split to more libraries
 15. Introduced elem2D for popups and define them in data files
-. gauge VII integrate new compass!
+. gauge VII integrate new compass! [OK, test]
 . test BG,GHG displays
-. move other screens to use elem2d at least for background, periscope i.e. for slider!
- log->bg [OK]
- shipssunk->clouds [OK]
- bridge->glasses [OK]
- cabin->bg,areas [OK]
- soldbuch->diverse [OK]
- periscope->multiple [OK,test]
- damage->bg,statii [fixmes]
- torpedo->many [started]
+. move other screens to use elem2d at least for background, periscope i.e. for slider! [OK]
+. solve fixmes in user_display, scaling, click etc. <<<<<<<<<<<<<<
+ log->bg [READY]
+ shipssunk->clouds [OK] NEVER USED!!! should be additionally available to soldbuch!!! [test]
+ bridge->glasses [READY]
+ cabin->bg,areas [READY]
+ soldbuch->diverse [OK] text a bit too far down, rest ok!
+ periscope->multiple [OK,test] buggy slider!
+ damage->bg,statii [OK] test if it works!
+ torpedo->many [OK] looks a bit wrong and background sub missing, fixmes remain
  valve->diverse,later [OK]
- uzo->uzo,compass [OK]
+ uzo->uzo,compass [READY]
+ recogmanual [OK]
  torpedo_display->generate coordinates for N tubes later!
  user_display xml reader needs improvements
  -> try gpu merge then
     what is different gpu to main?!
-. visible=-1 should mean optional=false,visible=0!
+    Textur draw getit
+    Textur Default linear
+    Testapp nutzen!
+.get_texture() for elements and all draw_at_pos etc must die.
+.game::get_id must die.
 -------------WE ARE HERE-----------------
 . Introduce elem2d helper for displays and convert code to them (makes
   transition to new gpu code easier)

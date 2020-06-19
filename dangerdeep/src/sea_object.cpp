@@ -559,7 +559,7 @@ void sea_object::simulate(double delta_time, game& gm)
 	}
 
 	// check target. heirs should check for "out of range" condition too
-	if (target.is_valid() && !gm.get_object(target).is_alive())//fixme we need game to check validity!!!
+	if (gm.is_valid(target) && !gm.get_object(target).is_alive())//fixme we need game to check validity!!!
 		target = sea_object_id{};
 
 	// check if list of detected objects needs to be compressed.

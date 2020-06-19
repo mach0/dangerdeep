@@ -119,27 +119,27 @@ void sub_torpedo_display::draw_torpedo(class game& gm, bool usebow,
 {
 	if (usebow) {
 		if (st.status == 0) {	// empty
-			element_for_id(et_torpempty).draw_at_position(pos);
+			element_for_id(et_torpempty).get_texture().draw(pos);
 		} else if (st.status == 1) {	// reloading
-			element_for_id(element_by_spec(st.specfilename)).draw_at_position(pos);
-			element_for_id(et_torpload).draw_at_position(pos);
+			element_for_id(element_by_spec(st.specfilename)).get_texture().draw(pos);
+			element_for_id(et_torpload).get_texture().draw(pos);
 		} else if (st.status == 2) {	// unloading
-			element_for_id(et_torpempty).draw_at_position(pos);
-			element_for_id(et_torpunload).draw_at_position(pos);
+			element_for_id(et_torpempty).get_texture().draw(pos);
+			element_for_id(et_torpunload).get_texture().draw(pos);
 		} else {		// loaded
-			element_for_id(element_by_spec(st.specfilename)).draw_at_position(pos);
+			element_for_id(element_by_spec(st.specfilename)).get_texture().draw(pos);
 		}
 	} else {
 		if (st.status == 0) {	// empty
-			element_for_id(et_torpempty).draw_hm_at_position(pos);
+			element_for_id(et_torpempty).get_texture().draw_hm(pos);
 		} else if (st.status == 1) {	// reloading
-			element_for_id(element_by_spec(st.specfilename)).draw_hm_at_position(pos);
-			element_for_id(et_torpload).draw_hm_at_position(pos);
+			element_for_id(element_by_spec(st.specfilename)).get_texture().draw_hm(pos);
+			element_for_id(et_torpload).get_texture().draw_hm(pos);
 		} else if (st.status == 2) {	// unloading
-			element_for_id(et_torpempty).draw_hm_at_position(pos);
-			element_for_id(et_torpunload).draw_hm_at_position(pos);
+			element_for_id(et_torpempty).get_texture().draw_hm(pos);
+			element_for_id(et_torpunload).get_texture().draw_hm(pos);
 		} else {		// loaded
-			element_for_id(element_by_spec(st.specfilename)).draw_hm_at_position(pos);
+			element_for_id(element_by_spec(st.specfilename)).get_texture().draw_hm(pos);
 		}
 	}
 }
@@ -261,9 +261,10 @@ void sub_torpedo_display::display() const
 	// draw transfer graphics if needed
 	if (torptranssrc != ILLEGAL_TUBE && torpedoes[torptranssrc].status ==
 	    submarine::stored_torpedo::st_loaded) {
-		element_for_id(element_by_spec(torpedoes[torptranssrc].specfilename)).draw_at_position({
-			mouse_position.x-124/2, mouse_position.y-12/2}); //fixme evil hack, and halftransparent missing!
-									//       colorf(1,1,1,0.5));
+		//fixme request size of element! must be set by loading!
+		auto& elem = element_for_id(element_by_spec(torpedoes[torptranssrc].specfilename));
+		const auto sz = elem.get_size();
+		elem.get_texture().draw(mouse_position - sz/2, colorf(1,1,1,0.5));
 		primitives::line(vector2f(tubecoords[torptranssrc].x+124/2,
 					  tubecoords[torptranssrc].y+12/2),
 				 vector2f(mouse_position), color::white()).render();

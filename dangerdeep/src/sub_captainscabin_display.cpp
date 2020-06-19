@@ -32,20 +32,22 @@ namespace
 {
 	enum element_type {
 		et_begin = 0,
-		et_successes = 0,
+		et_soldbuch = 0,
 		et_logbook = 1,
 		et_torpedoes = 2,
 		et_recogmanual = 3,
-		et_end = 4
+		et_successes = 4,
+		et_end = 5
 	};
 
 	void do_action(submarine_interface& s, element_type t)
 	{
 		switch (t) {
-		case et_successes:	s.goto_successes(); break;
+		case et_soldbuch:	s.goto_soldbuch(); break;
 		case et_logbook:	s.goto_logbook(); break;
 		case et_torpedoes:	s.goto_torpedomanagement(); break;
 		case et_recogmanual:	s.goto_recogmanual(); break;
+		case et_successes:	s.goto_successes(); break;
 		default:	THROW(error, "invalid element type");
 		}
 	}
@@ -53,10 +55,11 @@ namespace
 	int get_description(element_type t)
 	{
 		switch (t) {
-		case et_successes:	return 272;
+		case et_soldbuch:	return 274;
 		case et_logbook:	return 255;
 		case et_torpedoes:	return 253;
 		case et_recogmanual:	return 273;
+		case et_successes:	return 272;
 		default:	THROW(error, "invalid element type");
 		}
 	}
@@ -64,10 +67,11 @@ namespace
 	color get_color(element_type t)
 	{
 		switch (t) {
-		case et_successes:	return color(255, 224, 224);
+		case et_soldbuch:	return color(224, 224, 224);
 		case et_logbook:	return color(224, 224, 255);
 		case et_torpedoes:	return color(224, 255, 224);
 		case et_recogmanual:	return color(255, 224, 224);
+		case et_successes:	return color(255, 224, 224);
 		default:	THROW(error, "invalid element type");
 		}
 	}

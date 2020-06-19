@@ -66,7 +66,8 @@ void sub_soldbuch_display::display() const
 	sys().prepare_2d_drawing();
 
 	// specify the primary ovberlay's coords
-	const auto offset = element_for_id(et_overlay).get_position();
+	auto offset = element_for_id(et_overlay).get_position();
+	offset.y -= 16;	// fixme needed
 
 	const auto& gm = ui.get_game();
 	const auto& pi = gm.get_player_info();
