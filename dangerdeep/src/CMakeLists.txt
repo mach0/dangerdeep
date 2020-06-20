@@ -196,8 +196,6 @@ target_link_libraries ( dftdmedia dftdbasic oglext )
 add_library(dftdall STATIC
 	global_data.cpp
 	global_data.h
-	height_generator_map.cpp	# only geoclipmaptest, delete that later
-	height_generator_map.h		# only geoclipmaptest, delete that later
 	highscorelist.cpp
 	highscorelist.h
 	tree_generator.h
