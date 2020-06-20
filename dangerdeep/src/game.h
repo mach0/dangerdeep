@@ -44,7 +44,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // use forward declarations to avoid unneccessary compile dependencies
 class model;
 class global_data;
-class network_connection;
 class particle;
 class water;
 class height_generator;
@@ -74,20 +73,6 @@ class height_generator;
 
 // Note! do NOT include user_interface here, class game MUST NOT call any method
 // of class user_interface or its heirs.
-
-// network messages
-#define MSG_length	16
-#define MSG_cancel	"DFTD-cancel!    "
-#define MSG_ask		"DFTD-ask?       "
-#define MSG_offer	"DFTD-offer!     "
-#define MSG_join	"DFTD-join?      "
-#define MSG_joined	"DFTD-joined!    "
-#define MSG_initgame	"DFTD-init!      "
-#define MSG_ready	"DFTD-ready!     "
-#define MSG_start	"DFTD-start!     "
-#define MSG_gamestate	"DFTD-gamestate: "
-#define MSG_command	"DFTD-command:   "
-
 
 ///\brief Central object of the game world with physics simulation etc.
 class game
@@ -195,13 +180,6 @@ protected:
 	double max_view_dist;	// maximum visibility according to weather conditions, fixme recomputed or save?
 
 	std::list<ping> pings;	// [SAVE]
-
-	// network game type (0 = single player, 1 = server, 2 = client)
-	unsigned networktype;	// [SAVE] later!
-	// the connection to the server (zero if this is the server)
-	network_connection* servercon;	// [SAVE] later!
-	// the connections to the clients (at least one if this is the server, else empty)
-	std::vector<network_connection*> clientcons;	// [SAVE] later!
 
 	// time in milliseconds that game is paused between simulation steps.
 	// for small pauses to compensate long image loading times
