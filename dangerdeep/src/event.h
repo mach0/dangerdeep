@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class user_interface;
 #include "vector3.h"
+#include <utility>
+//fixme data as std::variant and type as enum class, so we can store it without new!
+//fixme user_interface must not be used here!!!
 
 /// interface for any event that needs special handling by user interface
 class event

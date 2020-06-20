@@ -58,11 +58,11 @@ using std::string;
 
 // ai computation between is randomly interleaved between frames to avoid
 // time consumption peeks every AI_THINK_CYCLE_TIME seconds
-ai::ai(types type_) : type(type_), state(followpath),
+ai::ai(types type_, game& gm) : type(type_), state(followpath),
 	zigzagstate(1/*0 fixme*/), attackrun(false), evasive_manouver(false),
 	rem_manouver_time(0),
 	has_contact(false),
-	remaining_time(rnd() * AI_THINK_CYCLE_TIME),
+	remaining_time(gm.randomf() * AI_THINK_CYCLE_TIME),
 	cyclewaypoints(false)
 {
 }
@@ -148,7 +148,7 @@ void ai::act(ship& parent, class game& gm, double delta_time)
 	if (remaining_time > 0) {
 		return;
 	} else {
-		remaining_time = AI_THINK_CYCLE_TIME * ( 0.75f + 0.25f * rnd ( 1 ) );
+		remaining_time = AI_THINK_CYCLE_TIME * ( 0.75f + 0.25f * gm.randomf() );
 	}
 
 	switch (type) {

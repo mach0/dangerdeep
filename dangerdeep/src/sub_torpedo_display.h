@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "user_display.h"
 #include "submarine.h"
 #include "vector2.h"
-#include "texture.h"
 #include "objcache.h"
 #include "log.h"
 

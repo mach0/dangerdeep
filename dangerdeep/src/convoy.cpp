@@ -95,7 +95,7 @@ ship_probability civilships[] = {
 
 
 
-string get_random_ship(ship_probability* p)
+string get_random_ship(ship_probability* p, game& gm)
 {
 	// count how many ships we have, sum of probabilities
 	double psum = 0;
@@ -104,7 +104,7 @@ string get_random_ship(ship_probability* p)
 		psum += p[k].prob;
 	//printf("psum %f k %u\n", psum, k);
 	// now compute one random ship
-	double r = rnd() * psum;
+	double r = gm.randomf() * psum;
 	for (unsigned i = 0; i < k; ++i) {
 		r -= p[i].prob;
 		if (r < 0) {
@@ -125,7 +125,7 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 
 	waypoints.emplace_back(0, 0);
 	for (int wp = 0; wp < 4; ++wp)
-		waypoints.emplace_back(rnd()*300000-150000,rnd()*300000-150000);
+		waypoints.emplace_back(gm.randomf()*300000-150000,gm.randomf()*300000-150000);
 	angle heading = angle(*(++waypoints.begin()) - *(waypoints.begin()));
 	vector2 coursevec = heading.direction();
 	//position = vector2(0, 0);
@@ -140,11 +140,11 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 		auto cvsize = unsigned(type_);
 
 		// speed? could be a slow or fast convoy (~4 or ~8 kts).
-		int throttle = 4 + rnd(2)*4;
+		int throttle = 4 + gm.randomf()*8;
 		velocity = sea_object::kts2ms(throttle);
 
 		// compute size and structure of convoy
-		unsigned nrships = (2<<cvsize)*10+rnd(10)-5;
+		unsigned nrships = (2<<cvsize)*10+gm.randomf()*10-5;
 		auto sqrtnrships = unsigned(floor(sqrt(float(nrships))));
 		unsigned shps = 0;
 		for (unsigned j = 0; j <= sqrtnrships; ++j) {
@@ -156,14 +156,14 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 				//fixme!!! replace by parsing ship dir for available types or hardcode them!!!
 				//each ship in data/ships stores its type.
 				//but probability can not be stored...
-				string shiptype = get_random_ship(civilships);
+				string shiptype = get_random_ship(civilships, gm);
 				xml_doc doc(data_file().get_filename(shiptype));
 				doc.load();
 				ship s(gm, doc.first_child());
 				s.set_random_skin_name(gm.get_date());
 				vector2 pos = vector2(
-					dx*intershipdist + rnd()*60.0-30.0,
-					dy*intershipdist + rnd()*60.0-30.0 );
+					dx*intershipdist + gm.randomf()*60.0-30.0,
+					dy*intershipdist + gm.randomf()*60.0-30.0 );
 				pos = pos.matrixmul(coursevec, coursevec.orthogonal());
 				s.manipulate_position((waypoints.front() + pos).xy0());
 				s.manipulate_heading(heading);
@@ -191,14 +191,14 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_)
 			dy *= sqrtnrships/2 * intershipdist + convoyescortdist;
 			nx *= (int(nrescs/4)-1)*interescortdist-int(i/4)*interescortdist;
 			ny *= (int(nrescs/4)-1)*interescortdist-int(i/4)*interescortdist;
-			string shiptype = get_random_ship(escortships);
+			string shiptype = get_random_ship(escortships, gm);
 			xml_doc doc(data_file().get_filename(shiptype));
 			doc.load();
 			ship s(gm, doc.first_child());
 			s.set_random_skin_name(gm.get_date());
 			vector2 pos = vector2(
-				dx+nx + rnd()*100.0-50.0,
-				dy+ny + rnd()*100.0-50.0 );
+				dx+nx + gm.randomf()*100.0-50.0,
+				dy+ny + gm.randomf()*100.0-50.0 );
 			pos = pos.matrixmul(coursevec, coursevec.orthogonal());
 			s.manipulate_position((waypoints.front() + pos).xy0());
 			s.manipulate_heading(heading);

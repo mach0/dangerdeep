@@ -72,17 +72,7 @@ bool torpedo::fuse::handle_impact(angle impactangle) const
 
 
 
-torpedo::setup::setup()
-	:
-	  turnangle(180.0),
-	  lut_angle(0.0)
-
-{
-}
-
-
-
-void torpedo::setup::load(const xml_elem& parent)
+void torpedo::setup_data::load(const xml_elem& parent)
 {
 	primaryrange = parent.attru("primaryrange");
 	short_secondary_run = parent.attrb("short_secondary_run");
@@ -96,7 +86,7 @@ void torpedo::setup::load(const xml_elem& parent)
 
 
 
-void torpedo::setup::save(xml_elem& parent) const
+void torpedo::setup_data::save(xml_elem& parent) const
 {
 	parent.set_attr(primaryrange, "primaryrange");
 	parent.set_attr(short_secondary_run, "short_secondary_run");
@@ -110,9 +100,9 @@ void torpedo::setup::save(xml_elem& parent) const
 
 
 
-torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
+torpedo::torpedo(game& gm, const xml_elem& parent, const setup_data& torpsetup)
 	: ship(gm, parent),
-	  mysetup(torpsetup),
+	  setup(torpsetup),
 	  temperature(15),	// degrees C
 	  probability_of_rundepth_failure(0.2),	// basically high before mid 1942, fixme
 	  run_length(0),
@@ -219,14 +209,14 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 	if (powertype == "steam") {
 		propulsion_type = STEAM;
 		if (hasfat || haslut)
-			mysetup.torpspeed = NORMAL; // 30kts / slow G7a
+			setup.torpspeed = NORMAL; // 30kts / slow G7a
 	} else if (powertype == "electric") {
 		propulsion_type = ELECTRIC;
-		if (mysetup.torpspeed != NORMAL && mysetup.torpspeed != PREHEATED)
-			mysetup.torpspeed = NORMAL;
+		if (setup.torpspeed != NORMAL && setup.torpspeed != PREHEATED)
+			setup.torpspeed = NORMAL;
 	} else if (powertype == "ingolin") {
 		propulsion_type = INGOLIN;
-		mysetup.torpspeed = NORMAL;
+		setup.torpspeed = NORMAL;
 	} else {
 		THROW(xml_error, "unknown power type!", parent.doc_name());
 	}
@@ -289,7 +279,7 @@ torpedo::torpedo(game& gm, const xml_elem& parent, const setup& torpsetup)
 void torpedo::load(const xml_elem& parent)
 {
 	sea_object::load(parent);
-	mysetup.load(parent.child("setup"));
+	setup.load(parent.child("setup"));
 	temperature = parent.child("temperature").attrf();
 	probability_of_rundepth_failure = parent.child("probability_of_rundepth_failure").attrf();
 	run_length = parent.child("run_length").attrf();
@@ -303,7 +293,7 @@ void torpedo::save(xml_elem& parent) const
 {
 	sea_object::save(parent);
 	xml_elem st = parent.add_child("setup");
-	mysetup.save(st);
+	setup.save(st);
 	parent.add_child("temperature").set_attr(temperature);
 	parent.add_child("probability_of_rundepth_failure").set_attr(probability_of_rundepth_failure);
 	parent.add_child("run_length").set_attr(run_length);
@@ -362,45 +352,45 @@ void torpedo::simulate(double delta_time, game& gm)
 		// phase change happens because of run_length, from phase 0 to phase 1, then 2, then 1 and 2 alternating.
 		// Angles between phases differ between the devices and can be set up by the player.
 		if (steering_device_phase == 0) {
-			if (run_length >= mysetup.primaryrange) {
-				log_debug("0: dev="<<steering_device<<" short="<<mysetup.short_secondary_run<<" left="<<mysetup.initialturn_left);
+			if (run_length >= setup.primaryrange) {
+				log_debug("0: dev="<<steering_device<<" short="<<setup.short_secondary_run<<" left="<<setup.initialturn_left);
 				steering_device_phase = 1;
 				if (steering_device == LUTI || steering_device == LUTII) {
 					// for LUT devices we turn now to the LUT main course
-					head_to_course(mysetup.lut_angle, 0 /* auto direction */, true /* small turn circle */);
-				} else if (steering_device == FATII && mysetup.short_secondary_run) {
+					head_to_course(setup.lut_angle, 0 /* auto direction */, true /* small turn circle */);
+				} else if (steering_device == FATII && setup.short_secondary_run) {
 					// for FAT II with short second turns, begin circling
-					set_rudder(mysetup.initialturn_left ? -1.0 : 1.0);
+					set_rudder(setup.initialturn_left ? -1.0 : 1.0);
 				} else {
 					// FAT I / FAT II long run: turn 180 degrees
-					head_to_course(get_heading() + angle(180), mysetup.initialturn_left ? -1 : 1, false /* large turn circle */);
+					head_to_course(get_heading() + angle(180), setup.initialturn_left ? -1 : 1, false /* large turn circle */);
 				}
 			}
 		} else if (steering_device_phase == 1) {
-			auto phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
+			auto phase = unsigned(floor((run_length - setup.primaryrange)/get_secondary_run_lenth()));
 			if (phase & 1) {
 				// phase change - FATII with short secondary turn changes nothing,
 				// other setups turn and change phase
-				if (steering_device != FATII || !mysetup.short_secondary_run) {
+				if (steering_device != FATII || !setup.short_secondary_run) {
 					// first LUT turn is on phase 1->2, so invert turn direction
 					bool is_lut = steering_device == LUTI || steering_device == LUTII;
-					bool turn_left = is_lut ? mysetup.initialturn_left : !mysetup.initialturn_left;
+					bool turn_left = is_lut ? setup.initialturn_left : !setup.initialturn_left;
 					// LUT device sets course according to main course, heading should have reached that course
-					// here, so we can use get_heading() instead of mysetup.lut_angle - fixme test this!
-					log_debug("1: dev="<<steering_device<<" short="<<mysetup.short_secondary_run<<" left="<<mysetup.initialturn_left<<" turn="<<turn_left);
-					head_to_course(get_heading() + mysetup.turnangle, turn_left ? -1 : 1, is_lut /* hard rudder for lut*/);
+					// here, so we can use get_heading() instead of setup.lut_angle - fixme test this!
+					log_debug("1: dev="<<steering_device<<" short="<<setup.short_secondary_run<<" left="<<setup.initialturn_left<<" turn="<<turn_left);
+					head_to_course(get_heading() + setup.turnangle, turn_left ? -1 : 1, is_lut /* hard rudder for lut*/);
 					steering_device_phase = 2;
 				}
 			}
 		} else {
 			// steering_device_phase = 2 here
-			auto phase = unsigned(floor((run_length - mysetup.primaryrange)/get_secondary_run_lenth()));
+			auto phase = unsigned(floor((run_length - setup.primaryrange)/get_secondary_run_lenth()));
 			if ((phase & 1) == 0) {
 				// first LUT turn is on phase 1->2, so invert turn direction, invert general because of phase
 				bool is_lut = steering_device == LUTI || steering_device == LUTII;
-				bool turn_left = is_lut ? !mysetup.initialturn_left : mysetup.initialturn_left;
-				log_debug("2: dev="<<steering_device<<" short="<<mysetup.short_secondary_run<<" left="<<mysetup.initialturn_left<<" turn="<<turn_left);
-				head_to_course(get_heading() + mysetup.turnangle, turn_left ? -1 : 1, is_lut /* hard rudder for lut*/);
+				bool turn_left = is_lut ? !setup.initialturn_left : setup.initialturn_left;
+				log_debug("2: dev="<<steering_device<<" short="<<setup.short_secondary_run<<" left="<<setup.initialturn_left<<" turn="<<turn_left);
+				head_to_course(get_heading() + setup.turnangle, turn_left ? -1 : 1, is_lut /* hard rudder for lut*/);
 				steering_device_phase = 1;
 			}
 		}
@@ -447,7 +437,7 @@ void torpedo::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 
 void torpedo::depth_steering_logic()
 {
-	double depthdiff = position.z - (-mysetup.rundepth);
+	double depthdiff = position.z - (-setup.rundepth);
 	double error0 = depthdiff;
 	double error1 = dive_planes.max_angle/dive_planes.max_turn_speed * local_velocity.z * 1.0;
 	double error2 = 0;//-rudder_pos/max_rudder_turn_speed * turn_velocity;
@@ -468,7 +458,7 @@ double torpedo::get_throttle_speed() const
 
 double torpedo::get_secondary_run_lenth() const
 {
-	if (mysetup.short_secondary_run) {
+	if (setup.short_secondary_run) {
 		switch (steering_device) {
 		case FATI:
 			return 1200.0;
@@ -552,12 +542,12 @@ double torpedo::get_range() const
 {
 	switch (propulsion_type) {
 	case STEAM:
-		return range[mysetup.torpspeed];
+		return range[setup.torpspeed];
 	case ELECTRIC:
 		{
 			// varies between 15 and 30
 			double s = myclamp((temperature - 15) / 15, 0.0, 1.0);
-			return myinterpolate(range[NORMAL], range[PREHEATED], s);
+			return helper::interpolate(range[NORMAL], range[PREHEATED], s);
 		}
 	case INGOLIN:	// Walther turbine
 	default:
@@ -571,12 +561,12 @@ double torpedo::get_torp_speed() const
 {
 	switch (propulsion_type) {
 	case STEAM:
-		return speed[mysetup.torpspeed];
+		return speed[setup.torpspeed];
 	case ELECTRIC:
 		{
 			// varies between 15 and 30
 			double s = myclamp((temperature - 15) / 15, 0.0, 1.0);
-			return myinterpolate(speed[NORMAL], speed[PREHEATED], s);
+			return helper::interpolate(speed[NORMAL], speed[PREHEATED], s);
 		}
 	case INGOLIN:	// Walther turbine
 	default:

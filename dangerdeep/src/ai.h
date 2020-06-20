@@ -135,7 +135,7 @@ protected:
 	ai& operator= (ai&& ) = delete;
 
 public:
-	ai(types type_);
+	ai(types type_, game& gm);
 	virtual ~ai();
 
 	// attention: all sea_objects must exist BEFORE this is called!
