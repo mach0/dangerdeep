@@ -25,6 +25,7 @@ add_library(dftdbasic STATIC
 	cfg.h
 	circle.h
 	constant.h
+	cylinder.h
 	datadirs.cpp
 	datadirs.h
 	dmath.h

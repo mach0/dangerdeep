@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <array>
 #include <vector>
+#include "cylinder.h"
 #include "sphere.h"
 #include "matrix4.h"
 
@@ -53,7 +54,7 @@ class bv_tree
 	{
 		const bv_tree& tree;	///< The tree to work on
 		unsigned node_index;	///< index of tree node
-		const std::vector<vector3f>& vertices;	///< wtf?
+		const std::vector<vector3f>& vertices;	///< vertex data to use for collision tests
 		matrix4f transform;	///< Transformation to use for tree
 		/// return the node for the subtree
 		const node& get_node() const { return tree.nodes[node_index]; }
@@ -96,14 +97,17 @@ class bv_tree
 	/// Check if position is inside the tree
 	bool is_inside(const vector3f& v) const;
 
-	/** determine if two bv_trees intersect each other (are colliding). A list of contact points is computed. Note this can be very slow! */
+	/// determine if two bv_trees intersect each other (are colliding). A list of contact points is computed. Note this can be very slow!
 	static bool collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points);
 
-	/** determine if two bv_trees intersect each other (are colliding). The closest contact point is computed. */
+	/// determine if two bv_trees intersect each other (are colliding). The closest contact point is computed.
 	static bool closest_collision(const param& p0, const param& p1, vector3f& contact_point);
 
-	/** determine if bv_trees intersects sphere (are colliding). */
-	static bool collides(const param& p, const spheref& sp);
+	/// determine if bv_trees intersects sphere (are colliding).
+	static bool collides(const param& p, const spheref& sp, vector3f& contact_point);
+
+	/// determine if bv_tree intersects line (cylinder)
+	static bool collides(const param& p, const cylinderf& cyl, vector3f& contact_point);
 
 	/// Transform tree data
 	void transform(const matrix4f& mat);
