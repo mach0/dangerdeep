@@ -194,8 +194,6 @@ target_link_libraries ( dftdmedia dftdbasic oglext )
 
 # todo distribute correctly - cfg/keys need global_data and that needs a lot more
 add_library(dftdall STATIC
-	credits.cpp
-	credits.h
 	global_data.cpp
 	global_data.h
 	height_generator_map.cpp	# only geoclipmaptest, delete that later
@@ -274,8 +272,12 @@ add_library(dftdgameui STATIC
 target_link_libraries ( dftdgameui dftdmedia dftdgamecore dftdall )
 # fixme need to link dftdall for add_loading_screen in global_data etc.
 
-
-add_executable ( dangerdeep subsim.cpp )
+set (dangerdeep_source
+	subsim.cpp
+	credits.cpp
+	credits.h
+)
+add_executable ( dangerdeep ${dangerdeep_source} )
 
 target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdgameui )
 
