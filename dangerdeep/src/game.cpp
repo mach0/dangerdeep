@@ -52,14 +52,11 @@ double log2( double n )
 #include "global_data.h"
 #include "user_interface.h"
 #include "submarine_interface.h"
-#include "airplane_interface.h"
-#include "ship_interface.h"
 #include "texts.h"
 #include "convoy.h"
 #include "particle.h"
 #include "sensors.h"
 #include "sonar.h"
-#include "network.h"
 #include "matrix4.h"
 #include "quaternion.h"
 #include "water.h"
@@ -234,8 +231,6 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 	This technique ignores the fact that convoys could be heared earlier than seen
 	(below surface, passive sonar) or even detected by their smell (smoke)!
 ***********************************************************************/
-	networktype = 0;
-	servercon = nullptr;
 
 	// fixme: show some info like in Silent Service II? sun/moon pos,time,visibility?
 
@@ -341,7 +336,7 @@ game::game(const string& subtype, unsigned cvsize, unsigned cvesc, unsigned time
 // --------------------------------------------------------------------------------
 game::game(const string& filename)
 	: my_run_state(running), player(nullptr),
-	  time(0), last_trail_time(0), max_view_dist(0), networktype(0), servercon(nullptr),
+	  time(0), last_trail_time(0), max_view_dist(0),
 	  freezetime(0), freezetime_start(0)
 {
 	xml_doc doc(filename);
