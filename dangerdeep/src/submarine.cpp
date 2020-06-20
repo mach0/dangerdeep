@@ -131,7 +131,7 @@ void submarine::stored_torpedo::load(const xml_elem& parent)
 	if (parent.has_child("setup")) {
 		setup.load(parent.child("setup"));
 	} else {
-		setup = torpedo::setup();
+		setup = torpedo::setup_data();
 	}
 	temperature = parent.attrf("temperature");
 	status = st_status(parent.attru("status"));

@@ -227,8 +227,8 @@ ship::ship(game& gm_, const xml_elem& parent)
 	if (parent.has_child("ai")) {
 		xml_elem eai = parent.child("ai");
 		string aitype = eai.attr("type");
-		if (aitype == "dumb") myai = std::make_unique<ai>(ai::dumb);
-		else if (aitype == "escort") myai = std::make_unique<ai>(ai::escort);
+		if (aitype == "dumb") myai = std::make_unique<ai>(ai::dumb, gm_);
+		else if (aitype == "escort") myai = std::make_unique<ai>(ai::escort, gm_);
 		else if (aitype == "none") myai.reset();
 		else THROW(error, string("illegal AI type in ") + specfilename);
 	}

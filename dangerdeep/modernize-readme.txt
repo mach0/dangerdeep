@@ -102,6 +102,7 @@ Changes that have been started in code comparison:
 - unit classes should also define seamiles and knots and offer the conversion there from meters, m/s
 - use rigid_body physical_data in sea_object class, check what we did in codemodernization
 - class event as std::variant without user_interface!
+- remove global_data helper functions for rnd (->game), interpolate etc (->helper)
 
 don't store target with every sea_object, only the user interface or player
 needs it!

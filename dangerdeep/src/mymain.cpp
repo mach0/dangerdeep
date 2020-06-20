@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // Danger from the Deep (C)+(W) Thorsten Jordan. SEE LICENSE
 //
-// system dependent main
+// system dependent main with command line translation to std::string
 //
 // WIN32: use WinMain, divide cmd line to list of strings
 // UNIX: C-like main, make strings from char** array
@@ -70,12 +70,12 @@ int call_mymain(std::vector<string>& args)
 	}
 #endif
 
-	string log_file =
+	std::string log_file =
 #ifdef WIN32
 	"./debug.log";
 #else
 	// fixme: use global /var/games instead
-	string(getenv("HOME"))+"/.dangerdeep/debug.log";
+	std::string(getenv("HOME"))+"/.dangerdeep/debug.log";
 #endif
 	log::instance().write(std::cerr, log::level::SYSINFO);
 	unlink( log_file.c_str() );
@@ -89,13 +89,13 @@ int call_mymain(std::vector<string>& args)
 
 int WinMain(HINSTANCE, HINSTANCE, LPSTR cmdline, int)
 {
-	string mycmdline(cmdline);
-	std::vector<string> args;
+	std::string mycmdline(cmdline);
+	std::vector<std::string> args;
 	// parse mycmdline
 	while (mycmdline.length() > 0) {
-		string::size_type st = mycmdline.find(" ");
+		std::string::size_type st = mycmdline.find(" ");
 		args.push_back(mycmdline.substr(0, st));
-		if (st == string::npos) break;
+		if (st == std::string::npos) break;
 		mycmdline = mycmdline.substr(st+1);
 	}
 	return call_mymain(args);
@@ -105,7 +105,7 @@ int WinMain(HINSTANCE, HINSTANCE, LPSTR cmdline, int)
 
 int main(int argc, char** argv)
 {
-	std::vector<string> args;
+	std::vector<std::string> args;
 	//parse argc, argv, do not store program name
 	for (int i = 1; i < argc; ++i) {
 		args.push_back(std::string(argv[i]));

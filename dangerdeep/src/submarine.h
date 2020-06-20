@@ -47,7 +47,7 @@ class submarine : public ship
 		enum st_status { st_empty, st_reloading, st_unloading, st_loaded };
 		// a torpedo transfer must not copy this structure!
 		std::string specfilename; ///< torpedo type, to be copied on transfer
-		torpedo::setup setup;	///< tube setup, don't copy
+		torpedo::setup_data setup;	///< tube setup, don't copy
 		double temperature{15.0};	///< current torpedo temperatue - fixme: as attribute of class torpedo?
 		st_status status{st_empty};	///< 0 empty 1 reloading 2 unloading 3 loaded
 		unsigned associated{0};	///< reloading from/unloading to

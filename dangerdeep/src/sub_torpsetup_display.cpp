@@ -59,7 +59,7 @@ bool sub_torpsetup_display::handle_mouse_button_event(const mouse_click_data& m)
 {
 	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
+	auto& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
 	which_element_is_turned = -1;
 	if (m.down() && m.left())
 	{
@@ -92,7 +92,7 @@ bool sub_torpsetup_display::handle_mouse_motion_event(const mouse_motion_data& m
 {
 	auto& gm = ui.get_game();
 	auto* sub = dynamic_cast<submarine*>(gm.get_player());
-	torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
+	auto& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
 	if (m.left()) {
 		if (which_element_is_turned != -1) {
 			auto& elem = element_for_id(which_element_is_turned);
@@ -127,7 +127,7 @@ void sub_torpsetup_display::display() const
 	element_for_id(et_temperature).set_value(helper::mod(gm.get_time(), 35.0));	// a test
 	element_for_id(et_torpspeeddial).set_value(helper::mod(gm.get_time(), 55.0));	// a test
 	// get tube settings
-	const torpedo::setup& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
+	const auto& tbsetup = sub->get_torp_in_tube(dynamic_cast<submarine_interface&>(ui).get_selected_tube()).setup;
 	element_for_id(et_primaryrangedial).set_value(double(tbsetup.primaryrange));
 	element_for_id(et_turnangledial).set_value(tbsetup.turnangle.value()); // 0...240 degrees for LUT, 180 for FAT.
 	element_for_id(et_torpspeed).set_phase(tbsetup.torpspeed);
