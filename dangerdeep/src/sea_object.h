@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sensors.h"
 #include "sonar.h"
 #include "objcache.h"
+#include "model_state.h"
 
 /*
 fixme: global todo (2004/06/26):

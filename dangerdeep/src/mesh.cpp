@@ -36,13 +36,13 @@ namespace
 		if (st == std::string::npos) {
 			std::string tmp = s.substr(fromwhere);
 			fromwhere = st;
-			return std::move(tmp);
+			return tmp;
 		} else {
 			std::string tmp = s.substr(fromwhere, st - fromwhere);
 			fromwhere = st + 1;
 			if (fromwhere == s.length())
 				fromwhere = std::string::npos;
-			return std::move(tmp);
+			return tmp;
 		}
 	}
 }

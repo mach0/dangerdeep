@@ -249,7 +249,7 @@ public:
 	virtual bool handle_text_input_event(const std::string& /*text*/) { return false; }
 
 	/// destructor
-	virtual ~input_event_handler() { /*fixme call SYS().remove_event_handler(this); needs a cpp to define it */ }
+	virtual ~input_event_handler() = default;
 };
 
 /// input event handler instance that can be customized

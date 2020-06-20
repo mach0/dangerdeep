@@ -21,10 +21,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sea_object.h"
-
-
-#include <utility>
-
 #include "vector2.h"
 #include "sensors.h"
 #include "model.h"

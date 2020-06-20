@@ -37,10 +37,10 @@ public:
 	/// parameter structure for class system_interface
 	struct parameters
 	{
-		vector2i resolution;			///< X/Y-Resolution of screen/window
+		vector2i resolution{1024, 768};		///< X/Y-Resolution of screen/window
 		vector2i resolution2d{1024, 768};	///< X/Y-Resolution of 2d mode to use (virtual resolution)
-		std::string window_caption;		///< Window caption (UTF-8)
-		bool fullscreen{true};			///< Fullscreen mode instead of window?
+		std::string window_caption{"todo"};	///< Window caption (UTF-8)
+		bool fullscreen{false};			///< Fullscreen mode instead of window?
 		bool vertical_sync{true};		///< Use vertical sync?
 		double near_z{1.0};	// not needed with new gpu interface, remove later
 		double far_z{30000.0};	// not needed with new gpu interface, remove later

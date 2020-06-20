@@ -28,6 +28,7 @@ After each step check functionality.
 17. Introduced test application for a user display (very handy!)
 -------------WE ARE HERE-----------------
 . Displays open issues: sub_tdc AngleOnTheBow can turn both directions, sub_tdc2 target distance non-linear gauge!
+. Take sea_objects etc all from master and integrate the modelstate stuff in GPUinterface branch
 . BVTree collision test is painfully slow, if we run into a ship the game nearly stops
   Maybe if there is no triangle intersection but the closest spheres intersect the whole tree is iterated - we need to stop there
 . try gpu merge then - what is different gpu to main?!
