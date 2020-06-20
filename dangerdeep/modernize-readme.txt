@@ -59,6 +59,7 @@ After each step check functionality.
 . game::get_id must die.
 . torpedo_display->generate coordinates for N tubes later and store them in layout.xml
 . Instead of stored_torpedo already store torpedo objects?
+. Particles are in groups, sorting in groups, then mergesort!
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list

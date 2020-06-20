@@ -170,12 +170,11 @@ bool bv_tree::is_inside(const vector3f& v) const
 
 bool bv_tree::collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points)
 {
-	// fixme: code is identical except one contact_point is delivered or pushed_back. We need a solution to have that code only once!
+	// Note: code is nearly identical to function below. We need a solution to have that code only once!
 
 	// Transform vertices of p1 and then compare to p0
 	const auto inverse_p0_tree_transform = p0.transform.inverse();
 	const auto combined_transform = inverse_p0_tree_transform * p1.transform;
-	const auto combined_inverse_transform = p1.transform.inverse() * p0.transform;
 	// Iterate over tree of p0, p1 and check for intersections, closest child first
 	std::function<bool(const bv_tree::node&, const bv_tree::node& )> check_intersection;
 	check_intersection = [&](const bv_tree::node& node0, const bv_tree::node& node1) {
@@ -183,6 +182,7 @@ bool bv_tree::collides(const param& p0, const param& p1, std::vector<vector3f>& 
 		if (!node0.volume.intersects(transformed_volume1)) {
 			return false;
 		}
+		bool split_node1 = false;
 		if (node0.is_leaf()) {
 			if (node1.is_leaf()) {
 				// direct face to face collision test
@@ -205,29 +205,23 @@ bool bv_tree::collides(const param& p0, const param& p1, std::vector<vector3f>& 
 				}
 				return c;
 			} else {
-				// check which child of node1 is closer to volume center of node0
+				split_node1 = true;
 			}
+		} else if (!node1.is_leaf() && node0.volume.radius < node1.volume.radius) {
+			split_node1 = true;
 		}
-		// split larger volume of this and other, go recursivly down all children
-		if (node0.volume.radius > node1.volume.radius || node1.is_leaf()) {
+		if (!split_node1) {
 			const auto& left_child_node = p0.tree.nodes[node0.tri_idx[0]];
 			const auto& right_child_node = p0.tree.nodes[node0.tri_idx[1]];
-			if (left_child_node.volume.center.square_distance(transformed_volume1.center) <
-					right_child_node.volume.center.square_distance(transformed_volume1.center)) {
-				return check_intersection(left_child_node, node1) || check_intersection(right_child_node, node1);
-			} else {
-				return check_intersection(right_child_node, node1) || check_intersection(left_child_node, node1);
-			}
+			const auto rl = check_intersection(left_child_node, node1);
+			const auto rr = check_intersection(right_child_node, node1);
+			return rl || rr;
 		} else {
 			const auto& left_child_node = p1.tree.nodes[node1.tri_idx[0]];
 			const auto& right_child_node = p1.tree.nodes[node1.tri_idx[1]];
-			const auto transformed_volume0_center = combined_inverse_transform.mul4vec3xlat(node0.volume.center);
-			if (left_child_node.volume.center.square_distance(transformed_volume0_center) <
-					right_child_node.volume.center.square_distance(transformed_volume0_center)) {
-				return check_intersection(node0, left_child_node) || check_intersection(node0, right_child_node);
-			} else {
-				return check_intersection(node0, right_child_node) || check_intersection(node0, left_child_node);
-			}
+			const auto rl = check_intersection(node0, left_child_node);
+			const auto rr = check_intersection(node0, right_child_node);
+			return rl || rr;
 		}
 	};
 	return check_intersection(p0.tree.nodes.back(), p1.tree.nodes.back());
@@ -248,6 +242,7 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 		if (!node0.volume.intersects(transformed_volume1)) {
 			return false;
 		}
+		bool split_node1 = false;
 		if (node0.is_leaf()) {
 			if (node1.is_leaf()) {
 				// direct face to face collision test
@@ -270,11 +265,12 @@ bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& cont
 				}
 				return c;
 			} else {
-				// check which child of node1 is closer to volume center of node0
+				split_node1 = true;
 			}
+		} else if (!node1.is_leaf() && node0.volume.radius < node1.volume.radius) {
+			split_node1 = true;
 		}
-		// split larger volume of this and other, go recursivly down all children
-		if (node0.volume.radius > node1.volume.radius || node1.is_leaf()) {
+		if (!split_node1) {
 			const auto& left_child_node = p0.tree.nodes[node0.tri_idx[0]];
 			const auto& right_child_node = p0.tree.nodes[node0.tri_idx[1]];
 			if (left_child_node.volume.center.square_distance(transformed_volume1.center) <
