@@ -663,7 +663,7 @@ void game::compute_max_view_dist()
 template<class T> void cleanup(std::unordered_map<sea_object_id, T>& s)
 {
 	for (auto it = s.begin(); it != s.end(); ) {
-		if (it->second.is_defunct()) {
+		if (it->second.is_dead()) {
 			it = s.erase(it);
 		} else {
 			++it;
@@ -676,7 +676,7 @@ template<class T> void cleanup(std::unordered_map<sea_object_id, T>& s)
 template<class T> void cleanup(std::vector<T>& s)
 {
 	for (auto it = s.begin(); it != s.end(); ) {
-		if (it->is_defunct()) {
+		if (it->is_dead()) {
 			it = s.erase(it);
 		} else {
 			++it;
@@ -831,13 +831,8 @@ void game::simulate_objects(double delta_t, bool record, double& nearest_contact
 			double dist = ship.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
-		try {
-			ship.simulate(delta_t, *this);
-			if (record) ship.remember_position(get_time());
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		ship.simulate(delta_t, *this);
+		if (record) ship.remember_position(get_time());
 	}
 
 	// ------------------------------ submarines ------------------------------
@@ -846,13 +841,8 @@ void game::simulate_objects(double delta_t, bool record, double& nearest_contact
 			double dist = submarine.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
-		try {
-			submarine.simulate(delta_t, *this);
-			if (record) submarine.remember_position(get_time());
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		submarine.simulate(delta_t, *this);
+		if (record) submarine.remember_position(get_time());
 	}
 
 	// ------------------------------ airplanes ------------------------------
@@ -861,53 +851,28 @@ void game::simulate_objects(double delta_t, bool record, double& nearest_contact
 			double dist = airplane.get_pos().distance(player->get_pos());
 			if (dist < nearest_contact) nearest_contact = dist;
 		}
-		try {
-			airplane.simulate(delta_t, *this);
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		airplane.simulate(delta_t, *this);
 	}
 
 	// ------------------------------ torpedoes ------------------------------
 	for (auto& torpedo : torpedoes) {
-		try {
-			torpedo.simulate(delta_t, *this);
-			if (record) torpedo.remember_position(get_time());
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		torpedo.simulate(delta_t, *this);
+		if (record) torpedo.remember_position(get_time());
 	}
 
 	// ------------------------------ depth_charges ------------------------------
 	for (auto& depth_charge : depth_charges) {
-		try {
-			depth_charge.simulate(delta_t, *this);
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		depth_charge.simulate(delta_t, *this);
 	}
 
 	// ------------------------------ gun_shells ------------------------------
 	for (auto& gun_shell : gun_shells) {
-		try {
-			gun_shell.simulate(delta_t, *this);
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		gun_shell.simulate(delta_t, *this);
 	}
 
 	// ------------------------------ water_splashes ------------------------------
 	for (auto& water_splash : water_splashes) {
-		try {
-			water_splash.simulate(delta_t, *this);
-		}
-		catch (sea_object::is_dead_exception& ) {
-			// nothing to do
-		}
+		water_splash.simulate(delta_t, *this);
 	}
 
 	// for convoys/particles it doesn't hurt to mix simulate() with compact().
@@ -919,7 +884,7 @@ void game::simulate_objects(double delta_t, bool record, double& nearest_contact
 	// ------------------------------ particles ------------------------------
 	for (unsigned i = 0; i < particles.size(); ++i) {
 		if (particles[i].get() == nullptr) continue;
-		if (particles[i]->is_defunct()) {
+		if (particles[i]->is_dead()) {
 			particles[i] = nullptr;
 		} else {
 			particles[i]->simulate(*this, delta_t);
@@ -2201,7 +2166,7 @@ void game::freeze_time()
 {
 	if (freezetime_start > 0)
 		THROW(error, "freeze_time() called twice!");
-	freezetime_start = sys().millisec();
+	freezetime_start = SYS().millisec();
 //	printf("time frozen at: %u\n", freezetime_start);
 }
 
@@ -2209,7 +2174,7 @@ void game::freeze_time()
 
 void game::unfreeze_time()
 {
-	unsigned freezetime_end = sys().millisec();
+	unsigned freezetime_end = SYS().millisec();
 //	printf("time UNfrozen at: %u (%u)\n", freezetime_end, freezetime_end - freezetime_start);
 	freezetime += freezetime_end - freezetime_start;
 	freezetime_start = 0;

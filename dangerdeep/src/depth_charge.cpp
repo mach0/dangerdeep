@@ -70,6 +70,10 @@ void depth_charge::save(xml_elem& parent) const
 
 void depth_charge::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	sea_object::simulate(delta_time, gm);
 
 	if (position.z < -explosion_depth) {

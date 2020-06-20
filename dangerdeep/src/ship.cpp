@@ -562,6 +562,10 @@ void ship::save(xml_elem& parent) const
 
 void ship::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	sea_object::simulate(delta_time, gm);
 
 	// screw animation

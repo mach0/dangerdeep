@@ -124,7 +124,7 @@ void sub_recogmanual_popup::display() const
 	// display background
 	user_popup::display();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	int off_x = 15;
 	int off_y = 82;
 	int off_text_x = 40;
@@ -145,5 +145,5 @@ void sub_recogmanual_popup::display() const
 	btn_left.draw();
 	btn_right.draw();
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }

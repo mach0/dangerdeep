@@ -588,11 +588,11 @@ void run()
     auto_ptr<glsl_shader_setup> glss;
     float cammove = 0;
     bool quit = false;
-    unsigned tm = sys().millisec();
+    unsigned tm = SYS().millisec();
     unsigned tm0 = tm;
     fpsmeasure fpsm(1.0f);
     while (!quit) {
-        auto events = sys().poll_event_queue();
+        auto events = SYS().poll_event_queue();
         for (auto& event : events) {
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
@@ -619,11 +619,11 @@ void run()
 
         glPushMatrix();
         glLoadIdentity();
-        float zang = 360.0 / 40 * (sys().millisec() - tm0) / 1000;
-        float zang2 = 360.0 / 200 * (sys().millisec() - tm0) / 1000;
+        float zang = 360.0 / 40 * (SYS().millisec() - tm0) / 1000;
+        float zang2 = 360.0 / 200 * (SYS().millisec() - tm0) / 1000;
         vector3 viewpos2 = viewpos + (angle(-zang2).direction() * 192).xy0();
 
-        float path_fac = myfrac((1.0 / 120) * (sys().millisec() - tm0) / 1000);
+        float path_fac = myfrac((1.0 / 120) * (SYS().millisec() - tm0) / 1000);
         vector3f campos = cam_path.value(path_fac);
         vector3f camlookat = cam_path.value(myfrac(path_fac + 0.01)) - vector3f(0, 0, 20);
         //camera cm(viewpos2, viewpos2 + angle(zang).direction().xyz(-0.25));
@@ -653,13 +653,13 @@ void run()
         // record fps
         float fps = fpsm.account_frame();
 
-        sys().prepare_2d_drawing();
+        SYS().prepare_2d_drawing();
         std::ostringstream oss;
         oss << "FPS: " << fps << "\n(all time total " << fpsm.get_total_fps() << ")";
         font_arial->print(0, 0, oss.str());
-        sys().unprepare_2d_drawing();
+        SYS().unprepare_2d_drawing();
 
-        sys().finish_frame();
+        SYS().finish_frame();
     }
 
     log_info("slowest frame " << fpsm.get_slowest_frame_time_ms() << "ms, fps total " <<
@@ -732,10 +732,10 @@ int mymain(std::vector<string>& args)
     // weather conditions and earth curvature allow 30km sight at maximum.
     system_interface::parameters params(1.0, 30000.0 + 500.0, res_x, res_y, fullscreen);
     system_interface::create_instance(new class system(params));
-    sys().set_res_2d(1024, 768);
+    SYS().set_res_2d(1024, 768);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    sys().gl_perspective_fovx(70, 4.0 / 3.0, 1.0, 30000);
+    SYS().gl_perspective_fovx(70, 4.0 / 3.0, 1.0, 30000);
     glMatrixMode(GL_MODELVIEW);
 
     log_info("Danger from the Deep");

@@ -456,6 +456,10 @@ int submarine::find_stored_torpedo(bool usebow)
 
 void submarine::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	// diveplane animation
 	if (diveplane_1_id >= 0) mymodel->set_object_angle(diveplane_1_id, -bow_depth_rudder.angle);
 	if (diveplane_2_id >= 0) mymodel->set_object_angle(diveplane_2_id, -stern_depth_rudder.angle);

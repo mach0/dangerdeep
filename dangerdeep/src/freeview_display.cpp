@@ -76,8 +76,8 @@ freeview_display::projection_data freeview_display::get_projection_data(game& gm
 	projection_data pd;
 	pd.x = 0;
 	pd.y = 0;
-	pd.w = sys().get_res_x();
-	pd.h = sys().get_res_y();
+	pd.w = SYS().get_res_x();
+	pd.h = SYS().get_res_y();
 	pd.fov_x = 70.0;
 	pd.near_z = 0.2;	// fixme: should be 1.0, but new conning tower needs 0.1 or so
 	pd.far_z = gm.get_max_view_distance();
@@ -115,9 +115,9 @@ void freeview_display::set_modelview_matrix(game& gm, const vector3& /*viewpos*/
 
 void freeview_display::post_display() const
 {
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	ui.draw_infopanel(true);
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 
@@ -441,11 +441,11 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	//glMatrixMode(GL_PROJECTION);
 	//glLoadIdentity();
 	// store the projection matrix
-	//sys().gl_perspective_fovx(pd.fov_x * 1.0, 1.0 /*aspect*/, pd.near_z, pd.far_z);
+	//SYS().gl_perspective_fovx(pd.fov_x * 1.0, 1.0 /*aspect*/, pd.near_z, pd.far_z);
 	//reflection_projmvmat = matrix4::get_gl(GL_PROJECTION_MATRIX) * matrix4::get_gl(GL_MODELVIEW_MATRIX);
 	//glLoadIdentity();
 	// set up projection matrix (new width/height of course) with a bit larger fov
-	//sys().gl_perspective_fovx(pd.fov_x * 1.0, 1.0 /*aspect*/, pd.near_z, pd.far_z);
+	//SYS().gl_perspective_fovx(pd.fov_x * 1.0, 1.0 /*aspect*/, pd.near_z, pd.far_z);
 	// -------- old end ------------
 
 	ui.get_water().refltex_render_bind();
@@ -585,7 +585,7 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 	glViewport(pd.x, pd.y, pd.w, pd.h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	sys().gl_perspective_fovx(pd.fov_x, double(pd.w)/double(pd.h), pd.near_z, pd.far_z);
+	SYS().gl_perspective_fovx(pd.fov_x, double(pd.w)/double(pd.h), pd.near_z, pd.far_z);
 	glMatrixMode(GL_MODELVIEW);
 
 

@@ -106,7 +106,7 @@ void sub_damage_display::display() const
 	// draw background and damage scheme
 	draw_elements();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	auto& gm = ui.get_game();
 	auto* mysub = dynamic_cast<submarine*>(gm.get_player());
@@ -175,7 +175,7 @@ void sub_damage_display::display() const
 		}
 	}
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

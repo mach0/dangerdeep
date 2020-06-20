@@ -223,8 +223,8 @@ water::water(double tm) :
 	// be seen as reflections. So why use them at all? they're rather costly!
 	// make them configureable? fixme
 	// fixme: make size configurable in parts of screen resolution
-	unsigned rx = sys().get_res_x();
-	unsigned ry = sys().get_res_y();
+	unsigned rx = SYS().get_res_x();
+	unsigned ry = SYS().get_res_y();
 	unsigned vps = texture::get_max_size();
 	const unsigned reflection_scale = use_hqsfx ? 1 : 2;
 	rx = std::min(rx, vps);
@@ -650,7 +650,7 @@ void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpo
 		// copy viewport data to foam-amount texture
 		foamamounttex->set_gl_texture();
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, afs, afs, 0);
-		glViewport(0, 0, sys().get_res_x(), sys().get_res_y());
+		glViewport(0, 0, SYS().get_res_x(), SYS().get_res_y());
 	}
 
 	// clean up
@@ -1509,7 +1509,7 @@ void water::wavetile_phase::mipmap_level::debug_dump()
 {
 #if 0
 	std::cout << "dump with res=" << resolution << " shift=" << resolution_shift << "\n";
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	{
 		// store heights as test image
 		std::ostringstream ossn;

@@ -228,7 +228,7 @@ void sub_torpedo_display::display() const
 	draw_elements();
 
 	// draw background
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	// draw sub model
 	//if (subtopsideview.get())//fixme later do not accept empty data
@@ -314,7 +314,7 @@ void sub_torpedo_display::display() const
 		font_vtremington12->print(400, 85, helper::str(sub->num_shells_remaining()), color(0,0,0));
 	}
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

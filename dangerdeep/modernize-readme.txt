@@ -97,6 +97,11 @@ Changes that have been started in code comparison:
 - BV Tree should use reserve for nodes, it would be better to give a mesh
   directly to bvtree and it reserves space for nodes (twice input) and then
   copies it!
+- add damageable_part from codemodernization
+- add a factor class storing values 0...1 maybe in units.h
+- unit classes should also define seamiles and knots and offer the conversion there from meters, m/s
+- use rigid_body physical_data in sea_object class, check what we did in codemodernization
+- class event as std::variant without user_interface!
 
 don't store target with every sea_object, only the user interface or player
 needs it!
@@ -107,8 +112,6 @@ A generic pointer to sea_object may be unnecessary, the objects can report their
 BV-Tree collision checks: the number of iterations here is insanely high.
 Maybe there is a faster algorithm or by converting recursion to iteration it
 is faster?
-
-rudder hard left seems not to work!
 
 
 Notes

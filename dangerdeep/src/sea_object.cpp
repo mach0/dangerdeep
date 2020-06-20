@@ -544,22 +544,12 @@ string sea_object::get_description(unsigned detail) const
 
 void sea_object::simulate(double delta_time, game& gm)
 {
-	// check and change states
-	if (alive_stat == defunct) {
-		// with that trick we do not need to handle this situation in every heir of sea_object.
-		throw is_dead_exception();
-	} else if (alive_stat == dead2) {
-		// change state to defunct.
-		alive_stat = defunct;
-		throw is_dead_exception();
-	} else if (alive_stat == dead) {
-		// change state to dead2.
-		alive_stat = dead2;
-		throw is_dead_exception();
+	if (!is_reference_ok()) {
+		return;
 	}
 
 	// check target. heirs should check for "out of range" condition too
-	if (gm.is_valid(target) && !gm.get_object(target).is_alive())//fixme we need game to check validity!!!
+	if (!gm.is_valid(target))
 		target = sea_object_id{};
 
 	// check if list of detected objects needs to be compressed.
@@ -720,8 +710,6 @@ unsigned sea_object::calc_damage() const
 
 void sea_object::set_inactive()
 {
-	if (alive_stat == defunct)
-		THROW(error, "illegal alive_stat switch (defunct to inactive)");
 	if (alive_stat == dead)
 		THROW(error, "illegal alive_stat switch (dead to inactive)");
 	alive_stat = inactive;
@@ -738,8 +726,6 @@ void sea_object::reanimate()
 
 void sea_object::kill()
 {
-	if (alive_stat == defunct)
-		THROW(error, "illegal alive_stat switch (defunct to inactive)");
 	alive_stat = dead;
 	// avoid that the AI accesses this object, so delete it
 	myai = nullptr;

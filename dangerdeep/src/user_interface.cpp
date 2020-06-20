@@ -161,7 +161,7 @@ user_interface::user_interface(game& gm) :
 	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<user_interface&>>(0, 0, 256, 32, texts::get(177), nullptr, [](auto& ui) { ui.request_abort(true); }, *this));
 	main_menu->add_child_near_last_child(std::make_unique<widget_caller_button<bool&>>(0, 0, 256, 32, texts::get(260), nullptr, [](auto& b) { b = false; }, main_menu_visible));
 	main_menu->clip_to_children_area();
-	vector2i mmp = sys().get_res_2d() - main_menu->get_size();
+	vector2i mmp = SYS().get_res_2d() - main_menu->get_size();
 	main_menu->set_pos(vector2i(mmp.x/2, mmp.y/2));
 
 	// create weather effects textures
@@ -372,23 +372,23 @@ void user_interface::display() const
 
 	// draw screen selector if visible
 	if (screen_selector_visible) {
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		screen_selector->draw();
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 	}
 
 	// draw music playlist if visible
 	if (playlist_visible) {
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		music_playlist->draw();
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 	}
 
 	// draw main_menu if visible
 	if (main_menu_visible) {
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		main_menu->draw();
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 	}
 }
 
@@ -500,7 +500,7 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
 			{
 				p += m.relative_motion_2d;
 				p = p.max(vector2i(0, 0));
-				p = p.min(sys().get_res_2d() - s);
+				p = p.min(SYS().get_res_2d() - s);
 				screen_selector->set_pos(p);
 				return true;
 			}
@@ -524,8 +524,8 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
 				if (p.x < 0) p.x = 0;
 				if (p.y < 0) p.y = 0;
 				// 2006-11-30 doc1972 negative pos and size of a playlist makes no sence, so we cast
-				if ((unsigned int)(p.x + s.x) > sys().get_res_x_2d()) p.x = sys().get_res_x_2d() - s.x;
-				if ((unsigned int)(p.y + s.y) > sys().get_res_y_2d()) p.y = sys().get_res_y_2d() - s.y;
+				if ((unsigned int)(p.x + s.x) > SYS().get_res_x_2d()) p.x = SYS().get_res_x_2d() - s.x;
+				if ((unsigned int)(p.y + s.y) > SYS().get_res_y_2d()) p.y = SYS().get_res_y_2d() - s.y;
 				music_playlist->set_pos(p);
 			}
 		}
@@ -589,14 +589,14 @@ void user_interface::show_target(double vx, double vy, double w, double h, const
 			// only when in front.
 			// transform to screen coordinates, using the projection coordinates
 			double x = (0.5 * tgtscr.x / tgtscr.w + 0.5) * w + vx;
-			double y = sys().get_res_y_2d()
+			double y = SYS().get_res_y_2d()
 				- ((0.5 * tgtscr.y / tgtscr.w + 0.5) * h + vy);
-			sys().prepare_2d_drawing();
+			SYS().prepare_2d_drawing();
 			primitives::triangle(vector2f(x-10, y+20),
 					     vector2f(x   , y+10),
 					     vector2f(x+10, y+20),
 					     colorf(1,0,0,0.5)).render();
-			sys().unprepare_2d_drawing();
+			SYS().unprepare_2d_drawing();
 		}
 	}
 }
@@ -721,7 +721,7 @@ void user_interface::draw_infopanel(bool onlytexts) const
 
 	// draw messages: fixme later move to separate function ?
 	double vanish_time = mygame->get_time() - message_vanish_time;
-	int y = (onlytexts ? sys().get_res_y_2d() : panel->get_pos().y)
+	int y = (onlytexts ? SYS().get_res_y_2d() : panel->get_pos().y)
 		- font_vtremington12->get_height();
 	for (auto it = messages.rbegin();
 	     it != messages.rend(); ++it) {
@@ -799,9 +799,9 @@ void user_interface::set_current_display(unsigned curdis)
 	// clear both screen buffers
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	sys().finish_frame();
+	SYS().finish_frame();
 	glClear(GL_COLOR_BUFFER_BIT);
-	sys().finish_frame();
+	SYS().finish_frame();
 
 	displays[current_display]->enter(daymode);
 	if (mygame)

@@ -333,8 +333,6 @@ unsigned convoy::get_nr_of_ships() const
 
 void convoy::simulate(double delta_time, game& gm)
 {
-	//if (is_defunct()) return;
-
 	//fixme: only control target every n seconds or so.
 	// compute global velocity. as first direction to destination.
 	// aim to next waypoint if that isn't already reached.

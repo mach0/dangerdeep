@@ -168,6 +168,6 @@ private:
 };
 
 // to make user's code even shorter
-inline class system_interface& sys() { return system_interface::instance(); }
+inline class system_interface& SYS() { return system_interface::instance(); }
 
 #endif
