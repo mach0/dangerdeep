@@ -90,7 +90,7 @@ void sub_captainscabin_display::display() const
 {
 	draw_elements();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	for (int i = et_begin; i != et_end; ++i) {
 		if (element_for_id(i).is_mouse_over(mouse_position)) {
 			font_vtremington12->print_hc(mouse_position.x, mouse_position.y - font_arial->get_height(),
@@ -99,7 +99,7 @@ void sub_captainscabin_display::display() const
 			break;
 		}
 	}
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

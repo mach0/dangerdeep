@@ -332,14 +332,14 @@ user_display::elem2D& user_display::element_for_id(unsigned id)
 
 void user_display::draw_elements(bool with_info_panel) const
 {
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	for (auto& e : elements) {
 		e.draw();
 	}
 	if (with_info_panel) {
 		ui.draw_infopanel();
 	}
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

@@ -85,7 +85,7 @@ void display_loading_screen()
 {
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	// display a nice loading image in the background
 	image* background;
@@ -99,8 +99,8 @@ void display_loading_screen()
 		font_arial->print(0, y, *it);
 		y += fh;
 	}
-	sys().unprepare_2d_drawing();
-	sys().finish_frame();
+	SYS().unprepare_2d_drawing();
+	SYS().finish_frame();
 }
 
 void reset_loading_screen()
@@ -109,12 +109,12 @@ void reset_loading_screen()
 	loading_screen_messages.emplace_back("Loading...");
 	log_info("Loading...");
 	display_loading_screen();
-	starttime = sys().millisec();
+	starttime = SYS().millisec();
 }
 
 void add_loading_screen(const string& msg)
 {
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	unsigned deltatime = tm - starttime;
 	starttime = tm;
 	ostringstream oss;

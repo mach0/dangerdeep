@@ -316,6 +316,10 @@ void torpedo::save(xml_elem& parent) const
 
 void torpedo::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	/*
 	log_debug("torpedo  " << this << " heading " << heading.value() << " should head to " << head_to.value() << " turn speed " << turn_velocity << "\n"
 		  << " position " << position << " orientation " << orientation << " run_length " << run_length << "\n"

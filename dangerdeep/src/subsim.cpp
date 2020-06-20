@@ -376,7 +376,7 @@ game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
 	// used for credits background etc.
 
 	unsigned frames = 1;
-	unsigned lasttime = sys().millisec();
+	unsigned lasttime = SYS().millisec();
 	unsigned lastframes = 1;
 	double fpstime = 0;
 	double totaltime = 0;
@@ -388,12 +388,12 @@ game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
 	ui->display();
 
 	ui->request_abort(false);
-	sys().add_input_event_handler(ui);
+	SYS().add_input_event_handler(ui);
 
 	while (gm.get_run_state() == game::running && !ui->abort_requested()) {
 		// this time_scaling is bad. hits may get computed wrong when time
 		// scaling is too high. fixme
-		unsigned thistime = sys().millisec();
+		unsigned thistime = SYS().millisec();
 		if (gm.get_freezetime_start() > 0)
 			THROW(error, "freeze_time() called without unfreeze_time() call");
 		lasttime += gm.process_freezetime();
@@ -429,9 +429,9 @@ game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
 		}
 
 		// this also fetches input events to the handlers
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
-	sys().remove_input_event_handler(ui);
+	SYS().remove_input_event_handler(ui);
 
 	ui->pause_all_sound();
 
@@ -1200,9 +1200,9 @@ void apply_mode(widget_list* wlg)
 	// try to set video mode BEFORE writing to config file, so that if video mode
 	// is broken, user is not forced to same mode again on restart
 	try {
-		auto params = sys().get_parameters();
+		auto params = SYS().get_parameters();
 		params.resolution = {width, height};
-		sys().set_parameters(params);
+		SYS().set_parameters(params);
 		cfg::instance().set("screen_res_y",int(height));
 		cfg::instance().set("screen_res_x",int(width));
 		glClearColor(0, 0, 0, 0);
@@ -1216,14 +1216,14 @@ void apply_mode(widget_list* wlg)
 
 void menu_resolution()
 {
-	auto& available_resolutions = sys().get_available_resolutions();
+	auto& available_resolutions = SYS().get_available_resolutions();
 
 	widget w(0, 0, 1024, 768, "", nullptr, "titlebackgr.jpg");
 	auto wm = std::make_unique<widget_menu>(0, 0, 400, 40, texts::get(106));
 
 	auto wlg = std::make_unique<widget_list>(0, 0, 400, 400);
 
-	vector2i curr_res(sys().get_res_x(), sys().get_res_y());
+	vector2i curr_res(SYS().get_res_x(), SYS().get_res_y());
 	unsigned curr_entry = 0;
 	unsigned i = 0;
 	for (auto available_resolution : available_resolutions) {
@@ -1259,7 +1259,7 @@ void configure_key(widget_list* wkeys)
 				return;
 			}
 			cfg::instance().set_key(keynr, kc, km);
-			keyname->set_text(sys().get_key_name(kc, km));
+			keyname->set_text(SYS().get_key_name(kc, km));
 			redraw();
 		}
 		confkey_widget(int x, int y, int w, int h, const string& text_, widget* parent_,
@@ -1267,7 +1267,7 @@ void configure_key(widget_list* wkeys)
 			widget(x, y, w, h, text_, parent_, backgrimg), keynr(key_command(sel)) // fixme later use key_command in widget directly!
 			{
 				auto k = cfg::instance().getkey(keynr);
-				keyname = &add_child(std::make_unique<widget_text>(40, 80, 432, 40, sys().get_key_name(k.keycode, k.keymod)));
+				keyname = &add_child(std::make_unique<widget_text>(40, 80, 432, 40, SYS().get_key_name(k.keycode, k.keymod)));
 				add_child(std::make_unique<widget_text>(40, 120, 432, 40, texts::get(217)));
 			}
 		~confkey_widget() override = default;
@@ -1279,7 +1279,7 @@ void configure_key(widget_list* wkeys)
 	w.add_child(std::make_unique<widget_text>(40, 40, 432, 32, wks));
 	widget::run(w, 0, true);
 	auto k = cfg::instance().getkey(key_command(sel));
-	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + sys().get_key_name(k.keycode, k.keymod));
+	wkeys->set_entry(sel, texts::get(sel+600) + string("\t") + SYS().get_key_name(k.keycode, k.keymod));
 }
 
 
@@ -1292,7 +1292,7 @@ void menu_configure_keys()
 
 	for (unsigned i = 600; i < 600 + unsigned(key_command::number); ++i) {
 		cfg::key k = cfg::instance().getkey(key_command(i-600));
-		wkeys.append_entry(texts::get(i) + string("\t") + sys().get_key_name(k.keycode, k.keymod));
+		wkeys.append_entry(texts::get(i) + string("\t") + SYS().get_key_name(k.keycode, k.keymod));
 	}
 
 	// fixme: handle undefined keys!
@@ -1908,7 +1908,7 @@ int mymain(std::vector<string>& args)
 	texture::use_anisotropic_filtering = mycfg.getb("use_ani_filtering");
 	texture::anisotropic_level = mycfg.getf("anisotropic_level");
 	system_interface::create_instance(new class system_interface(params));
-	sys().set_screenshot_directory(savegamedirectory);
+	SYS().set_screenshot_directory(savegamedirectory);
 	global_data::instance();	// create fonts
 	reset_loading_screen();
 	widget::set_image_cache(&(imagecache()));
@@ -1948,16 +1948,16 @@ int mymain(std::vector<string>& args)
 
 				glClearColor(0, 0, 1, 0);
 				glClear(GL_COLOR_BUFFER_BIT);
-				sys().prepare_2d_drawing();
+				SYS().prepare_2d_drawing();
 				font_arial->print(0, 0, str_problems.str());
-				sys().unprepare_2d_drawing();
-				sys().finish_frame();
+				SYS().unprepare_2d_drawing();
+				SYS().finish_frame();
 				bool quit = false;
 				input_event_handler_custom ic;
 				ic.set_handler([&quit](const input_event_handler::mouse_click_data& mc) { if (mc.up()) quit = true; return true; });
 				ic.set_handler([&quit](const input_event_handler::key_data& kd) { if (kd.keycode == key_code::ESCAPE) quit = true; return true; });
 				while (!quit) {
-					sys().finish_frame();
+					SYS().finish_frame();
 				}
 				throw system_interface::quit_exception(-1);
 			}

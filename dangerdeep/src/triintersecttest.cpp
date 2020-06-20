@@ -72,7 +72,7 @@ int mymain(std::vector<string>& args)
 
 	system_interface::parameters params(1.0, 1000.0, 1024, 768, false);
 	system_interface::create_instance(new class system(params));
-	sys().set_res_2d(1024, 768);
+	SYS().set_res_2d(1024, 768);
 	
 	srand(time(0));
 	vector3f triab[6];
@@ -95,7 +95,7 @@ int mymain(std::vector<string>& args)
 
 	// hier laufen lassen
 	for (bool doquit = false; !doquit; ) {
-		auto events = sys().poll_event_queue();
+		auto events = SYS().poll_event_queue();
 		for (auto& event : events) {
 			if (event.type == SDL_KEYDOWN) {
 				switch (event.key.keysym.sym) {
@@ -129,7 +129,7 @@ int mymain(std::vector<string>& args)
 				default: break;
 				}
 			} else if (event.type == SDL_MOUSEMOTION) {
-				vector2 motion = sys().translate_motion(event);
+				vector2 motion = SYS().translate_motion(event);
 				if (event.motion.state & SDL_BUTTON_RMASK) {
 					vector3f& v = triab[tria_or_b + vn];
 					float& f0 = (&v.x)[moveaxis];
@@ -175,7 +175,7 @@ int mymain(std::vector<string>& args)
 		glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(glsl_shader_setup::idx_c_color);
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 
 	system_interface::destroy_instance();

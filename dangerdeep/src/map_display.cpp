@@ -543,7 +543,7 @@ void map_display::display() const
 
 	vector2 offset = player->get_pos().xy() + mapoffset;
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	float delta = MAPGRIDSIZE*mapzoom;
 	float sx = helper::mod(512.f, delta)-helper::mod(offset.x, double(MAPGRIDSIZE))*mapzoom;
@@ -760,7 +760,7 @@ void map_display::display() const
 	}
 
 	ui.draw_infopanel();
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 
 }
 

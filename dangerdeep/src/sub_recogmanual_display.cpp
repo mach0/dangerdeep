@@ -70,7 +70,7 @@ void sub_recogmanual_display::display() const
 	// display background
 	draw_elements();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	int off_x = 82;
 	int off_y = 82;
@@ -95,7 +95,7 @@ void sub_recogmanual_display::display() const
 
 	btn_left.draw();
 	btn_right.draw();
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

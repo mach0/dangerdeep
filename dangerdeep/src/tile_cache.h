@@ -150,7 +150,7 @@ T tile_cache<T>::get_value(vector2i coord)
 template<class T>
 inline void tile_cache<T>::free_slot() 
 {
-	unsigned long min = sys().millisec();
+	unsigned long min = SYS().millisec();
 	vector2i min_key;
 	for (auto it = tile_list.begin(); it != tile_list.end(); it++) {
 		if (it->second.get_last_access()<=min) {
@@ -165,7 +165,7 @@ template<class T>
 inline void tile_cache<T>::erase_expired() 
 {
 	if (configuration.expire>0) {
-		long time = sys().millisec();
+		long time = SYS().millisec();
 		for (auto it = tile_list.begin(); it != tile_list.end();)
 			if (time-it->second.get_last_access() >= configuration.expire) {
 				tile_list.erase(it++);

@@ -71,7 +71,7 @@ void ships_sunk_display::display() const
 	draw_elements();
 
 	auto& gm = ui.get_game();
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	unsigned j = first_displayed_object;
 	const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
@@ -125,7 +125,7 @@ void ships_sunk_display::display() const
 
 	ui.draw_infopanel();
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

@@ -162,8 +162,8 @@ int mymain(std::vector<string>& args)
 
 	system_interface::parameters params(1.0, 1000.0, res_x, res_y, false);
 	system_interface::create_instance(new class system(params));
-	sys().set_res_2d(640, 480);
-	sys().set_max_fps(25);
+	SYS().set_res_2d(640, 480);
+	SYS().set_max_fps(25);
 	
 	log_info("A simple 2D test for ATI cards");
 
@@ -288,7 +288,7 @@ int mymain(std::vector<string>& args)
 		glCullFace(GL_BACK);
 		glEnable(GL_LIGHTING);
 
-		sys().finish_frame();
+		SYS().finish_frame();
 
 		SDL_Delay( 5000 );
 	}

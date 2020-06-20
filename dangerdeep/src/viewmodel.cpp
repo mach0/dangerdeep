@@ -253,13 +253,13 @@ void view_model(const string& modelfilename, const string& datafilename)
 	std::cout << "Inside: " << total_in << " of " << ii.size() << "\n";
 
 	/* // test code
-	unsigned t1 = sys().millisec();
+	unsigned t1 = SYS().millisec();
 	for (int i = 0; i < 1000; ++i)
 		mdl->get_mesh(0).compute_center_of_gravity();
-	unsigned t2 = sys().millisec();
+	unsigned t2 = SYS().millisec();
 	for (int i = 0; i < 1000; ++i)
 		mdl->get_mesh(0).compute_inertia_tensor();
-	unsigned t3 = sys().millisec();
+	unsigned t3 = SYS().millisec();
 	std::cout << "Time A = " << t2-t1 << " Time B = " << t3-t2 << "\n";
 	*/
 
@@ -332,7 +332,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 	msh->compile();
 	mdl->compile();
 
-	unsigned time1 = sys().millisec();
+	unsigned time1 = SYS().millisec();
 	double ang = 0;
 
 	model::mesh* lightsphere = make_mesh::sphere(5.0f, 5.0f, 8, 8, 1, 1, true, "sun");
@@ -344,8 +344,8 @@ void view_model(const string& modelfilename, const string& datafilename)
 
 	unsigned frames = 1;
 	unsigned lastframes = 1;
-	double fpstime = sys().millisec() / 1000.0;
-	double totaltime = sys().millisec() / 1000.0;
+	double fpstime = SYS().millisec() / 1000.0;
+	double totaltime = SYS().millisec() / 1000.0;
 	double measuretime = 5;	// seconds
 
 	unsigned max_objects=0;
@@ -477,11 +477,11 @@ void view_model(const string& modelfilename, const string& datafilename)
 			smoke_pos.z = 0;
 		return true;
 	});
-	sys().add_input_event_handler(ic);
+	SYS().add_input_event_handler(ic);
 
 	while (!doquit) {
 		// rotate light
-		unsigned time2 = sys().millisec();
+		unsigned time2 = SYS().millisec();
 		if (lightmove && time2 > time1) {
 			ang_delta = LIGHT_ANG_PER_SEC*(time2-time1)/1000.0;
 			ang += ang_delta;
@@ -634,7 +634,7 @@ void view_model(const string& modelfilename, const string& datafilename)
 			glColor4f(1,1,1,1);
 		}
 
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		vector3f minp = mdl->get_min(), maxp = mdl->get_max();
 		ostringstream os;
 		os << "A simple model viewer for Danger from the Deep.\n"
@@ -701,18 +701,18 @@ void view_model(const string& modelfilename, const string& datafilename)
 			}
 		}
 
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 
 		// record fps
 		++frames;
-		totaltime = sys().millisec() / 1000.0;
+		totaltime = SYS().millisec() / 1000.0;
 		if (totaltime - fpstime >= measuretime) {
 			fpstime = totaltime;
 			log_info("fps " << (frames - lastframes)/measuretime);
 			lastframes = frames;
 		}
 
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 
 	delete msh;

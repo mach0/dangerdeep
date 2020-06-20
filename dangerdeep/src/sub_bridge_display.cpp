@@ -49,8 +49,8 @@ freeview_display::projection_data sub_bridge_display::get_projection_data(game& 
 	if (element_for_id(et_glasses).is_visible()) {
 		pd.x = 0;
 		pd.y = 0;
-		pd.w = sys().get_res_x();
-		pd.h = sys().get_res_x();
+		pd.w = SYS().get_res_x();
+		pd.h = SYS().get_res_x();
 		pd.fov_x = 20.0;
 	}
 	return pd;

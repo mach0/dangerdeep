@@ -485,7 +485,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 				add_message(texts::get(269));
 			}
 		} else if ( is_configured_key(key_command::TAKE_SCREENSHOT, k) ) {
-			sys().screenshot();
+			SYS().screenshot();
 			log_info("screenshot taken.");
 
 		// DEFAULT
@@ -497,7 +497,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 				request_abort();
 				break;
 /*			case key_command::PRINT:
-				sys().screenshot();
+				SYS().screenshot();
 				log_info("screenshot taken.");
 				break;*/
 			case key_code::PAUSE:

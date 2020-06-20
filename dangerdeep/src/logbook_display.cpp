@@ -117,7 +117,7 @@ void logbook_display::display() const
 
 	draw_elements();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	// print rest of part from previous double page, if available
 	if ((first_entry_cp_left > 0 && entry_page_and_line[first_entry_cp_left].second > 0) ||
@@ -177,7 +177,7 @@ void logbook_display::display() const
 
 	// ui.draw_infopanel(); // already done in draw_elements
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }
 
 

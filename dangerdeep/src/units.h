@@ -49,9 +49,9 @@ enum class physical_unit
 template<typename T, physical_unit P> struct physical_value
 {
 	/// The value itself, can be number or vector
-	T value;
+	T value{T(0)};
 	/// Default constructor
-	physical_value() : value{} {}
+	physical_value() = default;
 	/// Explicit construction, use with care
 	physical_value(T v) : value(v) {}
 	/// Rotate 3d values
@@ -70,6 +70,8 @@ template<physical_unit P> auto operator* (const matrix3& m, const physical_value
 
 /// Duration in seconds
 typedef physical_value<double, physical_unit::duration> duration;
+duration& operator-= (duration& a, const duration& b) { a.value -= b.value; return a; }
+bool operator> (duration& a, const duration& b) { return a.value > b.value; }
 
 /// Time stamp in seconds
 typedef physical_value<double, physical_unit::time_point> time_point;

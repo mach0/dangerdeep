@@ -278,6 +278,10 @@ void gun_shell::check_collision_voxel(game& gm, const ship& s, const vector3f& o
 
 void gun_shell::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	check_collision(gm);
 	oldpos = position;
 	sea_object::simulate(delta_time, gm);

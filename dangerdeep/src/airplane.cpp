@@ -57,6 +57,10 @@ void airplane::save(xml_elem& parent) const
 
 void airplane::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	quaternion invrot = orientation.conj();
 	vector3 localvelocity = invrot.rotate(velocity);
 

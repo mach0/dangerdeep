@@ -121,12 +121,12 @@ int mymain(std::vector<string>& args)
 		}
 		return true;
 	});
-	sys().add_input_event_handler(ic);
+	SYS().add_input_event_handler(ic);
 
 	while (!doquit) {
-		td.set_time(sys().millisec() / 1000.0);
+		td.set_time(SYS().millisec() / 1000.0);
 		td.display();
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 
 	system_interface::destroy_instance();

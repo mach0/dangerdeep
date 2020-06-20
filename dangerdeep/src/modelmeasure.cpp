@@ -104,7 +104,7 @@ void measure_model(double angle, ostringstream& osscs)
 	}
 	double crosssection = screenarea_meters * filledpixels / screen_pixels;
 	osscs << crosssection << " ";
-	sys().finish_frame();
+	SYS().finish_frame();
 }
 
 
@@ -115,14 +115,14 @@ void measure_mass_distribution(const std::string& massmapfn, const vector3i& res
 	glClear(GL_COLOR_BUFFER_BIT);
 	texture massmap(massmapfn, texture::LINEAR, texture::CLAMP);
 	glEnable(GL_TEXTURE_2D);
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	massmap.draw(0, 0, res_x, res_y);
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 	glDisable(GL_TEXTURE_2D);
 	unsigned screen_pixels = res_x*res_y;
 	vector<uint8_t> pic(screen_pixels*3);
 	glReadPixels(0, 0, res_x, res_y, GL_RGB, GL_UNSIGNED_BYTE, &pic[0]);
-	sys().finish_frame();
+	SYS().finish_frame();
 	float allmass = 0;
 	for (int z = 0; z < resolution.z; ++z) {
 		for (int y = 0; y < resolution.y; ++y) {
@@ -371,7 +371,7 @@ int mymain(std::vector<string>& args)
 
 	vector<float> is_inside(resolution.x*resolution.y*resolution.z);
 	// start workers and let them compute data, then wait for them to finish
-	unsigned tm0 = sys().millisec();
+	unsigned tm0 = SYS().millisec();
 	{
 		mutex ctrmtx;
 		int ctr = resolution.z * resolution.y;
@@ -380,7 +380,7 @@ int mymain(std::vector<string>& args)
 		::thread::ptr<worker> w1(new worker(*mdl, is_inside, resolution, 1, 2, ctr, ctrmtx, samples_per_voxel));
 		w0->start();
 		w1->start();
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		while (ctr > 0) {
 			int w = res_x - res_x * ctr / (resolution.z * resolution.y);
 			primitive_col<4> qd(GL_QUADS);
@@ -393,13 +393,13 @@ int mymain(std::vector<string>& args)
 			qd.colors[1] = colorf(0, 0, 1);
 			qd.colors[0] = colorf(0, 0, 1);
 			qd.render();
-			sys().finish_frame();
+			SYS().finish_frame();
 			::thread::sleep(100);
 		}
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 	}
 	cout << "\n";
-	unsigned tm1 = sys().millisec();
+	unsigned tm1 = SYS().millisec();
 	cout << "time needed " << tm1-tm0 << "\n";
 
 	unsigned nr_inside = 0;
@@ -457,8 +457,8 @@ int mymain(std::vector<string>& args)
 		glRotated(-90.0, 1, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		mdl->get_base_mesh().display();
-		sys().finish_frame();
-		sys().screenshot(modelfilename.substr(0, st) + ".mass_map_draft");
+		SYS().finish_frame();
+		SYS().screenshot(modelfilename.substr(0, st) + ".mass_map_draft");
 		::thread::sleep(3000);
 	}
 

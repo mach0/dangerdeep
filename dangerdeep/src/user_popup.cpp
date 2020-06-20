@@ -78,10 +78,10 @@ user_popup::user_popup(user_interface& ui_, const char* popup_name)
 
 void user_popup::display() const
 {
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 	bool is_day = ui.get_game().is_day_mode();
 	for (auto& elem : elements) {
 		elem.draw(is_day);
 	}
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }

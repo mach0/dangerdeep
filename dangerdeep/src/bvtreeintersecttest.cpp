@@ -233,7 +233,7 @@ int mymain(std::vector<string>& args)
 		}
 		return false;
 	});
-	sys().add_input_event_handler(ic);
+	SYS().add_input_event_handler(ic);
 
 	// hier laufen lassen
 	while (!doquit) {
@@ -305,7 +305,7 @@ int mymain(std::vector<string>& args)
 			}
 		}
 
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 	ic = nullptr;
 

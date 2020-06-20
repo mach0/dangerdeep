@@ -63,32 +63,10 @@ public:
 	sea_object(sea_object&& ) = default;
 	sea_object& operator= (sea_object&& ) = default;
 
-	/// special class to make handling of dead/defunct objects easier.
-	class is_dead_exception : public error
-	{
-	public:
-		is_dead_exception() : error("", "dead!") {}
-	};
-
 	// inactive means burning, sinking etc. it just means AI does nothing sensible.
 	// objects can be inactive for any time.
-	// when they should be removed, they are set to "dead" state,
-	// which they are for exactly one simulation step (one frame),
-	// then set to "dead2" for one more step,
-	// then their state is set to "defunct".
-	// They stay defunct for exactly one further step,
-	// then are deleted (removed from storage).
-	// ANY object storing pointers to sea_objects (or heirs of sea_object) MUST
-	// clear those pointers when the target object is dead or even defunct.
-	// setting dead state is done by kill()
-	// this technique guarantees that dead objects exists at least one round, so other objects can clear
-	// their pointers to this object avoiding a segfault.
-	// Callers MUST NOT be allowed to set "defunct" state directly.
-	// Callers MUST NOT be allowed to set state from dead to anything else.
-	// Why these many states? when an object is killed() in game::simulate in the same round
-	// where its own simulate() would get called, but *before* that, its makes two state
-	// changes in one round, leading to error/crash.
-	enum alive_status { defunct, dead2, dead, inactive, alive };
+	// when they should be removed, they are set to "dead" state.
+	enum alive_status { dead, inactive, alive };
 
 	//fixme: should move to damageable_part class ...
 	enum damage_status { nodamage, lightdamage, mediumdamage, heavydamage, wrecked };
@@ -319,8 +297,7 @@ public:
 	virtual void reanimate();
 #endif//CODE_MODE
 
-	virtual bool is_defunct() const { return alive_stat == defunct; }
-	virtual bool is_dead() const { return alive_stat == dead || alive_stat == dead2; }
+	virtual bool is_dead() const { return alive_stat == dead; }
 	virtual bool is_inactive() const { return alive_stat == inactive; }
 	virtual bool is_alive() const { return alive_stat == alive; }
 	virtual bool is_reference_ok() const { return alive_stat == alive || alive_stat == inactive; }

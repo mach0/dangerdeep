@@ -138,7 +138,7 @@ void run()
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	sys().gl_perspective_fovx(70, 4.0/3.0, 0.1, 1000);
+	SYS().gl_perspective_fovx(70, 4.0/3.0, 0.1, 1000);
 	glMatrixMode(GL_MODELVIEW);
 
 	glDisable(GL_LIGHTING);
@@ -146,7 +146,7 @@ void run()
 	vector3 viewangles(0, 0, 0);
 	vector3 pos(1.5, 1.5, 0.3);
 
-	double tm0 = sys().millisec();
+	double tm0 = SYS().millisec();
 	int mv_forward = 0, mv_upward = 0, mv_sideward = 0;
 
 	fpsmeasure fpsm(1.0f);
@@ -201,10 +201,10 @@ void run()
 		}
 		return false;
 	});
-	sys().add_input_event_handler(ic);
+	SYS().add_input_event_handler(ic);
 
 	while (!doquit) {
-		double tm1 = sys().millisec();
+		double tm1 = SYS().millisec();
 		double delta_t = tm1 - tm0;
 		tm0 = tm1;
 
@@ -233,7 +233,7 @@ void run()
 		frustum viewfrustum(viewwindow, pos, 0.1 /* fixme: read from matrix! */);
 
 		// set light
-		vector3 ld(cos((sys().millisec()%10000)*2*3.14159/10000), sin((sys().millisec()%10000)*2*3.14159/10000), 1.0);
+		vector3 ld(cos((SYS().millisec()%10000)*2*3.14159/10000), sin((SYS().millisec()%10000)*2*3.14159/10000), 1.0);
 		ld.normalize();
 		GLfloat lposition[4] = {static_cast<GLfloat>(ld.x),static_cast<GLfloat>(ld.y),static_cast<GLfloat>(ld.z),0};
 		glLightfv(GL_LIGHT0, GL_POSITION, lposition);
@@ -264,12 +264,12 @@ void run()
 		// record fps
 		float fps = fpsm.account_frame();
 
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		std::ostringstream oss; oss << "FPS: " << fps << "\n(all time total " << fpsm.get_total_fps() << ")";
 		font_arial->print(0, 0, oss.str());
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 
 	delete terraintex;

@@ -63,7 +63,7 @@ void sub_soldbuch_display::display() const
 	std::stringstream ss;
 
 	// draw background
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	// specify the primary ovberlay's coords
 	auto offset = element_for_id(et_overlay).get_position();
@@ -117,5 +117,5 @@ void sub_soldbuch_display::display() const
 	//identification
 	font_jphsl->print(offset.x+125, offset.y+313, pi.name + "/" + pi.soldbuch_nr, color(20, 20, 30));
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 }

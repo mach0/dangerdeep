@@ -33,7 +33,7 @@ fpsmeasure::fpsmeasure(float mi)
 
 float fpsmeasure::account_frame()
 {
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	if (nr_frames == 0) {
 		tm0 = tm;
 		tm_lastframe = tm;
@@ -56,6 +56,6 @@ float fpsmeasure::account_frame()
 
 float fpsmeasure::get_total_fps() const
 {
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	return (nr_frames - 1) * 1000.0f / (tm - tm0);
 }
