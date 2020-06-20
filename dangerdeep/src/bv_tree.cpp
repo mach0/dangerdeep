@@ -170,138 +170,190 @@ bool bv_tree::is_inside(const vector3f& v) const
 
 bool bv_tree::collides(const param& p0, const param& p1, std::vector<vector3f>& contact_points)
 {
-	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	auto transformed_volume0 = p0.get_transformed_volume();
-	auto transformed_volume1 = p1.get_transformed_volume();
-	if (!transformed_volume0.intersects(transformed_volume1)) {
-		return false;
-	}
+	// fixme: code is identical except one contact_point is delivered or pushed_back. We need a solution to have that code only once!
 
-	// handle case that this is a leaf node
-	if (p0.is_leaf()) {
-		// we have a leaf node
-		if (p1.is_leaf()) {
-			// direct face to face collision test
-			// handle transform here
-			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[0]]);
-			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[1]]);
-			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[2]]);
-			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[0]]);
-			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[1]]);
-			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[2]]);
-			// note that degenerated triangles would be a critical problem here, but
-			// they would have a bounding sphere of radius zero and thus we
-			// never would compare with them, so we don't need to check for them
-			// here.
-			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
-			if (c) {
-				// fixme: compute more accurate position here, maybe
-				// weight by triangle area between centers of triangles.
-				contact_points.push_back((v0t+v1t+v2t+v3t+v4t+v5t)*(1.f/6));
-			}
-			return c;
-		} else {
-			// other node is no leaf, recurse there, swap roles of this and other
-			bool col1 = collides(p1.children(0), p0, contact_points);
-			bool col2 = collides(p1.children(1), p0, contact_points);
-			return col1 || col2;
+	// Transform vertices of p1 and then compare to p0
+	const auto inverse_p0_tree_transform = p0.transform.inverse();
+	const auto combined_transform = inverse_p0_tree_transform * p1.transform;
+	const auto combined_inverse_transform = p1.transform.inverse() * p0.transform;
+	// Iterate over tree of p0, p1 and check for intersections, closest child first
+	std::function<bool(const bv_tree::node&, const bv_tree::node& )> check_intersection;
+	check_intersection = [&](const bv_tree::node& node0, const bv_tree::node& node1) {
+		const auto transformed_volume1 = spheref(combined_transform.mul4vec3xlat(node1.volume.center), node1.volume.radius);
+		if (!node0.volume.intersects(transformed_volume1)) {
+			return false;
 		}
-	}
-
-	// split larger volume of this and other, go recursivly down all children
-	if (p0.get_node().volume.radius > p1.get_node().volume.radius || p1.is_leaf()) {
-		// recurse this node, so don't swap roles of this and other
-		bool col1 = collides(p0.children(0), p1, contact_points);
-		bool col2 = collides(p0.children(1), p1, contact_points);
-		return col1 || col2;
-	} else {
-		// recurse other node - other is no leaf here, swap roles of this and other
-		bool col1 = collides(p1.children(0), p0, contact_points);
-		bool col2 = collides(p1.children(1), p0, contact_points);
-		return col1 || col2;
-	}
+		if (node0.is_leaf()) {
+			if (node1.is_leaf()) {
+				// direct face to face collision test
+				// handle transform here
+				const auto& v0t = p0.vertices[node0.tri_idx[0]];
+				const auto& v1t = p0.vertices[node0.tri_idx[1]];
+				const auto& v2t = p0.vertices[node0.tri_idx[2]];
+				vector3f v3t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[0]]);
+				vector3f v4t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[1]]);
+				vector3f v5t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[2]]);
+				// note that degenerated triangles would be a critical problem here, but
+				// they would have a bounding sphere of radius zero and thus we
+				// never would compare with them, so we don't need to check for them
+				// here.
+				bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
+				if (c) {
+					// fixme: compute more accurate position here, maybe
+					// weight by triangle area between centers of triangles.
+					contact_points.push_back(p0.transform.mul4vec3xlat((v0t+v1t+v2t+v3t+v4t+v5t) * (1.f/6)));
+				}
+				return c;
+			} else {
+				// check which child of node1 is closer to volume center of node0
+			}
+		}
+		// split larger volume of this and other, go recursivly down all children
+		if (node0.volume.radius > node1.volume.radius || node1.is_leaf()) {
+			const auto& left_child_node = p0.tree.nodes[node0.tri_idx[0]];
+			const auto& right_child_node = p0.tree.nodes[node0.tri_idx[1]];
+			if (left_child_node.volume.center.square_distance(transformed_volume1.center) <
+					right_child_node.volume.center.square_distance(transformed_volume1.center)) {
+				return check_intersection(left_child_node, node1) || check_intersection(right_child_node, node1);
+			} else {
+				return check_intersection(right_child_node, node1) || check_intersection(left_child_node, node1);
+			}
+		} else {
+			const auto& left_child_node = p1.tree.nodes[node1.tri_idx[0]];
+			const auto& right_child_node = p1.tree.nodes[node1.tri_idx[1]];
+			const auto transformed_volume0_center = combined_inverse_transform.mul4vec3xlat(node0.volume.center);
+			if (left_child_node.volume.center.square_distance(transformed_volume0_center) <
+					right_child_node.volume.center.square_distance(transformed_volume0_center)) {
+				return check_intersection(node0, left_child_node) || check_intersection(node0, right_child_node);
+			} else {
+				return check_intersection(node0, right_child_node) || check_intersection(node0, left_child_node);
+			}
+		}
+	};
+	return check_intersection(p0.tree.nodes.back(), p1.tree.nodes.back());
 }
 
 
 
 bool bv_tree::closest_collision(const param& p0, const param& p1, vector3f& contact_point)
 {
-	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	auto transformed_volume0 = p0.get_transformed_volume();
-	auto transformed_volume1 = p1.get_transformed_volume();
-	if (!transformed_volume0.intersects(transformed_volume1)) {
-		return false;
-	}
-
-	// handle case that this is a leaf node
-	if (p0.is_leaf()) {
-		// we have a leaf node
-		if (p1.is_leaf()) {
-			// direct face to face collision test
-			// handle transform here
-			vector3f v0t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[0]]);
-			vector3f v1t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[1]]);
-			vector3f v2t = p0.transform.mul4vec3xlat(p0.vertices[p0.get_node().tri_idx[2]]);
-			vector3f v3t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[0]]);
-			vector3f v4t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[1]]);
-			vector3f v5t = p1.transform.mul4vec3xlat(p1.vertices[p1.get_node().tri_idx[2]]);
-			// note that degenerated triangles would be a critical problem here, but
-			// they would have a bounding sphere of radius zero and thus we
-			// never would compare with them, so we don't need to check for them
-			// here.
-			bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
-			if (c) {
-				// fixme: compute more accurate position here, maybe
-				// weight by triangle area between centers of triangles.
-				contact_point = (v0t+v1t+v2t+v3t+v4t+v5t)*(1.f/6);
-			}
-			// If we give false here the whole tree will get checked...
-			// But then mission immediatly stops.
-			return c;
-		} else {
-			// other node is no leaf, recurse there, swap roles of this and other
-			// use logical or to return on first true result
-			unsigned i = p1.get_index_of_closer_child(transformed_volume0.center);
-			return closest_collision(p1.children(i), p0, contact_point) ||
-				closest_collision(p1.children(1-i), p0, contact_point);
+	// Transform vertices of p1 and then compare to p0
+	const auto inverse_p0_tree_transform = p0.transform.inverse();
+	const auto combined_transform = inverse_p0_tree_transform * p1.transform;
+	const auto combined_inverse_transform = p1.transform.inverse() * p0.transform;
+	// Iterate over tree of p0, p1 and check for intersections, closest child first
+	std::function<bool(const bv_tree::node&, const bv_tree::node& )> check_intersection;
+	check_intersection = [&](const bv_tree::node& node0, const bv_tree::node& node1) {
+		const auto transformed_volume1 = spheref(combined_transform.mul4vec3xlat(node1.volume.center), node1.volume.radius);
+		if (!node0.volume.intersects(transformed_volume1)) {
+			return false;
 		}
-	}
-
-	// split larger volume of this and other, go recursivly down all children
-	if (p0.get_node().volume.radius > p1.get_node().volume.radius || p1.is_leaf()) {
-		// recurse this node, so don't swap roles of this and other
-		// use logical or to return on first true result
-		unsigned i = p0.get_index_of_closer_child(transformed_volume1.center);
-		return closest_collision(p0.children(i), p1, contact_point) ||
-			closest_collision(p0.children(1-i), p1, contact_point);
-	} else {
-		// recurse other node - other is no leaf here, swap roles of this and other
-		// use logical or to return on first true result
-		unsigned i = p1.get_index_of_closer_child(transformed_volume0.center);
-		return closest_collision(p1.children(i), p0, contact_point) ||
-			closest_collision(p1.children(1-i), p0, contact_point);
-	}
+		if (node0.is_leaf()) {
+			if (node1.is_leaf()) {
+				// direct face to face collision test
+				// handle transform here
+				const auto& v0t = p0.vertices[node0.tri_idx[0]];
+				const auto& v1t = p0.vertices[node0.tri_idx[1]];
+				const auto& v2t = p0.vertices[node0.tri_idx[2]];
+				vector3f v3t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[0]]);
+				vector3f v4t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[1]]);
+				vector3f v5t = combined_transform.mul4vec3xlat(p1.vertices[node1.tri_idx[2]]);
+				// note that degenerated triangles would be a critical problem here, but
+				// they would have a bounding sphere of radius zero and thus we
+				// never would compare with them, so we don't need to check for them
+				// here.
+				bool c = triangle_intersection::compute<float>(v0t, v1t, v2t, v3t, v4t, v5t);
+				if (c) {
+					// fixme: compute more accurate position here, maybe
+					// weight by triangle area between centers of triangles.
+					contact_point = p0.transform.mul4vec3xlat((v0t+v1t+v2t+v3t+v4t+v5t) * (1.f/6));
+				}
+				return c;
+			} else {
+				// check which child of node1 is closer to volume center of node0
+			}
+		}
+		// split larger volume of this and other, go recursivly down all children
+		if (node0.volume.radius > node1.volume.radius || node1.is_leaf()) {
+			const auto& left_child_node = p0.tree.nodes[node0.tri_idx[0]];
+			const auto& right_child_node = p0.tree.nodes[node0.tri_idx[1]];
+			if (left_child_node.volume.center.square_distance(transformed_volume1.center) <
+					right_child_node.volume.center.square_distance(transformed_volume1.center)) {
+				return check_intersection(left_child_node, node1) || check_intersection(right_child_node, node1);
+			} else {
+				return check_intersection(right_child_node, node1) || check_intersection(left_child_node, node1);
+			}
+		} else {
+			const auto& left_child_node = p1.tree.nodes[node1.tri_idx[0]];
+			const auto& right_child_node = p1.tree.nodes[node1.tri_idx[1]];
+			const auto transformed_volume0_center = combined_inverse_transform.mul4vec3xlat(node0.volume.center);
+			if (left_child_node.volume.center.square_distance(transformed_volume0_center) <
+					right_child_node.volume.center.square_distance(transformed_volume0_center)) {
+				return check_intersection(node0, left_child_node) || check_intersection(node0, right_child_node);
+			} else {
+				return check_intersection(node0, right_child_node) || check_intersection(node0, left_child_node);
+			}
+		}
+	};
+	return check_intersection(p0.tree.nodes.back(), p1.tree.nodes.back());
 }
 
 
-bool bv_tree::collides(const param& p, const spheref& sp)
+bool bv_tree::collides(const param& p, const spheref& sp, vector3f& contact_point)
 {
-	// if bounding volumes do not intersect, there can't be any collision of leaf elements
-	auto transformed_volume = p.get_transformed_volume();
-	if (!transformed_volume.intersects(sp)) {
+	const auto inverse_tree_transform = p.transform.inverse();
+	const auto transformed_sphere = spheref(inverse_tree_transform * sp.center, sp.radius);
+	// Iterate over tree of p and check for intersection with transformed sphere, closest child first
+	std::function<bool(const bv_tree::node&)> check_intersection;
+	check_intersection = [&](const bv_tree::node& node) {
+		if (node.volume.intersects(transformed_sphere)) {
+			if (node.is_leaf()) {
+				contact_point = (p.transform.mul4vec3xlat(node.volume.center) + sp.center) * 0.5f;
+				return true;
+			}
+			const auto& left_child_node = p.tree.nodes[node.tri_idx[0]];
+			const auto& right_child_node = p.tree.nodes[node.tri_idx[1]];
+			if (left_child_node.volume.center.square_distance(transformed_sphere.center) <
+					right_child_node.volume.center.square_distance(transformed_sphere.center)) {
+				return check_intersection(left_child_node) || check_intersection(right_child_node);
+			} else {
+				return check_intersection(right_child_node) || check_intersection(left_child_node);
+			}
+		}
 		return false;
-	}
+	};
+	return check_intersection(p.tree.nodes.back());
+}
 
-	// handle case that this is a leaf node
-	if (p.is_leaf()) {
-		// leaf's bounding sphere and sp intersect, so we have a collision
-		return true;
-	}
 
-	// split larger volume of this, go recursivly down all children
-	// use logical or to return on first true result
-	unsigned i = p.get_index_of_closer_child(sp.center);
-	return collides(p.children(i), sp) || collides(p.children(1-i), sp);
+
+bool bv_tree::collides(const param& p, const cylinderf& cyl, vector3f& contact_point)
+{
+	const auto inverse_tree_transform = p.transform.inverse();
+	const auto transformed_cylinder = cylinderf(inverse_tree_transform * cyl.start, inverse_tree_transform * cyl.end, cyl.radius);
+	// Iterate over tree of p and check for intersection with transformed cylinder, closest child first
+	std::function<bool(const bv_tree::node&)> check_intersection;
+	check_intersection = [&](const bv_tree::node& node) {
+		if (transformed_cylinder.intersects(node.volume)) {
+			if (node.is_leaf()) {
+				const auto delta = transformed_cylinder.end - transformed_cylinder.start;
+				const auto t = std::clamp((node.volume.center - transformed_cylinder.start) * delta / delta.square_length(), 0.0f, 1.0f);
+				// position: center between projection of volume on cylinder axis and volume center
+				contact_point = (helper::interpolate(cyl.start, cyl.end, t) + p.transform.mul4vec3xlat(node.volume.center)) * 0.5f;
+				return true;
+			}
+			const auto& left_child_node = p.tree.nodes[node.tri_idx[0]];
+			const auto& right_child_node = p.tree.nodes[node.tri_idx[1]];
+			if (transformed_cylinder.distance(left_child_node.volume.center) <
+					transformed_cylinder.distance(right_child_node.volume.center)) {
+				return check_intersection(left_child_node) || check_intersection(right_child_node);
+			} else {
+				return check_intersection(right_child_node) || check_intersection(left_child_node);
+			}
+		}
+		return false;
+	};
+	return check_intersection(p.tree.nodes.back());
 }
 
 

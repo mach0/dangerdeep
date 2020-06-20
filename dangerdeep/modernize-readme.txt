@@ -26,11 +26,13 @@ After each step check functionality.
 15. Introduced elem2D for popups and define them in data files
 16. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
 17. Introduced test application for a user display (very handy!)
+18. Improved bvtree collision speed and offer collision check to cylinder for gunshell impact
 -------------WE ARE HERE-----------------
 . Displays open issues: sub_tdc AngleOnTheBow can turn both directions, sub_tdc2 target distance non-linear gauge!
 . Take sea_objects etc all from master and integrate the modelstate stuff in GPUinterface branch
 . BVTree collision test is painfully slow, if we run into a ship the game nearly stops
   Maybe if there is no triangle intersection but the closest spheres intersect the whole tree is iterated - we need to stop there
+  Or the tree is not build well
 . try gpu merge then - what is different gpu to main?!
 . Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
