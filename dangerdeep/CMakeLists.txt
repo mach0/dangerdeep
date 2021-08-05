@@ -137,7 +137,7 @@ endif ()
 # https://cmake.org/cmake/help/v3.12/variable/CMAKE_LANG_COMPILER_ID.html
 
 if (DFTD_VERBOSE)
-    message (WARNING "Using \"${CMAKE_CXX_COMPILER_ID}\" 
+    message (WARNING "Using \"${CMAKE_CXX_COMPILER_ID}\"
     version \"${CMAKE_CXX_COMPILER_VERSION}\""
     )
 endif ()
@@ -211,11 +211,9 @@ endif ()
 if (WIN32)
 
 	# We don't use FindGLEW on windows, as it doesn't work.
-	set (GLEW_LIBRARY 
-         "${PROJECT_SOURCE_DIR}/build/win64/glew/lib/x64/glew32.lib")
+	set (GLEW_LIBRARY "${PROJECT_SOURCE_DIR}/build/win64/glew/lib/x64/glew32.lib")
 
-	set (GLEW_INCLUDE_DIR 
-         "${PROJECT_SOURCE_DIR}/build/win64/glew/include")
+	set (GLEW_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/build/win64/glew/include")
     
 	include_directories (${GLEW_INCLUDE_DIR})
     set (LIBS ${LIBS} ${GLEW_LIBRARY})
@@ -231,6 +229,7 @@ if (WIN32)
 	else ()
 		message (INFO "Building Win32 (x86) version.")
 	endif ()
+
 endif ()
 
 
@@ -308,7 +307,7 @@ include ( externalpackages )
 # some checks might be needed for other platforms
 #
 set (DEFAULT_INSTALL_PREFIX     "/usr/local")
-set (DEFAULT_BIN_INSTALL_DIR    "bin")                  
+set (DEFAULT_BIN_INSTALL_DIR    "bin")
 set (DEFAULT_DATA_INSTALL_DIR   "share/dangerdeep")
 
 # build version from branch and hash
