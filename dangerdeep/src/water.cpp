@@ -223,8 +223,8 @@ water::water(double tm) :
 	// be seen as reflections. So why use them at all? they're rather costly!
 	// make them configureable? fixme
 	// fixme: make size configurable in parts of screen resolution
-	unsigned rx = sys().get_res_x();
-	unsigned ry = sys().get_res_y();
+	unsigned rx = SYS().get_res_x();
+	unsigned ry = SYS().get_res_y();
 	unsigned vps = texture::get_max_size();
 	const unsigned reflection_scale = use_hqsfx ? 1 : 2;
 	rx = std::min(rx, vps);
@@ -433,8 +433,8 @@ void water::setup_textures(const matrix4& reflection_projmvmat, const vector2f& 
 	// need to divide by noise tile size here too (tex coordinates are in [0...1], not meters)
 	static const vector2f D_0 = vector2f(a_0, b_0) * (V_0/s_0/32.0); // noise tile is 256/8=32m long
 	static const vector2f D_1 = vector2f(a_1, b_1) * (V_1/s_1/8.0);  // noise tile is 256/32=8m long
-	vector2f noise_0_pos = vector2f(0, 0) + D_0 * myfmod(mytime, t_0);
-	vector2f noise_1_pos = vector2f(0, 0) + D_1 * myfmod(mytime, t_1);
+	vector2f noise_0_pos = vector2f(0, 0) + D_0 * helper::mod(mytime, t_0);
+	vector2f noise_1_pos = vector2f(0, 0) + D_1 * helper::mod(mytime, t_1);
 	//fixme: do we have to treat the viewer offset here, like with tex matrix
 	//       setup below?!
 	if (under_water) {
@@ -532,7 +532,7 @@ void water::draw_foam_for_ship(const game& gm, const ship* shp, const vector3& v
 	vector2 pr = foamstart - viewpos.xy();
 	foamtrail.colors[0] = col;
 	foamtrail.colors[1] = col;
-	double yc = myfmod(tm * 0.1, 3600);
+	double yc = helper::mod(tm * 0.1, 3600.0);
 	foamtrail.texcoords[0] = vector2f(0, yc);
 	foamtrail.texcoords[1] = vector2f(1, yc);
 	foamtrail.vertices[0] = vector3f(pl.x, pl.y, -viewpos.z);
@@ -572,7 +572,7 @@ void water::draw_foam_for_ship(const game& gm, const ship* shp, const vector3& v
 		//but it should be fix for any position on the foam, or the edge of the foam
 		//will "jump", an ugly effect - we use a workaround here to use time as fake
 		//distance and take mod 3600 to keep fix y coords.
-		double yc = myfmod((tm - age) * 0.1, 3600);
+		double yc = helper::mod((tm - age) * 0.1, 3600.0);
 		foamtrail.texcoords[pitc] = vector2f(0, yc);
 		foamtrail.texcoords[pitc+1] = vector2f(1, yc);
 		foamtrail.vertices[pitc] = vector3f(pl.x, pl.y, -viewpos.z);
@@ -650,7 +650,7 @@ void water::compute_amount_of_foam_texture(const game& gm, const vector3& viewpo
 		// copy viewport data to foam-amount texture
 		foamamounttex->set_gl_texture();
 		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 0, 0, afs, afs, 0);
-		glViewport(0, 0, sys().get_res_x(), sys().get_res_y());
+		glViewport(0, 0, SYS().get_res_x(), SYS().get_res_y());
 	}
 
 	// clean up
@@ -676,8 +676,8 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	matrix4 proj = matrix4::get_gl(GL_PROJECTION_MATRIX);
 	matrix4 modl = matrix4::get_gl(GL_MODELVIEW_MATRIX);
 	matrix4 reflection_projmvmat = proj * modl;
-	vector2f transl(myfmod(viewpos.x, double(wavetile_length)),
-			myfmod(viewpos.y, double(wavetile_length)));
+	vector2f transl(helper::mod(viewpos.x, double(wavetile_length)),
+			helper::mod(viewpos.y, double(wavetile_length)));
 
 	// give -viewpos.z to vertex shader for generation of foam projection coordinates
 	// the plane z = -viewpos.z is the water plane.
@@ -732,7 +732,7 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 	// compute module of wave tile length to get values in usable range,
 	// to give same precision of values, no matter how big the value of viewpos.x/y is,
 	// this can be very high, as its globally in meters.
-	vector2 viewpos_mod(myfmod(viewpos.x, double(wavetile_length)), myfmod(viewpos.y, double(wavetile_length)));
+	vector2 viewpos_mod(helper::mod(viewpos.x, double(wavetile_length)), helper::mod(viewpos.y, double(wavetile_length)));
 
 	// Note! on fast movement one can see some popping of detail, when boundary between
 	// levels moves around the screen. This can be avoided by smoothly blending
@@ -961,8 +961,8 @@ void water::display(const vector3& viewpos, double max_view_dist, bool under_wat
 float water::get_height(const vector2& pos) const
 {
 	float ffac = wave_resolution * wavetile_length_rcp;
-	float x = float(myfmod(pos.x, double(wavetile_length))) * ffac;
-	float y = float(myfmod(pos.y, double(wavetile_length))) * ffac;
+	float x = float(helper::mod(pos.x, double(wavetile_length))) * ffac;
+	float y = float(helper::mod(pos.y, double(wavetile_length))) * ffac;
 	int ix = int(floor(x));
 	int iy = int(floor(y));
 	int ix2 = (ix+1) & (wave_resolution-1);
@@ -1001,8 +1001,8 @@ vector3f water::get_wave_normal_at(unsigned x, unsigned y) const
 vector3f water::get_normal(const vector2& pos, double rollfac) const
 {
 	float ffac = wave_resolution * wavetile_length_rcp;
-	float x = float(myfmod(pos.x, double(wavetile_length))) * ffac;
-	float y = float(myfmod(pos.y, double(wavetile_length))) * ffac;
+	float x = float(helper::mod(pos.x, double(wavetile_length))) * ffac;
+	float y = float(helper::mod(pos.y, double(wavetile_length))) * ffac;
 	int ix = int(floor(x));
 	int iy = int(floor(y));
 	int ix2 = (ix+1) & (wave_resolution-1);
@@ -1027,7 +1027,7 @@ vector3f water::get_normal(const vector2& pos, double rollfac) const
 void water::generate_wavetile(ocean_wave_generator<float>& myowg, double tiletime, wavetile_phase& wtp)
 {
 	vector<float> heights;
-	myowg.set_time(myfmod(tiletime, wave_tidecycle_time));
+	myowg.set_time(helper::mod(tiletime, wave_tidecycle_time));
 	myowg.compute_heights(heights);
 	wtp.minh = 1e10;
 	wtp.maxh = -1e10;
@@ -1509,7 +1509,7 @@ void water::wavetile_phase::mipmap_level::debug_dump()
 {
 #if 0
 	std::cout << "dump with res=" << resolution << " shift=" << resolution_shift << "\n";
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	{
 		// store heights as test image
 		std::ostringstream ossn;

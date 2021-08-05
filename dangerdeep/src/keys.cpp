@@ -84,5 +84,7 @@ key_name key_names[std::size_t(key_command::number)] = {
 	{ key_command::TOGGLE_POPUP, "KEY_TOGGLE_POPUP" },
 	{ key_command::SHOW_TORPSETUP_SCREEN, "KEY_SHOW_TORPSETUP_SCREEN" },
 	{ key_command::SHOW_TORPEDO_CAMERA, "KEY_SHOW_TORPEDO_CAMERA" },
-	{ key_command::TAKE_SCREENSHOT, "KEY_TAKE_SCREENSHOT" }
+	{ key_command::TAKE_SCREENSHOT, "KEY_TAKE_SCREENSHOT" },
+	{ key_command::SHOW_TDC2_SCREEN, "KEY_SHOW_TDC2_SCREEN" },
+	{ key_command::SHOW_VALVES_SCREEN, "KEY_SHOW_VALVES_SCREEN" }
 };

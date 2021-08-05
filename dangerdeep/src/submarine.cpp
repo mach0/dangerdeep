@@ -131,7 +131,7 @@ void submarine::stored_torpedo::load(const xml_elem& parent)
 	if (parent.has_child("setup")) {
 		setup.load(parent.child("setup"));
 	} else {
-		setup = torpedo::setup();
+		setup = torpedo::setup_data();
 	}
 	temperature = parent.attrf("temperature");
 	status = st_status(parent.attru("status"));
@@ -270,8 +270,14 @@ submarine::submarine(game& gm_, const xml_elem& parent)
 	battery_recharge_value_a = bt.attrf("recharge_a");
 	battery_recharge_value_t = bt.attrf("recharge_t");
 	if (parent.has_child("torpedomanage")) { // fixme: later all subs should have it!!
-	xml_elem tm = parent.child("torpedomanage");
-	torpedomanage_sidetopimg = tm.attr("image");
+		xml_elem tm = parent.child("torpedomanage");
+		torpedomanage_sidetopimg = tm.attr("image");
+	}
+	if (parent.has_child("gauges")) {
+		auto spec_gauges_type = parent.child("gauges").child_text();
+		if (spec_gauges_type == "VII") {
+			gauges = gauges_type::VII;
+		}
 	}
 
 	// set all common damageable parts to "no damage", fixme move to ship?, replace by damage editor data reading
@@ -450,6 +456,10 @@ int submarine::find_stored_torpedo(bool usebow)
 
 void submarine::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	// diveplane animation
 	if (diveplane_1_id >= 0) mymodel->set_object_angle(diveplane_1_id, -bow_depth_rudder.angle);
 	if (diveplane_2_id >= 0) mymodel->set_object_angle(diveplane_2_id, -stern_depth_rudder.angle);
@@ -528,7 +538,7 @@ void submarine::simulate(double delta_time, game& gm)
 	// ------------- simulate the TDC ------------------------------------------
 	TDC.update_heading(get_heading());
 	TDC.simulate(delta_time);
-	if (target.is_valid()) {
+	if (gm.is_valid(target)) {
 		// fixme: limit update of bearing to each 5-30 secs or so,
 		// quality depends on duration of observance and quality of crew!
 		if (TDC.auto_mode_enabled()) {
@@ -597,7 +607,7 @@ void submarine::simulate(double delta_time, game& gm)
 void submarine::set_target(sea_object_id s, game& gm)
 {
 	sea_object::set_target(s, gm);
-	if (!target.is_valid()) return;
+	if (!gm.is_valid(target)) return;
 
 	TDC.set_torpedo_data(kts2ms(30), 7500);	// fixme!!!!
 	// the values below should be modified by quality of guessed target data
@@ -1257,7 +1267,7 @@ bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
 
 	// if tubenr is < 0, choose a tube
 	if (tubenr < 0) {	// check if target is behind
-		auto& mytarget = gm.get_object(target);
+		//auto& mytarget = gm.get_object(target);
 		angle a = angle(targetpos.xy() - get_pos().xy())
 			- get_heading(); // + trp_addleadangle;
 		usebowtubes = (a.ui_abs_value180() <= 90.0);

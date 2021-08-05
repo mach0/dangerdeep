@@ -47,8 +47,8 @@ postprocessor::postprocessor() :	filter( get_shader_dir() + "postp_null.vshader"
 					hipass( get_shader_dir() + "postp_null.vshader", get_shader_dir() + "postp_highpass.fshader" )
 
 {
-	unsigned w = sys().get_res_x();
-	unsigned h = sys().get_res_y();
+	unsigned w = SYS().get_res_x();
+	unsigned h = SYS().get_res_y();
 
 	//unused//unsigned pp_fx = cfg::instance().geti("postprocessing");
 
@@ -128,7 +128,7 @@ void postprocessor::render_quad()
 
 void postprocessor::do_2d()
 {
-//	using sys().prepare_2d_drawing() causes headaches (flipping/sizes), so we'll just stick with this for now.
+//	using SYS().prepare_2d_drawing() causes headaches (flipping/sizes), so we'll just stick with this for now.
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
@@ -353,9 +353,9 @@ void postprocessor::hdr()
 
 	// debug
 #if 0
-	system_interface::sys().prepare_2d_drawing();
+	system_interface::SYS().prepare_2d_drawing();
 	h_textures[0]->draw(0, 0, 256, 256);
-	system_interface::sys().unprepare_2d_drawing();
+	system_interface::SYS().unprepare_2d_drawing();
 
 #endif
 }

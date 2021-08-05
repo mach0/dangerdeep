@@ -40,13 +40,13 @@ protected:
 	user_interface& ui;
 
 	/// Constructor
-	user_popup(user_interface& ui_) : ui(ui_) {}
+	user_popup(user_interface& ui_, const char* popup_name = nullptr);
 
 public:
 	/// Destructor. needed for correct destruction of heirs.
 	virtual ~user_popup() = default;
-	/// Display method - very basic. Just draw display and handle input.
-	virtual void display() const = 0;
+	/// Display method - very basic. Just draw display (elements)
+	virtual void display() const;
 
 protected:
 	/// A 2D image element
@@ -63,6 +63,8 @@ protected:
 		std::unique_ptr<image> tex_night;	///< Texture data (optional)
 		vector2i position;			///< Position on the screen
 	};
+
+	std::vector<elem2D> elements;			///< Elements for display
 };
 
 #endif /* USER_POPUP_H */

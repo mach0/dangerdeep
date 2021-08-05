@@ -351,7 +351,7 @@ void videoplay::display(framebuffer& fb)
 	myshader.set_gl_texture(*tex_y, loc_tex_y, 0);
 	myshader.set_gl_texture(*tex_uv, loc_tex_uv, 1);
 	// we assume square pixels for display
-	const unsigned sw = sys().get_res_x_2d(), sh = sys().get_res_y_2d();
+	const unsigned sw = SYS().get_res_x_2d(), sh = SYS().get_res_y_2d();
 	double display_aspect_ratio = double(sw) / sh;
 	unsigned x, y, w, h;
 	if (display_aspect_ratio >= fb.aspect_ratio) {
@@ -442,10 +442,10 @@ int mymain(std::vector<string>& args)
     // weather conditions and earth curvature allow 30km sight at maximum.
     system_interface::parameters params(1.0, 30000.0 + 500.0, res_x, res_y, fullscreen);
     system_interface::create_instance(new class system(params));
-    sys().set_res_2d(1024, 768);
+    SYS().set_res_2d(1024, 768);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    sys().gl_perspective_fovx(70, 4.0 / 3.0, 1.0, 30000);
+    SYS().gl_perspective_fovx(70, 4.0 / 3.0, 1.0, 30000);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -456,9 +456,9 @@ int mymain(std::vector<string>& args)
     bool quit = false;
     thread::ptr<videoplay> vpl(new videoplay(filename));
     vpl->start();
-    unsigned tm = sys().millisec();
+    unsigned tm = SYS().millisec();
     while (!quit) {
-        auto events = sys().poll_event_queue();
+        auto events = SYS().poll_event_queue();
         for (auto& event : events) {
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
@@ -472,7 +472,7 @@ int mymain(std::vector<string>& args)
             }
             if (event.type == SDL_MOUSEBUTTONDOWN) {
 		    paused = !paused;
-		    tm = sys().millisec();
+		    tm = SYS().millisec();
             }
         }
 	if (quit)
@@ -480,11 +480,11 @@ int mymain(std::vector<string>& args)
 
         //glClear(GL_COLOR_BUFFER_BIT /*| GL_DEPTH_BUFFER_BIT*/);
 
-        sys().prepare_2d_drawing();
+        SYS().prepare_2d_drawing();
 
 	// render...
 	if (!paused) {
-		unsigned tm2 = sys().millisec();
+		unsigned tm2 = SYS().millisec();
 		vpl->display_loop((tm2 - tm)/1000.0);
 		tm = tm2;
 	}
@@ -492,9 +492,9 @@ int mymain(std::vector<string>& args)
         // record fps
         /*float fps = */ fpsm.account_frame();
 
-        sys().unprepare_2d_drawing();
+        SYS().unprepare_2d_drawing();
 
-        sys().finish_frame();
+        SYS().finish_frame();
     }
     vpl.reset();
 

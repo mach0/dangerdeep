@@ -23,16 +23,21 @@ After each step check functionality.
 13. Introduce elem2D class for popups (cleaner shorter code, easier
     transition to new GPU interface)
 14. Split to more libraries
+15. Introduced elem2D for popups and define them in data files
+16. Introduce elem2d helper for displays and convert code to layout.xml (makes transition to new gpu code easier)
+17. Introduced test application for a user display (very handy!)
+18. Improved bvtree collision speed and offer collision check to cylinder for gunshell impact
 -------------WE ARE HERE-----------------
-. Introduce elem2d helper for displays and convert code to them (makes
-  transition to new gpu code easier)
-  Much boring work but can be tested in master easily.
-  We can add elem2d class and elements and convert display for display
-  with checking between each of them!
+. Displays open issues: sub_tdc AngleOnTheBow can turn both directions, sub_tdc2 target distance non-linear gauge!
+. Take sea_objects etc all from master and integrate the modelstate stuff in GPUinterface branch
+. BVTree collision test is painfully slow, if we run into a ship the game nearly stops
+  Maybe if there is no triangle intersection but the closest spheres intersect the whole tree is iterated - we need to stop there
+  Or the tree is not build well
+. try gpu merge then - what is different gpu to main?!
 . Fix viewmodel app (no model can be seen, no background)
 ------------ MOST GLOBAL CODE IMPROVEMENTS UP TO HERE, HERE COME GAMEPLAY/INTERNAL STRUCTURE IMPROVEMENTS ------------------------
 . add new sensors (test if they work!!!) needs test program.
-. Divide code into separate libraries better (partly done)
+. Divide code into separate libraries better (partly done) remove dftdall library.
 ------------ MODERN ADVANCED RENDERING AND I/O HERE --------------------------------------------------
 . Finally adjust rendering
 	maybe we can adjust all the display classes to use the new kind of
@@ -46,7 +51,15 @@ After each step check functionality.
 . Fix portal rendering
 . Use physical units!
 . xml reader could use std::optional
-
+. using namespace std remove with clang-tidy google-build-using-namespace
+. replace myfmod with helper::mod
+. Move insignia and player fotos to own subdirectories
+. Integrate valves screen elements to display and make use of them (accessible via captainscabin)
+. remove global_data, at least the helper functions and use them in helper.h
+. game::get_id must die.
+. torpedo_display->generate coordinates for N tubes later and store them in layout.xml
+. Instead of stored_torpedo already store torpedo objects?
+. Particles are in groups, sorting in groups, then mergesort!
 
 Changes that have been started in code comparison:
 - use std::vector everywhere instead of std::list
@@ -88,6 +101,12 @@ Changes that have been started in code comparison:
 - BV Tree should use reserve for nodes, it would be better to give a mesh
   directly to bvtree and it reserves space for nodes (twice input) and then
   copies it!
+- add damageable_part from codemodernization
+- add a factor class storing values 0...1 maybe in units.h
+- unit classes should also define seamiles and knots and offer the conversion there from meters, m/s
+- use rigid_body physical_data in sea_object class, check what we did in codemodernization
+- class event as std::variant without user_interface!
+- remove global_data helper functions for rnd (->game), interpolate etc (->helper)
 
 don't store target with every sea_object, only the user interface or player
 needs it!
@@ -98,8 +117,6 @@ A generic pointer to sea_object may be unnecessary, the objects can report their
 BV-Tree collision checks: the number of iterations here is insanely high.
 Maybe there is a faster algorithm or by converting recursion to iteration it
 is faster?
-
-rudder hard left seems not to work!
 
 
 Notes
@@ -290,3 +307,27 @@ Rendering: what needs to be changed
 - 2d drawing		DONE
 - displays
 
+
+
+16.)
+====
+State of displays:
+logbook [OK][OK]
+ships_sunk [OK][OK]
+sub_bg [OK][?]
+sub_bridge [OK][OK]
+sub_captainscabin [OK][OK]
+sub_damage [OK][?]
+sub_gauges_II [OK][?]
+sub_gauges_VII [OK][OK]
+sub_ghg [OK][?]
+sub_kdb [OK][OK]
+sub_periscope [OK][OK]
+sub_recogmanual [OK][OK]
+sub_soldbuch [OK][OK]
+sub_tdc [lagenwinkel turns both directions][]
+sub_tdc2 [targetrange is not quadratic][]
+sub_torpedo [Background MISSING][]
+sub_torpsetup [OK][]
+sub_uzo [OK][OK]
+sub_valves [OK,incomplete][OK,incomplete]

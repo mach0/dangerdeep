@@ -1038,7 +1038,7 @@ void texture::draw(int x, int y, int w, int h, const colorf& col) const
 	float u = float(width)/gl_width;
 	float v = float(height)/gl_height;
 	primitives::textured_quad(vector2f(x,y),vector2f(x+w,y+h), *this,
-				  vector2f(0,0),vector2f(u,v), col).render(sys().get_modelview_matrix_2d());//fixme geht so nicht, braucht matrix von extern!!!! wird von draw_Rot aufgerufen! oder 2 funktionen, einmal so, einmal so
+				  vector2f(0,0),vector2f(u,v), col).render(SYS().get_modelview_matrix_2d());//fixme geht so nicht, braucht matrix von extern!!!! wird von draw_Rot aufgerufen! oder 2 funktionen, einmal so, einmal so
 }
 
 void texture::draw_hm(int x, int y, int w, int h, const colorf& col) const
@@ -1046,7 +1046,7 @@ void texture::draw_hm(int x, int y, int w, int h, const colorf& col) const
 	float u = float(width)/gl_width;
 	float v = float(height)/gl_height;
 	primitives::textured_quad(vector2f(x,y),vector2f(x+w,y+h), *this,
-				  vector2f(u,0),vector2f(0,v), col).render(sys().get_modelview_matrix_2d());
+				  vector2f(u,0),vector2f(0,v), col).render(SYS().get_modelview_matrix_2d());
 }
 
 void texture::draw_rot(int x, int y, double angle, const colorf& col) const
@@ -1068,7 +1068,7 @@ void texture::draw_tiles(int x, int y, int w, int h, const colorf& col) const
 	float tilesx = float(w)/gl_width;
 	float tilesy = float(h)/gl_height;
 	primitives::textured_quad(vector2f(x,y),vector2f(x+w,y+h), *this,
-				  vector2f(0,0),vector2f(tilesx,tilesy), col).render(sys().get_modelview_matrix_2d());
+				  vector2f(0,0),vector2f(tilesx,tilesy), col).render(SYS().get_modelview_matrix_2d());
 }
 
 void texture::draw_subimage(int x, int y, int w, int h, unsigned tx, unsigned ty,
@@ -1079,7 +1079,7 @@ void texture::draw_subimage(int x, int y, int w, int h, unsigned tx, unsigned ty
 	float x2 = float(tx+tw)/gl_width;
 	float y2 = float(ty+th)/gl_height;
 	primitives::textured_quad(vector2f(x,y),vector2f(x+w,y+h), *this,
-				  vector2f(x1,y1),vector2f(x2,y2), col).render(sys().get_modelview_matrix_2d());
+				  vector2f(x1,y1),vector2f(x2,y2), col).render(SYS().get_modelview_matrix_2d());
 }
 
 #endif

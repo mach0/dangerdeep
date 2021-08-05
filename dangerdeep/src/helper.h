@@ -160,7 +160,7 @@ namespace helper
 
 	/// count and call for every number
 	template<typename T> void count(const T start, const T limit, std::function<void(const T)> func) {
-		for (auto n = start; n != limit; ++n) {
+		for (auto n = start; n != limit; n = T(unsigned(n) + 1)) {
 			func(n);
 		}
 	}

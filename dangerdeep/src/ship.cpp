@@ -227,8 +227,8 @@ ship::ship(game& gm_, const xml_elem& parent)
 	if (parent.has_child("ai")) {
 		xml_elem eai = parent.child("ai");
 		string aitype = eai.attr("type");
-		if (aitype == "dumb") myai = std::make_unique<ai>(ai::dumb);
-		else if (aitype == "escort") myai = std::make_unique<ai>(ai::escort);
+		if (aitype == "dumb") myai = std::make_unique<ai>(ai::dumb, gm_);
+		else if (aitype == "escort") myai = std::make_unique<ai>(ai::escort, gm_);
 		else if (aitype == "none") myai.reset();
 		else THROW(error, string("illegal AI type in ") + specfilename);
 	}
@@ -562,6 +562,10 @@ void ship::save(xml_elem& parent) const
 
 void ship::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	sea_object::simulate(delta_time, gm);
 
 	// screw animation
@@ -643,7 +647,7 @@ void ship::simulate(double delta_time, game& gm)
 		double v = velocity.length();
 		if (v > 0.1) {
 			double produce_time = 2.0/v;
-			double t = myfmod(gm.get_time(), produce_time);
+			double t = helper::mod(gm.get_time(), produce_time);
 			if (t + delta_time >= produce_time) {
 				vector3 forward = velocity.normal();
 				vector3 sideward = forward.cross(vector3(0, 0, 1)).normal() * 2.0;//speed 2.0 m/s
@@ -662,7 +666,7 @@ void ship::simulate(double delta_time, game& gm)
 			case 1: produce_time = smoke_particle::get_produce_time(); break;
 			case 2: produce_time = smoke_particle_escort::get_produce_time(); break;
 			}
-			double t = myfmod(gm.get_time(), produce_time);
+			double t = helper::mod(gm.get_time(), produce_time);
 			if (t + delta_time >= produce_time) {
 				std::unique_ptr<particle> p = nullptr;
 				// handle orientation here!

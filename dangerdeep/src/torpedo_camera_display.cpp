@@ -50,10 +50,10 @@ void torpedo_camera_display::pre_display() const
 freeview_display::projection_data torpedo_camera_display::get_projection_data(class game& gm) const
 {
 	projection_data pd;
-	pd.x = sys().get_res_x() * 3 / 4;
+	pd.x = SYS().get_res_x() * 3 / 4;
 	pd.y = 0;
-	pd.w = sys().get_res_x() / 4;
-	pd.h = sys().get_res_y() / 4;
+	pd.w = SYS().get_res_x() / 4;
+	pd.h = SYS().get_res_y() / 4;
 	pd.fov_x = 70.0;
 	pd.near_z = 1.0;
 	pd.far_z = gm.get_max_view_distance();

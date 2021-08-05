@@ -27,12 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_control_popup : public user_popup
 {
-protected:
-	elem2D background;
-
 public:
 	sub_control_popup(class user_interface& ui_);
-	void display() const override;
 };
 
 #endif /* SUB_CONTROL_POPUP_H */

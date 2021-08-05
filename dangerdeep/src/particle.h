@@ -110,7 +110,7 @@ public:
 	virtual double get_height() const = 0;
 
 	virtual void kill() { life = 0.0; }
-	virtual bool is_defunct() const { return life <= 0.0; }
+	virtual bool is_dead() const { return life <= 0.0; }
 
 	// set opengl texture by particle type or e.g. game time etc.
 	virtual const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const = 0;

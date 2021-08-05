@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "bspline.h"
 #include <vector>
 
+/// A water splash from some weapon impact etc.
 class water_splash : public sea_object
 {
  protected:

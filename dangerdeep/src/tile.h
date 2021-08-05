@@ -55,7 +55,7 @@ protected:
 
 template<class T>
 tile<T>::tile(const char *filename, vector2i& _bottom_left, unsigned size) 
-: data(size, -200), bottom_left(_bottom_left), last_access(sys().millisec())
+: data(size, -200), bottom_left(_bottom_left), last_access(SYS().millisec())
 {
 	std::ifstream file;
 	file.open(filename);
@@ -78,7 +78,7 @@ void tile<T>::load(const char *filename, vector2i& _bottom_left, unsigned size)
 {
 	data.resize(size, -200);
 	bottom_left = _bottom_left;
-	last_access = sys().millisec();
+	last_access = SYS().millisec();
 	
 	std::ifstream file;
 	file.open(filename);
@@ -105,7 +105,7 @@ tile<T>::tile(const tile<T>& other)
 template<class T>
 T tile<T>::get_value(vector2i coord) 
 {
-	last_access = sys().millisec();
+	last_access = SYS().millisec();
 	coord.y = data.size()-coord.y-1;
 	return data.at(coord);
 }

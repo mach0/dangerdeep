@@ -543,11 +543,11 @@ void map_display::display() const
 
 	vector2 offset = player->get_pos().xy() + mapoffset;
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 
 	float delta = MAPGRIDSIZE*mapzoom;
-	float sx = myfmod(512, delta)-myfmod(offset.x, MAPGRIDSIZE)*mapzoom;
-	float sy = 768.0 - (myfmod(384.0f, delta)-myfmod(offset.y, MAPGRIDSIZE)*mapzoom);
+	float sx = helper::mod(512.f, delta)-helper::mod(offset.x, double(MAPGRIDSIZE))*mapzoom;
+	float sy = 768.0 - (helper::mod(384.0f, delta)-helper::mod(offset.y, double(MAPGRIDSIZE))*mapzoom);
 	int lx = int(1024/delta)+2, ly = int(768/delta)+2;
 
 	// draw grid
@@ -653,7 +653,7 @@ void map_display::display() const
 			draw_visual_contacts(gm, sub_player, -offset);
 
 			// Draw a red box around the selected target.
-			if (target.is_valid())
+			if (gm.is_valid(target))
 			{
 				draw_square_mark ( gm, gm.get_object(target).get_pos ().xy (), -offset,
 					color ( 255, 0, 0 ) );
@@ -666,7 +666,7 @@ void map_display::display() const
 		draw_radar_contacts(gm, player, -offset);
 
 		// Draw a red box around the selected target.
-		if (target.is_valid())
+		if (gm.is_valid(target))
 		{
 			draw_square_mark ( gm, gm.get_object(target).get_pos ().xy (), -offset,
 				color ( 255, 0, 0 ) );
@@ -712,7 +712,7 @@ void map_display::display() const
 #endif
 
 	// draw notepad sheet giving target distance, speed and course
-	if (target.is_valid()) {
+	if (gm.is_valid(target)) {
 		int nx = 768, ny = 512;
 		notepadsheet.get()->draw(nx, ny);
 		ostringstream os0, os1, os2;
@@ -760,7 +760,7 @@ void map_display::display() const
 	}
 
 	ui.draw_infopanel();
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 
 }
 
@@ -807,6 +807,7 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
 	auto& gm = ui.get_game();
 	sea_object* player = gm.get_player ();
 	if (gm.is_editor()) {
+		auto& ge = static_cast<game_editor&>(gm);
 		if (edit_panel->is_mouse_over(m.position_2d) && widget::handle_mouse_button_event(*edit_panel, m)) {
 			return true;
 		}
@@ -846,7 +847,6 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
 						       edit_timeminute->get_curr_value(),
 						       edit_timesecond->get_curr_value());
 						double time = d.get_time();
-						auto& ge = dynamic_cast<game_editor&>(gm);
 						ge.manipulate_time(time);
 						// construct new date to correct possible wrong date values
 						// like 30th february or so...
@@ -914,7 +914,7 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
 					p.y = 384 - p.y;
 					if (p.x >= x1 && p.x <= x2 &&
 					    p.y >= y1 && p.y <= y2) {
-						auto id = gm.get_id(*obj);
+						auto id = ge.get_id(*obj);
 						if (mode == 1)
 							selection.erase(id);
 						else
@@ -937,7 +937,7 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
 					p.y = 384 - p.y;
 					double clickd = mapclick.square_distance(p);
 					if (clickd < mapclickdist) {
-						auto id = gm.get_id(*obj);
+						auto id = ge.get_id(*obj);
 						target = id;
 						mapclickdist = clickd;
 					}
@@ -969,7 +969,7 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
 			p.y = 384 - p.y;
 			double clickd = mapclick.square_distance(p);
 			if (clickd < mapclickdist) {
-				auto id = gm.get_id(*obj);
+				auto id = gm.get_id(*obj);	//fixme later using sensor contacts here to select contact!
 				target = id;	// fixme: message?
 				mapclickdist = clickd;
 			}

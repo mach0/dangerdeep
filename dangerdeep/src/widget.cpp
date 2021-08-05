@@ -443,7 +443,7 @@ void widget::align(int h, int v)
 	if (parent) {
 		sz = parent->get_size();
 	} else {
-		sz = sys().get_res_2d();
+		sz = SYS().get_res_2d();
 	}
 	set_pos(vector2i(
 		(h < 0) ? 0 : ((h > 0) ? (sz.x-size.x) : ((sz.x-size.x)/2)),
@@ -602,8 +602,8 @@ bool widget::is_mouse_over(int mx, int my) const
 std::unique_ptr<widget> widget::create_dialogue_ok(widget* parent_, const string& title, const string& text,
 						 int w, int h)
 {
-	unsigned res_x = sys().get_res_x_2d();
-	unsigned res_y = sys().get_res_y_2d();
+	unsigned res_x = SYS().get_res_x_2d();
+	unsigned res_y = SYS().get_res_y_2d();
 	int x = w ? (res_x - w) / 2 : res_x/4;
 	int y = h ? (res_y - h) / 2 : res_y/4;
 	if (!w) w = res_x/2;
@@ -620,8 +620,8 @@ std::unique_ptr<widget> widget::create_dialogue_ok(widget* parent_, const string
 std::unique_ptr<widget> widget::create_dialogue_ok_cancel(widget* parent_, const string& title, const string& text,
 							int w, int h)
 {
-	unsigned res_x = sys().get_res_x_2d();
-	unsigned res_y = sys().get_res_y_2d();
+	unsigned res_x = SYS().get_res_x_2d();
+	unsigned res_y = SYS().get_res_y_2d();
 	int x = w ? (res_x - w) / 2 : res_x/4;
 	int y = h ? (res_y - h) / 2 : res_y/4;
 	if (!w) w = res_x/2;
@@ -648,7 +648,7 @@ int widget::run(widget& w, unsigned timeout, bool do_stacking, widget* focussed_
 	// we should encapsulate the code from here in a try call, to make changes reversible on error.
 	// but in case of errors, we can't handle them well here, so no matter.
 	widgets.push_back(&w);
-	unsigned endtime = sys().millisec() + timeout;
+	unsigned endtime = SYS().millisec() + timeout;
 	focussed = focussed_at_begin ? focussed_at_begin : &w;
 	// draw it initially
 	w.redraw();
@@ -658,23 +658,23 @@ int widget::run(widget& w, unsigned timeout, bool do_stacking, widget* focussed_
 	event_handler->set_handler([&w](const input_event_handler::mouse_motion_data& m) { return handle_mouse_motion_event(w, m); });
 	event_handler->set_handler([&w](const input_event_handler::mouse_wheel_data& m) { return handle_mouse_wheel_event(w, m); });
 	event_handler->set_handler([&w](const std::string& t) { return handle_text_input_event(w, t); });
-	sys().add_input_event_handler(event_handler);
+	SYS().add_input_event_handler(event_handler);
 	while (!w.was_closed()) {
-		unsigned time = sys().millisec();
+		unsigned time = SYS().millisec();
 		if (timeout != 0 && time > endtime) break;
 
 		if (w.redrawme) {
 			glClear(GL_COLOR_BUFFER_BIT);
-			sys().prepare_2d_drawing();
+			SYS().prepare_2d_drawing();
 			if (do_stacking) {
 				for (auto & it : widgets)
 					it->draw();
 			} else {
 				w.draw();
 			}
-			sys().unprepare_2d_drawing();
+			SYS().unprepare_2d_drawing();
 		}
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 	widgets.pop_back();
 	if (!do_stacking)
@@ -1329,7 +1329,7 @@ void widget_edit::draw() const
 	color cc = is_enabled() ? (editing ? globaltheme->textcol.more_contrast(3) : globaltheme->textcol) : globaltheme->textdisabledcol;
 	globaltheme->myfont->print_vc(p.x+fw, p.y+size.y/2, text, cc, true);
 	if (editing) {
-		uint32_t tm = sys().millisec();
+		uint32_t tm = SYS().millisec();
 		if (tm / 500 & 1) {
 			vector2i sz = globaltheme->myfont->get_size(text.substr(0, cursorpos));
 			vector2f xy(p.x+fw+sz.x, p.y+size.y/8);
@@ -1519,17 +1519,17 @@ void widget_3dview::draw() const
 	float bbl = bb.length();
 	float zfar = translation.z + bbl * 0.5;
 
-	sys().unprepare_2d_drawing();
+	SYS().unprepare_2d_drawing();
 	glFlush();
-	unsigned vpx = sys().get_res_area_2d_x();
-	unsigned vpy = sys().get_res_area_2d_y();
-	unsigned vpw = sys().get_res_area_2d_w();
-	unsigned vph = sys().get_res_area_2d_h();
+	unsigned vpx = SYS().get_res_area_2d_x();
+	unsigned vpy = SYS().get_res_area_2d_y();
+	unsigned vpw = SYS().get_res_area_2d_w();
+	unsigned vph = SYS().get_res_area_2d_h();
 	glViewport(vpx, vpy, vpw, vph);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	sys().gl_perspective_fovx(70.0/*fovx*/, float(size.x)/size.y, 1.0f, zfar);
+	SYS().gl_perspective_fovx(70.0/*fovx*/, float(size.x)/size.y, 1.0f, zfar);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
@@ -1559,7 +1559,7 @@ void widget_3dview::draw() const
 			 vector3f( 0.0, bb.y*0.5, -bb.z*0.5), color::black()).render();
 	mdl->display();
 
-	sys().prepare_2d_drawing();
+	SYS().prepare_2d_drawing();
 }
 
 

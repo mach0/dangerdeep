@@ -25,6 +25,7 @@ add_library(dftdbasic STATIC
 	cfg.h
 	circle.h
 	constant.h
+	cylinder.h
 	datadirs.cpp
 	datadirs.h
 	dmath.h
@@ -49,6 +50,7 @@ add_library(dftdbasic STATIC
 	message_queue.h
 	#model_state.cpp
 	#model_state.h
+	objcache.h
 	object_store.h
 	parser.cpp
 	parser.h
@@ -130,7 +132,7 @@ add_library(dftdgamecore STATIC
 	water_splash.cpp
 	water_splash.h
 )
-target_link_libraries ( dftdgamecore ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
+target_link_libraries ( dftdgamecore dftdbasic )
 
 add_library(dftdmedia STATIC
 	bzip.cpp		# only for terrain, remove later
@@ -189,7 +191,18 @@ add_library(dftdmedia STATIC
 	water.cpp
 	water.h
 )
-target_link_libraries ( dftdmedia ${LIBS} ${CMAKE_DL_LIBS} dftdbasic )
+target_link_libraries ( dftdmedia dftdbasic oglext )
+
+# todo distribute correctly - cfg/keys need global_data and that needs a lot more
+add_library(dftdall STATIC
+	global_data.cpp
+	global_data.h
+	highscorelist.cpp
+	highscorelist.h
+	tree_generator.h
+	dftdtester/tests.cpp
+)
+target_link_libraries ( dftdall dftdmedia )
 
 add_library(dftdgameui STATIC
 	coastmap.cpp
@@ -255,66 +268,48 @@ add_library(dftdgameui STATIC
 	widget.cpp	# fixme needs text, is not really part of the game ui
 	widget.h
 )
-target_link_libraries ( dftdgameui ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia dftdgamecore )
+target_link_libraries ( dftdgameui dftdmedia dftdgamecore dftdall )
+# fixme need to link dftdall for add_loading_screen in global_data etc.
 
-# todo distribute correctly - cfg/keys need global_data and that needs a lot more
-add_library(dftdall STATIC
+set (dangerdeep_source
+	subsim.cpp
 	credits.cpp
 	credits.h
-	global_data.cpp
-	global_data.h
-	height_generator_map.cpp	# only geoclipmaptest, delete that later
-	height_generator_map.h		# only geoclipmaptest, delete that later
-	highscorelist.cpp
-	highscorelist.h
-	objcache.h
-	tree_generator.h
-	dftdtester/tests.cpp
 )
-target_link_libraries ( dftdall ${LIBS} ${CMAKE_DL_LIBS} dftdbasic dftdmedia dftdgamecore )
+add_executable ( dangerdeep ${dangerdeep_source} )
 
-
-add_executable ( dangerdeep subsim.cpp )
-
-target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdall dftdbasic dftdmedia dftdgamecore dftdgameui tinyxml oglext )
+target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdgameui )
 
 if ( DFTD_BUILD_TOOLS )
-	set ( viewmodel_src viewmodel.cpp )
-	add_executable ( viewmodel      ${viewmodel_src} )
-	target_link_libraries ( viewmodel dftdbasic dftdall dftdgameui dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( viewmodel      viewmodel.cpp )
+	target_link_libraries ( viewmodel dftdgameui )
 
-	set ( modelmeasure_src modelmeasure.cpp )
-	add_executable ( modelmeasure   ${modelmeasure_src} )
-	target_link_libraries ( modelmeasure dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( modelmeasure   modelmeasure.cpp )
+	target_link_libraries ( modelmeasure dftdmedia )
 
-	set ( oceantest_src oceantest.cpp )
-	add_executable ( oceantest      ${oceantest_src} )
-	target_link_libraries ( oceantest dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( oceantest      oceantest.cpp )
+	target_link_libraries ( oceantest dftdmedia )
 
-	set ( bspline_src bspline_test.cpp )
-	add_executable ( bsplinetest    ${bspline_src} )
-	target_link_libraries ( bsplinetest dftdbasic tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( bsplinetest    bspline_test.cpp )
+	target_link_libraries ( bsplinetest dftdbasic )
 
-	set ( portal_src portal.cpp )
-	add_executable ( portal         ${portal_src} )
-	target_link_libraries ( portal dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( portal         portal.cpp )
+	target_link_libraries ( portal dftdmedia )
 
-	set ( treegen_src treegentest.cpp )
-	add_executable ( treegentest    ${treegen_src} )
-	target_link_libraries ( treegentest dftdbasic dftdall dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( treegentest    treegentest.cpp )
+	target_link_libraries ( treegentest dftdall )
 
-	set ( bvtreetest_src bvtreeintersecttest.cpp )
-	add_executable ( bvtreetest     ${bvtreetest_src} )
-	target_link_libraries ( bvtreetest dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( bvtreetest     bvtreeintersecttest.cpp )
+	target_link_libraries ( bvtreetest dftdmedia )
 
-	set ( mapprecompute_src         tools/map_precompute.cpp )
-	add_executable ( map_precompute ${mapprecompute_src} )
-	target_link_libraries ( map_precompute dftdbasic dftdall dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	add_executable ( map_precompute tools/map_precompute.cpp )
+	target_link_libraries ( map_precompute dftdall )
+
+	add_executable ( test_display test_display.cpp )
+	target_link_libraries ( test_display dftdgameui )
 
 	if ( FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST )
-	    set ( videoplay_src videoplaytest.cpp )
-	    add_executable ( videoplay  ${videoplay_src} )
-	    target_link_libraries ( videoplay dftdbasic dftdmedia tinyxml oglext ${CMAKE_DL_LIBS} ${LIBS} )
+	    add_executable ( videoplay  videoplaytest.cpp )
+	    target_link_libraries ( videoplay dftdmedia )
 	endif ()
-
 endif ()

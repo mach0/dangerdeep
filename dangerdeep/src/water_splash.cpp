@@ -94,6 +94,10 @@ water_splash::water_splash(game& gm_, const vector3& pos, double risetime_, doub
 
 void water_splash::simulate(double delta_time, game& gm)
 {
+	if (!is_reference_ok()) {
+		return;
+	}
+
 	sea_object::simulate(delta_time, gm);
 
 	resttime -= delta_time;

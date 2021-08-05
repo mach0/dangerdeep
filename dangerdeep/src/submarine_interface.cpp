@@ -69,6 +69,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sub_soldbuch_display.h"
 #include "sub_recogmanual_display.h"
 #include "sub_valves_display.h"
+#include "ships_sunk_display.h"
 
 #include "torpedo_camera_display.h"
 
@@ -95,7 +96,8 @@ submarine_interface::submarine_interface(game& gm) :
 	displays[display_mode_damagestatus] = std::make_unique<sub_damage_display>(*this);
 	displays[display_mode_logbook] = std::make_unique<logbook_display>(*this);
 	displays[display_mode_captainscabin] = std::make_unique<sub_captainscabin_display>(*this);
-	displays[display_mode_successes] = std::make_unique<sub_soldbuch_display>(*this);
+	displays[display_mode_soldbuch] = std::make_unique<sub_soldbuch_display>(*this);
+	displays[display_mode_successes] = std::make_unique<ships_sunk_display>(*this);
 	displays[display_mode_recogmanual] = std::make_unique<sub_recogmanual_display>(*this);
 	switch (player->get_hearing_device_type()) {
 	case submarine::hearing_device_KDB:
@@ -141,6 +143,7 @@ submarine_interface::submarine_interface(game& gm) :
 	screen_selector_menu->add_entry(texts::get(254), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_damagecontrol(); }, *this));
 	screen_selector_menu->add_entry(texts::get(271), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_captainscabin(); }, *this));
 	screen_selector_menu->add_entry(texts::get(255), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_logbook(); }, *this));
+	screen_selector_menu->add_entry(texts::get(274), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_soldbuch(); }, *this));
 	screen_selector_menu->add_entry(texts::get(272), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_successes(); }, *this));
 	screen_selector_menu->add_entry(texts::get(256), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_sonar(); }, *this));
 	screen_selector_menu->add_entry(texts::get(257), std::make_unique<widget_caller_button<submarine_interface&>>([](auto& si) { si.goto_freeview(); }, *this));
@@ -171,14 +174,14 @@ submarine_interface::~submarine_interface()
 void submarine_interface::fire_tube(submarine* player, int nr)
 {
 	//fixme here was a check that we don't target ourselves - but we can't request the ID from a sea_object ptr. This must be avoided elsewhere.
-	if (player->get_target().is_valid()) {
+	if (mygame->is_valid(player->get_target())) {
 		auto& mytarget = mygame->get_object(player->get_target());
 		bool ok = player->launch_torpedo(nr, mytarget.get_pos(), *mygame);
 		if (ok) {
 			add_message(texts::get(49));
 			ostringstream oss;
 			oss << texts::get(49);
-			if (player->get_target().is_valid())
+			if (mygame->is_valid(player->get_target()))
 				oss << " " << texts::get(6) << ": " << mytarget.get_description(2);
 			mygame->add_logbook_entry(oss.str());
 			play_sound_effect(SFX_TUBE_LAUNCH, player->get_pos());
@@ -245,8 +248,9 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		auto* player = dynamic_cast<submarine*>(mygame->get_player());
 
 		// SCREENS
-		if(k.keycode == key_code::b) goto_valves();
-		if (is_configured_key(key_command::SHOW_GAUGES_SCREEN, k)) {
+		if(is_configured_key(key_command::SHOW_VALVES_SCREEN, k)) {
+			goto_valves();
+		} else if (is_configured_key(key_command::SHOW_GAUGES_SCREEN, k)) {
 			goto_gauges();
 		} else if (is_configured_key(key_command::SHOW_PERISCOPE_SCREEN, k)) {
 			goto_periscope();
@@ -268,6 +272,8 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			goto_freeview();
 		} else if (is_configured_key(key_command::SHOW_TDC_SCREEN, k)) {
 			goto_TDC();
+		} else if (is_configured_key(key_command::SHOW_TDC2_SCREEN, k)) {
+			goto_TDC2();
 		} else if (is_configured_key(key_command::SHOW_TORPSETUP_SCREEN, k)) {
 			goto_torpedosettings();
 		} else if (is_configured_key(key_command::SHOW_TORPEDO_CAMERA, k)) {
@@ -352,7 +358,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			auto tgt = mygame->contact_in_direction(player, get_absolute_bearing());
 			// set initial tdc values, also do that when tube is switched
 			player->set_target(tgt, *mygame);
-			if (tgt.is_valid()) {
+			if (mygame->is_valid(tgt)) {
 				add_message(texts::get(50));
 				mygame->add_logbook_entry(texts::get(50));
 			} else {
@@ -396,7 +402,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 			player->head_to_course(get_absolute_bearing());
 		} else if (is_configured_key(key_command::IDENTIFY_TARGET, k)) {
 			// calculate distance to target for identification detail
-			if (player->get_target().is_valid()) {
+			if (mygame->is_valid(player->get_target())) {
 				ostringstream oss;
 				oss << texts::get(79) << mygame->get_object(player->get_target()).get_description(2); // fixme
 				add_message( oss.str () );
@@ -439,7 +445,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 		} else if (is_configured_key(key_command::FIRE_DECK_GUN, k)) {
 			if (player->has_deck_gun()) {
 				if (!player->is_submerged()) {
-					if (player->get_target().is_valid() /*fixme && player->get_target() != player*/) {
+					if (mygame->is_valid(player->get_target()) /*fixme && player->get_target() != player*/) {
 						int res = player->fire_shell_at(mygame->get_object(player->get_target()).get_pos().xy(), *mygame);
 						if (ship::TARGET_OUT_OF_RANGE == res)
 							add_message(texts::get(218));
@@ -479,7 +485,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 				add_message(texts::get(269));
 			}
 		} else if ( is_configured_key(key_command::TAKE_SCREENSHOT, k) ) {
-			sys().screenshot();
+			SYS().screenshot();
 			log_info("screenshot taken.");
 
 		// DEFAULT
@@ -491,7 +497,7 @@ bool submarine_interface::handle_key_event(const key_data& k)
 				request_abort();
 				break;
 /*			case key_command::PRINT:
-				sys().screenshot();
+				SYS().screenshot();
 				log_info("screenshot taken.");
 				break;*/
 			case key_code::PAUSE:
@@ -634,6 +640,13 @@ void submarine_interface::goto_logbook()
 
 
 
+void submarine_interface::goto_soldbuch()
+{
+	set_current_display(display_mode_soldbuch);
+}
+
+
+
 void submarine_interface::goto_successes()
 {
 	set_current_display(display_mode_successes);
@@ -657,11 +670,14 @@ void submarine_interface::goto_freeview()
 
 void submarine_interface::goto_TDC()
 {
-	if (current_display == display_mode_tdc) {
-		set_current_display(display_mode_tdc2);
-	} else {
-		set_current_display(display_mode_tdc);
-	}
+	set_current_display(display_mode_tdc);
+}
+
+
+
+void submarine_interface::goto_TDC2()
+{
+	set_current_display(display_mode_tdc2);
 }
 
 
@@ -691,17 +707,6 @@ bool submarine_interface::object_visible(sea_object* so,
 	return true;
 }
 */
-
-void submarine_interface::toggle_popup()
-{
-	if (current_display == display_mode_tdc) {
-		set_current_display(display_mode_tdc2);
-	} else if (current_display == display_mode_tdc2) {
-		set_current_display(display_mode_tdc);
-	} else {
-		user_interface::toggle_popup();
-	}
-}
 
 void submarine_interface::display() const
 {

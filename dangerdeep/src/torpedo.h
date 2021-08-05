@@ -93,15 +93,15 @@ class torpedo : public ship
 	};
 
 	/// data about setup of a torpedo while it is still in the tube
-	class setup
+	class setup_data
 	{
 	public:
-		setup();
+		setup_data() = default;
 		unsigned primaryrange{1500};	///< primary run length in meters, [SAVE]
 		bool short_secondary_run{true}; ///< secondary run short or long [SAVE]
 		bool initialturn_left{true};	///< initital turn is left (true) or right (false), [SAVE]
-		angle turnangle;	///< (0...240 degrees, for LUT, FAT has 180), [SAVE]
-		angle lut_angle;	///< angle to turn to after initial run for LuT [SAVE]
+		angle turnangle{180.0};	///< (0...240 degrees, for LUT, FAT has 180), [SAVE]
+		angle lut_angle{0.0};	///< angle to turn to after initial run for LuT [SAVE]
 		unsigned torpspeed{NORMAL};	///< torpspeed (0-2 slow-fast, only for G7a torps), [SAVE]
 		double rundepth{3};	///< depth the torpedo should run at, [SAVE]
 		bool preheating{false};	///< preheating on?
@@ -147,7 +147,7 @@ class torpedo : public ship
 	double sensor_activation_distance;	// meters. unused if torp has no sensors.
 
 	// ------------- configured by the player ------------------
-	setup mysetup;		// [SAVE]
+	setup_data setup;		// [SAVE]
 
 	// ------------ changes over time by simulation
 	double temperature;	// only useful for electric torpedoes, [SAVE]
@@ -155,6 +155,7 @@ class torpedo : public ship
 	double run_length;	// how long the torpedo has run, [SAVE]
 	unsigned steering_device_phase;	// [SAVE]
 
+	/// Vertically acting depth rudder
 	generic_rudder dive_planes;
 
 	// specific damage here:
@@ -177,7 +178,7 @@ public:
 	// create from spec file, select values by date. date is taken from game. fixme: avoid random values here!
 	// fixme: avoid that a game startet at date x but played until date y takes torpedo settings
 	// from date y instead of x for loading! use a special game::get_equipment_date() function for that...
-	torpedo(game& gm_, const xml_elem& parent, const setup& torpsetup);
+	torpedo(game& gm_, const xml_elem& parent, const setup_data& torpsetup);
 
 	void load(const xml_elem& parent) override;
 	void save(xml_elem& parent) const override;

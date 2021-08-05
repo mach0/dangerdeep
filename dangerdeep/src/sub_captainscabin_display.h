@@ -24,54 +24,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define SUB_CAPTAINSCABIN_DISPLAY_H
 
 #include "user_display.h"
-#include "submarine.h"
-#include "vector2.h"
-#include "texture.h"
-#include "color.h"
 
+/// Display for the submarine captain's cabin
 class sub_captainscabin_display : public user_display
 {
-	std::unique_ptr<image> background;
-
-	class clickable_area
-	{
-	protected:
-		vector2i topleft;
-		vector2i bottomright;
-		int description;
-		void (sub_captainscabin_display::*action)();
-		color desc_color;
-	private:
-		clickable_area() = delete;
-	public:
-		clickable_area(const vector2i& tl, const vector2i& br,
-			       int descr,
-			       void (sub_captainscabin_display::*func)(),
-			       color dc);
-		bool is_mouse_over(vector2i pos) const;
-		int get_description() const { return description; }
-		void do_action(sub_captainscabin_display& obj);
-		color get_description_color() const { return desc_color; }
-	};
-
-	std::vector<clickable_area> clickable_areas;
-
-	void goto_successes();
-	void goto_logbook();
-	void goto_torpedoes();
-	void goto_recogmanual();
-
-	vector2i mouse_position;
-
 public:
 	sub_captainscabin_display(class user_interface& ui_);
-
 	void display() const override;
 	bool handle_mouse_button_event(const mouse_click_data& ) override;
 	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
 
-	void enter(bool is_day) override;
-	void leave() override;
+protected:
+	vector2i mouse_position;	///< Stored for text overlay in display
 };
 
 #endif

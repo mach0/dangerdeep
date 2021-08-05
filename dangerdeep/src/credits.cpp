@@ -484,15 +484,15 @@ void plant_set::display(const vector3& viewpos, float zang) const
 {
 	vector3f vp(viewpos);
 
-	//unsigned tm0 = sys().millisec();
+	//unsigned tm0 = SYS().millisec();
 	for (unsigned i = 0; i < plants.size(); ++i) {
 		sortindices[i].sqd = plants[sortindices[i].idx].pos.xy().square_distance(vp.xy());
 	}
-	//unsigned tm1 = sys().millisec();
+	//unsigned tm1 = SYS().millisec();
 	// this sucks up to 16ms, so this limits fps at 60.
 	// this can't be shadowed by gpu time.
 	std::sort(sortindices.begin(), sortindices.end());
-	//unsigned tm2 = sys().millisec();
+	//unsigned tm2 = SYS().millisec();
 	//DBGOUT2(tm1-tm0,tm2-tm1);
 
 #if 1 // indices in VBO (3fps faster)
@@ -531,7 +531,7 @@ void plant_set::display(const vector3& viewpos, float zang) const
 	glDepthMask(GL_FALSE);
 	myshader.use();
 	myshader.set_uniform(loc_viewpos, vp.xy());
-	myshader.set_uniform(loc_windmovement, myfrac(sys().millisec()/4000.0));
+	myshader.set_uniform(loc_windmovement, myfrac(SYS().millisec()/4000.0));
 
 	plantvertexdata.bind();
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -818,17 +818,17 @@ void show_credits()
 	bool quit = false;
 	float lines_per_sec = 2;
 	float ctr = 0.0, ctradd = 1.0/32.0;
-	unsigned tm = sys().millisec();
+	unsigned tm = SYS().millisec();
 	unsigned tm0 = tm;
 	unsigned frames = 1;
 	unsigned lastframes = 1;
-	double fpstime = sys().millisec() / 1000.0;
-	double totaltime = sys().millisec() / 1000.0;
+	double fpstime = SYS().millisec() / 1000.0;
+	double totaltime = SYS().millisec() / 1000.0;
 	double measuretime = 5;	// seconds
 	auto ic = std::make_shared<input_event_handler_custom>();
 	ic->set_handler([&quit](const input_event_handler::mouse_click_data& mc) { if (mc.up()) quit = true; return true; });
 	ic->set_handler([&quit](const input_event_handler::key_data& kd) { if (kd.up() && kd.keycode == key_code::ESCAPE) quit = true; return true; });
-	sys().add_input_event_handler(ic);
+	SYS().add_input_event_handler(ic);
 
 	while (!quit) {
 
@@ -836,18 +836,18 @@ void show_credits()
 
 #if 0
 		// render sphere bobs
-		render_bobs(*sph, sys().millisec() - tm0, sys().millisec() - tm);
+		render_bobs(*sph, SYS().millisec() - tm0, SYS().millisec() - tm);
 #endif
 
 		glPushMatrix();
 		glLoadIdentity();
-		float zang = 360.0/40 * (sys().millisec() - tm0)/1000;
-		float zang2 = 360.0/200 * (sys().millisec() - tm0)/1000;
+		float zang = 360.0/40 * (SYS().millisec() - tm0)/1000;
+		float zang2 = 360.0/200 * (SYS().millisec() - tm0)/1000;
 		vector3 viewpos2 = viewpos + (angle(-zang2).direction() * 192).xy0();
 		float terrainh = chm.compute_height(vector2f(viewpos2.x, viewpos2.y));
 		viewpos2.z = terrainh * 0.5 + 20.0; // fixme, heightmap must take care of z scale
 
-		float path_fac = myfrac((1.0/120) * (sys().millisec() - tm0)/1000);
+		float path_fac = myfrac((1.0/120) * (SYS().millisec() - tm0)/1000);
 		vector3f campos = cam_path.value(path_fac);
 		vector3f camlookat = cam_path.value(myfrac(path_fac + 0.01));
 		//camera cm(viewpos2, viewpos2 + angle(zang).direction().xyz(-0.25));
@@ -869,16 +869,16 @@ void show_credits()
 		ps.display(campos, zang);//viewpos2 here, but it flickers
 		glPopMatrix();
 
-		sys().prepare_2d_drawing();
+		SYS().prepare_2d_drawing();
 		if (fadein_tex.get()) {
-			fadein_ctr = (sys().millisec() - tm0) * 64 / 3200;
+			fadein_ctr = (SYS().millisec() - tm0) * 64 / 3200;
 			// generate fadein tex
 			generate_fadein_pixels(fadein_pixels, fadein_ctr, 8);
 			fadein_tex = std::make_unique<texture>(fadein_pixels, 8, 8, GL_LUMINANCE_ALPHA,
 						     texture::NEAREST, texture::REPEAT);
 			glPushMatrix();
 			glScalef(4.0, 4.0, 4.0);
-			fadein_tex->draw_tiles(0, 0, sys().get_res_x_2d()/4, sys().get_res_y_2d()/4);
+			fadein_tex->draw_tiles(0, 0, SYS().get_res_x_2d()/4, SYS().get_res_y_2d()/4);
 			glPopMatrix();
 			if (fadein_ctr >= 64)
 				fadein_tex.reset();
@@ -896,18 +896,18 @@ void show_credits()
 		glColor4f(1,1,1,1);
 		glEnable(GL_TEXTURE_3D); // important!
 #if 0
-		float d = ((sys().millisec() - tm0)/1000.0)/10.0;
+		float d = ((SYS().millisec() - tm0)/1000.0)/10.0;
 		tex3d.draw(256, 128, 512, 512, vector3f(0,0,d), vector3f(1,0,0), vector3f(0,1,0));
 #else
-		float d = 2*3.14159*((sys().millisec() - tm0)/1000.0)/10.0;
+		float d = 2*3.14159*((SYS().millisec() - tm0)/1000.0)/10.0;
 		tex3d.draw(256, 128, 512, 512, vector3f(0,0,0), vector3f(cos(d),0,sin(d)), vector3f(0,1,0));
 #endif
 		glDisable(GL_TEXTURE_3D); // important!
 #endif
 
-		sys().unprepare_2d_drawing();
+		SYS().unprepare_2d_drawing();
 
-		unsigned tm2 = sys().millisec();
+		unsigned tm2 = SYS().millisec();
 		lineoffset += lines_per_sec*(tm2-tm)/1000.0f;
 		int tmp = int(lineoffset);
 		lineoffset -= tmp;
@@ -925,7 +925,7 @@ void show_credits()
 			lastframes = frames;
 		}
 
-		sys().finish_frame();
+		SYS().finish_frame();
 	}
 
 	glClearColor(0, 0, 1, 0);

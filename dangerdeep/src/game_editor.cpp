@@ -43,13 +43,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "global_data.h"
 #include "user_interface.h"
 #include "submarine_interface.h"
-#include "airplane_interface.h"
-#include "ship_interface.h"
 #include "texts.h"
 #include "convoy.h"
 #include "particle.h"
 #include "sensors.h"
-#include "network.h"
 #include "matrix4.h"
 #include "quaternion.h"
 using std::pair;
@@ -65,8 +62,6 @@ const unsigned GAMETYPE = 0;//fixme, 0-mission , 1-patrol etc.
 
 game_editor::game_editor(const date& start_date)
 {
-	networktype = 0;
-	servercon = nullptr;
 	time = start_date.get_time() + 86400/2;	// 12.00 o'clock
 	equipment_date = start_date;
 

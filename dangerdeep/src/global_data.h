@@ -71,14 +71,11 @@ void add_loading_screen(const std::string& msg);
 std::string get_time_string(double tm);
 
 // handle modulo calculation for negative values the way I need it
-inline float myfmod(float a, float b) { return a-floorf(a/b)*b; }//fmod is different for negative a/b
 inline float myfrac(float a) { return a-floorf(a); }
-inline double myfmod(double a, double b) { return a-floor(a/b)*b; }//fmod is different for negative a/b
 inline double myfrac(double a) { return a-floor(a); }
 inline float mysgn(float a) { return (a < 0) ? -1.0f : ((a > 0) ? 1.0f : 0.0f); }
 inline double mysgn(double a) { return (a < 0) ? -1.0 : ((a > 0) ? 1.0 : 0.0); }
 template<class T> inline T myclamp(const T& v, const T& minv, const T& maxv) { return std::min(maxv, std::max(minv, v)); }
-template<class T> inline T myinterpolate(const T& v0, const T& v1, double f) { return T(v0 * (1.0-f) + v1 * f); }
 template<class C> inline void add_saturated(C& sum, const C& add, const C& max) { sum = std::min(sum + add, max); }
 // return a random value in [0, 1(
 inline double rnd() { return double(rand())/RAND_MAX; }

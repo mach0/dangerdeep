@@ -47,7 +47,7 @@ class submarine : public ship
 		enum st_status { st_empty, st_reloading, st_unloading, st_loaded };
 		// a torpedo transfer must not copy this structure!
 		std::string specfilename; ///< torpedo type, to be copied on transfer
-		torpedo::setup setup;	///< tube setup, don't copy
+		torpedo::setup_data setup;	///< tube setup, don't copy
 		double temperature{15.0};	///< current torpedo temperatue - fixme: as attribute of class torpedo?
 		st_status status{st_empty};	///< 0 empty 1 reloading 2 unloading 3 loaded
 		unsigned associated{0};	///< reloading from/unloading to
@@ -64,6 +64,11 @@ class submarine : public ship
 		hearing_device_KDB,
 		hearing_device_GHG,
 		hearing_device_BG
+	};
+
+	enum class gauges_type {
+		standard,
+		VII
 	};
 
 	enum dive_states { // numbers are stored in savegame, don't change later!
@@ -123,6 +128,8 @@ protected:
 
 	// the hearing device type
 	hearing_device_type hearing_device;	// read from spec file and time, should be saved later
+
+	gauges_type gauges{gauges_type::standard};	///< What kind of gauges to show
 
 	std::vector<part> parts;	// read from data/spec file, fixme do that!
 
@@ -335,12 +342,15 @@ public:
 
 	virtual double get_bow_rudder() const { return bow_depth_rudder.angle; }
 	virtual double get_stern_rudder() const { return stern_depth_rudder.angle; }
+	virtual double get_bow_rudder_max_angle() const { return bow_depth_rudder.max_angle; }
+	virtual double get_stern_rudder_max_angle() const { return stern_depth_rudder.max_angle; }
 	virtual void set_bow_depth_rudder(double to){ bow_depth_rudder.set_to(to); permanent_dive = true; }
 	virtual void set_stern_depth_rudder(double to){ stern_depth_rudder.set_to(to); permanent_dive = true; }
 
 	const std::string& get_torpedomanage_img_name() const { return torpedomanage_sidetopimg; }
 
 	virtual hearing_device_type get_hearing_device_type() const { return hearing_device; }
+	virtual gauges_type get_gauges_type() const { return gauges; }
 };
 
 #endif
