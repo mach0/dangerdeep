@@ -16,6 +16,7 @@ project (DFTD
 configure_file (${PROJECT_SOURCE_DIR}/src/version.h.in
                 ${PROJECT_SOURCE_DIR}/src/version.h)
 
+# FFMPEG | FFTW3 | SDL2 | SDL2_image | SDL2_mixer | GL | GLU | GLEW | OpenGL
 
 # language options
 set (CMAKE_CXX_STANDARD 17)
@@ -57,7 +58,7 @@ set (DFTD_BUILD_LIBCPLUSPLUS OFF CACHE BOOL "Compile with clang libc++.")
 set (DFTD_BUILD_TOOLS ON CACHE BOOL "Build dftd extra developer tools.")
 set (DFTD_BUILD_TESTS ON CACHE BOOL "Build dftd code tests.")
 
-set (DFTD_HIDE_SYMBOLS ON CACHE BOOL
+set (DFTD_HIDE_SYMBOLS OFF CACHE BOOL
      "Hide internal symbols that aren't oficially external")
 
 set (DFTD_USE_IPO OFF CACHE BOOL 
@@ -74,6 +75,8 @@ set (USE_FLOAT_FFTW3 ON CACHE BOOL
 
 set (USE_LIB64_SUFFIX ON CACHE BOOL 
      "Use lib64 instead of lib on x86_64 systems")
+
+set (USE_EFENCE OFF CACHE BOOL "Use Electric fence, UNIX only.")
 
 
 # set property for 64bits unices, debian does not follow the convention and
