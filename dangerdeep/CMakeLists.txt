@@ -28,8 +28,8 @@ set (CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 include (FindPkgConfig)
 
 set (CMAKE_MODULE_PATH
-     "${PROJECT_SOURCE_DIR}/src/cmake/modules"
-     "${PROJECT_SOURCE_DIR}/src/cmake")   
+     "${PROJECT_SOURCE_DIR}/cmake/modules"
+     "${PROJECT_SOURCE_DIR}/cmake")   
 
 
 # use ccache IF found
@@ -224,11 +224,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
 
     if (DFTD_HIDE_SYMBOLS AND NOT DEBUGMODE)
         set (VISIBILITY_INLINES_HIDDEN TRUE)
-        set (CMAKE_CXX_VISIBILITY_PRESET hidden)
-
-        # turn default symbol visibility to hidden
-        #set (VISIBILITY_COMMAND 
-        #     "-fvisibility=hidden -fvisibility-inlines-hidden")        
+        set (CMAKE_CXX_VISIBILITY_PRESET hidden)    
     endif ()
     
 endif ()
