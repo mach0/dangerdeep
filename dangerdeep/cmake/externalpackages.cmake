@@ -26,8 +26,10 @@ endif ()
 
 # OpenGL, components: EGL | GLX | OpenGL
 # OpenGL_GL_PREFERENCE: GLVND | LEGACY
-# 
-find_package (OpenGL REQUIRED)
+#
+set (OpenGL_GL_PREFERENCE LEGACY)
+
+find_package (OpenGL REQUIRED COMPONENTS GLX OpenGL)
 if (OPENGL_FOUND)
     message (STATUS 
     "OpenGL found: \"${OPENGL_gl_LIBRARY}\", \"${OPENGL_opengl_LIBRARY}\"")

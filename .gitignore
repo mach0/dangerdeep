@@ -1,0 +1,7 @@
+build
+*~
+*.swp
+*.bak
+build/
+dangerdeep/build
+
