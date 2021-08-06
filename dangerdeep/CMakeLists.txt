@@ -70,6 +70,8 @@ set (DFTD_STOP_ON_WARNING OFF CACHE BOOL
 set (DFTD_COLOR_MAKEFILE ON CACHE BOOL
      "Enable colored compiler warnings, GCC, Clang only")
 
+set (DFTD_ENABLE_DOXYGEN OFF CACHE BOOL "Build doxygen documentation")
+
 set (USE_FLOAT_FFTW3 ON CACHE BOOL 
      "Use single or double precision FFTW3, pending availability")
 
@@ -87,6 +89,9 @@ set (USE_CLANG_TIDY OFF CACHE BOOL "Use Clang-Tidy tool for checks if found.")
 set (USE_CLANG_TIDY_FIXIT OFF CACHE BOOL "Fix clang-tidy checks, or just warn.")
 set (USE_CLANG_TIDY_CUSTOM_CHECKS "" CACHE STRING 
     "Custom checks for clang-tidy besides the built-in in this cmake file.")
+
+set (USE_CPPCHECK OFF CACHE BOOL "Use CPPcheck static analysis tool")
+
 
 if (USE_CLANG_TIDY)
     find_program (CLANG_TIDY
@@ -236,6 +241,27 @@ if (USE_CLANG_TIDY)
     endif ()
 endif ()
 
+
+# CPP check static analysis
+if (USE_CPPCHECK)
+    find_program (CPPCHECK NAMES cppcheck
+                  HINTS /usr
+                        /usr/local
+                        /opt
+                  PATH_SUFFIXES bin)
+
+    if (CPPCHECK-NOTFOUND)
+        message (WARNING "CPPcheck NOT found.")
+    else ()
+        set (CMAKE_CXX_CPPCHECK ${CPPCHECK} 
+            --suppress=missingInclude
+            --enable=all
+            --inline-suppr
+            --inconclusive
+            -std=c++17
+            -i ${CMAKE_SOURCE_DIR})
+    endif ()
+endif ()
 
 
 # set property for 64bits unices, debian does not follow the convention and
@@ -529,6 +555,18 @@ string (CONCAT DFTD_DATADIR ${DEFAULT_INSTALL_PREFIX} "/"
 # we define it twice because old build system uses the definitions without the DFTD_ prefix
 add_definitions ("-DDFTD_VERSION=\"${DFTD_VERSION}\"" "-DVERSION=\"${DFTD_VERSION}\"")
 add_definitions ("-DDFTD_DATADIR=\"${DFTD_DATADIR}\"" "-DDATADIR=\"${DFTD_DATADIR}\"")
+
+
+# Documentation
+if (DFTD_ENABLE_DOXYGEN)
+    set (DOXYGEN_CALLER_GRAPH TRUE)
+    set (DOXYGEN_CALL_GRAPH TRUE)
+    set (DOXYGEN_EXTRACT_ALL TRUE)
+    set (DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+
+    find_package (Doxygen REQUIRED dot)
+    doxygen_add_docs (doxygen-docs ${PROJECT_SOURCE_DIR})
+endif ()
 
 
 # install tree
