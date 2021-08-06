@@ -226,8 +226,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
     add_compile_options (-fno-math-errno)
 
     if (DFTD_HIDE_SYMBOLS AND NOT DEBUGMODE)
-        set (VISIBILITY_INLINES_HIDDEN TRUE)
-        set (CMAKE_CXX_VISIBILITY_PRESET hidden)    
+        set (CMAKE_CXX_VISIBILITY_PRESET hidden)
+        set (CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
     endif ()
     
 endif ()
