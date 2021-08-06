@@ -79,6 +79,165 @@ set (USE_LIB64_SUFFIX ON CACHE BOOL
 set (USE_EFENCE OFF CACHE BOOL "Use Electric fence, UNIX only.")
 
 
+# Clang tools, formatting and tidy checks
+set (USE_CLANG_FORMAT OFF CACHE BOOL 
+     "Use clang-format, ensure strict code formatting.")
+
+set (USE_CLANG_TIDY OFF CACHE BOOL "Use Clang-Tidy tool for checks if found.")
+set (USE_CLANG_TIDY_FIXIT OFF CACHE BOOL "Fix clang-tidy checks, or just warn.")
+set (USE_CLANG_TIDY_CUSTOM_CHECKS "" CACHE STRING 
+    "Custom checks for clang-tidy besides the built-in in this cmake file.")
+
+if (USE_CLANG_TIDY)
+    find_program (CLANG_TIDY
+                  NAMES clang-tidy clang-tidy-11 clang-tidy-10 clang-tidy-9
+                  PATHS /usr
+                        /usr/local
+                        /opt
+                  PATH_SUFFIXES bin
+                  DOC "Location of clang-tidy, versions 9,10,11."
+                  )
+    
+    if (CLANG_TIDY-NOTFOUND)
+        message (WARNING "Clang-tidy NOT found.")
+    else ()
+        message (STATUS "Found \"${CLANG_TIDY}\", use \"make tidy\" to run it.")
+        set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+        # https://releases.llvm.org/11.0.1/tools/clang/tools/extra/docs/clang-tidy/checks/bugprone-inaccurate-erase.html
+	    set (CLANG_TIDY_CHECKS "-*")
+
+        set (CLANG_TIDY_CHECKS_LLVM "")
+        list (APPEND CLANG_TIDY_CHECKS_LLVM
+            "llvm-header-guard"
+            "llvm-include-order"
+            "llvm-prefer-isa-or-dyn-cast-in-conditionals"
+            "llvm-twine-local" 
+        )
+
+        set (CLANG_TIDY_CHECKS_BUGPRONE "")
+        list (APPEND CLANG_TIDY_CHECKS_BUGPRONE
+            "bugprone-copy-constructor-init"
+            "bugprone-dynamic-static-initializers"
+            "bugprone-inaccurate-erase"
+            "bugprone-incorrect-roundings"
+            "bugprone-integer-division"
+            "bugprone-macro-parentheses"
+            "bugprone-misplaced-operator-in-strlen-in-alloc"
+            "bugprone-misplaced-pointer-arithmetic-in-alloc"
+            "bugprone-misplaced-widening-cast"
+            "bugprone-move-forwarding-reference"
+            "bugprone-not-null-terminated-result"
+            "bugprone-parent-virtual-call"
+            "bugprone-posix-return"
+            "bugprone-signed-char-misuse"
+            "bugprone-sizeof-container"
+            "bugprone-sizeof-expression"
+            "bugprone-suspicious-memset-usage"
+            "bugprone-suspicious-missing-comma"
+            "bugprone-swapped-arguments"
+            "bugprone-throw-keyword-missing"
+            "bugprone-too-small-loop-variable"
+            "bugprone-undefined-memory-manipulation"
+            "bugprone-undelegated-constructor"
+            "bugprone-unhandled-self-assignment"
+            "bugprone-unused-raii"
+            "bugprone-unused-return-value"
+            "bugprone-use-after-move"
+        )
+
+        set (CLANG_TIDY_CHECKS_CPPCOREGUIDELINES "")
+        list (APPEND CLANG_TIDY_CHECKS_CPPCOREGUIDELINES
+            "cppcoreguidelines-avoid-non-const-global-variables"
+            "cppcoreguidelines-interfaces-global-init"
+            "cppcoreguidelines-narrowing-conversions"
+            "cppcoreguidelines-pro-type-static-cast-downcast"
+            "cppcoreguidelines-pro-type-reinterpret-cast"
+        )
+
+        set (CLANG_TIDY_CHECKS_MISC "")
+        list (APPEND CLANG_TIDY_CHECKS_MISC
+            "misc-definitions-in-headers"
+            "misc-misplaced-const"
+            "misc-new-delete-overloads"
+            "misc-redundant-expression"
+            "misc-uniqueptr-reset-release"
+            "misc-unused-alias-decls"
+        )
+
+        set (CLANG_TIDY_CHECKS_MODERNIZE "")
+        list (APPEND CLANG_TIDY_CHECKS_MODERNIZE
+            "modernize-avoid-bind"
+            "modernize-avoid-c-arrays"
+            "modernize-loop-convert"
+            "modernize-make-shared"
+            "modernize-make-unique"
+            "modernize-replace-auto-ptr"
+            "modernize-use-auto"
+            "modernize-unary-static-assert"
+            "modernize-use-emplace"
+            "modernize-use-equals-default"
+            "modernize-use-equals-delete"
+            "modernize-use-nodiscard"
+            "modernize-use-noexcept"
+            "modernize-use-nullptr"
+            "modernize-use-override"
+            "modernize-use-implicit-conversion-in-loop"
+        )
+
+        set (CLANG_TIDY_CHECKS_PERFORMANCE "")
+        list (APPEND CLANG_TIDY_CHECKS_PERFORMANCE
+            "performance-inefficient-algorithm"
+            "performance-inefficient-string-concatenation"
+            "performance-inefficient-vector-operation"
+            "performance-move-constructor-init"
+            "performance-move-const-arg"
+            "performance-no-automatic-move"
+            "performance-noexcept-move-constructor"
+            "performance-trivially-destructible"
+        )
+
+        set (CLANG_TIDY_CHECKS_READABILITY "")
+        list (APPEND CLANG_TIDY_CHECKS_READABILITY
+            "readability-inconsistent-declaration-parameter-name"
+            "readability-implicit-bool-conversion"
+            "readability-magic-numbers"
+            "readability-make-member-function-const"
+            "readability-misleading-indentation"
+            "readability-non-const-parameter"
+            "readability-static-accessed-through-instance"
+            )
+
+        list (APPEND CLANG_TIDY_CHECKS
+              ${CLANG_TIDY_CHECKS_LLVM}
+              ${CLANG_TIDY_CHECKS_BUGPRONE}
+              ${CLANG_TIDY_CHECKS_CPPCOREGUIDELINES}
+              ${CLANG_TIDY_CHECKS_MISC}
+              ${CLANG_TIDY_CHECKS_MODERNIZE}
+              ${CLANG_TIDY_CHECKS_PERFORMANCE}
+              ${CLANG_TIDY_CHECKS_READABILITY}
+        )
+        list (JOIN CLANG_TIDY_CHECKS "," CLANG_TIDY_CHECKS)
+
+        if (DFTD_VERBOSE)
+            message (WARNING "checks \"${CLANG_TIDY_CHECKS}\"")
+        endif ()
+
+        set (CMAKE_CXX_CLANG_TIDY "")
+        list (APPEND CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")        
+        list (APPEND CMAKE_CXX_CLANG_TIDY "-checks=${CLANG_TIDY_CHECKS}")
+        list (APPEND CMAKE_CXX_CLANG_TIDY "-header-filter=.")
+        list (APPEND CMAKE_CXX_CLANG_TIDY "-extra-arg=-std=c++17")
+
+        if (USE_CLANG_TIDY_FIXIT)
+            list (APPEND CMAKE_CXX_CLANG_TIDY "-fix")
+        endif ()
+
+    endif ()
+endif ()
+
+
+
 # set property for 64bits unices, debian does not follow the convention and
 # puts 32bits libraries in lib32/ whilst symlinking lib64/ to lib/
 if (UNIX)
