@@ -1,15 +1,23 @@
 # Main dangerdeep
 
 # Definitions for TinyXML and FFTW.
-add_definitions ( -DTIXML_USE_STL -DWITH_FLOAT_FFTW )
+if (USE_FLOAT_FFTW3)
+    add_compile_definitions (WITH_FLOAT_FFTW)
+endif ()
+
+add_compile_definitions (TIXML_USE_STL)
+
 
 # Also build library for tinyxml
-add_subdirectory ( tinyxml )
+add_subdirectory (tinyxml)
+
 
 # and for oglExt
-add_subdirectory ( oglext )
+add_subdirectory (oglext)
 
-add_library(dftdbasic STATIC
+
+# DFTD basic
+add_library (dftdbasic STATIC
 	angle.h
 	angular_table.h
 	area.h
@@ -79,9 +87,11 @@ add_library(dftdbasic STATIC
 	xml.cpp
 	xml.h
 )
-target_link_libraries(dftdbasic ${LIBS} ${CMAKE_DL_LIBS} tinyxml)
+target_link_libraries (dftdbasic ${LIBS} ${CMAKE_DL_LIBS} tinyxml)
 
-add_library(dftdgamecore STATIC
+
+# DFTD game core
+add_library (dftdgamecore STATIC
 	ai.cpp
 	ai.h
 	airplane.cpp
@@ -134,7 +144,9 @@ add_library(dftdgamecore STATIC
 )
 target_link_libraries ( dftdgamecore dftdbasic )
 
-add_library(dftdmedia STATIC
+
+# DFTD media, ffmpeg
+add_library (dftdmedia STATIC
 	bzip.cpp		# only for terrain, remove later
 	bzip.h			# only for terrain, remove later
 	caustics.cpp
@@ -191,10 +203,12 @@ add_library(dftdmedia STATIC
 	water.cpp
 	water.h
 )
-target_link_libraries ( dftdmedia dftdbasic oglext )
+target_link_libraries (dftdmedia dftdbasic oglext)
 
-# todo distribute correctly - cfg/keys need global_data and that needs a lot more
-add_library(dftdall STATIC
+
+# DFTD all
+# TODO: distribute correctly,cfg/keys need global_data and that needs lot more
+add_library (dftdall STATIC
 	global_data.cpp
 	global_data.h
 	highscorelist.cpp
@@ -204,7 +218,9 @@ add_library(dftdall STATIC
 )
 target_link_libraries ( dftdall dftdmedia )
 
-add_library(dftdgameui STATIC
+
+# DFTD game UI
+add_library (dftdgameui STATIC
 	coastmap.cpp
 	coastmap.h
 	freeview_display.cpp
@@ -268,48 +284,54 @@ add_library(dftdgameui STATIC
 	widget.cpp	# fixme needs text, is not really part of the game ui
 	widget.h
 )
-target_link_libraries ( dftdgameui dftdmedia dftdgamecore dftdall )
+target_link_libraries (dftdgameui dftdmedia dftdgamecore dftdall)
 # fixme need to link dftdall for add_loading_screen in global_data etc.
+
 
 set (dangerdeep_source
 	subsim.cpp
 	credits.cpp
 	credits.h
 )
-add_executable ( dangerdeep ${dangerdeep_source} )
+add_executable (dangerdeep ${dangerdeep_source})
 
-target_link_libraries ( dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdgameui )
+target_link_libraries (dangerdeep ${LIBS} ${CMAKE_DL_LIBS} dftdgameui)
 
-if ( DFTD_BUILD_TOOLS )
-	add_executable ( viewmodel      viewmodel.cpp )
-	target_link_libraries ( viewmodel dftdgameui )
 
-	add_executable ( modelmeasure   modelmeasure.cpp )
-	target_link_libraries ( modelmeasure dftdmedia )
+# Extra tools, 3d model, XML files, font conversion...
+if (DFTD_BUILD_TOOLS)
 
-	add_executable ( oceantest      oceantest.cpp )
-	target_link_libraries ( oceantest dftdmedia )
+	add_executable (viewmodel      viewmodel.cpp)
+	target_link_libraries (viewmodel dftdgameui)
 
-	add_executable ( bsplinetest    bspline_test.cpp )
-	target_link_libraries ( bsplinetest dftdbasic )
+    # load exported model, dump hierarchy as XML
+	add_executable (modelmeasure   modelmeasure.cpp)
+	target_link_libraries (modelmeasure dftdmedia)
 
-	add_executable ( portal         portal.cpp )
-	target_link_libraries ( portal dftdmedia )
+	add_executable (oceantest      oceantest.cpp)
+	target_link_libraries (oceantest dftdmedia)
 
-	add_executable ( treegentest    treegentest.cpp )
-	target_link_libraries ( treegentest dftdall )
+	add_executable (bsplinetest    bspline_test.cpp)
+	target_link_libraries (bsplinetest dftdbasic)
 
-	add_executable ( bvtreetest     bvtreeintersecttest.cpp )
-	target_link_libraries ( bvtreetest dftdmedia )
+	add_executable (portal         portal.cpp)
+	target_link_libraries (portal dftdmedia)
 
-	add_executable ( map_precompute tools/map_precompute.cpp )
-	target_link_libraries ( map_precompute dftdall )
+	add_executable (treegentest    treegentest.cpp)
+	target_link_libraries (treegentest dftdall)
 
-	add_executable ( test_display test_display.cpp )
-	target_link_libraries ( test_display dftdgameui )
+	add_executable (bvtreetest     bvtreeintersecttest.cpp)
+	target_link_libraries (bvtreetest dftdmedia)
 
-	if ( FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST )
-	    add_executable ( videoplay  videoplaytest.cpp )
-	    target_link_libraries ( videoplay dftdmedia )
+	add_executable (map_precompute tools/map_precompute.cpp)
+	target_link_libraries (map_precompute dftdall)
+
+	add_executable (test_display test_display.cpp)
+	target_link_libraries (test_display dftdgameui)
+
+	if (FFMPEG_FOUND AND DFTD_BUILD_VIDEO_TEST)
+	    add_executable (videoplay  videoplaytest.cpp)
+	    target_link_libraries (videoplay dftdmedia)
 	endif ()
 endif ()
+
