@@ -253,14 +253,14 @@ if (USE_CPPCHECK)
 
     if (CMAKE_CXX_CPPCHECK)
 
-        set (CPPCHECK_TEMPLATE "cppcheck:{file}:{line}: [{severity}][{id}] {message} {callstack}")
+        set (CPPCHECK_TEMPLATE "cppcheck:{file}:{line}: [{severity}][{id}] {message}\\n{code}\\n{callstack}")
 
         list (APPEND CMAKE_CXX_CPPCHECK
             "--enable=all"
             "--inline-suppr"
-            "--force"
+            #"--force"
             "--language=c++"
-            "--library=opengl.cfg,std.cfg"
+            "--library=opengl,posix,zlib,std"
             "--template=${CPPCHECK_TEMPLATE}"
             "--suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt"
             "--std=c++17"
@@ -268,18 +268,17 @@ if (USE_CPPCHECK)
 
         if (DFTD_VERBOSE)
             list (APPEND CMAKE_CXX_CPPCHECK
-                --verbose
-                --max-ctu-depth=2)
+                #"--verbose"
+                "--max-ctu-depth=1")
         else ()
-            list (APPEND CMAKE_CXX_CPPCHECK --quiet)
+            list (APPEND CMAKE_CXX_CPPCHECK "--quiet")
         endif()
 
-        if (USE_CPPCHECK_HTML_REPORT)
-            list (APPEND CMAKE_CXX_CPPCHECK
-                "--xml"
-                "--output-file=${CMAKE_BINARY_DIR}/cppcheck_report.xml")
-        endif()                
-    
+        list (APPEND CMAKE_CXX_CPPCHECK
+            "--xml"
+            "--xml-version=2"
+            "--output-file=${CMAKE_BINARY_DIR}/cppcheck_report.xml")
+        
     else ()
         message (WARNING "CPPcheck NOT found.") 
     endif ()
@@ -631,10 +630,12 @@ if (USE_CPPCHECK AND CMAKE_CXX_CPPCHECK AND USE_CPPCHECK_HTML_REPORT
     if (CPPCHECK_HTMLREPORT_BIN)
         add_custom_command (OUTPUT cppcheck_report.html
             POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/html
             COMMAND cppcheck-htmlreport 
+                --title=${PROJECT_NAME}
                 --file=${CMAKE_BINARY_DIR}/cppcheck_report.xml
                 --source-dir=${CMAKE_SOURCE_DIR}
-                --report-dir=${CMAKE_BINARY_DIR}
+                --report-dir=${CMAKE_BINARY_DIR}/html
             DEPENDS build
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMENT "Custom post-built for cppcheck HTML report")
