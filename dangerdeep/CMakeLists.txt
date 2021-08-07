@@ -91,6 +91,7 @@ set (USE_CLANG_TIDY_CUSTOM_CHECKS "" CACHE STRING
     "Custom checks for clang-tidy besides the built-in in this cmake file.")
 
 set (USE_CPPCHECK OFF CACHE BOOL "Use CPPcheck static analysis tool")
+set (USE_CPPCHECK_HTML_REPORT OFF CACHE BOOL "Output cppcheck to HTML file")
 
 
 if (USE_CLANG_TIDY)
@@ -244,23 +245,45 @@ endif ()
 
 # CPP check static analysis
 if (USE_CPPCHECK)
-    find_program (CPPCHECK NAMES cppcheck
+    find_program (CMAKE_CXX_CPPCHECK NAMES cppcheck
                   HINTS /usr
                         /usr/local
                         /opt
                   PATH_SUFFIXES bin)
 
-    if (CPPCHECK-NOTFOUND)
-        message (WARNING "CPPcheck NOT found.")
+    if (CMAKE_CXX_CPPCHECK)
+
+        set (CPPCHECK_TEMPLATE "cppcheck:{file}:{line}: [{severity}][{id}] {message} {callstack}")
+
+        list (APPEND CMAKE_CXX_CPPCHECK
+            "--enable=all"
+            "--inline-suppr"
+            "--force"
+            "--language=c++"
+            "--library=opengl.cfg,std.cfg"
+            "--template=${CPPCHECK_TEMPLATE}"
+            "--suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt"
+            "--std=c++17"
+            )
+
+        if (DFTD_VERBOSE)
+            list (APPEND CMAKE_CXX_CPPCHECK
+                --verbose
+                --max-ctu-depth=2)
+        else ()
+            list (APPEND CMAKE_CXX_CPPCHECK --quiet)
+        endif()
+
+        if (USE_CPPCHECK_HTML_REPORT)
+            list (APPEND CMAKE_CXX_CPPCHECK
+                "--xml"
+                "--output-file=${CMAKE_BINARY_DIR}/cppcheck_report.xml")
+        endif()                
+    
     else ()
-        set (CMAKE_CXX_CPPCHECK ${CPPCHECK} 
-            --suppress=missingInclude
-            --enable=all
-            --inline-suppr
-            --inconclusive
-            -std=c++17
-            -i ${CMAKE_SOURCE_DIR})
+        message (WARNING "CPPcheck NOT found.") 
     endif ()
+
 endif ()
 
 
@@ -589,6 +612,43 @@ add_subdirectory (src)
 #if ( DFTD_BUILD_TOOLS )
 #    add_subdirectory ( src/tools )
 #endif ()
+
+
+# Custom post-build stages
+#
+# 1) cppcheck if enabled, has the option to produce a XML file for
+#    cppcheck-html to generate a HTML report
+#
+if (USE_CPPCHECK AND CMAKE_CXX_CPPCHECK AND USE_CPPCHECK_HTML_REPORT
+    AND EXISTS "${CMAKE_BINARY_DIR}/cppcheck_report.xml")
+
+    find_program (CPPCHECK_HTMLREPORT_BIN cppcheck-htmlreport
+                  HINTS /usr
+                        /usr/local
+                        /opt
+                  PATH_SUFFIXES bin)
+
+    if (CPPCHECK_HTMLREPORT_BIN)
+        add_custom_command (OUTPUT cppcheck_report.html
+            POST_BUILD
+            COMMAND cppcheck-htmlreport 
+                --file=${CMAKE_BINARY_DIR}/cppcheck_report.xml
+                --source-dir=${CMAKE_SOURCE_DIR}
+                --report-dir=${CMAKE_BINARY_DIR}
+            DEPENDS build
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Custom post-built for cppcheck HTML report")
+    else ()
+        message (WARNING "cppcheck-htmlreport NOT found.")
+    endif ()
+
+    add_custom_target (cppcheck_html_report ALL
+                       DEPENDS ${CMAKE_BINARY_DIR}/cppcheck_report.xml
+                       cppcheck_report.html)
+
+    add_dependencies (cppcheck_html_report dangerdeep)
+
+endif ()
 
 
 # Packaging
