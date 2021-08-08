@@ -262,7 +262,7 @@ if (USE_CPPCHECK)
             "--language=c++"
             "--library=opengl,posix,zlib,std"
             "--template=${CPPCHECK_TEMPLATE}"
-            "--suppressions-list=${CMAKE_SOURCE_DIR}/cppcheck_suppressions.txt"
+            "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck_suppressions.txt"
             "--std=c++17"
             )
 
