@@ -21,32 +21,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
 #include "error.h"
+
 #include <sstream>
 
 std::string error::throw_location(const char* file, unsigned line)
 {
-	std::ostringstream oss;
-	oss << ", in file: " << file << ", in line: " << line;
-	return oss.str();
+    std::ostringstream oss;
+    oss << ", in file: " << file << ", in line: " << line;
+    return oss.str();
 }
 
-
-
-error::error(const std::string& location, const std::string& message)
-	: std::runtime_error(std::string("DftD error at ") + location + ", Type: " + message)
+error::error(const std::string& location, const std::string& message) :
+    std::runtime_error(
+        std::string("DftD error at ") + location + ", Type: " + message)
 {
 }
 
-
-
-file_context_error::file_context_error(const std::string& location, const std::string& message, const std::string& filename)
-	: error(location, message + ", regarding file: " + filename)
+file_context_error::file_context_error(
+    const std::string& location, const std::string& message,
+    const std::string& filename) :
+    error(location, message + ", regarding file: " + filename)
 {
 }
 
-
-
-file_read_error::file_read_error(const std::string& location, const std::string& filename)
-	: error(location, std::string("failed to load: ") + filename)
+file_read_error::file_read_error(
+    const std::string& location, const std::string& filename) :
+    error(location, std::string("failed to load: ") + filename)
 {
 }

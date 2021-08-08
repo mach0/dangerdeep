@@ -22,8 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "sub_ecard_popup.h"
 
-
-sub_ecard_popup::sub_ecard_popup(user_interface& ui_)
- :	user_popup(ui_, "sub_ecard")
+sub_ecard_popup::sub_ecard_popup(user_interface& ui_) :
+    user_popup(ui_, "sub_ecard")
 {
 }

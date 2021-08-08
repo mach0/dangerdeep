@@ -20,19 +20,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // pointer to any ressource with user defined freeing
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-template<typename T> void free_ressource(T* ) {}
+template <typename T> void free_ressource(T*) { }
 
-template<typename T> class ressource_ptr
+template <typename T> class ressource_ptr
 {
-public:
-	ressource_ptr() : ptr(nullptr) {}
-	ressource_ptr(T* p) : ptr(p) {}
-	~ressource_ptr() { free_ressource(ptr); }
-	ressource_ptr(ressource_ptr&& m) : ptr(m.ptr) { m.ptr = nullptr; }
-	ressource_ptr& operator=(ressource_ptr&& m) { auto tmp = m.ptr; m.ptr = nullptr; ptr = tmp; }
-	T* get() const { return ptr; }
-protected:
-	T* ptr;
-	ressource_ptr(const ressource_ptr& );
-	ressource_ptr& operator= (const ressource_ptr& );
+  public:
+    ressource_ptr() : ptr(nullptr) { }
+    ressource_ptr(T* p) : ptr(p) { }
+    ~ressource_ptr() { free_ressource(ptr); }
+    ressource_ptr(ressource_ptr&& m) : ptr(m.ptr) { m.ptr = nullptr; }
+    ressource_ptr& operator=(ressource_ptr&& m)
+    {
+        auto tmp = m.ptr;
+        m.ptr    = nullptr;
+        ptr      = tmp;
+    }
+    T* get() const { return ptr; }
+
+  protected:
+    T* ptr;
+    ressource_ptr(const ressource_ptr&);
+    ressource_ptr& operator=(const ressource_ptr&);
 };

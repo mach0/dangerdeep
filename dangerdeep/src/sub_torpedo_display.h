@@ -23,52 +23,56 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SUB_TORPEDO_DISPLAY_H
 #define SUB_TORPEDO_DISPLAY_H
 
-#include "user_display.h"
-#include "submarine.h"
-#include "vector2.h"
-#include "objcache.h"
 #include "log.h"
+#include "objcache.h"
+#include "submarine.h"
+#include "user_display.h"
+#include "vector2.h"
 
 /// A display to manage torpedo storage and transfer for submarines
 class sub_torpedo_display : public user_display
 {
-public:
-	sub_torpedo_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
+  public:
+    sub_torpedo_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 
-protected:
-	// source tube nr for manual torpedo transfer, used for drag & drop drawing
-	unsigned torptranssrc;
+  protected:
+    // source tube nr for manual torpedo transfer, used for drag & drop drawing
+    unsigned torptranssrc;
 
-	class desc_text
-	{
-		std::vector<std::string> txtlines;
-		desc_text() = delete;
-	public:
-		desc_text(const std::string& filename);
-		// give startline and number of lines to fetch (nr=0: all).
-		std::string str(unsigned startline = 0, unsigned nrlines = 0) const;
-		unsigned nr_of_lines() const { return txtlines.size(); }
-	};
+    class desc_text
+    {
+        std::vector<std::string> txtlines;
+        desc_text() = delete;
 
-	mutable objcachet<desc_text> desc_texts;
+      public:
+        desc_text(const std::string& filename);
+        // give startline and number of lines to fetch (nr=0: all).
+        std::string str(unsigned startline = 0, unsigned nrlines = 0) const;
+        unsigned nr_of_lines() const { return txtlines.size(); }
+    };
 
-	void draw_torpedo(class game& gm, bool usebow, const vector2i& pos, const submarine::stored_torpedo& st) const;
+    mutable objcachet<desc_text> desc_texts;
 
-	vector2i mouse_position;
-	mouse_button_state mouse_buttons;
-	bool left_mouse_button_pressed{false};
+    void draw_torpedo(
+        class game& gm, bool usebow, const vector2i& pos,
+        const submarine::stored_torpedo& st) const;
 
-	mutable unsigned torp_desc_line;
+    vector2i mouse_position;
+    mouse_button_state mouse_buttons;
+    bool left_mouse_button_pressed{false};
 
-	objcachet<texture>::reference notepadsheet;
+    mutable unsigned torp_desc_line;
 
-	std::vector<vector2i> get_tubecoords(class submarine* sub) const;
+    objcachet<texture>::reference notepadsheet;
 
-	unsigned get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const;
+    std::vector<vector2i> get_tubecoords(class submarine* sub) const;
+
+    unsigned
+    get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const;
 };
 
 #endif

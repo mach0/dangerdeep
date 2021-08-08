@@ -22,75 +22,68 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "depth_charge.h"
 
+#include "constant.h"
+#include "game.h"
+#include "global_data.h"
+#include "log.h"
+#include "model.h"
+#include "system_interface.h"
 
 #include <utility>
 
-#include "global_data.h"
-#include "model.h"
-#include "system_interface.h"
-#include "game.h"
-#include "log.h"
-#include "constant.h"
-
-
-
-depth_charge::depth_charge(game& gm_)
-	: sea_object(gm_, "depth_charge.ddxml"), explosion_depth(0)
+depth_charge::depth_charge(game& gm_) :
+    sea_object(gm_, "depth_charge.ddxml"), explosion_depth(0)
 {
-	// for loading
+    // for loading
 }
 
-
-
-depth_charge::depth_charge(game& gm_, double expl_depth, const vector3& pos)
-	: sea_object(gm_, "depth_charge.ddxml"), explosion_depth(expl_depth)
+depth_charge::depth_charge(game& gm_, double expl_depth, const vector3& pos) :
+    sea_object(gm_, "depth_charge.ddxml"), explosion_depth(expl_depth)
 {
-	// fixme depends on parent! and parent's size, dc's can be thrown, etc.!
-	position = pos;
-	log_info("depth charge created");
+    // fixme depends on parent! and parent's size, dc's can be thrown, etc.!
+    position = pos;
+    log_info("depth charge created");
 }
-
-
 
 void depth_charge::load(const xml_elem& parent)
 {
-	sea_object::load(parent);
-	explosion_depth = parent.child("explosion_depth").attrf();
+    sea_object::load(parent);
+    explosion_depth = parent.child("explosion_depth").attrf();
 }
-
-
 
 void depth_charge::save(xml_elem& parent) const
 {
-	sea_object::save(parent);
-	parent.add_child("explosion_depth").set_attr(explosion_depth);
+    sea_object::save(parent);
+    parent.add_child("explosion_depth").set_attr(explosion_depth);
 }
-
-
 
 void depth_charge::simulate(double delta_time, game& gm)
 {
-	if (!is_reference_ok()) {
-		return;
-	}
+    if (!is_reference_ok())
+    {
+        return;
+    }
 
-	sea_object::simulate(delta_time, gm);
+    sea_object::simulate(delta_time, gm);
 
-	if (position.z < -explosion_depth) {
-		gm.dc_explosion(*this);
-		kill();	// dc is "dead"
-	}
+    if (position.z < -explosion_depth)
+    {
+        gm.dc_explosion(*this);
+        kill(); // dc is "dead"
+    }
 }
 
-
-
-void depth_charge::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
+void depth_charge::compute_force_and_torque(
+    vector3& F, vector3& T, game& gm) const
 {
-	// force is in world space!
-	if (position.z > 0) {	// DC's can be thrown, so they can be above water.
-		F.z = -constant::GRAVITY * mass;
-	} else {
-		double vm = velocity.z/DEPTH_CHARGE_SINK_SPEED;
-		F.z = (-constant::GRAVITY + constant::GRAVITY*vm*vm) * mass;
-	}
+    // force is in world space!
+    if (position.z > 0)
+    { // DC's can be thrown, so they can be above water.
+        F.z = -constant::GRAVITY * mass;
+    }
+    else
+    {
+        double vm = velocity.z / DEPTH_CHARGE_SINK_SPEED;
+        F.z       = (-constant::GRAVITY + constant::GRAVITY * vm * vm) * mass;
+    }
 }

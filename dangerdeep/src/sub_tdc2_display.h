@@ -27,14 +27,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_tdc2_display : public user_display
 {
-public:
-	sub_tdc2_display(class user_interface& ui_);
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	void display() const override;
+  public:
+    sub_tdc2_display(class user_interface& ui_);
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    void display() const override;
 
-protected:
-	/// last time of game that a tube was selected, used for display
-	double tubeselected_time{0.0};
+  protected:
+    /// last time of game that a tube was selected, used for display
+    double tubeselected_time{0.0};
 };
 
 #endif

@@ -38,36 +38,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// directory reading/writing encapsulated for compatibility and ease of use
 class directory
 {
-	directory() = delete;
-	directory(const directory& ) = delete;
-	directory& operator= (const directory& ) = delete;
- public:
-	/// Open directory.
-	///@note throws exception if it is an invalid directory or if filename does note exist
-	directory(const std::string& filename);
+    directory()                 = delete;
+    directory(const directory&) = delete;
+    directory& operator=(const directory&) = delete;
 
-	/// Close directory
-	~directory();
+  public:
+    /// Open directory.
+    ///@note throws exception if it is an invalid directory or if filename does
+    ///note exist
+    directory(const std::string& filename);
 
-	/// Read next filename from directory.
-	///@returns empty string if directory is fully read, filename else
-	std::string read();
+    /// Close directory
+    ~directory();
 
-	/// Recursivly walk a direcory tree and call a function for every filename
-	static void walk(const std::string& path, std::function<void(const std::string&)> func);
+    /// Read next filename from directory.
+    ///@returns empty string if directory is fully read, filename else
+    std::string read();
 
- private:
-	// system specific part
+    /// Recursivly walk a direcory tree and call a function for every filename
+    static void
+    walk(const std::string& path, std::function<void(const std::string&)> func);
+
+  private:
+    // system specific part
 #ifdef WIN32
-	HANDLE dir;
-	WIN32_FIND_DATA Win32_FileFind_Temporary;	// needed because findfirst does
-	bool temporary_used;				// open and first read together
+    HANDLE dir;
+    WIN32_FIND_DATA Win32_FileFind_Temporary; // needed because findfirst does
+    bool temporary_used;                      // open and first read together
 #else
-	DIR* dir;
+    DIR* dir;
 #endif
 };
-
-
 
 // file helper interface
 

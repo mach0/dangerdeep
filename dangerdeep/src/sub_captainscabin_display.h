@@ -28,14 +28,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Display for the submarine captain's cabin
 class sub_captainscabin_display : public user_display
 {
-public:
-	sub_captainscabin_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+  public:
+    sub_captainscabin_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
 
-protected:
-	vector2i mouse_position;	///< Stored for text overlay in display
+  protected:
+    vector2i mouse_position; ///< Stored for text overlay in display
 };
 
 #endif

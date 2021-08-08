@@ -25,10 +25,9 @@
 /// A display for submarine's valves
 class sub_valves_display : public user_display
 {
-public:
-	sub_valves_display(class user_interface& ui_);
-	void display() const override;
+  public:
+    sub_valves_display(class user_interface& ui_);
+    void display() const override;
 };
 
 #endif
-

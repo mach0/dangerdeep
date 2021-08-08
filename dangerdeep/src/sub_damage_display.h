@@ -23,21 +23,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SUB_DAMAGE_DISPLAY_H
 #define SUB_DAMAGE_DISPLAY_H
 
+#include "submarine.h"
 #include "user_display.h"
 #include "vector3.h"
-#include "submarine.h"
 
 /// A display to show and control sub's damage
 class sub_damage_display : public user_display
 {
-public:
-	sub_damage_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
+  public:
+    sub_damage_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
 
-protected:
-	vector2i mouse_position;	// last mouse position, needed for popup display
-	objcachet<texture>::reference notepadsheet;
+  protected:
+    vector2i mouse_position; // last mouse position, needed for popup display
+    objcachet<texture>::reference notepadsheet;
 };
 
 #endif /* SUB_DAMAGE_DISPLAY_H */

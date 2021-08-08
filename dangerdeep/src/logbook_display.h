@@ -28,21 +28,21 @@ class image;
 
 class logbook_display : public user_display
 {
-public:
-	logbook_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_key_event(const key_data& ) override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
+  public:
+    logbook_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_key_event(const key_data&) override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
 
-protected:
-	const vector2i page_left_offset;
-	const vector2i page_right_offset;
-	const vector2i page_size;
-	unsigned current_page{0};
-	mutable unsigned nr_of_pages{1};
+  protected:
+    const vector2i page_left_offset;
+    const vector2i page_right_offset;
+    const vector2i page_size;
+    unsigned current_page{0};
+    mutable unsigned nr_of_pages{1};
 
-	void next_page();
-	void previous_page();
+    void next_page();
+    void previous_page();
 };
 
 #endif

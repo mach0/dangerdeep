@@ -22,8 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "sub_control_popup.h"
 
-
-sub_control_popup::sub_control_popup(user_interface& ui_)
- :	user_popup(ui_, "sub_control")
+sub_control_popup::sub_control_popup(user_interface& ui_) :
+    user_popup(ui_, "sub_control")
 {
 }

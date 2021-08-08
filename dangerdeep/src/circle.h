@@ -24,41 +24,44 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef CIRCLE_H
 #define CIRCLE_H
 
-#include <vector>
 #include "vector3.h"
+
+#include <vector>
 
 /// a 2d circle
 struct circle
 {
-	vector2f center;
-	float radius_sqr;
-	circle(): radius_sqr(0.f) {}
-	circle(const vector2f& c, float rs) : center(c), radius_sqr(rs) {}
+    vector2f center;
+    float radius_sqr;
+    circle() : radius_sqr(0.f) { }
+    circle(const vector2f& c, float rs) : center(c), radius_sqr(rs) { }
 };
 
-inline circle get_circle(const std::vector<vector3f>& pos, int v0, int v1, int v2)
+inline circle
+get_circle(const std::vector<vector3f>& pos, int v0, int v1, int v2)
 {
-	// this code works, but may be too simple, other implementations are more
-	// complex, for example Paul Bourke tests for the case that b-a or c-a is
-	// null on the y value.
-	// If we use the test_graph program with many nodes (>=2000) an error is triggered
-	// in adjacency computation that may be a result of false checks here!
-	vector2f a = pos[v0].xy();
-	vector2f b = pos[v1].xy();
-	vector2f c = pos[v2].xy();
-	vector2f bao = (b-a).orthogonal();
-	vector2f cbo = (c-b).orthogonal();
-	float s = 0.f, t = 0.f;
-	((c-a)*0.5f).solve(bao, cbo, s, t);
-	vector2f ct = ((a+b)*0.5f) + bao*s;
-	return circle(ct, ct.square_distance(a));
+    // this code works, but may be too simple, other implementations are more
+    // complex, for example Paul Bourke tests for the case that b-a or c-a is
+    // null on the y value.
+    // If we use the test_graph program with many nodes (>=2000) an error is
+    // triggered in adjacency computation that may be a result of false checks
+    // here!
+    vector2f a   = pos[v0].xy();
+    vector2f b   = pos[v1].xy();
+    vector2f c   = pos[v2].xy();
+    vector2f bao = (b - a).orthogonal();
+    vector2f cbo = (c - b).orthogonal();
+    float s = 0.f, t = 0.f;
+    ((c - a) * 0.5f).solve(bao, cbo, s, t);
+    vector2f ct = ((a + b) * 0.5f) + bao * s;
+    return circle(ct, ct.square_distance(a));
 }
 
 inline bool is_inside_circle(const vector3f& pos, const circle& c)
 {
-	static const float epsilon = 1e-5f;
-	vector2f d = pos.xy() - c.center;
-	return d.square_length() <= c.radius_sqr + epsilon;
+    static const float epsilon = 1e-5f;
+    vector2f d                 = pos.xy() - c.center;
+    return d.square_length() <= c.radius_sqr + epsilon;
 }
 
 #endif

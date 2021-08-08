@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef AIRPLANE_H
 #define AIRPLANE_H
 
-#include "sea_object.h"
 #include "quaternion.h"
+#include "sea_object.h"
 
 ///\brief Represents an airplane with simulation of it.
 ///\todo improve the interface
@@ -33,39 +33,39 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\todo add steering AI and control AI for airplanes.
 class airplane : public sea_object
 {
- protected:
-	double rollfac, pitchfac;	// rudder state, pitch/roll factor per time.
+  protected:
+    double rollfac, pitchfac; // rudder state, pitch/roll factor per time.
 
-	bool detect_other_sea_objects() const override { return true; }
+    bool detect_other_sea_objects() const override { return true; }
 
- public:
-	/// defined to make it storeable in map, don't use
-	airplane() = default;
+  public:
+    /// defined to make it storeable in map, don't use
+    airplane() = default;
 
-	// create empty object from specification xml file
-	airplane(game& gm_, const xml_elem& parent);
+    // create empty object from specification xml file
+    airplane(game& gm_, const xml_elem& parent);
 
-	void load(const xml_elem& parent) override;
-	void save(xml_elem& parent) const override;
+    void load(const xml_elem& parent) override;
+    void save(xml_elem& parent) const override;
 
-	void simulate(double delta_time, game& gm) override;
+    void simulate(double delta_time, game& gm) override;
 
-	virtual double get_mass() const { return 4000.0; }	// 4 tons.
-	virtual double get_engine_thrust() const { return 20000.0; }
-	virtual double get_drag_factor() const { return 0.00005184; }
-	virtual double get_antislide_factor() const { return 0.0025; }
-	virtual double get_antilift_factor() const { return 0.04; }
-	virtual double get_lift_factor() const { return 0.75; }
-	virtual double get_roll_deg_per_sec() const { return 90.0; }
-	virtual double get_pitch_deg_per_sec() const { return 45.0; }
+    virtual double get_mass() const { return 4000.0; } // 4 tons.
+    virtual double get_engine_thrust() const { return 20000.0; }
+    virtual double get_drag_factor() const { return 0.00005184; }
+    virtual double get_antislide_factor() const { return 0.0025; }
+    virtual double get_antilift_factor() const { return 0.04; }
+    virtual double get_lift_factor() const { return 0.75; }
+    virtual double get_roll_deg_per_sec() const { return 90.0; }
+    virtual double get_pitch_deg_per_sec() const { return 45.0; }
 
-	// command interface for airplanes
-	virtual void roll_left();
-	virtual void roll_right();
-	virtual void roll_zero();
-	virtual void pitch_down();
-	virtual void pitch_up();
-	virtual void pitch_zero();
+    // command interface for airplanes
+    virtual void roll_left();
+    virtual void roll_right();
+    virtual void roll_zero();
+    virtual void pitch_down();
+    virtual void pitch_up();
+    virtual void pitch_zero();
 };
 
 #endif

@@ -18,221 +18,243 @@
 */
 
 #include "daysky.h"
+
 #include "constant.h"
 #include "helper.h"
 #include "vector3.h"
 
 // Distribution coefficients for the luminance(Y) distribution function
-static float YDC[5][2] = { { 0.1787f, - 1.4630f},
-			   {-0.3554f,   0.4275f},
-			   {-0.0227f,   5.3251f},
-			   { 0.1206f, - 2.5771f},
-			   {-0.0670f,   0.3703f} };
+static float YDC[5][2] = {
+    {0.1787f, -1.4630f},
+    {-0.3554f, 0.4275f},
+    {-0.0227f, 5.3251f},
+    {0.1206f, -2.5771f},
+    {-0.0670f, 0.3703f}};
 
 // Distribution coefficients for the x distribution function
-static float xDC[5][2] = { {-0.0193f, -0.2592f},
-			   {-0.0665f, 0.0008f},
-			   {-0.0004f, 0.2125f},
-			   {-0.0641f, -0.8989f},
-			   {-0.0033f, 0.0452f} };
+static float xDC[5][2] = {
+    {-0.0193f, -0.2592f},
+    {-0.0665f, 0.0008f},
+    {-0.0004f, 0.2125f},
+    {-0.0641f, -0.8989f},
+    {-0.0033f, 0.0452f}};
 
 // Distribution coefficients for the y distribution function
-static float yDC[5][2] = { {-0.0167f, -0.2608f},
-			   {-0.0950f, 0.0092f},
-			   {-0.0079f, 0.2102f},
-			   {-0.0441f, -1.6537f},
-			   {-0.0109f, 0.0529f} };
+static float yDC[5][2] = {
+    {-0.0167f, -0.2608f},
+    {-0.0950f, 0.0092f},
+    {-0.0079f, 0.2102f},
+    {-0.0441f, -1.6537f},
+    {-0.0109f, 0.0529f}};
 
 // Zenith x value
-static float xZC[3][4] = {  {0.00166f, -0.00375f, 0.00209f, 0.0f},
-			    {-0.02903f, 0.06377f, -0.03203f, 0.00394f},
-			    {0.11693f, -0.21196f, 0.06052f, 0.25886f} };
+static float xZC[3][4] = {
+    {0.00166f, -0.00375f, 0.00209f, 0.0f},
+    {-0.02903f, 0.06377f, -0.03203f, 0.00394f},
+    {0.11693f, -0.21196f, 0.06052f, 0.25886f}};
 // Zenith y value
-static float yZC[3][4] = { { 0.00275f, -0.00610f, 0.00317f, 0.0f},
-			   {-0.04214f, 0.08970f, -0.04153f, 0.00516f},
-			   {0.15346f, -0.26756f, 0.06670f, 0.26688f} };
-
+static float yZC[3][4] = {
+    {0.00275f, -0.00610f, 0.00317f, 0.0f},
+    {-0.04214f, 0.08970f, -0.04153f, 0.00516f},
+    {0.15346f, -0.26756f, 0.06670f, 0.26688f}};
 
 // Angle between (thetav, theta) and  (phiv,phi)
-inline float angle_between(float thetav, float phiv, float theta, float phi) {
-	double cospsi = sin(thetav) * sin(theta) * cos(phi-phiv) + cos(thetav) * cos(theta);
-	return float(acos(helper::clamp(cospsi, -1.0, 1.0)));
+inline float angle_between(float thetav, float phiv, float theta, float phi)
+{
+    double cospsi =
+        sin(thetav) * sin(theta) * cos(phi - phiv) + cos(thetav) * cos(theta);
+    return float(acos(helper::clamp(cospsi, -1.0, 1.0)));
 }
 
-inline float perez_function( float A, float B, float C,
-			     float D, float E, float Theta,
-			     float Gamma )
+inline float perez_function(
+    float A, float B, float C, float D, float E, float Theta, float Gamma)
 {
-	float cosGamma = cos(Gamma);
-	float d = (1+ A * exp(B/cos(Theta)))*(1+ C * exp(D*Gamma) + E * cosGamma*cosGamma );
-	return d;
+    float cosGamma = cos(Gamma);
+    float d        = (1 + A * exp(B / cos(Theta)))
+              * (1 + C * exp(D * Gamma) + E * cosGamma * cosGamma);
+    return d;
 }
 
 // Constructor
 daysky::daysky()
 {
-	set_turbidity(2.0f);
-	set_sun_position(0.0f, 0.0f);
+    set_turbidity(2.0f);
+    set_sun_position(0.0f, 0.0f);
 }
 
 daysky::daysky(float azimuth, float elevation, float turbidity)
 {
-	m_T = turbidity;
-	m_T2 = m_T * m_T;
+    m_T  = turbidity;
+    m_T2 = m_T * m_T;
 
-	set_sun_position(azimuth, elevation);
-	recalculate_alphabet();
+    set_sun_position(azimuth, elevation);
+    recalculate_alphabet();
 }
 
 // Set turbidity and precalc power of two
-void daysky::set_turbidity( float pT )
+void daysky::set_turbidity(float pT)
 {
-	m_T = pT;
-	m_T2 = m_T * m_T;
-	recalculate_chroma();
-	recalculate_alphabet();
+    m_T  = pT;
+    m_T2 = m_T * m_T;
+    recalculate_chroma();
+    recalculate_alphabet();
 }
 
 // Set sun position
 void daysky::set_sun_position(float azimuth, float elevation)
 {
-	// maybe give sun direction as vector3 here.
-	m_sun_theta = azimuth;
+    // maybe give sun direction as vector3 here.
+    m_sun_theta = azimuth;
 
-	m_sun_phi = float(constant::PI_2 - elevation);
-	recalculate_chroma();
+    m_sun_phi = float(constant::PI_2 - elevation);
+    recalculate_chroma();
 }
-
-
 
 // Calculate color
 colorf daysky::get_color(float theta, float phi) const
 {
-	phi = float(constant::PI_2-phi);
+    phi = float(constant::PI_2 - phi);
 
-	// Angle between sun (zenith=0.0!!) and point(phi,theta) to get compute color for
-	float gamma = angle_between( phi, theta, m_sun_phi, m_sun_theta );
+    // Angle between sun (zenith=0.0!!) and point(phi,theta) to get compute
+    // color for
+    float gamma = angle_between(phi, theta, m_sun_phi, m_sun_theta);
 
-	vector3f skycolor_xyY;
+    vector3f skycolor_xyY;
 
-	// Zenith luminance
-	auto chi = (4.0/9.0 - m_T/120.0)*(constant::PI - 2*m_sun_phi);
-	auto zenith_Y = (4.0453*m_T - 4.9710)*tan(chi) - 0.2155*m_T + 2.4192;
-	if (zenith_Y < 0.0) zenith_Y = -zenith_Y;
+    // Zenith luminance
+    auto chi      = (4.0 / 9.0 - m_T / 120.0) * (constant::PI - 2 * m_sun_phi);
+    auto zenith_Y = (4.0453 * m_T - 4.9710) * tan(chi) - 0.2155 * m_T + 2.4192;
+    if (zenith_Y < 0.0)
+        zenith_Y = -zenith_Y;
 
-	//  A = YDC[0][0]*m_T + YDC[0][1];
-	//  B = YDC[1][0]*m_T + YDC[1][1];
-	//  C = YDC[2][0]*m_T + YDC[2][1];
-	//  D = YDC[3][0]*m_T + YDC[3][1];
-	//  E = YDC[4][0]*m_T + YDC[4][1];
+    //  A = YDC[0][0]*m_T + YDC[0][1];
+    //  B = YDC[1][0]*m_T + YDC[1][1];
+    //  C = YDC[2][0]*m_T + YDC[2][1];
+    //  D = YDC[3][0]*m_T + YDC[3][1];
+    //  E = YDC[4][0]*m_T + YDC[4][1];
 
-	// Sky luminance
-	auto d = distribution(m_luminance, phi, gamma);
-	skycolor_xyY.z = float(zenith_Y * d);
+    // Sky luminance
+    auto d         = distribution(m_luminance, phi, gamma);
+    skycolor_xyY.z = float(zenith_Y * d);
 
-	// Zenith x
-	//Zenith.x = chromaticity( xZC );
-	//  A = xDC[0][0]*m_T + xDC[0][1];
-	//  B = xDC[1][0]*m_T + xDC[1][1];
-	//  C = xDC[2][0]*m_T + xDC[2][1];
-	//  D = xDC[3][0]*m_T + xDC[3][1];
-	//  E = xDC[4][0]*m_T + xDC[4][1];
+    // Zenith x
+    // Zenith.x = chromaticity( xZC );
+    //  A = xDC[0][0]*m_T + xDC[0][1];
+    //  B = xDC[1][0]*m_T + xDC[1][1];
+    //  C = xDC[2][0]*m_T + xDC[2][1];
+    //  D = xDC[3][0]*m_T + xDC[3][1];
+    //  E = xDC[4][0]*m_T + xDC[4][1];
 
-	// Sky x
-	d = distribution(m_x, phi, gamma);
-	skycolor_xyY.x = /*Zenith.x*/m_chroma_xZC * d;
+    // Sky x
+    d              = distribution(m_x, phi, gamma);
+    skycolor_xyY.x = /*Zenith.x*/ m_chroma_xZC * d;
 
+    // Zenith y
+    // Zenith.y = chromaticity( yZC );
+    //  A = yDC[0][0]*m_T + yDC[0][1];
+    //  B = yDC[1][0]*m_T + yDC[1][1];
+    //  C = yDC[2][0]*m_T + yDC[2][1];
+    //  D = yDC[3][0]*m_T + yDC[3][1];
+    //  E = yDC[4][0]*m_T + yDC[4][1];
 
-	// Zenith y
-	//Zenith.y = chromaticity( yZC );
-	//  A = yDC[0][0]*m_T + yDC[0][1];
-	//  B = yDC[1][0]*m_T + yDC[1][1];
-	//  C = yDC[2][0]*m_T + yDC[2][1];
-	//  D = yDC[3][0]*m_T + yDC[3][1];
-	//  E = yDC[4][0]*m_T + yDC[4][1];
+    // Sky y
+    d              = distribution(m_y, phi, gamma);
+    skycolor_xyY.y = /*Zenith.y*/ m_chroma_yZC * d;
 
-	// Sky y
-	d = distribution(m_y, phi, gamma);
-	skycolor_xyY.y = /*Zenith.y*/m_chroma_yZC * d;
+    // fixme: compute alpha
+    // fixme: Stellarium computes luminance value for display with a more
+    // complex model that takes moon and sun pos into account as well as viewer
+    // height etc.
+    float colors[3] = {skycolor_xyY.x, skycolor_xyY.y, skycolor_xyY.z};
+    // printf("colors xyY: %f %f %f\n", colors[0], colors[1], colors[2]);
+    tonerepro.xyY_to_RGB(colors);
+    // printf("colors RGB: %f %f %f\n", colors[0], colors[1], colors[2]);
 
-	// fixme: compute alpha
-	// fixme: Stellarium computes luminance value for display with a more complex model
-	// that takes moon and sun pos into account as well as viewer height etc.
-	float colors[3] = { skycolor_xyY.x, skycolor_xyY.y, skycolor_xyY.z };
-	//printf("colors xyY: %f %f %f\n", colors[0], colors[1], colors[2]);
-	tonerepro.xyY_to_RGB(colors);
-	//printf("colors RGB: %f %f %f\n", colors[0], colors[1], colors[2]);
+    // intensity rescaling for turbidity 2.0
 
-	// intensity rescaling for turbidity 2.0
+    float scalefac;
+    float elevation = float(constant::PI_2 - m_sun_phi);
+    if (elevation >= 0)
+    {
+        if (elevation >= constant::PI * 0.5 - 0.35)
+        { // - 0.3 with safety margin
+            scalefac = 100;
+        }
+        else
+        {
+            // when evelation + 0.3 is larger than PI/2, cos of that value
+            // goes below zero, leading to a NaN result of the pow.
+            scalefac = float(100 - pow(7 * pow(cos(elevation + 0.3), 1.8), 2));
+        }
+    }
+    else
+    {
+        scalefac = 50;
+    }
 
-	float scalefac;
-	float elevation = float(constant::PI_2 - m_sun_phi);
-	if ( elevation >= 0 ) {
-		if (elevation >= constant::PI * 0.5 - 0.35) { // - 0.3 with safety margin
-			scalefac = 100;
-		} else {
-			// when evelation + 0.3 is larger than PI/2, cos of that value
-			// goes below zero, leading to a NaN result of the pow.
-			scalefac = float(100 - pow( 7 * pow( cos(elevation + 0.3), 1.8), 2));
-		}
-	} else {
-		scalefac = 50;
-	}
-
-	// the scalefac scales RGB values over 1.0, up to roughly sqrt(2). (1.445...)
-	// we clamp the values here to avoid visible errors.
-	// we encode brightness for star rendering (fixme todo) as alpha, total brightness below level as star factor, i.e. minimum of rgb? but this can be done in star shader as well!
-	return {std::min(1.f, colors[0] * scalefac), std::min(1.f, colors[1] * scalefac), std::min(1.f, colors[2] * scalefac)};
+    // the scalefac scales RGB values over 1.0, up to roughly sqrt(2).
+    // (1.445...) we clamp the values here to avoid visible errors. we encode
+    // brightness for star rendering (fixme todo) as alpha, total brightness
+    // below level as star factor, i.e. minimum of rgb? but this can be done in
+    // star shader as well!
+    return {
+        std::min(1.f, colors[0] * scalefac),
+        std::min(1.f, colors[1] * scalefac),
+        std::min(1.f, colors[2] * scalefac)};
 }
 
-
-
-float daysky::distribution( const alphabet &ABCDE, float Theta,
-			    float Gamma ) const
+float daysky::distribution(
+    const alphabet& ABCDE, float Theta, float Gamma) const
 {
-	//                       Perez_f0(Theta,Gamma)
-	//    calculates:   d = -----------------------
-	//                       Perez_f1(0,ThetaSun)
-	float f0 = perez_function( ABCDE.A, ABCDE.B, ABCDE.C, ABCDE.D, ABCDE.E, Theta, Gamma );
-	float f1 = perez_function( ABCDE.A, ABCDE.B, ABCDE.C, ABCDE.D, ABCDE.E, 0, m_sun_phi );
-	return(f0/f1);
+    //                       Perez_f0(Theta,Gamma)
+    //    calculates:   d = -----------------------
+    //                       Perez_f1(0,ThetaSun)
+    float f0 = perez_function(
+        ABCDE.A, ABCDE.B, ABCDE.C, ABCDE.D, ABCDE.E, Theta, Gamma);
+    float f1 = perez_function(
+        ABCDE.A, ABCDE.B, ABCDE.C, ABCDE.D, ABCDE.E, 0, m_sun_phi);
+    return (f0 / f1);
 }
 
-float daysky::chromaticity(const float ZC[3][4], float sun_phi2, float sun_phi3) const
+float daysky::chromaticity(
+    const float ZC[3][4], float sun_phi2, float sun_phi3) const
 {
-	float c = (ZC[0][0]*sun_phi3 + ZC[0][1]*sun_phi2 + ZC[0][2]*m_sun_phi + ZC[0][3])* m_T2 +
-		(ZC[1][0]*sun_phi3 + ZC[1][1]*sun_phi2 + ZC[1][2]*m_sun_phi + ZC[1][3])* m_T +
-		(ZC[2][0]*sun_phi3 + ZC[2][1]*sun_phi2 + ZC[2][2]*m_sun_phi + ZC[2][3]);
-	return c;
+    float c = (ZC[0][0] * sun_phi3 + ZC[0][1] * sun_phi2 + ZC[0][2] * m_sun_phi
+               + ZC[0][3])
+                  * m_T2
+              + (ZC[1][0] * sun_phi3 + ZC[1][1] * sun_phi2
+                 + ZC[1][2] * m_sun_phi + ZC[1][3])
+                    * m_T
+              + (ZC[2][0] * sun_phi3 + ZC[2][1] * sun_phi2
+                 + ZC[2][2] * m_sun_phi + ZC[2][3]);
+    return c;
 }
-
 
 void daysky::recalculate_chroma()
 {
-	auto sun_phi2 = m_sun_phi * m_sun_phi;
-	auto sun_phi3 = m_sun_phi * sun_phi2;
-	m_chroma_xZC = chromaticity(xZC, sun_phi2, sun_phi3);
-	m_chroma_yZC = chromaticity(yZC, sun_phi2, sun_phi3);
+    auto sun_phi2 = m_sun_phi * m_sun_phi;
+    auto sun_phi3 = m_sun_phi * sun_phi2;
+    m_chroma_xZC  = chromaticity(xZC, sun_phi2, sun_phi3);
+    m_chroma_yZC  = chromaticity(yZC, sun_phi2, sun_phi3);
 }
-
 
 void daysky::recalculate_alphabet()
 {
-	m_luminance.A = YDC[0][0]*m_T + YDC[0][1];
-	m_luminance.B = YDC[1][0]*m_T + YDC[1][1];
-	m_luminance.C = YDC[2][0]*m_T + YDC[2][1];
-	m_luminance.D = YDC[3][0]*m_T + YDC[3][1];
-	m_luminance.E = YDC[4][0]*m_T + YDC[4][1];
+    m_luminance.A = YDC[0][0] * m_T + YDC[0][1];
+    m_luminance.B = YDC[1][0] * m_T + YDC[1][1];
+    m_luminance.C = YDC[2][0] * m_T + YDC[2][1];
+    m_luminance.D = YDC[3][0] * m_T + YDC[3][1];
+    m_luminance.E = YDC[4][0] * m_T + YDC[4][1];
 
-	m_x.A = xDC[0][0]*m_T + xDC[0][1];
-	m_x.B = xDC[1][0]*m_T + xDC[1][1];
-	m_x.C = xDC[2][0]*m_T + xDC[2][1];
-	m_x.D = xDC[3][0]*m_T + xDC[3][1];
-	m_x.E = xDC[4][0]*m_T + xDC[4][1];
+    m_x.A = xDC[0][0] * m_T + xDC[0][1];
+    m_x.B = xDC[1][0] * m_T + xDC[1][1];
+    m_x.C = xDC[2][0] * m_T + xDC[2][1];
+    m_x.D = xDC[3][0] * m_T + xDC[3][1];
+    m_x.E = xDC[4][0] * m_T + xDC[4][1];
 
-	m_y.A = yDC[0][0]*m_T + yDC[0][1];
-	m_y.B = yDC[1][0]*m_T + yDC[1][1];
-	m_y.C = yDC[2][0]*m_T + yDC[2][1];
-	m_y.D = yDC[3][0]*m_T + yDC[3][1];
-	m_y.E = yDC[4][0]*m_T + yDC[4][1];
+    m_y.A = yDC[0][0] * m_T + yDC[0][1];
+    m_y.B = yDC[1][0] * m_T + yDC[1][1];
+    m_y.C = yDC[2][0] * m_T + yDC[2][1];
+    m_y.D = yDC[3][0] * m_T + yDC[3][1];
+    m_y.E = yDC[4][0] * m_T + yDC[4][1];
 }

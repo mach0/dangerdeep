@@ -18,132 +18,152 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 #include "sub_recogmanual_popup.h"
+
 #include "datadirs.h"
 #include "game.h"
 #include "global_data.h"
 #include "user_interface.h"
 
-sub_recogmanual_popup::widget_button_next::widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_)
-	: widget_button(x, y, w, h, text_, parent_, bg_image_), direction(dir), page(att_page)
+sub_recogmanual_popup::widget_button_next::widget_button_next(
+    int x, int y, int w, int h, int dir, int& att_page,
+    const std::string& text_, const std::string& bg_image_, widget* parent_) :
+    widget_button(x, y, w, h, text_, parent_, bg_image_),
+    direction(dir), page(att_page)
 {
 }
-
-
 
 void sub_recogmanual_popup::widget_button_next::draw() const
 {
-	redrawme = false;
-	vector2i p = get_pos();
-	int bw = int(background->get_width());
-	int bh = int(background->get_height());
+    redrawme   = false;
+    vector2i p = get_pos();
+    int bw     = int(background->get_width());
+    int bh     = int(background->get_height());
 
-	colorf col(1.0, 1.0, 1.0, 1.0);
-	if (mouseover!=this)
-		col = colorf(1.0, 1.0, 1.0, 1.0);
-	background->draw(p.x + size.x/2 - bw/2, p.y + size.y/2 - bh/2, col);
-
+    colorf col(1.0, 1.0, 1.0, 1.0);
+    if (mouseover != this)
+        col = colorf(1.0, 1.0, 1.0, 1.0);
+    background->draw(p.x + size.x / 2 - bw / 2, p.y + size.y / 2 - bh / 2, col);
 }
 
-
-
-void sub_recogmanual_popup::widget_button_next::on_release ()
+void sub_recogmanual_popup::widget_button_next::on_release()
 {
-	pressed = false;
-	page+=direction;
+    pressed = false;
+    page += direction;
 }
 
-
-
-sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_)
- :	user_popup(ui_, "sub_recogmanual"),
-	page(0),
-	btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"),
-	btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
+sub_recogmanual_popup::sub_recogmanual_popup(user_interface& ui_) :
+    user_popup(ui_, "sub_recogmanual"), page(0),
+    btn_left(15, 690, 11, 31, -1, page, "", "BG_btn_left.png"),
+    btn_right(414, 690, 11, 31, 1, page, "", "BG_btn_right.png")
 {
 
-	auto ship_ids = data_file_handler::instance().get_ship_list();
-	for (auto & ship_id : ship_ids) {
-		try {
-			silhouettes.push_back(std::make_unique<image>(data_file_handler::instance().get_path(ship_id) + ship_id + "_silhouette.png"));
+    auto ship_ids = data_file_handler::instance().get_ship_list();
+    for (auto& ship_id : ship_ids)
+    {
+        try
+        {
+            silhouettes.push_back(std::make_unique<image>(
+                data_file_handler::instance().get_path(ship_id) + ship_id
+                + "_silhouette.png"));
 
-			xml_doc doc(data_file_handler::instance().get_filename(ship_id));
-			doc.load();
-			xml_elem elem = doc.child("dftd-ship");
-			elem = elem.child("shipmanual");
-			displacements.push_back(elem.attr("displacement"));
-			lengths.push_back(elem.attr("length"));
-			classes.push_back(elem.attr("class"));
-			weapons.push_back(elem.attr("weapons"));
-			countries.push_back(elem.attr("countries"));
-		} catch (std::exception& e) { // fixme: remove the try..catch when all silhouette files are on place
-		}
-	}
+            xml_doc doc(data_file_handler::instance().get_filename(ship_id));
+            doc.load();
+            xml_elem elem = doc.child("dftd-ship");
+            elem          = elem.child("shipmanual");
+            displacements.push_back(elem.attr("displacement"));
+            lengths.push_back(elem.attr("length"));
+            classes.push_back(elem.attr("class"));
+            weapons.push_back(elem.attr("weapons"));
+            countries.push_back(elem.attr("countries"));
+        }
+        catch (std::exception& e)
+        { // fixme: remove the try..catch when all silhouette files are on place
+        }
+    }
 }
-
-
 
 bool sub_recogmanual_popup::handle_mouse_button_event(const mouse_click_data& m)
 {
-	if (btn_left.is_mouse_over(m.position_2d)) {
-		widget::handle_mouse_button_event(btn_left, m);
-	} else if (btn_right.is_mouse_over(m.position_2d)) {
-		widget::handle_mouse_button_event(btn_right, m);
-	}
-	if (page<0) page=0;
-	if (page>=(int)silhouettes.size()/3) page--;
-	return false;
+    if (btn_left.is_mouse_over(m.position_2d))
+    {
+        widget::handle_mouse_button_event(btn_left, m);
+    }
+    else if (btn_right.is_mouse_over(m.position_2d))
+    {
+        widget::handle_mouse_button_event(btn_right, m);
+    }
+    if (page < 0)
+        page = 0;
+    if (page >= (int) silhouettes.size() / 3)
+        page--;
+    return false;
 }
 
-
-
-bool sub_recogmanual_popup::handle_mouse_motion_event(const mouse_motion_data& m)
+bool sub_recogmanual_popup::handle_mouse_motion_event(
+    const mouse_motion_data& m)
 {
-	if (btn_left.is_mouse_over(m.position_2d)) {
-		widget::handle_mouse_motion_event(btn_left, m);
-	} else if (btn_right.is_mouse_over(m.position_2d)) {
-		widget::handle_mouse_motion_event(btn_right, m);
-	}
-	if (page<0) page=0;
-	if (page>=(int)silhouettes.size()/3) page--;
-	return false;
+    if (btn_left.is_mouse_over(m.position_2d))
+    {
+        widget::handle_mouse_motion_event(btn_left, m);
+    }
+    else if (btn_right.is_mouse_over(m.position_2d))
+    {
+        widget::handle_mouse_motion_event(btn_right, m);
+    }
+    if (page < 0)
+        page = 0;
+    if (page >= (int) silhouettes.size() / 3)
+        page--;
+    return false;
 }
-
-
 
 bool sub_recogmanual_popup::handle_mouse_wheel_event(const mouse_wheel_data& m)
 {
-	if (page<0) page=0;
-	if (page>=(int)silhouettes.size()/3) page--;
-	return false;
+    if (page < 0)
+        page = 0;
+    if (page >= (int) silhouettes.size() / 3)
+        page--;
+    return false;
 }
-
-
 
 void sub_recogmanual_popup::display() const
 {
-	// display background
-	user_popup::display();
+    // display background
+    user_popup::display();
 
-	SYS().prepare_2d_drawing();
-	int off_x = 15;
-	int off_y = 82;
-	int off_text_x = 40;
-	int off_text_y = 237;
-	int step_y = 199;
+    SYS().prepare_2d_drawing();
+    int off_x      = 15;
+    int off_y      = 82;
+    int off_text_x = 40;
+    int off_text_y = 237;
+    int step_y     = 199;
 
-	for (int i=page*3; (i<page*3+3)&&(i<(int)silhouettes.size()); i++) {
+    for (int i = page * 3; (i < page * 3 + 3) && (i < (int) silhouettes.size());
+         i++)
+    {
 
-		silhouettes[i]->draw(off_x,off_y+step_y*(i%3), colorf(1,1,1,0.75));
+        silhouettes[i]->draw(
+            off_x, off_y + step_y * (i % 3), colorf(1, 1, 1, 0.75));
 
-		//fixme: change this after the authentic overlay is implemented
-		font_vtremington12->print(off_text_x, off_text_y+step_y*(i%3), classes[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+15+step_y*(i%3), std::string("Length: ")+lengths[i]+std::string("   Displacement:")+displacements[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+30+step_y*(i%3), std::string("Countries: ")+countries[i], color(0, 0, 0));
-		font_vtremington12->print(off_text_x, off_text_y+45+step_y*(i%3), std::string("Weapons: ")+weapons[i], color(0, 0, 0));
-	}
+        // fixme: change this after the authentic overlay is implemented
+        font_vtremington12->print(
+            off_text_x, off_text_y + step_y * (i % 3), classes[i],
+            color(0, 0, 0));
+        font_vtremington12->print(
+            off_text_x, off_text_y + 15 + step_y * (i % 3),
+            std::string("Length: ") + lengths[i]
+                + std::string("   Displacement:") + displacements[i],
+            color(0, 0, 0));
+        font_vtremington12->print(
+            off_text_x, off_text_y + 30 + step_y * (i % 3),
+            std::string("Countries: ") + countries[i], color(0, 0, 0));
+        font_vtremington12->print(
+            off_text_x, off_text_y + 45 + step_y * (i % 3),
+            std::string("Weapons: ") + weapons[i], color(0, 0, 0));
+    }
 
-	btn_left.draw();
-	btn_right.draw();
+    btn_left.draw();
+    btn_right.draw();
 
-	SYS().unprepare_2d_drawing();
+    SYS().unprepare_2d_drawing();
 }

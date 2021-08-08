@@ -28,11 +28,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Display for submarine's TDC (torpedo data computer) screen 1
 class sub_tdc_display : public user_display
 {
-public:
-	sub_tdc_display(class user_interface& ui_);
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	void display() const override;
+  public:
+    sub_tdc_display(class user_interface& ui_);
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    void display() const override;
 };
 
 #endif

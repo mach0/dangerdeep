@@ -28,18 +28,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Define datatype for a sea object reference. 0 is invalid reference.
 struct sea_object_id
 {
-	static const unsigned invalid = 0;	///< Invalid value
-	unsigned id{invalid};		///< The ID. But ask only class game for that!
-	sea_object_id() = default;
-	sea_object_id(unsigned n) : id(n) {}
-	bool operator== (const sea_object_id& other) const { return id == other.id; }
-	bool operator!= (const sea_object_id& other) const { return id != other.id; }
+    static const unsigned invalid = 0; ///< Invalid value
+    unsigned id{invalid}; ///< The ID. But ask only class game for that!
+    sea_object_id() = default;
+    sea_object_id(unsigned n) : id(n) { }
+    bool operator==(const sea_object_id& other) const { return id == other.id; }
+    bool operator!=(const sea_object_id& other) const { return id != other.id; }
 };
 
 /// Declare hash function so we can use sea_object_id as map-key
-template<> struct std::hash<sea_object_id>
+template <> struct std::hash<sea_object_id>
 {
-	std::size_t operator()(const sea_object_id& id) const noexcept { return id.id; }
+    std::size_t operator()(const sea_object_id& id) const noexcept
+    {
+        return id.id;
+    }
 };
 
 #endif

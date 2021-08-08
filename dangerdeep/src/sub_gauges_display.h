@@ -29,10 +29,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\ingroup displays
 class sub_gauges_display : public user_display
 {
-public:
-	sub_gauges_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
+  public:
+    sub_gauges_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
 };
 
 #endif

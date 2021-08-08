@@ -20,147 +20,149 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // multithreading primitives: messaging, message queue
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
+#include "message_queue.h"
+
 #include "error.h"
 #include "log.h"
-#include "message_queue.h"
 #include "system_interface.h"
-
 
 void message::evaluate() const
 {
-	result = false;
-	try {
-		eval();
-		result = true;
-	}
-	catch (std::exception& /*e*/) {
-		// avoid to spam the log. define when needed.
-		// log_debug("msg eval failed: " << e.what());
-	}
+    result = false;
+    try
+    {
+        eval();
+        result = true;
+    }
+    catch (std::exception& /*e*/)
+    {
+        // avoid to spam the log. define when needed.
+        // log_debug("msg eval failed: " << e.what());
+    }
 }
 
-
-
-message_queue::message_queue()
-	 
-{
-}
-
-
+message_queue::message_queue() { }
 
 message_queue::~message_queue()
 {
-	// clean up queues, report all pending messages as failed, then wait
-	// until ackqueue is empty... it should not happen though...
-	bool ackqueueempty = true;
-	{
-		std::unique_lock<std::mutex> ml(mymutex);
-		for (auto& elem : myqueue) {
-			if (elem->needsanswer) {
-				ackqueue.push_back(std::move(elem));
-			}
-		}
-		ackcondvar.notify_all();
-		ackqueueempty = ackqueue.empty();
-	}
-	while (!ackqueueempty) {
-		//fixme// thread::sleep(10);//fixme use sys! uses SDL_Delay...is there a c++ solution?!
-		std::unique_lock<std::mutex> ml(mymutex);
-		ackqueueempty = ackqueue.empty();
-	}
+    // clean up queues, report all pending messages as failed, then wait
+    // until ackqueue is empty... it should not happen though...
+    bool ackqueueempty = true;
+    {
+        std::unique_lock<std::mutex> ml(mymutex);
+        for (auto& elem : myqueue)
+        {
+            if (elem->needsanswer)
+            {
+                ackqueue.push_back(std::move(elem));
+            }
+        }
+        ackcondvar.notify_all();
+        ackqueueempty = ackqueue.empty();
+    }
+    while (!ackqueueempty)
+    {
+        // fixme// thread::sleep(10);//fixme use sys! uses SDL_Delay...is there
+        // a c++ solution?!
+        std::unique_lock<std::mutex> ml(mymutex);
+        ackqueueempty = ackqueue.empty();
+    }
 }
-
-
 
 bool message_queue::send(message::ptr msg, bool waitforanswer)
 {
-	msg->needsanswer = waitforanswer;
-	msg->result = false;
-	message* msg_addr = msg.get(); // address only for comparison
-	std::unique_lock<std::mutex> oml(mymutex);
-	bool e = myqueue.empty();
-	myqueue.push_back(std::move(msg));
-	msginqueue = true;
-	if (e) {
-		emptycondvar.notify_all();
-	}
-	if (waitforanswer) {
-		while (true) {
-			ackcondvar.wait(oml);
-			// check if this message has been acknowledged
-			for (auto it = ackqueue.begin(); it != ackqueue.end(); ) {
-				if (it->get() == msg_addr) {
-					// found it, return result, delete and unqueue message
-					bool result = (*it)->result;
-					ackqueue.erase(it);
-					return result;
-				}
-			}
-		}
-	}
-	return true;
+    msg->needsanswer  = waitforanswer;
+    msg->result       = false;
+    message* msg_addr = msg.get(); // address only for comparison
+    std::unique_lock<std::mutex> oml(mymutex);
+    bool e = myqueue.empty();
+    myqueue.push_back(std::move(msg));
+    msginqueue = true;
+    if (e)
+    {
+        emptycondvar.notify_all();
+    }
+    if (waitforanswer)
+    {
+        while (true)
+        {
+            ackcondvar.wait(oml);
+            // check if this message has been acknowledged
+            for (auto it = ackqueue.begin(); it != ackqueue.end();)
+            {
+                if (it->get() == msg_addr)
+                {
+                    // found it, return result, delete and unqueue message
+                    bool result = (*it)->result;
+                    ackqueue.erase(it);
+                    return result;
+                }
+            }
+        }
+    }
+    return true;
 }
-
-
 
 void message_queue::wakeup_receiver()
 {
-	// set a special flag to avoid another thread to enter the wait() command
-	// if this signal comes while the other thread tests wether to enter wait state
-	std::unique_lock<std::mutex> oml(mymutex);
-	abortwait = true;
-	emptycondvar.notify_all();
+    // set a special flag to avoid another thread to enter the wait() command
+    // if this signal comes while the other thread tests wether to enter wait
+    // state
+    std::unique_lock<std::mutex> oml(mymutex);
+    abortwait = true;
+    emptycondvar.notify_all();
 }
-
-
 
 std::vector<message::ptr> message_queue::receive(bool wait)
 {
-	std::vector<message::ptr> result;
-	std::unique_lock<std::mutex> oml(mymutex);
-	if (myqueue.empty()) {
-		if (wait && !abortwait) {
-			emptycondvar.wait(oml);
-		} else {
-			// no need to wait, so clear abort signal
-			abortwait = false;
-			msginqueue = false;
-			return result;
-		}
-	}
+    std::vector<message::ptr> result;
+    std::unique_lock<std::mutex> oml(mymutex);
+    if (myqueue.empty())
+    {
+        if (wait && !abortwait)
+        {
+            emptycondvar.wait(oml);
+        }
+        else
+        {
+            // no need to wait, so clear abort signal
+            abortwait  = false;
+            msginqueue = false;
+            return result;
+        }
+    }
 
-	abortwait = false;
+    abortwait = false;
 
-	// if we woke up and queue is still empty, we received a wakeup signal
-	// so result either is empty or contains the full queue after this line
-	myqueue.swap(result);
+    // if we woke up and queue is still empty, we received a wakeup signal
+    // so result either is empty or contains the full queue after this line
+    myqueue.swap(result);
 
-	// any way, there are now no messages in the queue. return messages or empty list.
-	msginqueue = false;
-	return result;
+    // any way, there are now no messages in the queue. return messages or empty
+    // list.
+    msginqueue = false;
+    return result;
 }
-
-
 
 void message_queue::acknowledge(message::ptr msg)
 {
-	if (msg.get() == nullptr)
-		THROW(error, "acknowledge without message called");
-	bool needsanswer = msg->needsanswer;
-	if (needsanswer) {
-		std::unique_lock<std::mutex> oml(mymutex);
-		ackqueue.push_back(std::move(msg));
-		ackcondvar.notify_all();
-	}
+    if (msg.get() == nullptr)
+        THROW(error, "acknowledge without message called");
+    bool needsanswer = msg->needsanswer;
+    if (needsanswer)
+    {
+        std::unique_lock<std::mutex> oml(mymutex);
+        ackqueue.push_back(std::move(msg));
+        ackcondvar.notify_all();
+    }
 }
-
-
 
 void message_queue::process_messages(bool wait)
 {
-	auto msgs = receive(wait);
-	for (auto& msg : msgs) {
-		msg->evaluate();
-		acknowledge(std::move(msg));
-	}
+    auto msgs = receive(wait);
+    for (auto& msg : msgs)
+    {
+        msg->evaluate();
+        acknowledge(std::move(msg));
+    }
 }
