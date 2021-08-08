@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef DMATH_H
 #define DMATH_H
 
+#include <iostream>
+#include <cmath>
+#include <cfloat>
+
 #if (defined(__APPLE__) && defined(__GNUC__)) || defined(__MACOSX__)
 #include <complex.h>
 #ifndef isfinite
