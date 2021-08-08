@@ -93,9 +93,6 @@ set (USE_CLANG_TIDY_CUSTOM_CHECKS "" CACHE STRING
 set (USE_CPPCHECK OFF CACHE BOOL "Use CPPcheck static analysis tool")
 set (USE_CPPCHECK_HTML_REPORT OFF CACHE BOOL "Output cppcheck to HTML file")
 
-set (USE_CLANG_FORMAT OFF CACHE BOOL "Use clang-format for code formatting.")
-#set (USE_CLANG_FORMAT_FIXIT OFF CACHE BOOL "Apply clang-format fixes.")
-
 
 if (USE_CLANG_TIDY)
     find_program (CLANG_TIDY
@@ -290,32 +287,6 @@ if (USE_CPPCHECK)
 endif ()
 
 
-# Report formatting issues and optionally fix them
-if (USE_CLANG_FORMAT)
-    find_program (CLANG_FORMAT
-                  NAMES clang-format clang-format-11
-                        clang-format-10 clang-format-9
-                  PATHS /usr
-                        /usr/local
-                        /opt
-                  PATH_SUFFIXES bin
-                  DOC "Location of clang-format, versions 9,10,11."
-                  )
-    
-    if (CLANG_FORMAT-NOTFOUND)
-        message (WARNING "Clang-format NOT found.")
-    else ()
-        add_custom_target (clang_format
-            COMMAND ${CLANG_FORMAT} --style=file  
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            COMMENT "Formatting source files according to dftd convention.")   
-
-        add_custom_target (clang_format_src ALL)
-        add_dependencies (clang_format_src clang_format)              
-    endif ()
-endif ()
-
-
 # set property for 64bits unices, debian does not follow the convention and
 # puts 32bits libraries in lib32/ whilst symlinking lib64/ to lib/
 if (UNIX)
@@ -371,7 +342,8 @@ endif ()
 
 # Add build types and drop-down menu with the build types
 set (CMAKE_CONFIGURATION_TYPES 
-     "Pedantic;Debug;Release;RelWithDebInfo;MinSizeRel;Profile" CACHE STRING "" FORCE)
+     "Pedantic;Debug;Release;RelWithDebInfo;MinSizeRel;Profile" 
+     CACHE STRING "" FORCE)
 
 if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE Release
