@@ -29,16 +29,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\brief Simulates a log book.
 class logbook
 {
-protected:
-	std::vector<std::string> entries;
+  protected:
+    std::vector<std::string> entries;
 
-public:
-	void add_entry(const std::string& entry) { entries.push_back(entry); }
-	void add_entry(std::string&& entry) { entries.push_back(std::move(entry)); }
-	std::vector<std::string>::const_iterator get_entry(unsigned i) const { return entries.begin() + i; }
-	std::vector<std::string>::const_iterator begin() const { return entries.begin(); }
-	std::vector<std::string>::const_iterator end() const { return entries.end(); }
-	unsigned size() const { return unsigned(entries.size()); }
+  public:
+    void add_entry(const std::string& entry) { entries.push_back(entry); }
+    void add_entry(std::string&& entry) { entries.push_back(std::move(entry)); }
+    std::vector<std::string>::const_iterator get_entry(unsigned i) const
+    {
+        return entries.begin() + i;
+    }
+    std::vector<std::string>::const_iterator begin() const
+    {
+        return entries.begin();
+    }
+    std::vector<std::string>::const_iterator end() const
+    {
+        return entries.end();
+    }
+    unsigned size() const { return unsigned(entries.size()); }
 };
 
 #endif

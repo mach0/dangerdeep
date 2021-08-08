@@ -21,22 +21,18 @@
 
 namespace
 {
-	//fixme
-	enum element_type {
-		et_valve_b,
-		et_valve_t
-	};
+// fixme
+enum element_type
+{
+    et_valve_b,
+    et_valve_t
+};
 
-}
+} // namespace
 
-sub_valves_display::sub_valves_display(class user_interface& ui_)
- :	user_display(ui_, "sub_valves")
+sub_valves_display::sub_valves_display(class user_interface& ui_) :
+    user_display(ui_, "sub_valves")
 {
 }
 
-
-
-void sub_valves_display::display() const
-{
-	draw_elements();
-}
+void sub_valves_display::display() const { draw_elements(); }

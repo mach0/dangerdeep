@@ -27,36 +27,53 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "mesh.h"
 
 /// A viewer or gpu representation for mesh class
-namespace gpu {
+namespace gpu
+{
 class mesh
 {
-public:
-	mesh(const ::mesh& m, const program& material_prog, const gpu::program& material_underwater_prog, const program& material_mirrorclip_prog,
-	     const uniform_buffer& material_ubo, const scene& myscene);
-	mesh(const ::mesh& m, const program& material_custom_prog,
-	     const uniform_buffer& material_ubo, const scene& myscene);
-	void display(const matrix4& transformation);
-	void display_under_water(const matrix4& transformation);
-	void display_mirror_clip(const matrix4& transformation);
-	void set_textures_and_samplers(const std::vector<std::pair<const gpu::texture*, gpu::sampler::type>>& textures_and_samplers);
+  public:
+    mesh(
+        const ::mesh& m, const program& material_prog,
+        const gpu::program& material_underwater_prog,
+        const program& material_mirrorclip_prog,
+        const uniform_buffer& material_ubo, const scene& myscene);
+    mesh(
+        const ::mesh& m, const program& material_custom_prog,
+        const uniform_buffer& material_ubo, const scene& myscene);
+    void display(const matrix4& transformation);
+    void display_under_water(const matrix4& transformation);
+    void display_mirror_clip(const matrix4& transformation);
+    void set_textures_and_samplers(
+        const std::vector<std::pair<const gpu::texture*, gpu::sampler::type>>&
+            textures_and_samplers);
 
-protected:
-	uniform_buffer transform_ubo;		///< Transformation data to display mesh with current camera
-	render_context render_ctx;		///< Way to render all data, program is changed depending on display method
-	const program& default_program;		///< Shader program for default material rendering
-	const program& underwater_program;	///< Shader program for underwater rendering of material
-	const program& mirrorclip_program;	///< Shader program for mirrorclip rendering of material
-	const scene& myscene;			///< Reference to the scene the mesh is displayed in
+  protected:
+    uniform_buffer transform_ubo; ///< Transformation data to display mesh with
+                                  ///< current camera
+    render_context render_ctx; ///< Way to render all data, program is changed
+                               ///< depending on display method
+    const program&
+        default_program; ///< Shader program for default material rendering
+    const program& underwater_program; ///< Shader program for underwater
+                                       ///< rendering of material
+    const program& mirrorclip_program; ///< Shader program for mirrorclip
+                                       ///< rendering of material
+    const scene& myscene; ///< Reference to the scene the mesh is displayed in
 
-	void display_generic(const program& prg, const matrix4& transformation);
-	void init(const ::mesh& m, const program& ctx_init_program, const uniform_buffer& material_ubo);
+    void display_generic(const program& prg, const matrix4& transformation);
+    void init(
+        const ::mesh& m, const program& ctx_init_program,
+        const uniform_buffer& material_ubo);
 
-private:
-	mesh() = delete;
+  private:
+    mesh() = delete;
 };
 
 /// provide data type deduction
-template<> inline data_type to_data_type(::mesh::vertex_index) { return data_type::u32; }
+template <> inline data_type to_data_type(::mesh::vertex_index)
+{
+    return data_type::u32;
 }
+} // namespace gpu
 
 #endif

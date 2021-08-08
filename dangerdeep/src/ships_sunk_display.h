@@ -28,16 +28,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Display to show sunken ships
 class ships_sunk_display : public user_display
 {
-public:
-	ships_sunk_display(class user_interface& ui_);
-	void display() const override;
-	bool handle_key_event(const key_data& ) override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
+  public:
+    ships_sunk_display(class user_interface& ui_);
+    void display() const override;
+    bool handle_key_event(const key_data&) override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
 
-protected:
-	unsigned first_displayed_object{0};
-	virtual void next_page(unsigned nrships);
-	virtual void previous_page(unsigned nrships);
+  protected:
+    unsigned first_displayed_object{0};
+    virtual void next_page(unsigned nrships);
+    virtual void previous_page(unsigned nrships);
 };
 
 #endif

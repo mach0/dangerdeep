@@ -29,42 +29,45 @@ class user_interface;
 
 class user_popup : public input_event_handler
 {
-private:
-	// no empty construction, no copy
-	user_popup() = delete;
-	user_popup(user_popup& ) = delete;
-	user_popup& operator= (const user_popup& ) = delete;
+  private:
+    // no empty construction, no copy
+    user_popup()            = delete;
+    user_popup(user_popup&) = delete;
+    user_popup& operator=(const user_popup&) = delete;
 
-protected:
-	/// the display needs to know its parent (user_interface) to access common data
-	user_interface& ui;
+  protected:
+    /// the display needs to know its parent (user_interface) to access common
+    /// data
+    user_interface& ui;
 
-	/// Constructor
-	user_popup(user_interface& ui_, const char* popup_name = nullptr);
+    /// Constructor
+    user_popup(user_interface& ui_, const char* popup_name = nullptr);
 
-public:
-	/// Destructor. needed for correct destruction of heirs.
-	virtual ~user_popup() = default;
-	/// Display method - very basic. Just draw display (elements)
-	virtual void display() const;
+  public:
+    /// Destructor. needed for correct destruction of heirs.
+    virtual ~user_popup() = default;
+    /// Display method - very basic. Just draw display (elements)
+    virtual void display() const;
 
-protected:
-	/// A 2D image element
-	class elem2D
-	{
-	public:
-		/// Construct static element
-		elem2D(vector2i pos, const std::string& filename_day, const std::string& filename_night = std::string());
-		/// Draw element normally/static
-		void draw(bool is_day) const;
+  protected:
+    /// A 2D image element
+    class elem2D
+    {
+      public:
+        /// Construct static element
+        elem2D(
+            vector2i pos, const std::string& filename_day,
+            const std::string& filename_night = std::string());
+        /// Draw element normally/static
+        void draw(bool is_day) const;
 
-	protected:
-		std::unique_ptr<image> tex_day;		///< Texture data
-		std::unique_ptr<image> tex_night;	///< Texture data (optional)
-		vector2i position;			///< Position on the screen
-	};
+      protected:
+        std::unique_ptr<image> tex_day;   ///< Texture data
+        std::unique_ptr<image> tex_night; ///< Texture data (optional)
+        vector2i position;                ///< Position on the screen
+    };
 
-	std::vector<elem2D> elements;			///< Elements for display
+    std::vector<elem2D> elements; ///< Elements for display
 };
 
 #endif /* USER_POPUP_H */

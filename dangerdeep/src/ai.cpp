@@ -20,29 +20,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ai
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#include "date.h"
 #include "ai.h"
 
+#include "convoy.h"
+#include "date.h"
+#include "depth_charge.h"
+#include "game.h"
+#include "global_data.h"
+#include "sea_object.h"
+#include "submarine.h"
 
 #include <utility>
-
-#include "game.h"
-#include "convoy.h"
-#include "sea_object.h"
-#include "depth_charge.h"
-#include "global_data.h"
-#include "submarine.h"
-using std::vector;
 using std::list;
 using std::string;
+using std::vector;
 
-// fixme: we have bspline code ready. convoys should follow their routes along a bspline
-// curve for realistic results.
-#define WPEXACTNESS 100			// how exact a waypoint has to be hit in meters
-#define AI_THINK_CYCLE_TIME 10		// sec
-#define DC_ATTACK_RADIUS 100		// distance to target before DC launching starts
-#define DC_ATTACK_RUN_RADIUS 600	// distance to contact until escort switches to
-					// maximum speed
+// fixme: we have bspline code ready. convoys should follow their routes along a
+// bspline curve for realistic results.
+#define WPEXACTNESS          100 // how exact a waypoint has to be hit in meters
+#define AI_THINK_CYCLE_TIME  10  // sec
+#define DC_ATTACK_RADIUS     100 // distance to target before DC launching starts
+#define DC_ATTACK_RUN_RADIUS 600 // distance to contact until escort switches to
+                                 // maximum speed
 
 // fixme:
 // should ai know class game?
@@ -50,366 +49,429 @@ using std::string;
 
 // fixme: zigzag is possible, but never used.
 // zig zag for:
-// convoys do a large scale zig zag to make it difficult for submarines to keep contact
-// merchants should zigzig when convoy is attacked (or they are) to avoid torpedo hits
-// escorts should zigzag when patrolling (or maybe their speed makes zigzagging unneccessary?)
-// escorts should zigzag when following/hunting a submarine that is in torpedo range, but not
-// to close (250-400m minimum, 3000m? maximum) to avoid headon torpedo hits
+// convoys do a large scale zig zag to make it difficult for submarines to keep
+// contact merchants should zigzig when convoy is attacked (or they are) to
+// avoid torpedo hits escorts should zigzag when patrolling (or maybe their
+// speed makes zigzagging unneccessary?) escorts should zigzag when
+// following/hunting a submarine that is in torpedo range, but not to close
+// (250-400m minimum, 3000m? maximum) to avoid headon torpedo hits
 
 // ai computation between is randomly interleaved between frames to avoid
 // time consumption peeks every AI_THINK_CYCLE_TIME seconds
-ai::ai(types type_, game& gm) : type(type_), state(followpath),
-	zigzagstate(1/*0 fixme*/), attackrun(false), evasive_manouver(false),
-	rem_manouver_time(0),
-	has_contact(false),
-	remaining_time(gm.randomf() * AI_THINK_CYCLE_TIME),
-	cyclewaypoints(false)
+ai::ai(types type_, game& gm) :
+    type(type_), state(followpath), zigzagstate(1 /*0 fixme*/),
+    attackrun(false), evasive_manouver(false), rem_manouver_time(0),
+    has_contact(false), remaining_time(gm.randomf() * AI_THINK_CYCLE_TIME),
+    cyclewaypoints(false)
 {
 }
 
-
-
-ai::~ai()
-= default;
-
-
+ai::~ai() = default;
 
 void ai::load(const xml_elem& parentnode)
 {
-	type = types(parentnode.attru("type"));
-	state = states(parentnode.attru("state"));
-	zigzagstate = parentnode.attru("zigzagstate");
-	attackrun = parentnode.attrb("attackrun");
-	evasive_manouver = parentnode.attrb("evasive_manouver");
-	rem_manouver_time = parentnode.attrf("rem_manouver_time");
-	followme.id = parentnode.attru("followme");
-	myconvoy.id = parentnode.attru("myconvoy");
-	if (parentnode.has_child("contact")) {
-		contact = parentnode.child("contact").attrv3();
-	}
-	remaining_time = parentnode.attrf("remaining_time");
-	main_course = parentnode.child("main_course").attra();
-	xml_elem wp = parentnode.child("waypoints");
-	waypoints.clear();
-	for (auto elem : wp.iterate("waypoint")) {
-		waypoints.push_back(elem.attrv2());
-	}
-	cyclewaypoints = wp.attrb("cyclewaypoints");
+    type              = types(parentnode.attru("type"));
+    state             = states(parentnode.attru("state"));
+    zigzagstate       = parentnode.attru("zigzagstate");
+    attackrun         = parentnode.attrb("attackrun");
+    evasive_manouver  = parentnode.attrb("evasive_manouver");
+    rem_manouver_time = parentnode.attrf("rem_manouver_time");
+    followme.id       = parentnode.attru("followme");
+    myconvoy.id       = parentnode.attru("myconvoy");
+    if (parentnode.has_child("contact"))
+    {
+        contact = parentnode.child("contact").attrv3();
+    }
+    remaining_time = parentnode.attrf("remaining_time");
+    main_course    = parentnode.child("main_course").attra();
+    xml_elem wp    = parentnode.child("waypoints");
+    waypoints.clear();
+    for (auto elem : wp.iterate("waypoint"))
+    {
+        waypoints.push_back(elem.attrv2());
+    }
+    cyclewaypoints = wp.attrb("cyclewaypoints");
 }
-
-
 
 void ai::save(xml_elem& parentnode) const
 {
-	parentnode.set_attr(unsigned(type), "type");
-	parentnode.set_attr(unsigned(state), "state");
-	parentnode.set_attr(zigzagstate, "zigzagstate");
-	parentnode.set_attr(attackrun, "attackrun");
-	parentnode.set_attr(evasive_manouver, "evasive_manouver");
-	parentnode.set_attr(rem_manouver_time, "rem_manouver_time");
-	parentnode.set_attr(followme.id, "followme");
-	parentnode.set_attr(myconvoy.id, "myconvoy");
-	if (has_contact) {
-		parentnode.add_child("contact").set_attr(contact);
-	}
-	parentnode.set_attr(remaining_time, "remaining_time");
-	parentnode.add_child("main_course").set_attr(main_course);
-	xml_elem wp = parentnode.add_child("waypoints");
-	for (auto waypoint : waypoints) {
-		wp.add_child("waypoint").set_attr(waypoint);
-	}
-	wp.set_attr(cyclewaypoints, "cyclewaypoints");
+    parentnode.set_attr(unsigned(type), "type");
+    parentnode.set_attr(unsigned(state), "state");
+    parentnode.set_attr(zigzagstate, "zigzagstate");
+    parentnode.set_attr(attackrun, "attackrun");
+    parentnode.set_attr(evasive_manouver, "evasive_manouver");
+    parentnode.set_attr(rem_manouver_time, "rem_manouver_time");
+    parentnode.set_attr(followme.id, "followme");
+    parentnode.set_attr(myconvoy.id, "myconvoy");
+    if (has_contact)
+    {
+        parentnode.add_child("contact").set_attr(contact);
+    }
+    parentnode.set_attr(remaining_time, "remaining_time");
+    parentnode.add_child("main_course").set_attr(main_course);
+    xml_elem wp = parentnode.add_child("waypoints");
+    for (auto waypoint : waypoints)
+    {
+        wp.add_child("waypoint").set_attr(waypoint);
+    }
+    wp.set_attr(cyclewaypoints, "cyclewaypoints");
 }
-
 
 void ai::relax(ship& parent, game& gm)
 {
-	has_contact = false;
-	state = gm.is_valid(followme) ? followobject : followpath;
-	parent.set_throttle(ship::aheadsonar);
-	attackrun = false;
+    has_contact = false;
+    state       = gm.is_valid(followme) ? followobject : followpath;
+    parent.set_throttle(ship::aheadsonar);
+    attackrun = false;
 }
 
 void ai::attack_contact(const vector3& c)
 {
-	has_contact = true;
-	contact = c;
-	state = attackcontact;
+    has_contact = true;
+    contact     = c;
+    state       = attackcontact;
 }
 
 void ai::follow(game& gm, sea_object_id t)
 {
-	state = gm.is_valid(followme) ? followobject : followpath;
+    state = gm.is_valid(followme) ? followobject : followpath;
 }
 
 void ai::act(ship& parent, class game& gm, double delta_time)
 {
-	remaining_time -= delta_time;
-	if (remaining_time > 0) {
-		return;
-	} else {
-		remaining_time = AI_THINK_CYCLE_TIME * ( 0.75f + 0.25f * gm.randomf() );
-	}
+    remaining_time -= delta_time;
+    if (remaining_time > 0)
+    {
+        return;
+    }
+    else
+    {
+        remaining_time = AI_THINK_CYCLE_TIME * (0.75f + 0.25f * gm.randomf());
+    }
 
-	switch (type) {
-		case escort: act_escort(parent, gm, delta_time); break;
-		case convoy: act_convoy(parent, gm, delta_time); break;
-		default: act_dumb(parent, gm, delta_time); break;
-	}
+    switch (type)
+    {
+        case escort:
+            act_escort(parent, gm, delta_time);
+            break;
+        case convoy:
+            act_convoy(parent, gm, delta_time);
+            break;
+        default:
+            act_dumb(parent, gm, delta_time);
+            break;
+    }
 
-	if (zigzagstate > 0) {	// this depends on ai type, convoys zigzag different! fixme
-		// course diff up to 45 deg for dd's, depends on ship type
-		if (zigzagstate == 7)
-			parent.head_to_course(main_course - angle(45), -1);
-		else if (zigzagstate == 13)
-			parent.head_to_course(main_course + angle(45), 1);
-		++zigzagstate;
-		if (zigzagstate > 18)
-			zigzagstate = 1;
-	}
+    if (zigzagstate > 0)
+    { // this depends on ai type, convoys zigzag different! fixme
+        // course diff up to 45 deg for dd's, depends on ship type
+        if (zigzagstate == 7)
+            parent.head_to_course(main_course - angle(45), -1);
+        else if (zigzagstate == 13)
+            parent.head_to_course(main_course + angle(45), 1);
+        ++zigzagstate;
+        if (zigzagstate > 18)
+            zigzagstate = 1;
+    }
 }
 
 void ai::set_zigzag(bool stat)
 {
-	if (stat)
-		zigzagstate = 1;
-	else
-		zigzagstate = 0;
+    if (stat)
+        zigzagstate = 1;
+    else
+        zigzagstate = 0;
 }
 
 void ai::act_escort(ship& parent, game& gm, double delta_time)
 {
-	// always watch out/listen/ping for the enemy
-	// watch around
+    // always watch out/listen/ping for the enemy
+    // watch around
 
-	// fixme: a list of submarine* is bad (more information given than
-	// what is really visible, not compatible to network play!
-	// but how else should the ai ask for course and speed?
-	// a contact should be of the form: position, course, type.
-	// contact's speed should be determined by the ai itself.
-	// but how can the ai identify contacts? by the objects adress i.e. pointer?
-	// this would be nearly the same as returning a list of pointers (see above).
+    // fixme: a list of submarine* is bad (more information given than
+    // what is really visible, not compatible to network play!
+    // but how else should the ai ask for course and speed?
+    // a contact should be of the form: position, course, type.
+    // contact's speed should be determined by the ai itself.
+    // but how can the ai identify contacts? by the objects adress i.e. pointer?
+    // this would be nearly the same as returning a list of pointers (see
+    // above).
 
-	// A dead, crippled or sinking unit reacts like a dump unit. It does
-	// not fire shells, depth charges etc. on enemy units and does not try
-	// to locate them anymore.
-	if ( !parent.is_alive () )
-	{
-		act_dumb(parent, gm, delta_time);
-		return;
-	}
+    // A dead, crippled or sinking unit reacts like a dump unit. It does
+    // not fire shells, depth charges etc. on enemy units and does not try
+    // to locate them anymore.
+    if (!parent.is_alive())
+    {
+        act_dumb(parent, gm, delta_time);
+        return;
+    }
 
-	double dist = 1e12;
-	const submarine* nearest_contact = nullptr;
-	// any subs in visual range to attack?
-	auto subs = gm.visible_submarines(&parent);
-	for (auto & sub : subs) {
-		double d = sub->get_pos().xy().distance(parent.get_pos().xy());
-		if (d < dist) {
-			dist = d;
-			nearest_contact = sub;
-		}
-	}
+    double dist                      = 1e12;
+    const submarine* nearest_contact = nullptr;
+    // any subs in visual range to attack?
+    auto subs = gm.visible_submarines(&parent);
+    for (auto& sub : subs)
+    {
+        double d = sub->get_pos().xy().distance(parent.get_pos().xy());
+        if (d < dist)
+        {
+            dist            = d;
+            nearest_contact = sub;
+        }
+    }
 
-	if (!nearest_contact) {
-		// any subs in radar range to attack?
-		auto subs = gm.radar_submarines(&parent);
-		for (auto & sub : subs) {
-			double d = sub->get_pos().xy().distance(parent.get_pos().xy());
-			if (d < dist) {
-				dist = d;
-				nearest_contact = sub;
-			}
-		}
-	}
+    if (!nearest_contact)
+    {
+        // any subs in radar range to attack?
+        auto subs = gm.radar_submarines(&parent);
+        for (auto& sub : subs)
+        {
+            double d = sub->get_pos().xy().distance(parent.get_pos().xy());
+            if (d < dist)
+            {
+                dist            = d;
+                nearest_contact = sub;
+            }
+        }
+    }
 
-	if (nearest_contact) {	// is there a contact?
-		if (dist <= parent.max_gun_range())
-		{
-			if (ship::GUN_NOT_MANNED == parent.fire_shell_at(nearest_contact->get_pos().xy(), gm))
-				parent.man_guns();
-		}
-		attack_contact(nearest_contact->get_pos());
-		if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(nearest_contact->get_pos());
-		parent.set_throttle(ship::aheadflank);
-		attackrun = true;
-	}
+    if (nearest_contact)
+    { // is there a contact?
+        if (dist <= parent.max_gun_range())
+        {
+            if (ship::GUN_NOT_MANNED
+                == parent.fire_shell_at(nearest_contact->get_pos().xy(), gm))
+                parent.man_guns();
+        }
+        attack_contact(nearest_contact->get_pos());
+        if (gm.is_valid(myconvoy))
+            gm.get_convoy(myconvoy).add_contact(nearest_contact->get_pos());
+        parent.set_throttle(ship::aheadflank);
+        attackrun = true;
+    }
 
-	if (!attackrun) {	// nothing found? try a ping or listen
-		// high speeds do not allow for listening or sonar.
+    if (!attackrun)
+    { // nothing found? try a ping or listen
+        // high speeds do not allow for listening or sonar.
 
-		// listen for subs
-		auto hearable_subs = gm.sonar_submarines(&parent);
-		if (hearable_subs.size() > 0) {
-			attack_contact(hearable_subs.front().pos.xy0());
-		} else {
-			// ping around to find something
-			list<vector3> contacts;
-			gm.ping_ASDIC(contacts, &parent, true);
-			if (contacts.size() > 0) {
-				// fixme: choose best contact!
-				if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(contacts.front());
-				attack_contact(contacts.front());
-			}
-		}
-	}
+        // listen for subs
+        auto hearable_subs = gm.sonar_submarines(&parent);
+        if (hearable_subs.size() > 0)
+        {
+            attack_contact(hearable_subs.front().pos.xy0());
+        }
+        else
+        {
+            // ping around to find something
+            list<vector3> contacts;
+            gm.ping_ASDIC(contacts, &parent, true);
+            if (contacts.size() > 0)
+            {
+                // fixme: choose best contact!
+                if (gm.is_valid(myconvoy))
+                    gm.get_convoy(myconvoy).add_contact(contacts.front());
+                attack_contact(contacts.front());
+            }
+        }
+    }
 
-	if (state == followpath || state == followobject) {
-		act_dumb(parent, gm, delta_time);
-	} else if (state == attackcontact) {	// attack sonar/visible contact
+    if (state == followpath || state == followobject)
+    {
+        act_dumb(parent, gm, delta_time);
+    }
+    else if (state == attackcontact)
+    { // attack sonar/visible contact
 
-		if (!(evasive_manouver && rem_manouver_time > 0)) {
-			evasive_manouver = ! set_course_to_pos(parent, gm, contact.xy());//fixme move function to ai!!!
-			if (evasive_manouver) {
-				// wait for half circle to complete
-				double waittime = 180.0 / (parent.get_turn_rate().value() * parent.get_speed());
-				rem_manouver_time = ceil(waittime/AI_THINK_CYCLE_TIME) * AI_THINK_CYCLE_TIME;
-			}
-		}
+        if (!(evasive_manouver && rem_manouver_time > 0))
+        {
+            evasive_manouver = !set_course_to_pos(
+                parent, gm, contact.xy()); // fixme move function to ai!!!
+            if (evasive_manouver)
+            {
+                // wait for half circle to complete
+                double waittime =
+                    180.0
+                    / (parent.get_turn_rate().value() * parent.get_speed());
+                rem_manouver_time =
+                    ceil(waittime / AI_THINK_CYCLE_TIME) * AI_THINK_CYCLE_TIME;
+            }
+        }
 
-		vector2 delta = contact.xy() - parent.get_pos().xy();
-		double cd = delta.length();
-		if (cd > DC_ATTACK_RUN_RADIUS && !attackrun) {
-			list<vector3> contacts;
-			gm.ping_ASDIC(contacts, &parent, false, angle(delta));
-			if (contacts.size() > 0) {	// update contact
-				// fixme: choose best contact!
-				if (gm.is_valid(myconvoy)) gm.get_convoy(myconvoy).add_contact(contacts.front());
-				attack_contact(contacts.front());
-			}
-			set_zigzag((cd > 500 && cd < 2500) ? true : false); // zig-zag near the sub - fixme test hack, doesn't work
-		} else {
-			parent.set_throttle(ship::aheadflank);
-			attackrun = true;
-			set_zigzag(false); // run straight - fixme test hack, doesn't work
-		}
+        vector2 delta = contact.xy() - parent.get_pos().xy();
+        double cd     = delta.length();
+        if (cd > DC_ATTACK_RUN_RADIUS && !attackrun)
+        {
+            list<vector3> contacts;
+            gm.ping_ASDIC(contacts, &parent, false, angle(delta));
+            if (contacts.size() > 0)
+            { // update contact
+                // fixme: choose best contact!
+                if (gm.is_valid(myconvoy))
+                    gm.get_convoy(myconvoy).add_contact(contacts.front());
+                attack_contact(contacts.front());
+            }
+            set_zigzag(
+                (cd > 500 && cd < 2500)
+                    ? true
+                    : false); // zig-zag near the sub - fixme test hack, doesn't
+                              // work
+        }
+        else
+        {
+            parent.set_throttle(ship::aheadflank);
+            attackrun = true;
+            set_zigzag(false); // run straight - fixme test hack, doesn't work
+        }
 
-		if (cd < DC_ATTACK_RADIUS) {
-			// fixme: get real pos for dc throwing...
-			gm.spawn(depth_charge(gm, -contact.z, parent.get_pos()));
-			// the escort must run with maximum speed until the depth charges
-			// have exploded to avoid suicide. fixme
-			// fixme: just ai hacking/testing.
-			// after spawning a DC start pinging again.
-			relax(parent, gm);
-		}
-	}
+        if (cd < DC_ATTACK_RADIUS)
+        {
+            // fixme: get real pos for dc throwing...
+            gm.spawn(depth_charge(gm, -contact.z, parent.get_pos()));
+            // the escort must run with maximum speed until the depth charges
+            // have exploded to avoid suicide. fixme
+            // fixme: just ai hacking/testing.
+            // after spawning a DC start pinging again.
+            relax(parent, gm);
+        }
+    }
 
-	if (rem_manouver_time > 0) rem_manouver_time -= AI_THINK_CYCLE_TIME;
+    if (rem_manouver_time > 0)
+        rem_manouver_time -= AI_THINK_CYCLE_TIME;
 }
 
 void ai::act_dumb(ship& parent, game& gm, double delta_time)
 {
-	if (state == followobject && gm.is_valid(followme)) {
-		set_course_to_pos(parent, gm, gm.get_object(followme).get_pos().xy());
-	} else if (state == followpath) {
-		if (waypoints.size() > 0) {
-			set_course_to_pos(parent, gm, waypoints.front());
-			if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS) {
-				if (cyclewaypoints)
-					waypoints.push_back(waypoints.front());
-				waypoints.erase(waypoints.begin());
-			}
-		}
-	}
+    if (state == followobject && gm.is_valid(followme))
+    {
+        set_course_to_pos(parent, gm, gm.get_object(followme).get_pos().xy());
+    }
+    else if (state == followpath)
+    {
+        if (waypoints.size() > 0)
+        {
+            set_course_to_pos(parent, gm, waypoints.front());
+            if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS)
+            {
+                if (cyclewaypoints)
+                    waypoints.push_back(waypoints.front());
+                waypoints.erase(waypoints.begin());
+            }
+        }
+    }
 }
 
 void ai::act_convoy(ship& parent, game& gm, double delta_time)
 {
-	// follow waypoints
-	if (waypoints.size() > 0) {
-		set_course_to_pos(parent, gm, waypoints.front());
-		if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS) {
-/*
-			if (cyclewaypoints)
-				waypoints.push_back(waypoints.front());
-*/
-			waypoints.erase(waypoints.begin());
-		}
-	}
+    // follow waypoints
+    if (waypoints.size() > 0)
+    {
+        set_course_to_pos(parent, gm, waypoints.front());
+        if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS)
+        {
+            /*
+                        if (cyclewaypoints)
+                            waypoints.push_back(waypoints.front());
+            */
+            waypoints.erase(waypoints.begin());
+        }
+    }
 
-	// set actions for convoy's ships.
-	// civil ships continue their course with zigzags eventually
-//fixme: the ships don't follow their waypoint exactly, they're zigzagging wild around it
-//if i use set_course_to_pos direct, everything is fine. maybe the ai of each ship
-//must "think" shortly after setting the waypoint
-//fixme: don't set the immidiate next wp, just use the next convoy wp + rel. position as waypoint!
-//or set all wps at the beginning. fixme is this really a good idea?
-//this could be done in the constructor!
-//	for (list<pair<ship*, vector2> >::iterator it = merchants.begin(); it != merchants.end(); ++it) {
-//		it->first->get_ai()->set_waypoint(position.xy() + it->second);
-//	}
+    // set actions for convoy's ships.
+    // civil ships continue their course with zigzags eventually
+    // fixme: the ships don't follow their waypoint exactly, they're zigzagging
+    // wild around it if i use set_course_to_pos direct, everything is fine.
+    // maybe the ai of each ship must "think" shortly after setting the waypoint
+    // fixme: don't set the immidiate next wp, just use the next convoy wp +
+    // rel. position as waypoint! or set all wps at the beginning. fixme is this
+    // really a good idea? this could be done in the constructor! 	for
+    //(list<pair<ship*, vector2> >::iterator it = merchants.begin(); it !=
+    //merchants.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
+    //it->second);
+    //	}
 
-	// war ships follow their course, with zigzags / evasive manouvers / increasing speed
-//	for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it != warships.end(); ++it) {
-//		it->first->get_ai()->set_waypoint(position.xy() + it->second);
-//	}
+    // war ships follow their course, with zigzags / evasive manouvers /
+    // increasing speed
+    //	for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it !=
+    //warships.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
+    //it->second);
+    //	}
 
-	// escorts follow their escort pattern or attack if alarmed
-//	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it != escorts.end(); ++it) {
-//		it->first->get_ai()->set_waypoint(position.xy() + it->second);
-//	}
+    // escorts follow their escort pattern or attack if alarmed
+    //	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it !=
+    //escorts.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
+    //it->second);
+    //	}
 }
 
 bool ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos)
 {
-	vector2 d = pos - parent.get_pos().xy();
-	vector2 hd = parent.get_heading().direction();
-	double a = d.x*hd.x + d.y*hd.y;
-	double b = d.x*hd.y - d.y*hd.x;
-	// if a is < 0 then target lies behind our pos.
-	// if b is < 0 then target is left, else right of our pos.
-	double r1 = (b == 0) ? 1e10 : (a*a + b*b)/fabs(2*b);
-	// fixme: a*a + b*b = |d|^2 * |hd|^2 = 1 * 1 = 1 !
-	double r2 = 1.0/parent.get_turn_rate().rad();
-	if (a <= 0) {	// target is behind us
-		if (b < 0) {	// target is left
-			main_course = parent.get_heading() - angle(180);
-			parent.head_to_course(main_course, -1);
-		} else {
-			main_course = parent.get_heading() + angle(180);
-			parent.head_to_course(main_course, 1);
-		}
-		return false;
-	} else if (r2 > r1) {	// target can not be reached with smallest curve possible
-		if (b < 0) {	// target is left
-			main_course = parent.get_heading() + angle(180);
-			parent.head_to_course(main_course, 1);
-		} else {
-			main_course = parent.get_heading() - angle(180);
-			parent.head_to_course(main_course, -1);
-		}
-		return false;
-	} else {	// target can be reached, steer curve
-		parent.head_to_course(angle::from_math(atan2(d.y, d.x)), (b < 0) ? -1 : 1);
-//	this code computes the curve that hits the target
-//	but it is much better to turn fast and then steam straight ahead.
-//	however, the straight path does not hit the target exactly, since the ship moves
-//	while turning. In reality the ship would turn until it is facing the target
-//	directly. Here the ai recomputes the path every 10seconds, so this doesn't matter.
-//	2004/02/24. an even better course would be: turn to a course so that when it is reached
-//	the target position lies exactly in that direction, e.g. target bearing is 30 degrees,
-//	if we turn to 30, we're already a bit off the target (bearing then is not 0, maybe 5)
-//	so turn to ~35 degrees and then run straight. Such exact path computation is not
-//	realistic though, humans are no computers...
-/*
-		double needed_turn_rate = (r1 == 0) ? 0 : 1.0/r1; //speed/r1;
-		double fac = ((180.0*needed_turn_rate)/PI)/fabs(turn_rate.value_pm180());
-		head_chg = (b < 0) ? -fac : fac;
-*/
-		return true;
-	}
+    vector2 d  = pos - parent.get_pos().xy();
+    vector2 hd = parent.get_heading().direction();
+    double a   = d.x * hd.x + d.y * hd.y;
+    double b   = d.x * hd.y - d.y * hd.x;
+    // if a is < 0 then target lies behind our pos.
+    // if b is < 0 then target is left, else right of our pos.
+    double r1 = (b == 0) ? 1e10 : (a * a + b * b) / fabs(2 * b);
+    // fixme: a*a + b*b = |d|^2 * |hd|^2 = 1 * 1 = 1 !
+    double r2 = 1.0 / parent.get_turn_rate().rad();
+    if (a <= 0)
+    { // target is behind us
+        if (b < 0)
+        { // target is left
+            main_course = parent.get_heading() - angle(180);
+            parent.head_to_course(main_course, -1);
+        }
+        else
+        {
+            main_course = parent.get_heading() + angle(180);
+            parent.head_to_course(main_course, 1);
+        }
+        return false;
+    }
+    else if (r2 > r1)
+    { // target can not be reached with smallest curve possible
+        if (b < 0)
+        { // target is left
+            main_course = parent.get_heading() + angle(180);
+            parent.head_to_course(main_course, 1);
+        }
+        else
+        {
+            main_course = parent.get_heading() - angle(180);
+            parent.head_to_course(main_course, -1);
+        }
+        return false;
+    }
+    else
+    { // target can be reached, steer curve
+        parent.head_to_course(
+            angle::from_math(atan2(d.y, d.x)), (b < 0) ? -1 : 1);
+        //	this code computes the curve that hits the target
+        //	but it is much better to turn fast and then steam straight ahead.
+        //	however, the straight path does not hit the target exactly, since
+        //the ship moves 	while turning. In reality the ship would turn until it
+        //is facing the target 	directly. Here the ai recomputes the path every
+        //10seconds, so this doesn't matter. 	2004/02/24. an even better course
+        //would be: turn to a course so that when it is reached 	the target
+        //position lies exactly in that direction, e.g. target bearing is 30
+        //degrees, 	if we turn to 30, we're already a bit off the target (bearing
+        //then is not 0, maybe 5) 	so turn to ~35 degrees and then run straight.
+        //Such exact path computation is not 	realistic though, humans are no
+        //computers...
+        /*
+                double needed_turn_rate = (r1 == 0) ? 0 : 1.0/r1; //speed/r1;
+                double fac =
+           ((180.0*needed_turn_rate)/PI)/fabs(turn_rate.value_pm180()); head_chg
+           = (b < 0) ? -fac : fac;
+        */
+        return true;
+    }
 }
 
-
-
-
-
-
-#if 0	// gunnery code
+#if 0 // gunnery code
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include <cmath>
 #include <list>
 
 const float PI = 3.1415962;

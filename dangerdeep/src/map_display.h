@@ -23,12 +23,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef MAP_DISPLAY_H
 #define MAP_DISPLAY_H
 
+#include "bivector.h"
+#include "color.h"
+#include "primitives.h"
 #include "user_display.h"
 #include "vector2.h"
-#include "color.h"
 #include "widget.h"
-#include "primitives.h"
-#include "bivector.h"
+
 #include <unordered_set>
 class game;
 class game_editor;
@@ -36,82 +37,92 @@ class sea_object;
 
 class map_display : public user_display
 {
-protected:
-	// map
-	float mapzoom;	// factor pixel/meter
-	vector2 mapoffset;	// additional offset used for display, relative to player (meters)
-	vector2i mouse_position;	// last mouse position
-	int mapmode;
+  protected:
+    // map
+    float mapzoom;     // factor pixel/meter
+    vector2 mapoffset; // additional offset used for display, relative to player
+                       // (meters)
+    vector2i mouse_position; // last mouse position
+    int mapmode;
 
-	void draw_vessel_symbol(const vector2& offset, const sea_object* so, color c) const;
-	void draw_trail(const sea_object* so, const vector2& offset) const;
-	void draw_pings(game& gm, const vector2& offset) const;
-	void draw_sound_contact(game& gm, const sea_object* player,
-		double max_view_dist, const vector2& offset) const;
-	void draw_sound_contact(game& gm, const submarine* player,
-				const vector2& offset) const;
-	void draw_visual_contacts(game& gm, const sea_object* player, const vector2& offset) const;
-	void draw_radar_contacts(game& gm, const sea_object* player, const vector2& offset) const;
-	void draw_square_mark(game& gm, const vector2& mark_pos, const vector2& offset, const color& c ) const;
-	void draw_square_mark_special(game& gm, const vector2& mark_pos, const vector2& offset, const color& c ) const;
+    void draw_vessel_symbol(
+        const vector2& offset, const sea_object* so, color c) const;
+    void draw_trail(const sea_object* so, const vector2& offset) const;
+    void draw_pings(game& gm, const vector2& offset) const;
+    void draw_sound_contact(
+        game& gm, const sea_object* player, double max_view_dist,
+        const vector2& offset) const;
+    void draw_sound_contact(
+        game& gm, const submarine* player, const vector2& offset) const;
+    void draw_visual_contacts(
+        game& gm, const sea_object* player, const vector2& offset) const;
+    void draw_radar_contacts(
+        game& gm, const sea_object* player, const vector2& offset) const;
+    void draw_square_mark(
+        game& gm, const vector2& mark_pos, const vector2& offset,
+        const color& c) const;
+    void draw_square_mark_special(
+        game& gm, const vector2& mark_pos, const vector2& offset,
+        const color& c) const;
 
-	// only used in editor mode
-	//fixme: this should be part of the user interface, so that the editor panel
-	//is available also in other screens...
-	std::unique_ptr<widget> edit_panel;
-	std::unique_ptr<widget> edit_panel_add;
-	std::unique_ptr<widget> edit_panel_chgmot;
-	std::unique_ptr<widget> edit_panel_time;
-	std::unique_ptr<widget> edit_panel_descr;
-	std::unique_ptr<widget> edit_panel_help;
-	std::unique_ptr<widget> edit_panel_convoy;
-	widget* edit_btn_del;
-	widget* edit_btn_chgmot;
-	widget* edit_btn_copy;
-	widget* edit_btn_cvmenu;
-	widget* edit_panel_fg;
-	widget_list* edit_shiplist;
-	widget_slider* edit_heading;
-	widget_slider* edit_speed;
-	widget_slider* edit_throttle;
-	widget_slider* edit_timeyear;
-	widget_slider* edit_timemonth;
-	widget_slider* edit_timeday;
-	widget_slider* edit_timehour;
-	widget_slider* edit_timeminute;
-	widget_slider* edit_timesecond;
-	widget_edit* edit_cvname;
-	widget_slider* edit_cvspeed;
-	widget_list* edit_cvlist;
-	vector2i mouse_position_down{-1,-1};	// position of mouse when button was pressed
-	std::unordered_set<sea_object_id> selection;
-	key_mod state_of_key_modifiers;
-	objcachet<texture>::reference notepadsheet;
+    // only used in editor mode
+    // fixme: this should be part of the user interface, so that the editor
+    // panel is available also in other screens...
+    std::unique_ptr<widget> edit_panel;
+    std::unique_ptr<widget> edit_panel_add;
+    std::unique_ptr<widget> edit_panel_chgmot;
+    std::unique_ptr<widget> edit_panel_time;
+    std::unique_ptr<widget> edit_panel_descr;
+    std::unique_ptr<widget> edit_panel_help;
+    std::unique_ptr<widget> edit_panel_convoy;
+    widget* edit_btn_del;
+    widget* edit_btn_chgmot;
+    widget* edit_btn_copy;
+    widget* edit_btn_cvmenu;
+    widget* edit_panel_fg;
+    widget_list* edit_shiplist;
+    widget_slider* edit_heading;
+    widget_slider* edit_speed;
+    widget_slider* edit_throttle;
+    widget_slider* edit_timeyear;
+    widget_slider* edit_timemonth;
+    widget_slider* edit_timeday;
+    widget_slider* edit_timehour;
+    widget_slider* edit_timeminute;
+    widget_slider* edit_timesecond;
+    widget_edit* edit_cvname;
+    widget_slider* edit_cvspeed;
+    widget_list* edit_cvlist;
+    vector2i mouse_position_down{
+        -1, -1}; // position of mouse when button was pressed
+    std::unordered_set<sea_object_id> selection;
+    key_mod state_of_key_modifiers;
+    objcachet<texture>::reference notepadsheet;
 
-	// editor methods
-	void edit_add_obj(game_editor& gm);
-	void edit_del_obj(game_editor& gm);
-	void edit_change_motion(game_editor& gm);
-	void edit_copy_obj(game_editor& gm);
-	void edit_convoy_menu(game_editor& gm);
-	void edit_time(game_editor& gm);
-	void edit_description(game_editor& gm);
-	void edit_help(game_editor& gm);
+    // editor methods
+    void edit_add_obj(game_editor& gm);
+    void edit_del_obj(game_editor& gm);
+    void edit_change_motion(game_editor& gm);
+    void edit_copy_obj(game_editor& gm);
+    void edit_convoy_menu(game_editor& gm);
+    void edit_time(game_editor& gm);
+    void edit_description(game_editor& gm);
+    void edit_help(game_editor& gm);
 
-	// check if we have a selection and enables/disables buttons
-	void check_edit_sel();
+    // check if we have a selection and enables/disables buttons
+    void check_edit_sel();
 
-private:
-	map_display() = delete;
+  private:
+    map_display() = delete;
 
-public:
-	map_display(class user_interface& ui_);
+  public:
+    map_display(class user_interface& ui_);
 
-	void display() const override;
-	bool handle_key_event(const key_data& ) override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
+    void display() const override;
+    bool handle_key_event(const key_data&) override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 };
 
 #endif

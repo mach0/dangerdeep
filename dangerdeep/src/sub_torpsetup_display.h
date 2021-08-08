@@ -28,14 +28,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Display for the torpedo setup display for submarines
 class sub_torpsetup_display : public user_display
 {
-public:
-	sub_torpsetup_display(class user_interface& ui_);
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	void display() const override;
+  public:
+    sub_torpsetup_display(class user_interface& ui_);
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    void display() const override;
 
-protected:
-	int which_element_is_turned{-1};
+  protected:
+    int which_element_is_turned{-1};
 };
 
 #endif

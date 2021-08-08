@@ -29,41 +29,54 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class random_generator_deprecated
 {
- public:
-	random_generator_deprecated(unsigned seed = 0) : reg(seed) {}
-	virtual ~random_generator_deprecated() = default;
-	virtual unsigned rnd() { chaos(); return reg; }
-	virtual float rndf() { unsigned n = rnd(); return float(double(n)/unsigned(-1)); }
-	virtual void set_seed(unsigned seed) { reg = seed; }
+  public:
+    random_generator_deprecated(unsigned seed = 0) : reg(seed) { }
+    virtual ~random_generator_deprecated() = default;
+    virtual unsigned rnd()
+    {
+        chaos();
+        return reg;
+    }
+    virtual float rndf()
+    {
+        unsigned n = rnd();
+        return float(double(n) / unsigned(-1));
+    }
+    virtual void set_seed(unsigned seed) { reg = seed; }
 
- protected:
-	virtual void chaos() {
-		reg = reg * 9699691 + 223092870;
-	}
+  protected:
+    virtual void chaos() { reg = reg * 9699691 + 223092870; }
 
-	unsigned reg;
+    unsigned reg;
 };
-
 
 /// A simple class to generate random numbers
 class random_generator
 {
-public:
-	/// Construct a generator that delivers true random numbers
-	random_generator() : generator(std::random_device()()), distribution(0.0, 1.0) {}
-	/// Construct a generator with defined seed value
-	random_generator(uint32_t seed) : generator(seed), distribution(0.0, 1.0) {}
-	/// Return the next pseudo random number in range [0...1]
-        double get() { return distribution(generator); }
-        /// Return unsigned value in range [0...n[
-        /// @remark a tiny bit biased, because 1.0 will be mapped to limit-1, but that's ok for our use
-        unsigned get(unsigned limit) { return std::min(limit - 1, unsigned(std::floor(limit * get()))); }
-        /// Return random value in -v...+v range
-        double variance(double v) { return (2.0 * get() - 1.0) * v; } 
+  public:
+    /// Construct a generator that delivers true random numbers
+    random_generator() :
+        generator(std::random_device()()), distribution(0.0, 1.0)
+    {
+    }
+    /// Construct a generator with defined seed value
+    random_generator(uint32_t seed) :
+        generator(seed), distribution(0.0, 1.0) { }
+    /// Return the next pseudo random number in range [0...1]
+    double get() { return distribution(generator); }
+    /// Return unsigned value in range [0...n[
+    /// @remark a tiny bit biased, because 1.0 will be mapped to limit-1, but
+    /// that's ok for our use
+    unsigned get(unsigned limit)
+    {
+        return std::min(limit - 1, unsigned(std::floor(limit * get())));
+    }
+    /// Return random value in -v...+v range
+    double variance(double v) { return (2.0 * get() - 1.0) * v; }
 
-protected:
-	std::mt19937 generator;
-	std::uniform_real_distribution<double> distribution;
+  protected:
+    std::mt19937 generator;
+    std::uniform_real_distribution<double> distribution;
 };
 
 #endif

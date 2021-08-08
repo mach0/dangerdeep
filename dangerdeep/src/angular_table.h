@@ -24,22 +24,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "angle.h"
 #include "helper.h"
+
 #include <vector>
 
 /// A 1D table with wrap around interpolation indexed by an angle
-template<typename T> class angular_table
+template <typename T> class angular_table
 {
-public:
-	angular_table(std::vector<T>&& values_ = std::vector<T>()) : values(std::move(values_)) {}
-	T get(angle a) const {
-		const auto exact_index = a.value() * values.size() / 360.0;
-		const auto i0 = std::size_t(std::floor(exact_index));
-		const auto i1 = (i0 + 1) == values.size() ? 0 : i0 + 1;
-		return helper::interpolate(values[i0], values[i1], helper::frac(exact_index));
-	}
+  public:
+    angular_table(std::vector<T>&& values_ = std::vector<T>()) :
+        values(std::move(values_))
+    {
+    }
+    T get(angle a) const
+    {
+        const auto exact_index = a.value() * values.size() / 360.0;
+        const auto i0          = std::size_t(std::floor(exact_index));
+        const auto i1          = (i0 + 1) == values.size() ? 0 : i0 + 1;
+        return helper::interpolate(
+            values[i0], values[i1], helper::frac(exact_index));
+    }
 
-protected:
-	std::vector<T> values;
+  protected:
+    std::vector<T> values;
 };
 
 #endif

@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// Display for the Soldbuch of a submarine captain
 class sub_soldbuch_display : public user_display
 {
-public:
-	sub_soldbuch_display(class user_interface& ui_);
-	void display() const override;
+  public:
+    sub_soldbuch_display(class user_interface& ui_);
+    void display() const override;
 };
 
 #endif

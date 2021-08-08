@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
 #include "sub_soldbuch_display.h"
+
 #include "font.h"
 #include "game.h"
 #include "global_data.h"
@@ -29,93 +30,118 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "system_interface.h"
 #include "texts.h"
 #include "texture.h"
+
 #include <fstream>
 #include <memory>
-
 #include <sstream>
 #include <utility>
 
 namespace
 {
-	enum element_type {
-		et_photo = 0,
-		et_overlay = 1,
-		et_stamp = 2
-	};
+enum element_type
+{
+    et_photo   = 0,
+    et_overlay = 1,
+    et_stamp   = 2
+};
 }
 
-
-
 sub_soldbuch_display::sub_soldbuch_display(user_interface& ui_) :
-	user_display(ui_, "sub_soldbuch")
+    user_display(ui_, "sub_soldbuch")
 {
-	const auto& gm = ui.get_game();
-	const auto& pi = gm.get_player_info();
-	element_for_id(et_photo).set_phase(pi.photo - 1 /* first foto starts at 1*/);
-	element_for_id(et_stamp).set_phase(gm.get_date().get_value(date::year) - 1939);
+    const auto& gm = ui.get_game();
+    const auto& pi = gm.get_player_info();
+    element_for_id(et_photo).set_phase(
+        pi.photo - 1 /* first foto starts at 1*/);
+    element_for_id(et_stamp).set_phase(
+        gm.get_date().get_value(date::year) - 1939);
 }
 
 void sub_soldbuch_display::display() const
 {
-	draw_elements();
+    draw_elements();
 
-	// just for simplier handling of coords
-	std::stringstream ss;
+    // just for simplier handling of coords
+    std::stringstream ss;
 
-	// draw background
-	SYS().prepare_2d_drawing();
+    // draw background
+    SYS().prepare_2d_drawing();
 
-	// specify the primary ovberlay's coords
-	auto offset = element_for_id(et_overlay).get_position();
-	offset.y -= 6;	// fixme needed
+    // specify the primary ovberlay's coords
+    auto offset = element_for_id(et_overlay).get_position();
+    offset.y -= 6; // fixme needed
 
-	const auto& gm = ui.get_game();
-	const auto& pi = gm.get_player_info();
+    const auto& gm = ui.get_game();
+    const auto& pi = gm.get_player_info();
 
-	// soldbuch nr
-	font_jphsl->print(offset.x+140, offset.y+45, pi.soldbuch_nr, color(20, 20, 30));
-	// rank
-	font_jphsl->print(offset.x+30, offset.y+79, texts::get(700), color(20, 20, 30));
-	// paygroup
-	ss << "A" << 2;
-	font_jphsl->print(offset.x+230, offset.y+81, ss.str(), color(20, 20, 30));
+    // soldbuch nr
+    font_jphsl->print(
+        offset.x + 140, offset.y + 45, pi.soldbuch_nr, color(20, 20, 30));
+    // rank
+    font_jphsl->print(
+        offset.x + 30, offset.y + 79, texts::get(700), color(20, 20, 30));
+    // paygroup
+    ss << "A" << 2;
+    font_jphsl->print(
+        offset.x + 230, offset.y + 81, ss.str(), color(20, 20, 30));
 
-	//career
-	if (pi.career.size() > 1) {
-		ss.str("");
-		ss << "A" << 2+1;
-		font_jphsl->print(offset.x+25, offset.y+140, *pi.career.begin(), color(20, 20, 30));
-		font_jphsl->print(offset.x+100, offset.y+140, texts::get(700+1), color(20, 20, 30));
-		font_jphsl->print(offset.x+270, offset.y+140, ss.str(), color(20, 20, 30));
-		if ( pi.career.size() >= 2 ) {
-			unsigned i = 1;
-			auto it = pi.career.begin();
-			for (it++; it != pi.career.end(); ++it ) {
-				ss.str("");
-				ss << "A" << (2+1+i);
-				font_jphsl->print(offset.x+25, offset.y+150+(i*20), *it, color(20, 20, 30));
-				font_jphsl->print(offset.x+100, offset.y+150+(i*20), texts::get(700+1+i), color(20, 20, 30));
-				font_jphsl->print(offset.x+270, offset.y+150+(i*20), ss.str(), color(20, 20, 30));
-				i++;
-			}
-		}
-	}
-	// player name
-	font_jphsl->print(offset.x+20, offset.y+270, pi.name, color(20, 20, 30));
-	//bloodgroup
-	font_jphsl->print(offset.x+70, offset.y+340, pi.bloodgroup, color(20, 20, 30));
-	//gasmask_size
-	font_jphsl->print(offset.x+90, offset.y+364, pi.gasmask_size, color(20, 20, 30));
-	//marineroll
-	font_jphsl->print(offset.x+125, offset.y+389, pi.marine_roll, color(20, 20, 30));
-	//marinegroup
-	ss.str("");
-	ss << pi.flotilla;
-	std::string flotname = texts::get(164);
-	flotname.replace(flotname.find("#"), 1, ss.str());
-	font_jphsl->print(offset.x+95, offset.y+438, flotname, color(20, 20, 30));
-	//identification
-	font_jphsl->print(offset.x+125, offset.y+313, pi.name + "/" + pi.soldbuch_nr, color(20, 20, 30));
+    // career
+    if (pi.career.size() > 1)
+    {
+        ss.str("");
+        ss << "A" << 2 + 1;
+        font_jphsl->print(
+            offset.x + 25, offset.y + 140, *pi.career.begin(),
+            color(20, 20, 30));
+        font_jphsl->print(
+            offset.x + 100, offset.y + 140, texts::get(700 + 1),
+            color(20, 20, 30));
+        font_jphsl->print(
+            offset.x + 270, offset.y + 140, ss.str(), color(20, 20, 30));
+        if (pi.career.size() >= 2)
+        {
+            unsigned i = 1;
+            auto it    = pi.career.begin();
+            for (it++; it != pi.career.end(); ++it)
+            {
+                ss.str("");
+                ss << "A" << (2 + 1 + i);
+                font_jphsl->print(
+                    offset.x + 25, offset.y + 150 + (i * 20), *it,
+                    color(20, 20, 30));
+                font_jphsl->print(
+                    offset.x + 100, offset.y + 150 + (i * 20),
+                    texts::get(700 + 1 + i), color(20, 20, 30));
+                font_jphsl->print(
+                    offset.x + 270, offset.y + 150 + (i * 20), ss.str(),
+                    color(20, 20, 30));
+                i++;
+            }
+        }
+    }
+    // player name
+    font_jphsl->print(
+        offset.x + 20, offset.y + 270, pi.name, color(20, 20, 30));
+    // bloodgroup
+    font_jphsl->print(
+        offset.x + 70, offset.y + 340, pi.bloodgroup, color(20, 20, 30));
+    // gasmask_size
+    font_jphsl->print(
+        offset.x + 90, offset.y + 364, pi.gasmask_size, color(20, 20, 30));
+    // marineroll
+    font_jphsl->print(
+        offset.x + 125, offset.y + 389, pi.marine_roll, color(20, 20, 30));
+    // marinegroup
+    ss.str("");
+    ss << pi.flotilla;
+    std::string flotname = texts::get(164);
+    flotname.replace(flotname.find("#"), 1, ss.str());
+    font_jphsl->print(
+        offset.x + 95, offset.y + 438, flotname, color(20, 20, 30));
+    // identification
+    font_jphsl->print(
+        offset.x + 125, offset.y + 313, pi.name + "/" + pi.soldbuch_nr,
+        color(20, 20, 30));
 
-	SYS().unprepare_2d_drawing();
+    SYS().unprepare_2d_drawing();
 }

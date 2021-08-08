@@ -23,44 +23,47 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef SUB_RECOGMANUAL_DISPLAY_H
 #define SUB_RECOGMANUAL_DISPLAY_H
 
-#include "user_display.h"
 #include "datadirs.h"
+#include "user_display.h"
 #include "widget.h"
 
 class sub_recogmanual_display : public user_display
 {
-protected:
-	class widget_button_next : public widget_button
-	{
-	protected:
-		int direction;
-		int& page;
-	public:
-		widget_button_next(int x, int y, int w, int h, int dir, int& att_page, const std::string& text_,  const std::string& bg_image_, widget* parent_ =nullptr);
-		void draw() const override;
-		void on_release () override;
-	};
+  protected:
+    class widget_button_next : public widget_button
+    {
+      protected:
+        int direction;
+        int& page;
 
-	int page;
-	std::vector<std::unique_ptr<image>> silhouettes;
-	std::vector<std::string> classes;
-	std::vector<std::string> lengths;
-	std::vector<std::string> displacements;
-	std::vector<std::string> weapons;
-	std::vector<std::string> countries;
-	widget_button_next btn_left;
-	widget_button_next btn_right;
+      public:
+        widget_button_next(
+            int x, int y, int w, int h, int dir, int& att_page,
+            const std::string& text_, const std::string& bg_image_,
+            widget* parent_ = nullptr);
+        void draw() const override;
+        void on_release() override;
+    };
 
-public:
-	sub_recogmanual_display(class user_interface& ui_);
+    int page;
+    std::vector<std::unique_ptr<image>> silhouettes;
+    std::vector<std::string> classes;
+    std::vector<std::string> lengths;
+    std::vector<std::string> displacements;
+    std::vector<std::string> weapons;
+    std::vector<std::string> countries;
+    widget_button_next btn_left;
+    widget_button_next btn_right;
 
-	void display() const override;
-	bool handle_mouse_button_event(const mouse_click_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
+  public:
+    sub_recogmanual_display(class user_interface& ui_);
 
-	void enter(bool is_day) override;
-	void leave() override;
+    void display() const override;
+    bool handle_mouse_button_event(const mouse_click_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 
+    void enter(bool is_day) override;
+    void leave() override;
 };
 #endif

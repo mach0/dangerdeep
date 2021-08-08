@@ -24,30 +24,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define CAUSTICS_H
 
 /*
-	This class contains map for underwater caustic
+    This class contains map for underwater caustic
 */
 
-
 #include "texture.h"
+
 #include <cfloat>
 #include <limits>
 
-
 class caustics
 {
-protected:
-	double mytime{-DBL_MAX};
-	std::vector<std::unique_ptr<texture>> texture_pointers;
-	unsigned int current_texture{0};
+  protected:
+    double mytime{-DBL_MAX};
+    std::vector<std::unique_ptr<texture>> texture_pointers;
+    unsigned int current_texture{0};
 
-public:
-	caustics();
+  public:
+    caustics();
 
-	void set_time(double tm);
-	texture *get_map() const;
+    void set_time(double tm);
+    texture* get_map() const;
 };
-
-
-
 
 #endif

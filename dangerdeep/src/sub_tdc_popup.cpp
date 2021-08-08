@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "sub_tdc_popup.h"
 
-
-sub_tdc_popup::sub_tdc_popup(user_interface& ui_)
- :	user_popup(ui_, "sub_tdc")
+sub_tdc_popup::sub_tdc_popup(user_interface& ui_) : user_popup(ui_, "sub_tdc")
 {
 }

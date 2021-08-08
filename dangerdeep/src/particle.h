@@ -22,209 +22,229 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
-#include "vector3.h"
 #include "color.h"
+#include "vector3.h"
+
 #include <vector>
 
 class game;
 class texture;
 
-// particles: smoke, water splashes, fire, explosions, spray caused by ship's bow
-// fire particles can produce smoke particles!
+// particles: smoke, water splashes, fire, explosions, spray caused by ship's
+// bow fire particles can produce smoke particles!
 
 using uint8_t = unsigned char;
 
-///\brief Simulates and displays particles that are rendered as billboard images.
+///\brief Simulates and displays particles that are rendered as billboard
+///images.
 class particle
 {
-protected:
-	vector3 position;
-	vector3 velocity;
-	double life{1.0};	// 0...1, 0 = faded out
-	particle()  = default;
-	particle(const particle& other);
-	particle& operator= (const particle& other);
+  protected:
+    vector3 position;
+    vector3 velocity;
+    double life{1.0}; // 0...1, 0 = faded out
+    particle() = default;
+    particle(const particle& other);
+    particle& operator=(const particle& other);
 
-	// returns wether particle is shown parallel to z-axis (true), or 3d billboarding always (false)
-	virtual bool is_z_up() const { return true; }
+    // returns wether particle is shown parallel to z-axis (true), or 3d
+    // billboarding always (false)
+    virtual bool is_z_up() const { return true; }
 
-	// returns wether image should be drawn above pos or centered around pos
-	virtual bool tex_centered() const { return true; }
+    // returns wether image should be drawn above pos or centered around pos
+    virtual bool tex_centered() const { return true; }
 
-	// helper struct for depth sorting
-	struct particle_dist {
-		const particle* pt;
-		double dist;
-		vector3 projpos;
-		particle_dist(const particle* p, double d, const vector3& pp) : pt(p), dist(d), projpos(pp) {}
-		bool operator< (const particle_dist& other) const { return dist > other.dist; }
-	};
+    // helper struct for depth sorting
+    struct particle_dist
+    {
+        const particle* pt;
+        double dist;
+        vector3 projpos;
+        particle_dist(const particle* p, double d, const vector3& pp) :
+            pt(p), dist(d), projpos(pp)
+        {
+        }
+        bool operator<(const particle_dist& other) const
+        {
+            return dist > other.dist;
+        }
+    };
 
-	// particle textures (generated and stored once)
-	//fixme: why not use texture_cache here?
-	static unsigned init_count;
-	static std::vector<texture*> tex_smoke;
-	static texture* tex_spray;
-	static std::vector<texture*> tex_fire;
-	static std::vector<texture*> explosionbig;
-	static std::vector<texture*> explosionsml;
-	static std::vector<texture*> watersplashes;
-	static texture* tex_fireworks;
-	static texture* tex_fireworks_flare;
-	static texture* tex_marker;
+    // particle textures (generated and stored once)
+    // fixme: why not use texture_cache here?
+    static unsigned init_count;
+    static std::vector<texture*> tex_smoke;
+    static texture* tex_spray;
+    static std::vector<texture*> tex_fire;
+    static std::vector<texture*> explosionbig;
+    static std::vector<texture*> explosionsml;
+    static std::vector<texture*> watersplashes;
+    static texture* tex_fireworks;
+    static texture* tex_fireworks_flare;
+    static texture* tex_marker;
 
-	// wh must be power of two (returns a square). 1 <= 2^low <= 2^high <= wh
-	static std::vector<float> interpolate_func;
-	static std::vector<uint8_t> make_2d_smoothed_noise_map(unsigned wh);
-	static unsigned interpolate_2d_map(const std::vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y, unsigned res2);
+    // wh must be power of two (returns a square). 1 <= 2^low <= 2^high <= wh
+    static std::vector<float> interpolate_func;
+    static std::vector<uint8_t> make_2d_smoothed_noise_map(unsigned wh);
+    static unsigned interpolate_2d_map(
+        const std::vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y,
+        unsigned res2);
 
-	// 1 <= highest_level <= log2(wh)
-	static std::vector<uint8_t> make_2d_perlin_noise(unsigned wh, unsigned highestlevel);
-	static std::vector<uint8_t> compute_fire_frame(unsigned wh, const std::vector<uint8_t>& oldframe);
+    // 1 <= highest_level <= log2(wh)
+    static std::vector<uint8_t>
+    make_2d_perlin_noise(unsigned wh, unsigned highestlevel);
+    static std::vector<uint8_t>
+    compute_fire_frame(unsigned wh, const std::vector<uint8_t>& oldframe);
 
-	virtual vector3 get_acceleration() const { return {}; }
+    virtual vector3 get_acceleration() const { return {}; }
 
-	/// must this type of particle be rendered specially?
-	virtual bool has_custom_rendering() const { return false; }
-	/// renders a particle in custom way giving vectors parallel to screen's xy plane
-	virtual void custom_display(const vector3& viewpos, const vector3& dx, const vector3& dy) const {}
+    /// must this type of particle be rendered specially?
+    virtual bool has_custom_rendering() const { return false; }
+    /// renders a particle in custom way giving vectors parallel to screen's xy
+    /// plane
+    virtual void custom_display(
+        const vector3& viewpos, const vector3& dx, const vector3& dy) const
+    {
+    }
 
-public:
-	particle(const vector3& pos, const vector3& velo = vector3()) : position(pos), velocity(velo) {}
-	virtual ~particle() = default;
+  public:
+    particle(const vector3& pos, const vector3& velo = vector3()) :
+        position(pos), velocity(velo)
+    {
+    }
+    virtual ~particle() = default;
 
-	static void init();
-	static void deinit();
+    static void init();
+    static void deinit();
 
-	virtual const vector3& get_pos() const { return position; }
-	virtual void set_pos(const vector3& pos) { position = pos; }
+    virtual const vector3& get_pos() const { return position; }
+    virtual void set_pos(const vector3& pos) { position = pos; }
 
-	// class game is given so that particles can spawn other particles (fire->smoke)
-	virtual void simulate(game& gm, double delta_t);
+    // class game is given so that particles can spawn other particles
+    // (fire->smoke)
+    virtual void simulate(game& gm, double delta_t);
 
-	static void display_all(const std::vector<const particle*>& pts, const vector3& viewpos, game& gm,
-				const colorf& light_color);
+    static void display_all(
+        const std::vector<const particle*>& pts, const vector3& viewpos,
+        game& gm, const colorf& light_color);
 
-	// return width/height (in meters) of particle (length of quad edge)
-	virtual double get_width() const = 0;
-	virtual double get_height() const = 0;
+    // return width/height (in meters) of particle (length of quad edge)
+    virtual double get_width() const  = 0;
+    virtual double get_height() const = 0;
 
-	virtual void kill() { life = 0.0; }
-	virtual bool is_dead() const { return life <= 0.0; }
+    virtual void kill() { life = 0.0; }
+    virtual bool is_dead() const { return life <= 0.0; }
 
-	// set opengl texture by particle type or e.g. game time etc.
-	virtual const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const = 0;
+    // set opengl texture by particle type or e.g. game time etc.
+    virtual const texture&
+    get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const = 0;
 
-	virtual double get_life_time() const = 0;
+    virtual double get_life_time() const = 0;
 };
-
-
 
 class smoke_particle : public particle
 {
-	bool is_z_up() const override { return false; }
-	unsigned texnr;
-	vector3 get_acceleration() const override;
-public:
-	smoke_particle(const vector3& pos);//set velocity by wind, fixme
-	double get_width() const override;
-	double get_height() const override;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
-	static double get_produce_time();
+    bool is_z_up() const override { return false; }
+    unsigned texnr;
+    vector3 get_acceleration() const override;
+
+  public:
+    smoke_particle(const vector3& pos); // set velocity by wind, fixme
+    double get_width() const override;
+    double get_height() const override;
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
+    static double get_produce_time();
 };
-
-
 
 class smoke_particle_escort : public smoke_particle
 {
-public:
-	smoke_particle_escort(const vector3& pos);//set velocity by wind, fixme
-	double get_width() const override;
-	double get_life_time() const override;
-	static double get_produce_time();
+  public:
+    smoke_particle_escort(const vector3& pos); // set velocity by wind, fixme
+    double get_width() const override;
+    double get_life_time() const override;
+    static double get_produce_time();
 };
-
-
 
 class explosion_particle : public particle
 {
-	unsigned extype;	// which texture
-public:
-	// is_z_up could be false for this kind of particle
-	explosion_particle(const vector3& pos);
-	double get_width() const override;
-	double get_height() const override;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
+    unsigned extype; // which texture
+  public:
+    // is_z_up could be false for this kind of particle
+    explosion_particle(const vector3& pos);
+    double get_width() const override;
+    double get_height() const override;
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
 };
-
-
 
 class fire_particle : public particle
 {
-//	unsigned firetype;	// which texture
-public:
-	// only particle where is_z_up should be true.
-	fire_particle(const vector3& pos);
-	void simulate(game& gm, double delta_t) override;
-	double get_width() const override;
-	double get_height() const override;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
+    //	unsigned firetype;	// which texture
+  public:
+    // only particle where is_z_up should be true.
+    fire_particle(const vector3& pos);
+    void simulate(game& gm, double delta_t) override;
+    double get_width() const override;
+    double get_height() const override;
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
 };
-
-
 
 class spray_particle : public particle
 {
-public:
-	// is_z_up could be false for this kind of particle
-	spray_particle(const vector3& pos, const vector3& velo);
-	double get_width() const override;
-	double get_height() const override;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
+  public:
+    // is_z_up could be false for this kind of particle
+    spray_particle(const vector3& pos, const vector3& velo);
+    double get_width() const override;
+    double get_height() const override;
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
 };
-
-
 
 class fireworks_particle : public particle
 {
-	bool is_z_up() const override { return false; }
+    bool is_z_up() const override { return false; }
 
-	bool has_custom_rendering() const override { return true; }
-	void custom_display(const vector3& viewpos, const vector3& dx, const vector3& dy) const override;
+    bool has_custom_rendering() const override { return true; }
+    void custom_display(
+        const vector3& viewpos, const vector3& dx,
+        const vector3& dy) const override;
 
-	struct flare
-	{
-		vector2 velocity;
-	};
+    struct flare
+    {
+        vector2 velocity;
+    };
 
-	std::vector<flare> flares;
+    std::vector<flare> flares;
 
-	void simulate(game& gm, double delta_t) override;
-	double get_z(double life_fac) const;
+    void simulate(game& gm, double delta_t) override;
+    double get_z(double life_fac) const;
 
-public:
-	fireworks_particle(const vector3& pos);
-	double get_width() const override { return 0; } // not needed
-	double get_height() const override { return 0; } // not needed
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
+  public:
+    fireworks_particle(const vector3& pos);
+    double get_width() const override { return 0; }  // not needed
+    double get_height() const override { return 0; } // not needed
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
 };
-
-
 
 class marker_particle : public particle
 {
-	bool is_z_up() const override { return false; }
-public:
-	marker_particle(const vector3& pos);
-	double get_width() const override;
-	double get_height() const override;
-	const texture& get_tex_and_col(game& gm, const colorf& light_color, colorf& col) const override;
-	double get_life_time() const override;
+    bool is_z_up() const override { return false; }
+
+  public:
+    marker_particle(const vector3& pos);
+    double get_width() const override;
+    double get_height() const override;
+    const texture& get_tex_and_col(
+        game& gm, const colorf& light_color, colorf& col) const override;
+    double get_life_time() const override;
 };
 
 #endif

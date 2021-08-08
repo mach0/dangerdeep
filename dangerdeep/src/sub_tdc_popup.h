@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 class sub_tdc_popup : public user_popup
 {
-public:
-	sub_tdc_popup(class user_interface& ui_);
+  public:
+    sub_tdc_popup(class user_interface& ui_);
 };
 
 #endif /* SUB_TDC_POPUP_H */

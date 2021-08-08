@@ -30,34 +30,35 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /// A display for submarine's periscope
 class sub_periscope_display : public freeview_display
 {
-public:
-	sub_periscope_display(class user_interface& ui_);
+  public:
+    sub_periscope_display(class user_interface& ui_);
 
-	//overload for zoom key handling ('y') and TDC input
-	bool handle_key_event(const key_data& ) override;
-	bool handle_mouse_motion_event(const mouse_motion_data& ) override;
-	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
-	void display() const override;
+    // overload for zoom key handling ('y') and TDC input
+    bool handle_key_event(const key_data&) override;
+    bool handle_mouse_motion_event(const mouse_motion_data&) override;
+    bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
+    void display() const override;
 
-	unsigned get_popup_allow_mask() const override;
+    unsigned get_popup_allow_mask() const override;
 
-protected:
-	void pre_display() const override;
-	projection_data get_projection_data(class game& gm) const override;
-	void set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
-	void post_display() const override;
+  protected:
+    void pre_display() const override;
+    projection_data get_projection_data(class game& gm) const override;
+    void
+    set_modelview_matrix(class game& gm, const vector3& viewpos) const override;
+    void post_display() const override;
 
-	bool zoomed{false};	// use 1,5x (false) or 6x zoom (true)
+    bool zoomed{false}; // use 1,5x (false) or 6x zoom (true)
 
-	bool use_hqsfx{false};
-	texture::ptr viewtex;
-	texture::ptr blurtex;
-	std::unique_ptr<glsl_shader_setup> glsl_blurview;
-	unsigned loc_blur_texc_offset;
-	unsigned loc_tex_view;
-	unsigned loc_tex_blur;
+    bool use_hqsfx{false};
+    texture::ptr viewtex;
+    texture::ptr blurtex;
+    std::unique_ptr<glsl_shader_setup> glsl_blurview;
+    unsigned loc_blur_texc_offset;
+    unsigned loc_tex_view;
+    unsigned loc_tex_blur;
 
-	vector3 get_viewpos(class game& gm) const override;
+    vector3 get_viewpos(class game& gm) const override;
 };
 
 #endif

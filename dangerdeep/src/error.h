@@ -23,42 +23,49 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef ERROR_H
 #define ERROR_H
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 ///\brief Base exception class for any runtime error.
 class error : public std::runtime_error
 {
- public:
-	static std::string throw_location(const char* file, unsigned line);
-	error(const std::string& location, const std::string& message);
+  public:
+    static std::string throw_location(const char* file, unsigned line);
+    error(const std::string& location, const std::string& message);
 };
 
 /// error with a file context
 class file_context_error : public error
 {
-public:
-	file_context_error(const std::string& location, const std::string& message, const std::string& filename);
+  public:
+    file_context_error(
+        const std::string& location, const std::string& message,
+        const std::string& filename);
 };
 
 /// error reading a file
 class file_read_error : public error
 {
- public:
-	file_read_error(const std::string& location, const std::string& filename);
+  public:
+    file_read_error(const std::string& location, const std::string& filename);
 };
 
 // only for backwards compatibility of old code!
 class sdl_error : public error
 {
- public:
- 	sdl_error(const std::string& location, const std::string& filename) : error(location, filename) {}
+  public:
+    sdl_error(const std::string& location, const std::string& filename) :
+        error(location, filename)
+    {
+    }
 };
 
 // Throw with description where exactly the error was thrown
 #ifdef THROW
 #undef THROW
 #endif
-#define THROW(exceptionclass, ...) throw exceptionclass ( error::throw_location(__FILE__, __LINE__), ##__VA_ARGS__)
+#define THROW(exceptionclass, ...) \
+    throw exceptionclass(          \
+        error::throw_location(__FILE__, __LINE__), ##__VA_ARGS__)
 
 #endif

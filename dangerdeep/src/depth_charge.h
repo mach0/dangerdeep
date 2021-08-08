@@ -26,30 +26,33 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "sea_object.h"
 
 // fixme: these values depend on depth charge type.
-#define DEPTH_CHARGE_SINK_SPEED 4	// m/sec
-#define DEADLY_DC_RADIUS_SURFACE 120	// meters
-#define DEADLY_DC_RADIUS_200M 80
-#define DAMAGE_DC_RADIUS_SURFACE 480	// meters, fixme realistic values?
-#define DAMAGE_DC_RADIUS_200M 320
+#define DEPTH_CHARGE_SINK_SPEED  4   // m/sec
+#define DEADLY_DC_RADIUS_SURFACE 120 // meters
+#define DEADLY_DC_RADIUS_200M    80
+#define DAMAGE_DC_RADIUS_SURFACE 480 // meters, fixme realistic values?
+#define DAMAGE_DC_RADIUS_200M    320
 
 ///\brief Represents a depth charge with simulation of it.
-/** At the moment there are no specialisations for various types of depth charges */
+/** At the moment there are no specialisations for various types of depth
+ * charges */
 class depth_charge : public sea_object
 {
-protected:
-	double explosion_depth;
+  protected:
+    double explosion_depth;
 
-public:
-	/// Needed to store in map, don't use
-	depth_charge() = default;
-	depth_charge(game& gm_);	// for loading
-	depth_charge(game& gm_, double expl_depth, const vector3& pos);	// for creation
+  public:
+    /// Needed to store in map, don't use
+    depth_charge() = default;
+    depth_charge(game& gm_); // for loading
+    depth_charge(
+        game& gm_, double expl_depth, const vector3& pos); // for creation
 
-	void load(const xml_elem& parent) override;
-	void save(xml_elem& parent) const override;
+    void load(const xml_elem& parent) override;
+    void save(xml_elem& parent) const override;
 
-	void simulate(double delta_time, game& gm) override;
-	void compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
+    void simulate(double delta_time, game& gm) override;
+    void
+    compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 };
 
 #endif

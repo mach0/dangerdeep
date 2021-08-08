@@ -20,8 +20,8 @@
 // The aim is to get on the screen something which is perceptualy accurate,
 // ie. to compress high dynamic range luminance to CRT display range.
 // The class perform mainly a fast implementation of the algorithm from the
-// paper [1], with more accurate values from [2]. The blue shift formula is taken
-// from [3] and combined with the Scotopic vision formula from [4].
+// paper [1], with more accurate values from [2]. The blue shift formula is
+// taken from [3] and combined with the Scotopic vision formula from [4].
 
 // Important : you may call set_display_adaptation_luminance()
 // and set_world_adaptation_luminance() before any call to xyY_to_RGB()
@@ -44,7 +44,6 @@
 // [4] "A Visibility Matching Tone Reproduction Operator for High Dynamic
 // Range Scenes", G.W. Larson, H. Rushmeier, C. Piatko
 
-
 #ifndef _TONE_REPRODUCTOR_H_
 #define _TONE_REPRODUCTOR_H_
 
@@ -52,52 +51,53 @@
 
 class tone_reproductor
 {
-public:
+  public:
     tone_reproductor();
     virtual ~tone_reproductor();
 
-	// Set the eye adaptation luminance for the display (and precompute what can be)
-	// Usual luminance range is 1-100 cd/m^2 for a CRT screen
-	// default value = 50 cd/m^2
-	void set_display_adaptation_luminance(float display_adaptation_luminance);
+    // Set the eye adaptation luminance for the display (and precompute what can
+    // be) Usual luminance range is 1-100 cd/m^2 for a CRT screen default value
+    // = 50 cd/m^2
+    void set_display_adaptation_luminance(float display_adaptation_luminance);
 
-	// Set the eye adaptation luminance for the world (and precompute what can be)
-	// default value = 40000 cd/m^2 for skylight
-	// Star Light      : 0.001  cd/m^2
-	// Moon Light      : 0.1    cd/m^2
-	// Indoor Lighting : 100    cd/m^2
-	// Sun Light       : 100000 cd/m^2
-	void set_world_adaptation_luminance(float world_adaptation_luminance);
+    // Set the eye adaptation luminance for the world (and precompute what can
+    // be) default value = 40000 cd/m^2 for skylight Star Light      : 0.001
+    // cd/m^2 Moon Light      : 0.1    cd/m^2 Indoor Lighting : 100    cd/m^2
+    // Sun Light       : 100000 cd/m^2
+    void set_world_adaptation_luminance(float world_adaptation_luminance);
 
-	// Set the maximum display luminance : default value = 100 cd/m^2
-	// This value is used to scale the RGB range
-	void set_max_display_luminance(float _MaxdL) {MaxdL = MaxdL;}
+    // Set the maximum display luminance : default value = 100 cd/m^2
+    // This value is used to scale the RGB range
+    void set_max_display_luminance(float _MaxdL) { MaxdL = MaxdL; }
 
-	// Set the display gamma : default value = 2.3
-	void set_display_gamma(float _gamma) {gamma = _gamma;}
+    // Set the display gamma : default value = 2.3
+    void set_display_gamma(float _gamma) { gamma = _gamma; }
 
-	// Return adapted luminance from world to display
-	float adapt_luminance(float world_luminance) const
-	{
-		return powf((float)(world_luminance*constant::PI*0.0001f),alpha_wa_over_alpha_da) * term2;
-	}
+    // Return adapted luminance from world to display
+    float adapt_luminance(float world_luminance) const
+    {
+        return powf(
+                   (float) (world_luminance * constant::PI * 0.0001f),
+                   alpha_wa_over_alpha_da)
+               * term2;
+    }
 
-	// Convert from xyY color system to RGB
-	void xyY_to_RGB(float*);
+    // Convert from xyY color system to RGB
+    void xyY_to_RGB(float*);
 
-private:
-	float Lda{50.f};		// Display luminance adaptation (in cd/m^2)
-	float Lwa{40000.f};		// World   luminance adaptation (in cd/m^2)
-	float MaxdL{100.f};	// Display maximum luminance (in cd/m^2)
-	float gamma{2.3f};	// Screen gamma value
+  private:
+    float Lda{50.f};    // Display luminance adaptation (in cd/m^2)
+    float Lwa{40000.f}; // World   luminance adaptation (in cd/m^2)
+    float MaxdL{100.f}; // Display maximum luminance (in cd/m^2)
+    float gamma{2.3f};  // Screen gamma value
 
-	// Precomputed variables
-	float alpha_da;
-	float beta_da;
-	float alpha_wa;
-	float beta_wa;
-	float alpha_wa_over_alpha_da;
-	float term2;
+    // Precomputed variables
+    float alpha_da;
+    float beta_da;
+    float alpha_wa;
+    float beta_wa;
+    float alpha_wa_over_alpha_da;
+    float term2;
 };
 
 #endif // _TONE_REPRODUCTOR_H_
