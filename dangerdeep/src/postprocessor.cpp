@@ -148,7 +148,7 @@ void postprocessor::render_quad()
 void postprocessor::do_2d()
 {
     //	using SYS().prepare_2d_drawing() causes headaches (flipping/sizes), so
-    //we'll just stick with this for now.
+    // we'll just stick with this for now.
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
