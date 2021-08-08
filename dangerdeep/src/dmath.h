@@ -23,17 +23,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef DMATH_H
 #define DMATH_H
 
-#include <iostream>
-#include <cmath>
 #include <cfloat>
+#include <cmath>
+#include <iostream>
 
 #if (defined(__APPLE__) && defined(__GNUC__)) || defined(__MACOSX__)
 #include <complex.h>
 #ifndef isfinite
 #define isfinite(x) finite(x)
 #endif
-#elif defined(WIN32)
-#include <float.h>
+#elif defined(WIN32)include <float.h>
 #ifndef isfinite
 #define isfinite(x) _finite(x)
 #endif
