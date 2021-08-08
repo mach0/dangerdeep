@@ -93,6 +93,9 @@ set (USE_CLANG_TIDY_CUSTOM_CHECKS "" CACHE STRING
 set (USE_CPPCHECK OFF CACHE BOOL "Use CPPcheck static analysis tool")
 set (USE_CPPCHECK_HTML_REPORT OFF CACHE BOOL "Output cppcheck to HTML file")
 
+set (USE_CLANG_FORMAT OFF CACHE BOOL "Use clang-format for code formatting.")
+#set (USE_CLANG_FORMAT_FIXIT OFF CACHE BOOL "Apply clang-format fixes.")
+
 
 if (USE_CLANG_TIDY)
     find_program (CLANG_TIDY
@@ -232,8 +235,9 @@ if (USE_CLANG_TIDY)
         set (CMAKE_CXX_CLANG_TIDY "")
         list (APPEND CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")        
         list (APPEND CMAKE_CXX_CLANG_TIDY "-checks=${CLANG_TIDY_CHECKS}")
-        list (APPEND CMAKE_CXX_CLANG_TIDY "-header-filter=.")
+        list (APPEND CMAKE_CXX_CLANG_TIDY "-header-filter=.*")
         list (APPEND CMAKE_CXX_CLANG_TIDY "-extra-arg=-std=c++17")
+        list (APPEND CMAKE_CXX_CLANG_TIDY "--format-style=file")
 
         if (USE_CLANG_TIDY_FIXIT)
             list (APPEND CMAKE_CXX_CLANG_TIDY "-fix")
@@ -283,6 +287,32 @@ if (USE_CPPCHECK)
         message (WARNING "CPPcheck NOT found.") 
     endif ()
 
+endif ()
+
+
+# Report formatting issues and optionally fix them
+if (USE_CLANG_FORMAT)
+    find_program (CLANG_FORMAT
+                  NAMES clang-format clang-format-11
+                        clang-format-10 clang-format-9
+                  PATHS /usr
+                        /usr/local
+                        /opt
+                  PATH_SUFFIXES bin
+                  DOC "Location of clang-format, versions 9,10,11."
+                  )
+    
+    if (CLANG_FORMAT-NOTFOUND)
+        message (WARNING "Clang-format NOT found.")
+    else ()
+        add_custom_target (clang_format
+            COMMAND ${CLANG_FORMAT} --style=file  
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Formatting source files according to dftd convention.")   
+
+        add_custom_target (clang_format_src ALL)
+        add_dependencies (clang_format_src clang_format)              
+    endif ()
 endif ()
 
 
@@ -749,9 +779,9 @@ file (COPY "${PROJECT_SOURCE_DIR}/LICENSE" DESTINATION "${CMAKE_BINARY_DIR}")
 file (RENAME "${CMAKE_BINARY_DIR}/LICENSE" "${CMAKE_BINARY_DIR}/License.txt")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_BINARY_DIR}/License.txt")
 
-file (COPY "${PROJECT_SOURCE_DIR}/README" DESTINATION "${CMAKE_BINARY_DIR}")
-file (RENAME "${CMAKE_BINARY_DIR}/README" "${CMAKE_BINARY_DIR}/Readme.txt")
-set (CPACK_RESOURCE_FILE_README "${CMAKE_BINARY_DIR}/Readme.txt")
+#file (COPY "${PROJECT_SOURCE_DIR}/README" DESTINATION "${CMAKE_BINARY_DIR}")
+#file (RENAME "${CMAKE_BINARY_DIR}/README" "${CMAKE_BINARY_DIR}/Readme.txt")
+#set (CPACK_RESOURCE_FILE_README "${CMAKE_BINARY_DIR}/Readme.txt")
 
 # common package options
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
