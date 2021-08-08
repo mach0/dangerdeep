@@ -70,7 +70,7 @@ set (DFTD_STOP_ON_WARNING OFF CACHE BOOL
 set (DFTD_COLOR_MAKEFILE ON CACHE BOOL
      "Enable colored compiler warnings, GCC, Clang only")
 
-set (DFTD_ENABLE_DOXYGEN OFF CACHE BOOL "Build doxygen documentation")
+set (DFTD_BUILD_DOCS OFF CACHE BOOL "Build developer documentation")
 
 set (USE_FLOAT_FFTW3 ON CACHE BOOL 
      "Use single or double precision FFTW3, pending availability")
@@ -580,14 +580,98 @@ add_definitions ("-DDFTD_DATADIR=\"${DFTD_DATADIR}\"" "-DDATADIR=\"${DFTD_DATADI
 
 
 # Documentation
-if (DFTD_ENABLE_DOXYGEN)
-    set (DOXYGEN_CALLER_GRAPH TRUE)
-    set (DOXYGEN_CALL_GRAPH TRUE)
-    set (DOXYGEN_EXTRACT_ALL TRUE)
-    set (DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+if (DFTD_BUILD_DOCS)
+
+    # Developer documentation comprised of doxygen and TeX docs.
 
     find_package (Doxygen REQUIRED dot)
-    doxygen_add_docs (doxygen-docs ${PROJECT_SOURCE_DIR})
+
+    if (DOXYGEN_FOUND AND DOXYGEN_VERSION GREATER 1.7)
+        set (DOXYGEN_BUILTIN_STL_SUPPORT TRUE)
+        set (DOXYGEN_QUIET TRUE)
+        set (DOXYGEN_WARN_IF_UNDOCUMENTED TRUE)
+        set (DOXYGEN_RECURSIVE TRUE)
+        set (DOXYGEN_SOURCE_BROWSER TRUE)
+        set (DOXYGEN_REFERENCES_RELATION TRUE)
+        set (DOXYGEN_ALPHABETICAL_INDEX TRUE)
+        set (DOXYGEN_GENERATE_TREEVIEW TRUE)
+        set (DOXYGEN_CLASS_GRAPH TRUE)
+        set (DOXYGEN_CALLER_GRAPH TRUE)
+        set (DOXYGEN_CALL_GRAPH TRUE)
+        set (DOXYGEN_EXTRACT_ALL TRUE)
+        set (DOXYGEN_EXTRACT_PRIVATE TRUE)
+        set (DOXYGEN_EXTRACT_STATIC TRUE)
+        set (DOXYGEN_SUBGROUPINT TRUE)
+        set (DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/doc/doxygen)
+        set (DOXYGEN_SOURCE_BROWSER TRUE)
+        set (DOXYGEN_DOT_GRAPH_MAX_NODES 150)
+        set (DOXYGEN_DOT_INTERACTIVE_SVG FALSAE)
+
+        find_package (Clang)
+        if (CLANG_FOUND AND CMAKE_EXPORT_COMPILE_COMMANDS)
+            set (DOXYGEN_CLANG_ASSISTED_PARSING TRUE)
+            set (DOXYGEN_CLANG_DATABASE_PATH ${CMAKE_BINARY_DIR})
+        else ()
+            set (WARNING "Doxygen couldn't use Clang assisted parsing or compilation database was disabled.")
+        endif ()
+
+        doxygen_add_docs (doxygendocs
+            ${CMAKE_SOURCE_DIR}/src
+            ALL
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src
+            COMMENT "Building doxygen documentation")
+    else ()
+        message (WARNING "Doxygen NOT found, skipping doxygen docs.")
+    endif ()
+
+    # Finally build the PDF from tex files
+    find_package (LATEX COMPONENTS PDFLATEX)
+
+    if (LATEX_FOUND AND PDFLATEX_COMPILER)
+
+        set (LATEX_OUTPUT_PATH ${CMAKE_BINARY_DIR}/doc)
+
+        add_custom_target (texdocs_prebuild
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/doc
+            COMMAND ${PDFLATEX_COMPILER} -output-directory
+                ${LATEX_OUTPUT_PATH} -draft-mode -interaction=nonstopmode
+                --no-file-line-error
+                ${CMAKE_SOURCE_DIR}/doc/tex/codeguide.tex
+            COMMAND ${PDFLATEX_COMPILER} -output-directory
+                ${LATEX_OUTPUT_PATH} -draft-mode -interaction=nonstopmode
+                --no-file-line-error
+                ${CMAKE_SOURCE_DIR}/doc/tex/sonar.tex
+            COMMAND ${PDFLATEX_COMPILER} -output-directory
+                ${LATEX_OUTPUT_PATH} -draft-mode -interaction=nonstopmode
+                --no-file-line-error
+                ${CMAKE_SOURCE_DIR}/doc/tex/translation.tex    
+            DEPENDS ${CMAKE_SOURCE_DIR}/doc/tex/codeguide.tex
+                    ${CMAKE_SOURCE_DIR}/doc/tex/sonar.tex
+                    ${CMAKE_SOURCE_DIR}/doc/tex/translation.tex
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/tex
+            COMMENT "Prebuilding tex to PDF documents.")
+
+        add_custom_target (texdocs_build
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/doc
+            COMMAND ${PDFLATEX_COMPILER} -output-directory ${LATEX_OUTPUT_PATH}
+                ${CMAKE_SOURCE_DIR}/doc/tex/codeguide.tex
+            COMMAND ${PDFLATEX_COMPILER} -output-directory ${LATEX_OUTPUT_PATH}
+                ${CMAKE_SOURCE_DIR}/doc/tex/sonar.tex
+            COMMAND ${PDFLATEX_COMPILER} -output-directory ${LATEX_OUTPUT_PATH}
+                ${CMAKE_SOURCE_DIR}/doc/tex/translation.tex    
+            DEPENDS ${CMAKE_SOURCE_DIR}/doc/tex/codeguide.tex
+                    ${CMAKE_SOURCE_DIR}/doc/tex/sonar.tex
+                    ${CMAKE_SOURCE_DIR}/doc/tex/translation.tex  
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/doc/tex
+            COMMENT "Building tex to PDF documents.")   
+
+        add_custom_target (texdocs ALL)
+        add_dependencies (texdocs texdocs_build)    
+
+    else ()
+        message (WARNING "Latex and/or pdflatex compiler NOT found. Skipping.")
+    endif ()
+
 endif ()
 
 
@@ -609,7 +693,7 @@ endif ()
 add_subdirectory (src)
 
 #if ( DFTD_BUILD_TOOLS )
-#    add_subdirectory ( src/tools )
+#    add_subdirectory (src/tools)
 #endif ()
 
 
@@ -618,8 +702,7 @@ add_subdirectory (src)
 # 1) cppcheck if enabled, has the option to produce a XML file for
 #    cppcheck-html to generate a HTML report
 #
-if (USE_CPPCHECK AND CMAKE_CXX_CPPCHECK AND USE_CPPCHECK_HTML_REPORT
-    AND EXISTS "${CMAKE_BINARY_DIR}/cppcheck_report.xml")
+if (USE_CPPCHECK AND CMAKE_CXX_CPPCHECK AND USE_CPPCHECK_HTML_REPORT)
 
     find_program (CPPCHECK_HTMLREPORT_BIN cppcheck-htmlreport
                   HINTS /usr
@@ -628,26 +711,28 @@ if (USE_CPPCHECK AND CMAKE_CXX_CPPCHECK AND USE_CPPCHECK_HTML_REPORT
                   PATH_SUFFIXES bin)
 
     if (CPPCHECK_HTMLREPORT_BIN)
+
         add_custom_command (OUTPUT cppcheck_report.html
             POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/html
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/cppc
             COMMAND cppcheck-htmlreport 
                 --title=${PROJECT_NAME}
                 --file=${CMAKE_BINARY_DIR}/cppcheck_report.xml
                 --source-dir=${CMAKE_SOURCE_DIR}
-                --report-dir=${CMAKE_BINARY_DIR}/html
+                --report-dir=${CMAKE_BINARY_DIR}/cppc
             DEPENDS build
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMENT "Custom post-built for cppcheck HTML report")
+
+        add_custom_target (cppcheck_html_report ALL
+            DEPENDS ${CMAKE_BINARY_DIR}/cppcheck_report.xml
+            cppcheck_report.html)
+
+        add_dependencies (cppcheck_html_report dangerdeep)
+
     else ()
         message (WARNING "cppcheck-htmlreport NOT found.")
     endif ()
-
-    add_custom_target (cppcheck_html_report ALL
-                       DEPENDS ${CMAKE_BINARY_DIR}/cppcheck_report.xml
-                       cppcheck_report.html)
-
-    add_dependencies (cppcheck_html_report dangerdeep)
 
 endif ()
 
