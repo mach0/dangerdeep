@@ -38,35 +38,42 @@ cfg::~cfg() = default;
 bool cfg::set_str(const string& name, const string& value)
 {
     auto it = valb.find(name);
+
     if (it != valb.end())
     {
         if (value == "true" || value == "yes")
-            it->second = true;
-        else if (value == "false" || value == "no")
-            it->second = false;
-        else
-            it->second = bool(atoi(value.c_str()));
-    }
-    else
-    {
-        auto it = vali.find(name);
-        if (it != vali.end())
         {
-            it->second = atoi(value.c_str());
+            it->second = true;
+        }
+        else if (value == "false" || value == "no")
+        {
+            it->second = false;
         }
         else
         {
-            auto it = valf.find(name);
-            if (it != valf.end())
+            it->second = bool(atoi(value.c_str()));
+        }
+    }
+    else
+    {
+        auto ia = vali.find(name);
+        if (ia != vali.end())
+        {
+            ia->second = atoi(value.c_str());
+        }
+        else
+        {
+            auto ib = valf.find(name);
+            if (ib != valf.end())
             {
-                it->second = atof(value.c_str());
+                ib->second = atof(value.c_str());
             }
             else
             {
-                auto it = vals.find(name);
-                if (it != vals.end())
+                auto ic = vals.find(name);
+                if (ic != vals.end())
                 {
-                    it->second = value;
+                    ic->second = value;
                 }
                 else
                 {
@@ -82,7 +89,9 @@ void cfg::load(const string& filename)
 {
     xml_doc doc(filename);
     doc.load();
+
     xml_elem root = doc.child("dftd-cfg");
+
     for (auto elem : root)
     {
         if (elem.get_name() == "keys")
@@ -90,8 +99,10 @@ void cfg::load(const string& filename)
             for (auto keyelem : elem.iterate("key"))
             {
                 std::string keyname = keyelem.attr("action");
+
                 // get key number for this action from table
                 auto nr = key_command::number;
+
                 for (unsigned i = 0; i < unsigned(key_command::number); ++i)
                 {
                     if (std::string(key_names[i].name) == keyname)
@@ -99,6 +110,7 @@ void cfg::load(const string& filename)
                         nr = key_command(i);
                     }
                 }
+
                 if (nr == key_command::number)
                 {
                     log_warning(
@@ -106,24 +118,31 @@ void cfg::load(const string& filename)
                                                        << " in config file");
                     continue;
                 }
+
                 auto keycode = key_code(keyelem.attri("keycode"));
                 bool ctrl    = keyelem.attrb("ctrl");
                 bool alt     = keyelem.attrb("alt");
                 bool shift   = keyelem.attrb("shift");
+
                 // fixme build modifier here
                 key_mod mod{key_mod::none};
+
                 if (ctrl)
                     mod = mod | key_mod::ctrl;
+
                 if (alt)
                     mod = mod | key_mod::alt;
+
                 if (shift)
                     mod = mod | key_mod::shift;
+
                 set_key(nr, keycode, mod);
             }
         }
         else
         {
             bool found = set_str(elem.get_name(), elem.attr());
+
             if (!found)
                 log_warning(
                     "config option not registered: " << elem.get_name());
@@ -135,31 +154,41 @@ void cfg::save(const string& filename) const
 {
     xml_doc doc(filename);
     xml_elem root = doc.add_child("dftd-cfg");
+
     for (const auto& it : valb)
     {
         root.add_child(it.first).set_attr(it.second);
     }
+
     for (const auto& it : vali)
     {
         root.add_child(it.first).set_attr(it.second);
     }
+
     for (const auto& it : valf)
     {
         root.add_child(it.first).set_attr(it.second);
     }
+
     for (const auto& val : vals)
     {
         root.add_child(val.first).set_attr(val.second);
     }
+
     xml_elem keys = root.add_child("keys");
+
     for (const auto& it : valk)
     {
         xml_elem key = keys.add_child("key");
+
         key.set_attr(it.second.action, "action");
         key.set_attr(int(it.second.keycode), "keycode");
+
         key.set_attr(
             (it.second.keymod & key_mod::ctrl) != key_mod::none, "ctrl");
+
         key.set_attr((it.second.keymod & key_mod::alt) != key_mod::none, "alt");
+
         key.set_attr(
             (it.second.keymod & key_mod::shift) != key_mod::none, "shift");
     }
@@ -189,6 +218,7 @@ void cfg::register_option(const string& name, const string& value)
 void cfg::register_key(const std::string& name, key_code kc, key_mod km)
 {
     auto nr = key_command::number;
+
     for (unsigned i = 0; i < unsigned(key_command::number); ++i)
     {
         if (std::string(key_names[i].name) == name)
@@ -196,6 +226,7 @@ void cfg::register_key(const std::string& name, key_code kc, key_mod km)
             nr = key_command(i);
         }
     }
+
     if (nr == key_command::number)
         THROW(error, std::string("register_key with invalid name ") + name);
     valk[nr] = key(name, kc, km);
@@ -300,10 +331,13 @@ cfg::key cfg::getkey(key_command nr) const
 void cfg::parse_value(const string& s)
 {
     // fixme: ignore values for unregistered names?
+
     if (s.length() < 3 || s[0] != '-' || s[1] != '-')
         return; // ignore it
+
     string::size_type st = s.find("=");
     string s0, s1;
+
     if (st == string::npos)
     {
         if (s.substr(2, 2) == "no")

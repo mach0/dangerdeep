@@ -35,8 +35,10 @@ class object_store
       public:
         handle() : mystore(nullptr), storage(nullptr) { }
         ~handle() { unref(); }
+
         C& get() { return *storage; }
         const C& get() const { return *storage; }
+
         bool is_valid() const { return mystore != nullptr; }
 
       protected:
@@ -46,6 +48,7 @@ class object_store
             key     = std::move(key_);
             storage = &store.ref(key);
         }
+
         void unref()
         {
             if (mystore)
@@ -55,6 +58,7 @@ class object_store
                 storage = nullptr;
             }
         }
+
         object_store* mystore;
         Key key;
         C* storage;
@@ -79,11 +83,13 @@ class object_store
                       .insert(std::make_pair(
                           name, std::make_pair(0, std::unique_ptr<C>())))
                       .first;
+
         if (it->second.first == 0)
         {
             it->second.second = maker(name);
         }
         ++it->second.first;
+
         return *it->second.second;
     }
 
@@ -95,10 +101,12 @@ class object_store
         {
             THROW(error, "tried to unref unknown object");
         }
+
         if (it->second.first == 0)
         {
             THROW(error, "unref with already empty object");
         }
+
         --it->second.first;
         if (it->second.first == 0)
         {

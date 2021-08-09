@@ -188,20 +188,26 @@ class object_handle
   public:
     object_handle() = default;
     ~object_handle() { unref(); }
+
     C& get() { return *storage; }
     const C& get() const { return *storage; }
+
     bool is_valid() const { return mystore != nullptr; }
     C* operator->() { return storage; }
+
     const C* operator->() const { return storage; }
+
     object_handle(objcachet<C>& store, Key key_) :
         mystore(&store), key(std::move(key_)), storage(store.ref(key))
     {
     }
+
     object_handle(object_handle&& o) :
         mystore(o.mystore), key(std::move(o.key)), storage(o.storage)
     {
         o.storage = nullptr;
     }
+
     object_handle& operator=(object_handle&& o)
     {
         if (&o != this)
@@ -217,6 +223,7 @@ class object_handle
   protected:
     object_handle(const object_handle&) = delete;
     object_handle& operator=(const object_handle&) = delete;
+
     void unref()
     {
         if (mystore != nullptr && storage != nullptr)
@@ -226,6 +233,7 @@ class object_handle
             storage = nullptr;
         }
     }
+
     objcachet<C>* mystore{nullptr};
     Key key;
     C* storage{nullptr};

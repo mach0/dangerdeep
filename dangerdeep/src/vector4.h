@@ -39,17 +39,20 @@ class vector4t
         x(a.x), y(a.y), z(b.x), w(b.y)
     {
     }
+
     template<typename E>
     explicit vector4t(const vector4t<E>& other) :
         x(D(other.x)), y(D(other.y)), z(D(other.z)), w(D(other.w))
     {
     }
+
     // not all of the following operations are sensible for homogenous vectors.
     vector4t<D> normal() const
     {
         D len = D(1.0) / length();
         return vector4t(x * len, y * len, z * len, w * len);
     }
+
     void normalize()
     {
         D len = D(1.0) / length();
@@ -58,23 +61,29 @@ class vector4t
         z *= len;
         w *= len;
     }
+
     vector4t<D> operator*(D scalar) const
     {
         return vector4t(x * scalar, y * scalar, z * scalar, w * scalar);
     }
+
     vector4t<D> operator/(D scalar) const
     {
         return vector4t(x / scalar, y / scalar, z / scalar, w / scalar);
     }
+
     vector4t<D> operator+(const vector4t<D>& other) const
     {
         return vector4t(x + other.x, y + other.y, z + other.z, w + other.w);
     }
+
     vector4t<D> operator-(const vector4t<D>& other) const
     {
         return vector4t(x - other.x, y - other.y, z - other.z, w - other.w);
     }
+
     vector4t<D> operator-() const { return vector4t(-x, -y, -z, -w); };
+
     vector4t<D>& operator+=(const vector4t<D>& other)
     {
         x += other.x;
@@ -83,6 +92,7 @@ class vector4t
         w += other.w;
         return *this;
     }
+
     vector4t<D>& operator-=(const vector4t<D>& other)
     {
         x -= other.x;
@@ -91,6 +101,7 @@ class vector4t
         w -= other.w;
         return *this;
     }
+
     vector4t<D>& operator*=(D s)
     {
         x *= s;
@@ -99,38 +110,48 @@ class vector4t
         w *= s;
         return *this;
     }
+
     bool operator==(const vector4t<D>& other) const
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
+
     bool operator!=(const vector4t<D>& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
+
     D square_length() const { return x * x + y * y + z * z + w * w; }
     D length() const { return D(::sqrt(square_length())); }
+
     D square_distance(const vector4t<D>& other) const
     {
         vector4t<D> n = *this - other;
         return n.square_length();
     }
+
     D distance(const vector4t<D>& other) const
     {
         vector4t<D> n = *this - other;
         return n.length();
     }
+
     D operator*(const vector4t<D>& other) const
     {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
+
     vector2t<D> xy() const { return vector2t<D>(x, y); }
     vector3t<D> xyz() const { return vector3t<D>(x, y, z); }
+
     vector3t<D> to_real() const
     {
         return (w == 0) ? vector3t<D>() : vector3t<D>(x / w, y / w, z / w);
     }
+
     template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector4t<D2>& v);
+
     template<typename E>
     void assign(const vector4t<E>& other)
     {

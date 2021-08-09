@@ -31,41 +31,48 @@ struct vector_coord
     static D& get(vector3t<D>& v) { return v.x; }
     static const D& get(const vector3t<D>& v) { return v.x; }
 };
+
 template<typename D>
 struct vector_coord<D, axis::y>
 {
     static D& get(vector3t<D>& v) { return v.y; }
     static const D& get(const vector3t<D>& v) { return v.y; }
 };
+
 template<typename D>
 struct vector_coord<D, axis::z>
 {
     static D& get(vector3t<D>& v) { return v.z; }
     static const D& get(const vector3t<D>& v) { return v.z; }
 };
+
 template<typename D>
 struct vector_coord<D, axis::neg_x>
 {
     static D& get(vector3t<D>& v) { return -v.x; }
     static const D& get(const vector3t<D>& v) { return -v.x; }
 };
+
 template<typename D>
 struct vector_coord<D, axis::neg_y>
 {
     static D& get(vector3t<D>& v) { return -v.y; }
     static const D& get(const vector3t<D>& v) { return -v.y; }
 };
+
 template<typename D>
 struct vector_coord<D, axis::neg_z>
 {
     static D& get(vector3t<D>& v) { return -v.z; }
     static const D& get(const vector3t<D>& v) { return -v.z; }
 };
+
 template<typename D, axis a>
 inline D plane_distance(const vector3t<D>& v, D c)
 {
     return vector_coord<D, a>::get(v) - c;
 }
+
 template<typename D, axis a>
 inline vector3t<D>
 plane_intersection(const vector3t<D>& p, const vector3t<D>& q, D c)
@@ -89,25 +96,31 @@ class plane_t
         N(N_), d(-N_ * pivot)
     {
     }
+
     plane_t(const D& a, const D& b, const D& c, const D& d_) : N(a, b, c), d(d_)
     {
     }
+
     /// construct from three points.
     plane_t(const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>& c) :
         N((b - a).cross(c - a).normal())
     {
         d = -(N * a);
     }
+
     /// determine if point is left of plane (on side that normal points to).
     bool is_left(const vector3t<D>& a) const { return (N * a >= -d); }
+
     /// determine if point is left of/right of/in plane (>0,<0,==0)
     int test_side(const vector3t<D>& a) const
     {
         D r = N * a + d;
         return (r > epsilon<D>()) ? 1 : ((r < -epsilon<D>()) ? -1 : 0);
     }
+
     /// determine distance of point to plane
     D distance(const vector3t<D>& a) const { return N * a + d; }
+
     /// compute intersection point of line a->b, assumes that a->b intersects
     /// the plane
     vector3t<D> intersection(const vector3t<D>& a, const vector3t<D>& b) const
@@ -117,6 +130,7 @@ class plane_t
         D t = -(d + N * a) / divi;
         return a + (b - a) * t;
     }
+
     /// compute intersection point of line a->b, returns true if intersection is
     /// valid
     bool test_intersection(
@@ -131,6 +145,7 @@ class plane_t
         result = intersection(a, b);
         return true;
     }
+
     /// compute intersection point of line a->b, returns true if intersection is
     /// valid
     bool test_intersection_no_touch(
@@ -145,10 +160,13 @@ class plane_t
         result = intersection(a, b);
         return true;
     }
+
     /// translate
     void translate(const vector3t<D>& delta) { d -= delta * N; }
+
     /// compute pivot point
     vector3t<D> get_pivot() const { return N * -d; }
+
     /// compute intersection point with two other planes
     bool compute_intersection(
         const plane_t<D>& plane_b,
@@ -167,14 +185,19 @@ class plane_t
         D x = plane_b.N.cross(plane_c.N) * N;
         if (x < 0)
             x = -x;
+
         if (x <= epsilon<D>())
             return false;
+
         intersection.x =
             -(N.x * d + plane_b.N.x * plane_b.d + plane_c.N.x * plane_c.d);
+
         intersection.y =
             -(N.y * d + plane_b.N.y * plane_b.d + plane_c.N.y * plane_c.d);
+
         intersection.z =
             -(N.z * d + plane_b.N.z * plane_b.d + plane_c.N.z * plane_c.d);
+
         return true;
     }
 };

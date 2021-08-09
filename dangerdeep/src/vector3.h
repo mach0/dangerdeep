@@ -50,16 +50,19 @@ class vector3t
     vector3t() : x(0), y(0), z(0) { }
     vector3t(D x_, D y_, D z_) : x(x_), y(y_), z(z_) { }
     vector3t(const vector2t<D>& v, D z_) : x(v.x), y(v.y), z(z_) { }
+
     template<typename E>
     vector3t(const vector3t<E>& other) :
         x(D(other.x)), y(D(other.y)), z(D(other.z))
     {
     }
+
     vector3t<D> normal() const
     {
         D len = D(1.0) / length();
         return vector3t(x * len, y * len, z * len);
     }
+
     void normalize()
     {
         D len = D(1.0) / length();
@@ -67,27 +70,34 @@ class vector3t
         y *= len;
         z *= len;
     }
+
     vector3t<D> orthogonal(const vector3t<D>& other) const
     {
         return cross(other);
     }
+
     vector3t<D> operator*(D scalar) const
     {
         return vector3t(x * scalar, y * scalar, z * scalar);
     }
+
     vector3t<D> operator/(D scalar) const
     {
         return vector3t(x / scalar, y / scalar, z / scalar);
     }
+
     vector3t<D> operator+(const vector3t<D>& other) const
     {
         return vector3t(x + other.x, y + other.y, z + other.z);
     }
+
     vector3t<D> operator-(const vector3t<D>& other) const
     {
         return vector3t(x - other.x, y - other.y, z - other.z);
     }
+
     vector3t<D> operator-() const { return vector3t(-x, -y, -z); }
+
     vector3t<D>& operator+=(const vector3t<D>& other)
     {
         x += other.x;
@@ -95,6 +105,7 @@ class vector3t
         z += other.z;
         return *this;
     }
+
     vector3t<D>& operator-=(const vector3t<D>& other)
     {
         x -= other.x;
@@ -102,6 +113,7 @@ class vector3t
         z -= other.z;
         return *this;
     }
+
     vector3t<D>& operator*=(D s)
     {
         x *= s;
@@ -109,16 +121,19 @@ class vector3t
         z *= s;
         return *this;
     }
+
     vector3t<D> min(const vector3t<D>& other) const
     {
         return vector3t(
             std::min(x, other.x), std::min(y, other.y), std::min(z, other.z));
     }
+
     vector3t<D> max(const vector3t<D>& other) const
     {
         return vector3t(
             std::max(x, other.x), std::max(y, other.y), std::max(z, other.z));
     }
+
     vector3t<D> sign() const
     {
         return vector3t(
@@ -126,35 +141,43 @@ class vector3t
             y < 0 ? D(-1) : (y > 0 ? D(1) : D(0)),
             z < 0 ? D(-1) : (z > 0 ? D(1) : D(0)));
     }
+
     vector3t<D> abs() const
     {
         return vector3t(
             x < D(0) ? -x : x, y < D(0) ? -y : y, z < D(0) ? -z : z);
     }
+
     bool operator==(const vector3t<D>& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
+
     bool operator!=(const vector3t<D>& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
+
     D square_length() const { return x * x + y * y + z * z; }
     D length() const { return D(::sqrt(square_length())); }
+
     D square_distance(const vector3t<D>& other) const
     {
         vector3t<D> n = *this - other;
         return n.square_length();
     }
+
     D distance(const vector3t<D>& other) const
     {
         vector3t<D> n = *this - other;
         return n.length();
     }
+
     D operator*(const vector3t<D>& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
+
     vector3t<D> cross(const vector3t<D>& other) const
     {
         return vector3t(
@@ -162,6 +185,7 @@ class vector3t
             z * other.x - x * other.z,
             x * other.y - y * other.x);
     }
+
     bool solve(
         const vector3t<D>& o1,
         const vector3t<D>& o2,
@@ -169,21 +193,26 @@ class vector3t
         D& s1,
         D& s2,
         D& s3) const;
+
     /// multiplies 3x3 matrix (given in columns c0-c2) with *this.
     vector3t<D> matrixmul(
         const vector3t<D>& c0,
         const vector3t<D>& c1,
         const vector3t<D>& c2) const;
+
     vector3t<D> coeff_mul(const vector3t<D>& other) const
     {
         return vector3t(x * other.x, y * other.y, z * other.z);
     }
+
     vector2t<D> xy() const { return vector2t<D>(x, y); }
     vector2t<D> yz() const { return vector2t<D>(y, z); }
     vector4t<D> xyz0() const { return vector4t<D>(x, y, z, 0); }
     vector4t<D> xyzw(D w) const { return vector4t<D>(x, y, z, w); }
+
     template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector3t<D2>& v);
+
     template<typename E>
     void assign(const vector3t<E>& other)
     {
@@ -191,18 +220,22 @@ class vector3t
         y = D(other.y);
         z = D(other.z);
     }
+
     void to_mem(float* p) const
     {
         p[0] = x;
         p[1] = y;
         p[2] = z;
     }
+
     vector3t<D> rcp() const { return vector3t(D(1) / x, D(1) / y, D(1) / z); }
+
     D determinate(const vector3t<D>& b, const vector3t<D>& c) const
     {
         return x * b.y * c.z + b.x * c.y * z + c.x * y * b.z - x * c.y * b.z
                - b.x * y * c.z - c.x * b.y * z;
     }
+
     /// Construct axis vector
     constexpr vector3t<D>(axis a) : vector3t<D>()
     {
@@ -230,6 +263,7 @@ class vector3t
                 break;
         }
     }
+
     /// Get axis value
     constexpr D at(axis a) const
     {
@@ -271,6 +305,7 @@ bool vector3t<D>::solve(
     D det = // sarrus
         o1.x * o2.y * o3.z - o1.x * o3.y * o2.z + o2.x * o3.y * o1.z
         - o2.x * o1.y * o3.z + o3.x * o1.y * o2.z - o3.x * o2.y * o1.z;
+
     if (!det)
         return false;
 
@@ -285,6 +320,7 @@ bool vector3t<D>::solve(
     s3 = ((o1.y * o2.z - o1.z * o2.y) * x + (o1.z * o2.x - o1.x * o2.z) * y
           + (o1.x * o2.y - o1.y * o2.x) * z)
          / det;
+
     return true;
 }
 

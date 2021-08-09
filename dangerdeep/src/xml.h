@@ -80,32 +80,43 @@ class xml_elem
     int attri(const std::string& name = "value") const;
     unsigned attru(const std::string& name = "value") const;
     double attrf(const std::string& name = "value") const;
+
     vector3 attrv3() const;
     vector2 attrv2() const;
     vector2i attrv2i() const;
     quaternion attrq() const;
     angle attra() const;
+
     bool attrb(const std::string& name = "value") const;
+
     xml_elem child(const std::string& name) const;
+
     bool has_child(const std::string& name) const;
+
     xml_elem add_child(const std::string& name);
+
     void set_attr(const std::string& val, const std::string& name = "value");
     void set_attr(unsigned u, const std::string& name = "value");
     void set_attr(int i, const std::string& name = "value");
     void set_attr(double f, const std::string& name = "value");
+
     void set_attr(const vector3& v);
     void set_attr(const vector2& v);
     void set_attr(const quaternion& q);
+
     void set_attr(angle a);
     void set_attr(bool b, const std::string& name = "value");
+
     void get_attr(std::string& val, const std::string& name = "value") const
     {
         val = attr(name);
     }
+
     void get_attr(unsigned& val, const std::string& name = "value") const
     {
         val = attru(name);
     }
+
     void get_attr(int& val, const std::string& name = "value") const
     {
         val = attri(name);
@@ -114,16 +125,21 @@ class xml_elem
     {
         val = attrf(name);
     }
+
     void get_attr(vector3& val) const { val = attrv3(); }
     void get_attr(vector2& val) const { val = attrv2(); }
     void get_attr(quaternion& val) const { val = attrq(); }
     void get_attr(angle& val) const { val = attra(); }
+
     void get_attr(bool& val, const std::string& name = "value") const
     {
         val = attrb(name);
     }
+
     const std::string& get_name() const;
+
     void add_child_text(const std::string& txt); // add text child
+
     const std::string& child_text()
         const; // returns value of text child, throws error if there is none
 
@@ -151,6 +167,7 @@ class xml_elem
             e(elem_), samename(samename_)
         {
         }
+
         xml_elem operator*() const;
         iterator& operator++();
         bool operator!=(const iterator& it) const { return e != it.e; }
@@ -169,6 +186,7 @@ class xml_elem
             childname(childname_)
         {
         }
+
         iterator begin() const;
         iterator end() const { return parent.end(); }
 
@@ -181,6 +199,7 @@ class xml_elem
 
     iterator begin() const;
     iterator end() const { return iterator(*this, nullptr, false); }
+
     iterator_range_samename iterate(const char* childname) const
     {
         return iterator_range_samename(*this, childname);
@@ -202,8 +221,10 @@ class xml_doc
   public:
     xml_doc(std::string fn);
     ~xml_doc();
+
     void load();
     void save();
+
     xml_elem first_child();
     xml_elem child(const std::string& name);
     xml_elem add_child(const std::string& name);

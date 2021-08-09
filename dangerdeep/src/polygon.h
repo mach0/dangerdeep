@@ -44,8 +44,10 @@ class polygon_t
   public:
     /// empty polygon
     polygon_t() = default;
+
     /// polygon with prepared space
     polygon_t(unsigned capacity_) { points.reserve(capacity_); }
+
     /// make from three points.
     polygon_t(
         const vector3t<D>& a,
@@ -54,6 +56,7 @@ class polygon_t
         points{a, b, c}
     {
     }
+
     /// make from four points
     polygon_t(
         const vector3t<D>& a,
@@ -63,19 +66,24 @@ class polygon_t
         points{a, b, c, d}
     {
     }
+
     /// construct from other type
     template<typename E>
     polygon_t(const polygon_t<E>& other) :
         points(other.points.begin(), other.points.end())
     {
     }
+
     /// check if polygon is empty. Each polygon must have at least three
     /// vertices or it is empty
     bool empty() const { return points.size() < 3; }
+
     /// Add new point
     void add_point(const vector3t<D>& p) { points.push_back(p); }
+
     /// return number of points
     unsigned nr_of_points() const { return unsigned(points.size()); }
+
     /// Get next index from this
     unsigned next_index(unsigned i) const
     {
@@ -84,6 +92,7 @@ class polygon_t
             i = 0;
         return i;
     }
+
     /// Get previous index from this
     unsigned prev_index(unsigned i) const
     {
@@ -92,6 +101,7 @@ class polygon_t
         --i;
         return i;
     }
+
     /// compute normal of polygon. Only valid if all points are in a plane.
     vector3t<D> normal() const
     {
@@ -108,6 +118,7 @@ class polygon_t
         void add_front(const vector3t<D>& p) { result.add_point(p); }
         void add_back(const vector3t<D>& p) { }
     };
+
     /// Parameter type for returning front and back
     struct clip_result_front_and_back
     {
@@ -116,6 +127,7 @@ class polygon_t
         void add_front(const vector3t<D>& p) { result.first.add_point(p); }
         void add_back(const vector3t<D>& p) { result.second.add_point(p); }
     };
+
     /// Parameter type for returning clip points
     struct clip_point_result
     {
@@ -128,11 +140,13 @@ class polygon_t
             ++counter;
         }
     };
+
     /// Parameter type for NOT returning clip points
     struct clip_point_no_result
     {
         void set(unsigned /*index*/, const vector3t<D>& /*p*/) { }
     };
+
     /// Parameter type for generic planes
     struct plane_type_generic
     {
@@ -144,6 +158,7 @@ class polygon_t
             return pln.intersection(a, b);
         }
     };
+
     /// Parameter type for axis aligned planes
     template<axis A>
     struct plane_type_axis
@@ -181,13 +196,17 @@ class polygon_t
         {
             return false;
         }
+
         const D epsilon           = D(0.001);
         D last_point_distance     = pt.distance(points.back());
         unsigned last_point_index = nr_of_points() - 1;
+
         int last_point_side       = (last_point_distance > epsilon)
                                         ? 1
                                         : (last_point_distance < -epsilon ? -1 : 0);
+
         int current_side          = last_point_side;
+
         if (current_side == 0)
         {
             // find a definitive side
@@ -198,6 +217,7 @@ class polygon_t
                                             ? 1
                                             : (this_point_distance < -epsilon ? -1 : 0);
             }
+
             if (current_side == 0)
             {
                 // if all points are on the plane, so just keep the polygon
@@ -205,13 +225,16 @@ class polygon_t
                 return true;
             }
         }
+
         for (unsigned i = 0; i < nr_of_points(); ++i)
         {
             D this_point_distance = pt.distance(points[i]);
+
             int this_point_side =
                 (this_point_distance > epsilon)
                     ? 1
                     : (this_point_distance < -epsilon ? -1 : 0);
+
             if (this_point_side > 0)
             {
                 if (last_point_side < 0)
@@ -290,6 +313,7 @@ class polygon_t
         clip_generic(crf, cpnr, pt);
         return crf.result;
     }
+
     /// Clip convex polygon by plane with frontside/backside result
     std::pair<polygon_t, polygon_t> clip(const plane_t<D>& plan) const
     {
@@ -299,6 +323,7 @@ class polygon_t
         clip_generic(crfb, cpnr, pt);
         return crfb.result;
     }
+
     /// Clip with axis aligned plane with frontside/backside result
     template<axis a>
     std::pair<polygon_t, polygon_t> clip(D axis_value) const
@@ -309,6 +334,7 @@ class polygon_t
         clip_generic(crfb, cpnr, pta);
         return crfb.result;
     }
+
     /// Clip with axis aligned plane with frontside/backside result
     template<axis a>
     std::pair<polygon_t, polygon_t> clip(plane_type_axis<a> pta) const
@@ -318,6 +344,7 @@ class polygon_t
         clip_generic(crfb, cpnr, pta);
         return crfb.result;
     }
+
     /// print polygon (maybe offer << operator!)
     void print() const
     {
@@ -325,6 +352,7 @@ class polygon_t
         for (unsigned i = 0; i < points.size(); ++i)
             std::cout << "P[" << i << "] = " << points[i] << "\n";
     }
+
     /// compute plane that poly lies in
     plane_t<D> get_plane() const
     {
@@ -332,12 +360,14 @@ class polygon_t
             return plane_t<D>();
         return plane_t<D>(points[0], points[1], points[2]);
     }
+
     /// translate
     void translate(const vector3t<D>& delta)
     {
         for (unsigned i = 0; i < points.size(); ++i)
             points[i] += delta;
     }
+
     /// Check if a point is inside the polygon from a given direction. Here we
     /// assume z axis as direction. determine number of intersections of polygon
     /// with one axis going out of the point (e.g. X axis), even number is
@@ -350,11 +380,13 @@ class polygon_t
         bool last_point_above      = last_delta_y > 0.0;
         unsigned last_index        = unsigned(points.size()) - 1;
         unsigned num_intersections = 0;
+
         // Check all edges for intersection of X axis going through the point
         for (unsigned i = 0; i < unsigned(points.size()); ++i)
         {
             D delta_y        = points[i].y - point.y;
             bool point_above = delta_y > 0.0;
+
             // std::cout<<"i="<<i<<" ldy"<<last_delta_y<<" dy"<<delta_y<<"\n";
             if (last_point_above != point_above)
             {
@@ -363,6 +395,7 @@ class polygon_t
                 D t = delta_y / (delta_y - last_delta_y);
                 D x = points[last_index].x * t + points[i].x * (D(1) - t);
                 num_intersections += (x > point.x) ? 1 : 0;
+
                 // std::cout<<"t="<<t<<" x="<<x<<" numi
                 // "<<num_intersections<<"\n";//fixme seems ok, but needs more
                 // testing
@@ -370,6 +403,7 @@ class polygon_t
         }
         return (num_intersections & 1);
     }
+
     /// Compute unnormalized normal of a special polygon, a triangle
     static vector3t<D> compute_normal(
         const vector3t<D>& a,
@@ -378,6 +412,7 @@ class polygon_t
     {
         return (b - a).cross(c - a);
     }
+
     /// Clip a vector of polygons by one plane and fetch results to two other
     /// vectors
     template<axis a>
@@ -388,11 +423,14 @@ class polygon_t
         D axis_value)
     {
         plane_type_axis<a> pta(axis_value);
+
         for (const auto& source_polygon : src)
         {
             auto front_and_back = source_polygon.clip(pta);
+
             if (!front_and_back.first.empty())
                 front.push_back(std::move(front_and_back.first));
+
             if (!front_and_back.second.empty())
                 back.push_back(std::move(front_and_back.second));
         }

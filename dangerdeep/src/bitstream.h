@@ -65,7 +65,7 @@ class ibitstream
 
     uint8_t read_byte(uint8_t len = 8);
     void inline fill_buffer();
-    void inline update_position(uint8_t& len);
+    void inline update_position(const uint8_t &len);
 
   public:
     ibitstream(std::istream* is, long bufsize = 128);

@@ -77,8 +77,10 @@ class message_queue
     std::mutex mymutex;
     std::condition_variable emptycondvar;
     std::condition_variable ackcondvar;
+
     bool msginqueue{false};
     bool abortwait{false};              // set to true by wakeup_receiver()
+
     std::vector<message::ptr> ackqueue; // queue with acknowledged messages
 
   public:

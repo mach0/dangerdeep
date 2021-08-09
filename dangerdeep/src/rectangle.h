@@ -37,12 +37,14 @@ class rectangle_t
 
     /// Construct invalid empty rectangle
     rectangle_t() : is_empty(true) { }
+
     /// Construct by two vectors - note! data is not checked! Sort by yourself
     /// and make sure data is valid rectangle!
     rectangle_t(const vector2t<D>& bottomleft, const vector2t<D>& topright) :
         minpos(bottomleft), maxpos(topright), is_empty(false)
     {
     }
+
     /// Construct by two vectors - note! data is not checked! Sort by yourself
     /// and make sure data is valid rectangle!
     rectangle_t(D left, D bottom, D right, D top) :
@@ -50,6 +52,7 @@ class rectangle_t
         is_empty(false)
     {
     }
+
     /// Extend rectangle
     void extend(const vector2t<D>& p)
     {
@@ -63,6 +66,7 @@ class rectangle_t
             maxpos = maxpos.max(p);
         }
     }
+
     /// Construct from bound of values
     rectangle_t(const std::vector<vector2t<D>>& values) :
         is_empty(values.size() == 0)
@@ -72,16 +76,20 @@ class rectangle_t
             extend(p);
         }
     }
+
     /// Return size of rectangle
     vector2t<D> size() const { return maxpos - minpos; }
+
     /// Return center of rectangle
     vector2t<D> center() const { return (maxpos + minpos) / D(2); }
+
     /// Check if coordinate is inside rectangle
     bool is_inside(const vector2t<D>& p) const
     {
         return !is_empty && p.x >= minpos.x && p.y >= minpos.y
                && p.x <= maxpos.x && p.y <= maxpos.y;
     }
+
     /// Compute rectangle from bound of two other rectanglees
     rectangle_t(const rectangle_t& a, const rectangle_t& b) : is_empty(false)
     {
@@ -95,6 +103,7 @@ class rectangle_t
             maxpos = a.maxpos.max(b.maxpos);
         }
     }
+
     /// Extend rectangle with other rectangle
     void extend(const rectangle_t& other)
     {
@@ -106,6 +115,7 @@ class rectangle_t
             maxpos = maxpos.max(other.maxpos);
         }
     }
+
     /// Create intersection with other rectangle
     void intersect(const rectangle_t& other)
     {
@@ -121,6 +131,7 @@ class rectangle_t
             }
         }
     }
+
     /// Get translated version
     rectangle_t<D> translated(const vector2t<D>& v) const
     {
@@ -132,12 +143,16 @@ class rectangle_t
         }
         return copy;
     }
+
     /// Get values
     D x() const { return minpos.x; }
+
     /// Get values
     D y() const { return minpos.y; }
+
     /// Get values
     D w() const { return maxpos.x - minpos.x; }
+
     /// Get values
     D h() const { return maxpos.y - minpos.y; }
 };
