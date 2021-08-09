@@ -53,6 +53,7 @@ class thread
     std::mutex state_mutex;
     std::condition_variable start_cond;
     std::string error_message; // to pass exception texts via thread boundaries
+
     const char* myname;
 
     void run();
@@ -62,6 +63,7 @@ class thread
 
     virtual void init() { } ///< will be called once after thread starts
     virtual void loop() { } ///< will be called periodically in main thread loop
+
     virtual void deinit() {
     } ///< will be called once after main thread loop ends
 
@@ -109,8 +111,10 @@ class thread
         /// construct thread auto pointer with thread pointer
         ///@note will throw error when t is not a thread
         ptr(T* t = nullptr) : p(nullptr) { reset(t); }
+
         /// destruct thread auto pointer (will destruct thread)
         ~ptr() { reset(nullptr); }
+
         /// reset pointer (destructs current thread)
         ///@note will throw error when t is not a thread
         ///@note seems bizarre, use with care!
@@ -123,8 +127,10 @@ class thread
                 p->destruct();
             p = t;
         }
+
         /// use pointer like normal pointer
         T* operator->() const { return p; }
+
         /// get pointer
         const T* get() const { return p; }
     };

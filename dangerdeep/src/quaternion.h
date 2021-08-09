@@ -54,76 +54,95 @@ class quaterniont
         s(r_), v(i_, j_, k_)
     {
     }
+
     quaterniont(const D& s_, vector3t<D> v_) : s(s_), v(std::move(v_)) { }
+
     quaterniont<D> normal() const
     {
         D len = D(1.0) / length();
         return quaterniont(s * len, v * len);
     }
+
     void normalize()
     {
         D len = D(1.0) / length();
         s *= len;
         v *= len;
     }
+
     quaterniont<D> operator*(const D& scalar) const
     {
         return quaterniont(s * scalar, v * scalar);
     }
+
     quaterniont<D> operator+(const quaterniont<D>& other) const
     {
         return quaterniont(s + other.s, v + other.v);
     }
+
     quaterniont<D> operator-(const quaterniont<D>& other) const
     {
         return quaterniont(s - other.s, v - other.v);
     }
+
     quaterniont<D> operator-() const { return quaterniont(-s, -v); }
     quaterniont<D> conj() const { return quaterniont(s, -v); }
+
     quaterniont<D>& operator+=(const quaterniont<D>& other)
     {
         s += other.s;
         v += other.v;
         return *this;
     }
+
     quaterniont<D>& operator-=(const quaterniont<D>& other)
     {
         s -= other.s;
         v -= other.v;
         return *this;
     }
+
     quaterniont<D>& operator*=(const quaterniont<D>& other)
     {
         *this = *this * other;
         return *this;
     }
+
     bool operator==(const quaterniont<D>& other) const
     {
         return s == other.s && v == other.v;
     }
+
     D square_length() const { return s * s + v * v; }
     D length() const { return D(sqrt(square_length())); }
+
     quaterniont<D> operator*(const quaterniont<D>& o) const
     {
         return quaterniont(s * o.s - v * o.v, o.v * s + v * o.s + v.cross(o.v));
     }
+
     template<class D2>
     friend std::ostream& operator<<(std::ostream& os, const quaterniont<D2>& q);
+
     template<class E>
     void assign(const vector2t<E>& other)
     {
         s = D(other.s);
         v.assign(other.v);
     }
+
     static quaterniont<D> vec(const D& x, const D& y, const D& z)
     {
         return quaterniont(0, vector3t<D>(x, y, z));
     }
+
     static quaterniont<D> vec(const vector3t<D>& p)
     {
         return quaterniont(D(0), p);
     }
+
     static quaterniont<D> zero() { return quaterniont(D(0), vector3t<D>()); }
+
     // angle is divided by 2 for a rotation quaternion, so divide by 360, not
     // 180.
     static quaterniont<D>
@@ -132,15 +151,18 @@ class quaterniont
         D rad = D(angle * constant::PI / 360.0);
         return quaterniont(cos(rad), vector3t<D>(x, y, z) * sin(rad));
     }
+
     static quaterniont<D> rot(const D& angle, const vector3t<D>& axis)
     {
         D rad = D(angle * constant::PI / 360.0);
         return quaterniont(cos(rad), axis * sin(rad));
     }
+
     static quaterniont<D> rot_rad(const D& angle_rad, const vector3t<D>& axis)
     {
         return quaterniont(cos(angle_rad), axis * sin(angle_rad));
     }
+
     // reverse operation: angle * 2 * 180
     void angleaxis(D& angle, D& x, D& y, D& z) const
     {
@@ -151,17 +173,20 @@ class quaterniont
         y     = v.y / sa;
         z     = v.z / sa;
     }
+
     void angleaxis(D& angle, vector3t<D>& axis) const
     {
         D a   = acos(s);
         angle = D(a * 360.0 / constant::PI);
         axis  = v * (D(1.0) / sin(a));
     }
+
     vector3t<D> rotate(const D& x, const D& y, const D& z) const
     {
         quaterniont<D> p2 = *this * vec(x, y, z) * this->conj();
         return p2.v;
     }
+
     vector3t<D> rotate(const vector3t<D>& p) const
     {
         quaterniont<D> p2 = *this * vec(p) * this->conj();
@@ -182,8 +207,10 @@ class quaterniont
     matrix3t<D> rotmat() const
     {
         D x2 = v.x * v.x, y2 = v.y * v.y, z2 = v.z * v.z;
+
         D xy = v.x * v.y, wz = s * v.z, xz = v.x * v.z, wy = s * v.y,
           yz = v.y * v.z, wx = s * v.x;
+
         return matrix3t<D>(
             1 - 2 * (y2 + z2),
             2 * (xy - wz),
@@ -200,8 +227,10 @@ class quaterniont
     matrix4t<D> rotmat4() const
     {
         D x2 = v.x * v.x, y2 = v.y * v.y, z2 = v.z * v.z;
+
         D xy = v.x * v.y, wz = s * v.z, xz = v.x * v.z, wy = s * v.y,
           yz = v.y * v.z, wx = s * v.x;
+
         return matrix4t<D>(
             1 - 2 * (y2 + z2),
             2 * (xy - wz),
@@ -227,6 +256,7 @@ class quaterniont
     {
         D tr = m.elem(0, 0) + m.elem(1, 1) + m.elem(2, 2);
         quaterniont result;
+
         if (tr > D(0.0))
         {
             D s        = D(sqrt(tr + D(1.0)));
@@ -241,15 +271,21 @@ class quaterniont
             unsigned next[3] = {1, 2, 0};
             D* ptr[3]        = {&result.v.x, &result.v.y, &result.v.z};
             unsigned i       = 0;
+
             if (m.elem(1, 1) > m.elem(i, i))
                 i = 1;
+
             if (m.elem(2, 2) > m.elem(i, i))
                 i = 2;
+
             unsigned j = next[i];
             unsigned k = next[j];
+
             D s = D(sqrt(m.elem(i, i) - (m.elem(j, j) + m.elem(k, k)) + D(1)));
+
             *(ptr[i]) = s / 2;
             s         = D(1.0) / (D(2) * s);
+
             result.s  = (m.elem(j, k) - m.elem(k, j)) * s;
             *(ptr[j]) = (m.elem(i, j) - m.elem(j, i)) * s;
             *(ptr[k]) = (m.elem(i, k) - m.elem(k, i)) * s;

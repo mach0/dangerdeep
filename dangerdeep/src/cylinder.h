@@ -42,6 +42,7 @@ class cylinder_t
         start(p0), end(p1), radius(r)
     {
     }
+
     /// determine distance to cylinder
     D distance(const vector3t<D>& a) const
     {
@@ -49,6 +50,7 @@ class cylinder_t
         // project onto line
         const auto delta = end - start;
         const auto t     = (a - start) * delta / delta.square_length();
+
         if (t < 0.0)
         {
             return start.distance(a);
@@ -63,20 +65,24 @@ class cylinder_t
             return (start + delta * t).distance(a);
         }
     }
+
     /// determine if point is inside
     bool is_inside(const vector3t<D>& a) const
     {
         // project onto line
         const auto delta = end - start;
         const auto t     = (a - start) * delta / delta.square_length();
+
         if (t < 0.0 || t > 1.0)
         {
             // Projection onto cylinder axis outside range
             return false;
         }
+
         // Compare distance to axis with radius
         return (start + delta * t).square_distance(a) > radius * radius;
     }
+
     /// determine if intersects sphere
     bool intersects(const sphere_t<D>& s) const
     {
@@ -84,6 +90,7 @@ class cylinder_t
         // project onto line
         const auto delta = end - start;
         const auto t     = (s.center - start) * delta / delta.square_length();
+
         if (t < 0.0)
         {
             // check for collision with sphere around start

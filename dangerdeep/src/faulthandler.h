@@ -186,11 +186,13 @@ inline void print_stack_trace()
 {
     void* array[16];
     int size = backtrace(array, 16);
+
     if (size < 0)
     {
         fprintf(stderr, "Backtrace could not be created!\n");
         return;
     }
+
     char** strings = backtrace_symbols(array, size);
     if (!strings)
     {
@@ -201,28 +203,36 @@ inline void print_stack_trace()
     fprintf(stderr, "Stack trace: (%u frames)\n", size);
     std::string addrs;
     std::list<std::string> lines;
+
     for (int i = 0; i < size; ++i)
     {
         std::string addr;
         std::string s(strings[i]);
         std::string::size_type p1 = s.rfind('[');
         std::string::size_type p2 = s.rfind(']');
+
         if ((p1 != std::string::npos) && (p2 != std::string::npos))
         {
             addr = s.substr(p1 + 1, p2 - p1 - 1);
             addrs += addr + " ";
         }
+
         p1 = s.rfind("_Z");
         p2 = s.rfind('+');
+
         if (p2 == std::string::npos)
             p2 = s.rfind(')');
+
         std::string func;
+
         if (p1 != std::string::npos)
         {
             func       = s.substr(p1, p2 - p1);
             int status = 0;
+
             char* c =
                 abi::__cxa_demangle(func.c_str(), nullptr, nullptr, &status);
+
             if (c)
                 func = c;
             else
@@ -231,6 +241,7 @@ inline void print_stack_trace()
         else
         {
             p1 = s.rfind('(');
+
             if (p1 != std::string::npos)
             {
                 func = s.substr(p1 + 1, p2 - p1 - 1);
@@ -251,6 +262,7 @@ inline void print_stack_trace()
     std::ostringstream oss;
     oss << "addr2line -e /proc/" << getpid() << "/exe -s " << addrs;
     FILE* f = popen(oss.str().c_str(), "r");
+
     if (f)
     {
         for (auto& line : lines)

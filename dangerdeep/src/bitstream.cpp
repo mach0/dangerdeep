@@ -18,9 +18,11 @@
  */
 
 #include "bitstream.h"
+
 //#define DEBUG_WRITE
 //#define DEBUG_READ_BYTE
 //#define DEBUG_TO_BUFFER
+
 uint8_t obitstream::bitmask[] = {0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF};
 uint8_t ibitstream::bitmask[] = {0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF};
 
@@ -34,6 +36,7 @@ inline void obitstream::to_buffer(uint8_t bits, uint8_t len)
 #endif
     buffer[byte_pos] |= (bits << (8 - len - bit_pos));
     bit_pos += len;
+
     if (bit_pos > 7)
     {
         bit_pos -= 8;
@@ -154,7 +157,7 @@ ibitstream::ibitstream(std::istream* is, long bufsize) :
     end_pos += instream->gcount() - 1;
 }
 
-inline void ibitstream::update_position(uint8_t& len)
+inline void ibitstream::update_position(const uint8_t& len)
 {
     bit_pos += len;
     if (bit_pos > 7)

@@ -29,46 +29,57 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 
 const std::string& get_data_dir();
+
 inline std::string get_texture_dir()
 {
     return get_data_dir() + "textures/";
 }
+
 inline std::string get_font_dir()
 {
     return get_data_dir() + "fonts/";
 }
+
 inline std::string get_model_dir()
 {
     return get_data_dir() + "models/";
 }
+
 inline std::string get_sound_dir()
 {
     return get_data_dir() + "sounds/";
 }
+
 inline std::string get_image_dir()
 {
     return get_data_dir() + "images/";
 }
+
 inline std::string get_mission_dir()
 {
     return get_data_dir() + "missions/";
 }
+
 inline std::string get_map_dir()
 {
     return get_data_dir() + "maps/";
 }
+
 inline std::string get_shader_dir()
 {
     return get_data_dir() + "shaders/";
 }
+
 inline std::string get_menu_dir()
 {
     return get_data_dir() + "menus/";
 }
+
 inline std::string get_display_dir()
 {
     return get_data_dir() + "displays/";
 }
+
 inline std::string get_popup_dir()
 {
     return get_data_dir() + "popups/";
@@ -83,7 +94,7 @@ class data_file_handler : public singleton<class data_file_handler>
 
   private:
     data_file_handler();
-    void parse_for_data_files(std::string dir, std::list<std::string>& idlist);
+    void parse_for_data_files(const std::string &dir, std::list<std::string>& idlist);
 
     static data_file_handler* my_instance;
     std::map<std::string, std::string> data_files;
@@ -96,26 +107,34 @@ class data_file_handler : public singleton<class data_file_handler>
   public:
     /// returns path to specfile for id "objectid", path is relative to data_dir
     const std::string& get_rel_path(const std::string& objectid) const;
+
     /// returns path to specfile for id "objectid", path is absolute
     std::string get_path(const std::string& objectid) const;
+
     /// returns path + filename to specfile for id "objectid", path is relative
     /// to data_dir
     std::string get_rel_filename(const std::string& objectid) const;
+
     /// returns path + filename to specfile for id "objectid", path is absolute
     std::string get_filename(const std::string& objectid) const;
+
     const std::list<std::string>& get_airplane_list() const
     {
         return airplane_ids;
     }
+
     const std::list<std::string>& get_ship_list() const { return ship_ids; }
+
     const std::list<std::string>& get_submarine_list() const
     {
         return submarine_ids;
     }
+
     const std::list<std::string>& get_torpedo_list() const
     {
         return torpedo_ids;
     }
+
     const std::list<std::string>& get_prop_list() const { return prop_ids; }
 };
 

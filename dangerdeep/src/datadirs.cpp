@@ -49,6 +49,7 @@ data_file_handler::data_file_handler()
 {
     // scan data dir for all .data files
     std::string dir = "objects/";
+
     parse_for_data_files(dir + "airplanes/", airplane_ids);
     parse_for_data_files(dir + "ships/", ship_ids);
     parse_for_data_files(dir + "submarines/", submarine_ids);
@@ -57,11 +58,13 @@ data_file_handler::data_file_handler()
 }
 
 static const std::string data_file_ext = ".data";
+
 void data_file_handler::parse_for_data_files(
-    std::string dir,
+    const std::string& dir,
     std::list<std::string>& idlist)
 {
     directory d(get_data_dir() + dir);
+
     for (std::string f = d.read(); !f.empty(); f = d.read())
     {
         if (f[0] == '.' || f == "CVS")
@@ -91,6 +94,7 @@ data_file_handler::get_rel_path(const std::string& objectid) const
 {
     static std::string emptystr;
     auto it = data_files.find(objectid);
+
     if (it == data_files.end())
     {
         THROW(

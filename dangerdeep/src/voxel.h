@@ -36,17 +36,23 @@ class voxel
   public:
     /// position of center of voxel relative to the base mesh
     vector3f relative_position;
+
     /// part of voxel that is filled with model volume (0...1)
     float part_of_volume;
+
     /// third root of part_of_volume, used for collision detection
     float root3_part_of_volume;
+
     /// relative mass of the voxel of total mass (0...1)
     float relative_mass;
+
     /// relative volume of the voxel of total volume (0...1)
     float relative_volume;
+
     /// indices of neighbouring voxels: top, left, forward, right, backward,
     /// bottom, -1 means no neighbour
     std::array<int, 6> neighbour_idx;
+
     /// construct a voxel
     voxel(const vector3f& rp, float pv, float m, float rv);
 };
@@ -59,15 +65,19 @@ class voxel_data
     vector3f voxel_size;           ///< size of a voxel in 3-space
     float voxel_radius;            ///< "radius" of a voxel in 3-space
     double total_volume_by_voxels; ///< total volume of model defined by voxels
+
     std::vector<voxel> voxels; ///< per voxel: relative 3d position and part of
                                ///< volume that is inside (0...1)
+
     std::vector<int> voxel_index_by_pos; ///< voxel for 3-space coordinate of
                                          ///< it, -1 if not existing
+
     /// get voxel data by position, may return 0 for not existing voxels
     const voxel* get_voxel_by_pos(const vector3i& v) const
     {
         int i = voxel_index_by_pos
             [(v.z * voxel_resolution.y + v.y) * voxel_resolution.x + v.x];
+
         return (i >= 0) ? &voxels[i] : (const voxel*) nullptr;
     }
 

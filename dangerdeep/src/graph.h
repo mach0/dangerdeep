@@ -169,8 +169,10 @@ class graph
             // Now fill in adjacency information
             neighbors.resize(all_edges.size());
             neighbor_indices.resize(get_nr_of_nodes() + 1);
+
             unsigned k          = 0;
             neighbor_indices[0] = 0;
+
             for (unsigned i = 0; i < get_nr_of_nodes(); ++i)
             {
                 while (all_edges[k].x == i && k < unsigned(all_edges.size()))

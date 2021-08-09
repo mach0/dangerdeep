@@ -37,6 +37,7 @@ class sphere_t
 
     sphere_t() : radius(0) { }
     sphere_t(vector3t<D> c, const D& r) : center(std::move(c)), radius(r) { }
+
     /// construct from three points (triangle).
     // sphere_t(const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>&
     // c) { }
@@ -45,28 +46,35 @@ class sphere_t
     {
         return center.square_distance(a) < radius * radius;
     }
+
     /// determine if spheres intersect
     bool intersects(const sphere_t<D>& other) const
     {
         D r = radius + other.radius;
         return center.square_distance(other.center) < r * r;
     }
+
     /// build minimum combination sphere
     sphere_t<D> compute_bound(const sphere_t<D>& other) const
     {
         // new center is on axis between the two spheres
         vector3t<D> delta = other.center - center;
+
         D distance        = delta.length();
+
         if (distance < epsilon<D>())
             return sphere_t<D>(
                 center, std::max(radius, other.radius + distance));
+
         D new_diameter =
             std::max(radius + distance + other.radius, radius * D(2));
         D new_radius = new_diameter / D(2);
+
         vector3t<D> new_center =
             center + delta * ((new_radius - radius) / distance);
         return sphere_t<D>(new_center, new_radius);
     }
+
     /// compute min/max x,y,z values
     void compute_min_max(vector3t<D>& minv, vector3t<D>& maxv) const
     {

@@ -143,22 +143,31 @@ class matrix3t
     matrix3t<D> operator*(const matrix3t<D>& other) const
     {
         matrix3t<D> r(int(0));
+
         r.values[0] = values[0] * other.values[0] + values[1] * other.values[3]
                       + values[2] * other.values[6];
+
         r.values[1] = values[0] * other.values[1] + values[1] * other.values[4]
                       + values[2] * other.values[7];
+
         r.values[2] = values[0] * other.values[2] + values[1] * other.values[5]
                       + values[2] * other.values[8];
+
         r.values[3] = values[3] * other.values[0] + values[4] * other.values[3]
                       + values[6] * other.values[6];
+
         r.values[4] = values[3] * other.values[1] + values[4] * other.values[4]
                       + values[6] * other.values[7];
+
         r.values[5] = values[3] * other.values[2] + values[4] * other.values[5]
                       + values[6] * other.values[8];
+
         r.values[6] = values[6] * other.values[0] + values[7] * other.values[3]
                       + values[8] * other.values[6];
+
         r.values[7] = values[6] * other.values[1] + values[7] * other.values[4]
                       + values[8] * other.values[7];
+
         r.values[8] = values[6] * other.values[2] + values[7] * other.values[5]
                       + values[8] * other.values[8];
         return r;

@@ -31,14 +31,17 @@ class ressource_ptr
   public:
     ressource_ptr() : ptr(nullptr) { }
     ressource_ptr(T* p) : ptr(p) { }
+
     ~ressource_ptr() { free_ressource(ptr); }
     ressource_ptr(ressource_ptr&& m) : ptr(m.ptr) { m.ptr = nullptr; }
+
     ressource_ptr& operator=(ressource_ptr&& m)
     {
         auto tmp = m.ptr;
         m.ptr    = nullptr;
         ptr      = tmp;
     }
+
     T* get() const { return ptr; }
 
   protected:

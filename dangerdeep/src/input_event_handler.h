@@ -179,6 +179,7 @@ struct mouse_button_state
     bool left() const { return is_pressed(mouse_button::left); }
     bool middle() const { return is_pressed(mouse_button::middle); }
     bool right() const { return is_pressed(mouse_button::right); }
+
     bool any() const
     {
         return std::any_of(
@@ -194,10 +195,12 @@ class input_event_handler
     {
         return (m & key_mod::shift) != key_mod::none;
     }
+
     inline bool key_mod_ctrl(key_mod m)
     {
         return (m & key_mod::ctrl) != key_mod::none;
     }
+
     inline bool key_mod_alt(key_mod m)
     {
         return (m & key_mod::alt) != key_mod::none;
@@ -211,6 +214,7 @@ class input_event_handler
         key_mod mod{key_mod::none};          ///< State of key modifiers
         input_action action{
             input_action::none}; ///< whether key was pressed or released
+
         bool up() const { return action == input_action::up; }
         bool down() const { return action == input_action::down; }
         bool is_keypad_number() const
@@ -249,9 +253,12 @@ class input_event_handler
                               ///< coordinates (1024x768)
         mouse_button button{
             mouse_button::left}; ///< which mouse button was pressed
+
         input_action action{
             input_action::none}; ///< whether button was pressed or released
+
         mouse_button_state buttons_pressed; ///< for each button if pressed
+
         bool up() const { return action == input_action::up; }
         bool down() const { return action == input_action::down; }
         bool left() const { return button == mouse_button::left; }
@@ -264,12 +271,16 @@ class input_event_handler
     {
         vector2f relative_motion;    ///< Relative mouse motion, matching screen
                                      ///< coordinates
+                                     ///
         vector2i relative_motion_2d; ///< Relative motion in 2D pseudo
                                      ///< coordinates (1024x768)
+                                     ///
         vector2f position;    ///< Absolute mouse position in screen coordinates
                               ///< -1...1, y axis up
+                              ///
         vector2i position_2d; ///< Absolute mouse position in 2D pseudo
                               ///< coordinates (1024x768)
+
         input_action action{
             input_action::none}; ///< whether wheel turned up or down
         bool up() const { return action == input_action::up; }
@@ -315,18 +326,22 @@ class input_event_handler_custom : public input_event_handler
     {
         handler_key = handler;
     }
+
     void set_handler(std::function<bool(const mouse_click_data&)> handler)
     {
         handler_mouse_click = handler;
     }
+
     void set_handler(std::function<bool(const mouse_motion_data&)> handler)
     {
         handler_mouse_motion = handler;
     }
+
     void set_handler(std::function<bool(const mouse_wheel_data&)> handler)
     {
         handler_mouse_wheel = handler;
     }
+
     void set_handler(std::function<bool(const std::string&)> handler)
     {
         handler_text_input = handler;
@@ -347,6 +362,7 @@ class input_event_handler_custom : public input_event_handler
         }
         return false;
     }
+
     bool handle_mouse_button_event(const mouse_click_data& md) override
     {
         if (handler_mouse_click != nullptr)
@@ -355,6 +371,7 @@ class input_event_handler_custom : public input_event_handler
         }
         return false;
     }
+
     bool handle_mouse_motion_event(const mouse_motion_data& mmd) override
     {
         if (handler_mouse_motion != nullptr)
@@ -363,6 +380,7 @@ class input_event_handler_custom : public input_event_handler
         }
         return false;
     }
+
     bool handle_mouse_wheel_event(const mouse_wheel_data& mwd) override
     {
         if (handler_mouse_wheel != nullptr)
@@ -371,6 +389,7 @@ class input_event_handler_custom : public input_event_handler
         }
         return false;
     }
+
     bool handle_text_input_event(const std::string& text) override
     {
         if (handler_text_input != nullptr)

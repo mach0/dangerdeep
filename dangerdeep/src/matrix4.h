@@ -205,48 +205,62 @@ class matrix4t
         r.values[0] = values[0] * other.values[0] + values[1] * other.values[4]
                       + values[2] * other.values[8]
                       + values[3] * other.values[12];
+
         r.values[1] = values[0] * other.values[1] + values[1] * other.values[5]
                       + values[2] * other.values[9]
                       + values[3] * other.values[13];
+
         r.values[2] = values[0] * other.values[2] + values[1] * other.values[6]
                       + values[2] * other.values[10]
                       + values[3] * other.values[14];
+
         r.values[3] = values[0] * other.values[3] + values[1] * other.values[7]
                       + values[2] * other.values[11]
                       + values[3] * other.values[15];
+
         r.values[4] = values[4] * other.values[0] + values[5] * other.values[4]
                       + values[6] * other.values[8]
                       + values[7] * other.values[12];
+
         r.values[5] = values[4] * other.values[1] + values[5] * other.values[5]
                       + values[6] * other.values[9]
                       + values[7] * other.values[13];
+
         r.values[6] = values[4] * other.values[2] + values[5] * other.values[6]
                       + values[6] * other.values[10]
                       + values[7] * other.values[14];
+
         r.values[7] = values[4] * other.values[3] + values[5] * other.values[7]
                       + values[6] * other.values[11]
                       + values[7] * other.values[15];
+
         r.values[8] = values[8] * other.values[0] + values[9] * other.values[4]
                       + values[10] * other.values[8]
                       + values[11] * other.values[12];
+
         r.values[9] = values[8] * other.values[1] + values[9] * other.values[5]
                       + values[10] * other.values[9]
                       + values[11] * other.values[13];
+
         r.values[10] = values[8] * other.values[2] + values[9] * other.values[6]
                        + values[10] * other.values[10]
                        + values[11] * other.values[14];
+
         r.values[11] = values[8] * other.values[3] + values[9] * other.values[7]
                        + values[10] * other.values[11]
                        + values[11] * other.values[15];
         r.values[12] =
             values[12] * other.values[0] + values[13] * other.values[4]
             + values[14] * other.values[8] + values[15] * other.values[12];
+
         r.values[13] =
             values[12] * other.values[1] + values[13] * other.values[5]
             + values[14] * other.values[9] + values[15] * other.values[13];
+
         r.values[14] =
             values[12] * other.values[2] + values[13] * other.values[6]
             + values[14] * other.values[10] + values[15] * other.values[14];
+
         r.values[15] =
             values[12] * other.values[3] + values[13] * other.values[7]
             + values[14] * other.values[11] + values[15] * other.values[15];
@@ -259,48 +273,63 @@ class matrix4t
         r.values[0] = values[0] * other.values[0] + values[1] * other.values[4]
                       + values[2] * other.values[8]
                       + values[3] * other.values[12];
+
         r.values[1] = values[0] * other.values[1] + values[1] * other.values[5]
                       + values[2] * other.values[9]
                       + values[3] * other.values[13];
+
         r.values[2] = values[0] * other.values[2] + values[1] * other.values[6]
                       + values[2] * other.values[10]
                       + values[3] * other.values[14];
+
         r.values[3] = values[0] * other.values[3] + values[1] * other.values[7]
                       + values[2] * other.values[11]
                       + values[3] * other.values[15];
+
         r.values[4] = values[4] * other.values[0] + values[5] * other.values[4]
                       + values[6] * other.values[8]
                       + values[7] * other.values[12];
+
         r.values[5] = values[4] * other.values[1] + values[5] * other.values[5]
                       + values[6] * other.values[9]
                       + values[7] * other.values[13];
+
         r.values[6] = values[4] * other.values[2] + values[5] * other.values[6]
                       + values[6] * other.values[10]
                       + values[7] * other.values[14];
+
         r.values[7] = values[4] * other.values[3] + values[5] * other.values[7]
                       + values[6] * other.values[11]
                       + values[7] * other.values[15];
+
         r.values[8] = values[8] * other.values[0] + values[9] * other.values[4]
                       + values[10] * other.values[8]
                       + values[11] * other.values[12];
+
         r.values[9] = values[8] * other.values[1] + values[9] * other.values[5]
                       + values[10] * other.values[9]
                       + values[11] * other.values[13];
+
         r.values[10] = values[8] * other.values[2] + values[9] * other.values[6]
                        + values[10] * other.values[10]
                        + values[11] * other.values[14];
+
         r.values[11] = values[8] * other.values[3] + values[9] * other.values[7]
                        + values[10] * other.values[11]
                        + values[11] * other.values[15];
+
         r.values[12] =
             values[12] * other.values[0] + values[13] * other.values[4]
             + values[14] * other.values[8] + values[15] * other.values[12];
+
         r.values[13] =
             values[12] * other.values[1] + values[13] * other.values[5]
             + values[14] * other.values[9] + values[15] * other.values[13];
+
         r.values[14] =
             values[12] * other.values[2] + values[13] * other.values[6]
             + values[14] * other.values[10] + values[15] * other.values[14];
+
         r.values[15] =
             values[12] * other.values[3] + values[13] * other.values[7]
             + values[14] * other.values[11] + values[15] * other.values[15];
@@ -413,9 +442,11 @@ class matrix4t
     void set_glf(GLenum pname); // GL_PROJECTION, GL_MODELVIEW, GL_TEXTURE
     void multiply_gl() const;
     void multiply_glf() const;
+
     static matrix4t<D>
     get_gl(GLenum pname); // GL_PROJECTION_MATRIX, GL_MODELVIEW_MATRIX,
                           // GL_TEXTURE_MATRIX
+
     static matrix4t<D>
     get_glf(GLenum pname); // GL_PROJECTION_MATRIX, GL_MODELVIEW_MATRIX,
                            // GL_TEXTURE_MATRIX
@@ -620,6 +651,7 @@ void matrix4t<D>::set_gl(GLenum pname)
     glLoadMatrixd(m);
     glMatrixMode(GL_MODELVIEW);
 }
+
 template<class D>
 void matrix4t<D>::set_glf(GLenum pname)
 {
@@ -641,6 +673,7 @@ void matrix4t<D>::multiply_gl() const
             m[i + j * 4] = GLdouble(values[j + i * 4]);
     glMultMatrixd(m);
 }
+
 template<class D>
 void matrix4t<D>::multiply_glf() const
 {
@@ -662,6 +695,7 @@ matrix4t<D> matrix4t<D>::get_gl(GLenum pname)
             r.values[j + i * 4] = D(m[i + j * 4]);
     return r;
 }
+
 template<class D>
 matrix4t<D> matrix4t<D>::get_glf(GLenum pname)
 {

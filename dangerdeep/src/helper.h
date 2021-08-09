@@ -34,36 +34,43 @@ inline void convert_pm1(D& d, S s)
 {
     d = D(s);
 }
+
 template<typename D>
 inline void convert_pm1(D& d, uint8_t s)
 {
     d = D(D(s) - D(128)) / D(127);
 }
+
 template<typename S>
 inline void convert_pm1(uint8_t& d, S s)
 {
     d = uint8_t(s * S(127) + S(128));
 }
+
 template<>
 inline void convert_pm1<uint8_t, uint8_t>(uint8_t& d, uint8_t s)
 {
     d = s;
 }
+
 template<typename D, typename S>
 inline void convert_01(D& d, S s)
 {
     d = D(s);
 }
+
 template<typename D>
 inline void convert_01(D& d, uint8_t s)
 {
     d = D(s) / D(255);
 }
+
 template<typename S>
 inline void convert_01(uint8_t& d, S s)
 {
     d = uint8_t(s * S(255));
 }
+
 template<>
 inline void convert_01<uint8_t, uint8_t>(uint8_t& d, uint8_t s)
 {
