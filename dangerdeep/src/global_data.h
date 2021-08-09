@@ -56,10 +56,12 @@ inline objcachet<class model>& modelcache()
 {
     return global_data::instance().modelcache;
 }
+
 inline objcachet<class image>& imagecache()
 {
     return global_data::instance().imagecache;
 }
+
 inline objcachet<class texture>& texturecache()
 {
     return global_data::instance().texturecache;
@@ -84,33 +86,40 @@ inline float myfrac(float a)
 {
     return a - floorf(a);
 }
+
 inline double myfrac(double a)
 {
     return a - floor(a);
 }
+
 inline float mysgn(float a)
 {
     return (a < 0) ? -1.0f : ((a > 0) ? 1.0f : 0.0f);
 }
+
 inline double mysgn(double a)
 {
     return (a < 0) ? -1.0 : ((a > 0) ? 1.0 : 0.0);
 }
+
 template<class T>
 inline T myclamp(const T& v, const T& minv, const T& maxv)
 {
     return std::min(maxv, std::max(minv, v));
 }
+
 template<class C>
 inline void add_saturated(C& sum, const C& add, const C& max)
 {
     sum = std::min(sum + add, max);
 }
+
 // return a random value in [0, 1(
 inline double rnd()
 {
     return double(rand()) / RAND_MAX;
 }
+
 inline unsigned rnd(unsigned b)
 {
     return unsigned(b * rnd());
@@ -121,6 +130,7 @@ inline int32_t clamp_zero(int32_t x)
 {
     return x & ~(x >> 31);
 }
+
 inline int32_t clamp_value(int32_t x, int32_t val)
 {
     return val - clamp_zero(val - x);
@@ -150,9 +160,9 @@ double transform_nautic_posx_to_real(const std::string& s);
 double transform_nautic_posy_to_real(const std::string& s);
 
 void jacobi_amp(double u, double k, double& sn, double& cn);
-vector2f transform_real_to_geo(vector2f& pos);
-std::list<std::string>
-string_split(const std::string& src, char splitter = ',');
+vector2f transform_real_to_geo(const vector2f &pos);
+
+std::list<std::string>string_split(const std::string& src, char splitter = ',');
 
 // save a PGM (for debugging mostly)
 void save_pgm(
@@ -170,6 +180,7 @@ std::string str(const T& x)
     oss << x;
     return oss.str();
 }
+
 ///> do the same with width and filler
 template<typename T>
 std::string str_wf(const T& x, unsigned width, char filler = '0')
