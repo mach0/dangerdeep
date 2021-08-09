@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // An nautical angle (C)+(W) 2003 Thorsten Jordan
 
-#ifndef ANGULAR_TABLE_H
-#define ANGULAR_TABLE_H
+#pragma once
 
 #include "angle.h"
 #include "helper.h"
@@ -48,4 +47,3 @@ template <typename T> class angular_table
     std::vector<T> values;
 };
 
-#endif

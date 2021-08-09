@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 2d area (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef AREA_H
-#define AREA_H
+#pragma once
 
 #include "vector2.h"
 
@@ -79,4 +78,3 @@ inline std::ostream& operator<<(std::ostream& os, const area& ar)
     return os;
 }
 
-#endif

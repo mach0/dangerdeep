@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL GPU interface
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef GPU_INTERFACE_H
-#define GPU_INTERFACE_H
+#pragma once
 
 #include "area.h"
 #include "color.h"
@@ -1751,4 +1750,3 @@ class interface : public singleton<interface>
 /// get the singleton
 inline gpu::interface& GPU() { return gpu::interface::instance(); }
 
-#endif

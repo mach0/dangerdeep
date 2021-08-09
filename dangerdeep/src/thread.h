@@ -20,8 +20,7 @@
 // multithreading primitives: thread
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef THREAD_H
-#define THREAD_H
+#pragma once
 
 #include "error.h"
 
@@ -141,4 +140,3 @@ class thread_function : public ::thread
     std::function<void()> myfunction;
 };
 
-#endif

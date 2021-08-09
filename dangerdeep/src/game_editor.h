@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // game editor
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef GAME_EDITOR_H
-#define GAME_EDITOR_H
+#pragma once
 
 #include "game.h"
 
@@ -51,4 +50,3 @@ class game_editor : public game
     virtual void manipulate_equipment_date(date equipdate);
 };
 
-#endif

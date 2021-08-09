@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // physical units
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef UNITS_H
-#define UNITS_H
+#pragma once
 
 #include "angle.h"
 #include "matrix3.h"
@@ -198,4 +197,3 @@ typedef physical_value<double, physical_unit::area> area2d;
 /// for that, no physical unit.
 typedef double factor;
 
-#endif

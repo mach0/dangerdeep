@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // underwater caustic simulation
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef CAUSTICS_H
-#define CAUSTICS_H
+#pragma once
 
 /*
     This class contains map for underwater caustic
@@ -46,4 +45,3 @@ class caustics
     texture* get_map() const;
 };
 
-#endif

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 2d vector (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef VECTOR2_H
-#define VECTOR2_H
+#pragma once
 
 #include <algorithm> // for std::min/std::max
 #include <cmath>     // for sqrt
@@ -207,4 +206,3 @@ using vector2i = vector2t<int>;
 using vector2u = vector2t<unsigned int>;
 using vector2l = vector2t<long>;
 
-#endif

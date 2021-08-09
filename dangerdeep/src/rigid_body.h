@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // physical rigid body
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef RIGID_BODY_H
-#define RIGID_BODY_H
+#pragma once
 
 #include "units.h"
 class xml_elem;
@@ -90,4 +89,3 @@ class rigid_body
     simulate(duration delta_time, const force3d& force, const torque3d& torque);
 };
 
-#endif

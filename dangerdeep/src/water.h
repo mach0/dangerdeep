@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // (ocean) water simulation and display (OpenGL)
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef WATER_H
-#define WATER_H
+#pragma once
 
 /*
     This class simulates and displays the water.
@@ -268,4 +267,3 @@ class water
     void refltex_render_unbind() const;
 };
 
-#endif

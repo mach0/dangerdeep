@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // A 3d model
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include "bv_tree.h"
 #include "color.h"
@@ -617,4 +616,3 @@ class model
     double get_bounding_sphere_radius() const { return boundsphere_radius; }
 };
 
-#endif

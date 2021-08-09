@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <map>
 
-#ifndef SONAR_OPERATOR_H
-#define SONAR_OPERATOR_H
+#pragma once
 
 class sonar_operator
 {
@@ -84,4 +83,3 @@ class sonar_operator
     void save(class xml_elem& parent) const;
 };
 
-#endif /* SONAR_OPERATOR_H */

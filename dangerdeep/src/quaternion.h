@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A quaternion (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef QUATERNION_H
-#define QUATERNION_H
+#pragma once
 
 #include "constant.h"
 #include "matrix4.h"
@@ -254,4 +253,3 @@ std::ostream& operator<<(std::ostream& os, const quaterniont<D>& q)
 using quaternion  = quaterniont<double>;
 using quaternionf = quaterniont<float>;
 
-#endif

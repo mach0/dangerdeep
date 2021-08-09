@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // text parser
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef PARSER_H
-#define PARSER_H
+#pragma once
 
 #include <fstream>
 #include <string>
@@ -60,4 +59,3 @@ class parser
     std::string cell;
 };
 
-#endif

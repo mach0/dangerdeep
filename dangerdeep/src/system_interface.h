@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // SDL2/OpenGL based system input/output
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef SYSTEM_INTERFACE_H
-#define SYSTEM_INTERFACE_H
+#pragma once
 
 #include "input_event_handler.h"
 #include "singleton.h"
@@ -204,4 +203,3 @@ class system_interface : public singleton<system_interface>
 // to make user's code even shorter
 inline class system_interface& SYS() { return system_interface::instance(); }
 
-#endif

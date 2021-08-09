@@ -20,8 +20,7 @@
 // multithreading primitives: messaging, message queue
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef MESSAGE_QUEUE_H
-#define MESSAGE_QUEUE_H
+#pragma once
 
 #include <condition_variable>
 #include <mutex>
@@ -115,4 +114,3 @@ class message_queue
     void process_messages(bool wait = true);
 };
 
-#endif

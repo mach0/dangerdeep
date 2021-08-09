@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // this class holds the game's configuration
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SINGLETON_H
-#define SINGLETON_H
+#pragma once
 
 /// Implementation of the singleton pattern
 template <typename D> class singleton
@@ -77,4 +76,3 @@ template <typename D> class singleton
     singleton& operator=(singleton&&) = delete;
 };
 
-#endif

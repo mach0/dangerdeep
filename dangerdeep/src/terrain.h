@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#pragma once
 
 #include "bivector.h"
 #include "cfg.h"
@@ -298,4 +297,3 @@ template <class T> double terrain<T>::uni()
     r1         = noise_seed * rm;
     return (r1);
 }
-#endif

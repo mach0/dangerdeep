@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's torpedo room
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_TORPEDO_DISPLAY_H
-#define SUB_TORPEDO_DISPLAY_H
+#pragma once
 
 #include "log.h"
 #include "objcache.h"
@@ -75,4 +74,3 @@ class sub_torpedo_display : public user_display
     get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const;
 };
 
-#endif

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A triangle to triangle collision test (C)+(W) 2009 Thorsten Jordan
 //
 
-#ifndef TRIANGLE_INTERSECTION_H
-#define TRIANGLE_INTERSECTION_H
+#pragma once
 
 #include "helper.h"
 #include "vector2.h"
@@ -239,4 +238,3 @@ bool compute(
 }
 } // namespace triangle_intersection
 
-#endif

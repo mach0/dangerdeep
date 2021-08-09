@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // a color
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef COLOR_H
-#define COLOR_H
+#pragma once
 
 #include "vector4.h"
 
@@ -243,4 +242,3 @@ inline std::ostream& operator<<(std::ostream& os, const colorf& c)
     return os;
 }
 
-#endif

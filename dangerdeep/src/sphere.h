@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3d sphere (C)+(W) 2009 Thorsten Jordan
 //
 
-#ifndef SPHERE_H
-#define SPHERE_H
+#pragma once
 
 #include "vector3.h"
 
@@ -79,4 +78,3 @@ template <class D> class sphere_t
 using sphere  = sphere_t<double>;
 using spheref = sphere_t<float>;
 
-#endif

@@ -18,8 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef POSTPROCESSING_H
-#define POSTPROCESSING_H
+#pragma once
 
 #include "shader.h"
 
@@ -62,4 +61,3 @@ class postprocessor : public singleton<class postprocessor>
     void undo_2d();
 };
 
-#endif

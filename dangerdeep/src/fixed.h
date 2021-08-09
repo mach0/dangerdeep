@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // a 32bit fixed point data type, handles only positive values
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef FIXED_H
-#define FIXED_H
+#pragma once
 
 #include <cstdint>
 
@@ -82,4 +81,3 @@ class fixed32
     int32_t value() const { return x; }
 };
 
-#endif

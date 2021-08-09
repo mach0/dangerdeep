@@ -22,8 +22,7 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#ifndef TINYXML_INCLUDED
-#define TINYXML_INCLUDED
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -2138,4 +2137,3 @@ class TiXmlPrinter : public TiXmlVisitor
 #pragma warning(pop)
 #endif
 
-#endif

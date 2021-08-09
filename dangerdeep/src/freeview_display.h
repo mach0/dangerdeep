@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: free 3d view
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef FREEVIEW_DISPLAY_H
-#define FREEVIEW_DISPLAY_H
+#pragma once
 
 #include "angle.h"
 #include "user_display.h"
@@ -90,4 +89,3 @@ class freeview_display : public user_display
     bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 };
 
-#endif

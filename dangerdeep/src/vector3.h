@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3d vector (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef VECTOR3_H
-#define VECTOR3_H
+#pragma once
 
 #include "vector2.h"
 
@@ -308,4 +307,3 @@ using vector3f = vector3t<float>;
 using vector3i = vector3t<int>;
 using vector3u = vector3t<unsigned int>;
 
-#endif

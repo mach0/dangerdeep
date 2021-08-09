@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 4x4 matrix (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef MATRIX4_H
-#define MATRIX4_H
+#pragma once
 
 #include "constant.h"
 #include "matrix3.h"
@@ -610,4 +609,3 @@ std::ostream& operator<<(std::ostream& os, const matrix4t<D>& m)
     return os;
 }
 
-#endif

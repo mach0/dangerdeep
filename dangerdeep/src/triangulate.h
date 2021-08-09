@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // returns vector of vertex indices (triangles, 3*m indices, m = #triangles, ccw
 // order)
 
-#ifndef TRIANGULATE_H
-#define TRIANGULATE_H
+#pragma once
 
 #include "vector2.h"
 
@@ -63,4 +62,3 @@ struct triangulate
         const std::vector<vector2>& vertices, const std::string& outputfile);
 };
 
-#endif

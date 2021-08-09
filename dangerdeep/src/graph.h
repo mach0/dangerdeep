@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A graph represention (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef GRAPH_H
-#define GRAPH_H
+#pragma once
 
 #include "vector2.h"
 
@@ -183,4 +182,3 @@ template <typename NodeData, typename EdgeData> class graph
     }
 };
 
-#endif

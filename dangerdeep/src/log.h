@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A logging implementation
 //
 
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 
 #include "singleton.h"
 
@@ -108,4 +107,3 @@ class log : public singleton<class log>
     friend struct log_msg;
 };
 
-#endif

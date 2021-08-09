@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // sky simulation and display (OpenGL)
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SKY_H
-#define SKY_H
+#pragma once
 
 /*
     This class simulates and displays the sky.
@@ -105,4 +104,3 @@ class sky
     color get_horizon_color(const game& gm, const vector3& viewpos) const;
 };
 
-#endif

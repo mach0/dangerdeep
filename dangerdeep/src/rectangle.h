@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 2d rectangle (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef RECTANGLE_H
-#define RECTANGLE_H
+#pragma once
 
 #include "vector2.h"
 
@@ -146,4 +145,3 @@ typedef rectangle_t<double> rectangle;
 typedef rectangle_t<float> rectanglef;
 typedef rectangle_t<int> rect;
 
-#endif

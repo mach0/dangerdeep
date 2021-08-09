@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // An nautical angle (C)+(W) 2003 Thorsten Jordan
 
-#ifndef ANGLE_H
-#define ANGLE_H
+#pragma once
 
 #include "constant.h"
 #include "helper.h"
@@ -139,4 +138,3 @@ inline std::ostream& operator<<(std::ostream& os, const angle& a)
     return os;
 }
 
-#endif

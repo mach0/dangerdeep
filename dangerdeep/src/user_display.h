@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Base interface for user screens.
 // subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
 
-#ifndef USER_DISPLAY_H
-#define USER_DISPLAY_H
+#pragma once
 
 #include "angle.h"
 #include "datadirs.h"
@@ -176,4 +175,3 @@ class user_display : public input_event_handler
     user_display& operator=(const user_display&) = delete;
 };
 
-#endif /* USER_DISPLAY_H */

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // submarines
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUBMARINE_H
-#define SUBMARINE_H
+#pragma once
 
 #include "ship.h"
 #include "sonar.h"
@@ -457,4 +456,3 @@ class submarine : public ship
     virtual gauges_type get_gauges_type() const { return gauges; }
 };
 
-#endif

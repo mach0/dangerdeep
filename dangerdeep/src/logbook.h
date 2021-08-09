@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // handle log book entries
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef LOGBOOK_H
-#define LOGBOOK_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -50,4 +49,3 @@ class logbook
     unsigned size() const { return unsigned(entries.size()); }
 };
 
-#endif

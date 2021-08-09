@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // key name definitions
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef COUNTRYCODES_H
-#define COUNTRYCODES_H
+#pragma once
 
 #include "date.h"
 
@@ -64,4 +63,3 @@ extern const char* parties[NR_OF_PARTIES];
 
 partycode party_of_country(countrycode c, date d);
 
-#endif

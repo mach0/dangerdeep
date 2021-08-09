@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // perlin 2d noise generator
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef PERLINNOISE_H
-#define PERLINNOISE_H
+#pragma once
 
 #ifndef M_PI
 #define M_PI 3.1415927
@@ -160,4 +159,3 @@ class perlinnoise3d
         unsigned x, unsigned y, unsigned z, unsigned depth = 0xffffffff) const;
 };
 
-#endif

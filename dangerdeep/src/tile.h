@@ -16,8 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef TILE_H
-#define TILE_H
+#pragma once
 
 #include "bitstream.h"
 #include "bzip.h"
@@ -113,4 +112,3 @@ template <class T> T tile<T>::get_value(vector2i coord)
     coord.y     = data.size() - coord.y - 1;
     return data.at(coord);
 }
-#endif

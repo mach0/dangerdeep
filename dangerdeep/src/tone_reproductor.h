@@ -44,8 +44,7 @@
 // [4] "A Visibility Matching Tone Reproduction Operator for High Dynamic
 // Range Scenes", G.W. Larson, H. Rushmeier, C. Piatko
 
-#ifndef _TONE_REPRODUCTOR_H_
-#define _TONE_REPRODUCTOR_H_
+#pragma once
 
 #include "constant.h"
 
@@ -100,4 +99,3 @@ class tone_reproductor
     float term2;
 };
 
-#endif // _TONE_REPRODUCTOR_H_

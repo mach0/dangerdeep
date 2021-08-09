@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user interface for controlling a submarine
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUBMARINE_INTERFACE_H
-#define SUBMARINE_INTERFACE_H
+#pragma once
 
 #include "submarine.h"
 
@@ -127,4 +126,3 @@ class submarine_interface : public user_interface
     virtual void select_tube(unsigned nr) { selected_tube = nr; }
 };
 
-#endif

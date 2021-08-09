@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // sea object id
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SEA_OBJECT_ID_H
-#define SEA_OBJECT_ID_H
+#pragma once
 
 #include <functional>
 
@@ -45,4 +44,3 @@ template <> struct std::hash<sea_object_id>
     }
 };
 
-#endif

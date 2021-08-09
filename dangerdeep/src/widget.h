@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL based widgets
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef WIDGET_H
-#define WIDGET_H
+#pragma once
 
 #include "color.h"
 #include "font.h"
@@ -680,4 +679,3 @@ class widget_slider : public widget
     virtual int get_max_value() const { return maxvalue; }
 };
 
-#endif

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A bounding volume tree (spheres) (C)+(W) 2009 Thorsten Jordan
 //
 
-#ifndef BV_TREE_H
-#define BV_TREE_H
+#pragma once
 
 #include "cylinder.h"
 #include "matrix4.h"
@@ -164,4 +163,3 @@ class bv_tree
     std::vector<node> nodes;
 };
 
-#endif

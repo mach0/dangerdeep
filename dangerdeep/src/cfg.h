@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // this class holds the game's configuration
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef CFG_H
-#define CFG_H
+#pragma once
 
 #include "input_event_handler.h"
 #include "keys.h"
@@ -103,4 +102,3 @@ class cfg : public singleton<class cfg>
 
 bool is_configured_key(key_command kc, const input_event_handler::key_data& kd);
 
-#endif

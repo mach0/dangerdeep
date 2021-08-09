@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // common helper functions
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef HELPER_H
-#define HELPER_H
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -249,4 +248,3 @@ template <typename T> T kmh2ms(T kmh) { return T(kmh / 3.6); }
 template <typename T> T ms2kmh(T meters) { return T(meters * 3.6); }
 } // namespace helper
 
-#endif

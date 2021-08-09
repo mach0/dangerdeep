@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's bridge
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_BRIDGE_DISPLAY_H
-#define SUB_BRIDGE_DISPLAY_H
+#pragma once
 
 #include "freeview_display.h"
 
@@ -40,4 +39,3 @@ class sub_bridge_display : public freeview_display
     void post_display() const override;
 };
 
-#endif

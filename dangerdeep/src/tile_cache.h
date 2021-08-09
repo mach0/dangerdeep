@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef TILE_CACHE_H
-#define TILE_CACHE_H
+#pragma once
 
 #include "system_interface.h"
 #include "tile.h"
@@ -204,4 +203,3 @@ template <class T> inline vector2i tile_cache<T>::coord_to_tile(vector2i& coord)
         (coord.x / configuration.tile_size) * configuration.tile_size,
         (coord.y / configuration.tile_size) * configuration.tile_size);
 }
-#endif // TILE_CACHE_H

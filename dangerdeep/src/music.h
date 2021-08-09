@@ -26,8 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
    class
 */
 
-#ifndef _MUSIC_H_
-#define _MUSIC_H_
+#pragma once
 
 #include "angle.h"
 #include "message_queue.h"
@@ -419,7 +418,6 @@ class music : public singleton<class music>, public ::thread
 template <> inline void free_ressource(Mix_Chunk* p) { Mix_FreeChunk(p); }
 template <> inline void free_ressource(Mix_Music* p) { Mix_FreeMusic(p); }
 
-#endif /* __MUSIC_H_ */
 
 /* data for command generator, save to file --- snip ---
 music

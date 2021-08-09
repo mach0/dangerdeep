@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL primitives container
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef PRIMITIVES_H
-#define PRIMITIVES_H
+#pragma once
 
 #include "color.h"
 #include "oglext/OglExt.h"
@@ -248,4 +247,3 @@ class primitives : public primitives_plain
     const texture* tex;
 };
 
-#endif

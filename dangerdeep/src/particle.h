@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // particle (C)+(W) 2004 Thorsten Jordan
 
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#pragma once
 
 #include "color.h"
 #include "vector3.h"
@@ -247,4 +246,3 @@ class marker_particle : public particle
     double get_life_time() const override;
 };
 
-#endif

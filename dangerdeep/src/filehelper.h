@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // file helper functions
 // (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef FILEHELPER_H
-#define FILEHELPER_H
+#pragma once
 
 #ifdef WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -84,4 +83,3 @@ bool is_directory(const std::string& filename);
 ///\brief Test if the given filename is a file (can be read by fopen())
 bool is_file(const std::string& filename);
 
-#endif

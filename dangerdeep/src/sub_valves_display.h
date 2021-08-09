@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SUB_VALVES_DISPLAY_H
-#define SUB_VALVES_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 
@@ -30,4 +29,3 @@ class sub_valves_display : public user_display
     void display() const override;
 };
 
-#endif

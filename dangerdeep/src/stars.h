@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef STARS_H
-#define STARS_H
+#pragma once
 
 #include "color.h"
 #include "vector3.h"
@@ -48,4 +47,3 @@ class stars
     void display(const float max_view_dist) const;
 };
 
-#endif

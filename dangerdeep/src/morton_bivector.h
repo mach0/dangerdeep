@@ -18,8 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef MORTON_BIVECTOR_H
-#define MORTON_BIVECTOR_H
+#pragma once
 
 #include "bivector.h"
 #include "error.h"
@@ -661,4 +660,3 @@ morton_bivector<T>::insert(const bivector<T>& other, const vector2i& offset)
 #undef bivector_FOREACH_XY
 #undef bivector_FOREACH_XYZ
 #undef bivector_abs
-#endif

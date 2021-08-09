@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A generic NxN matrix (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
 
 #include "vector4.h"
 
@@ -314,4 +313,3 @@ template <class D, unsigned size> class matrixt
     }
 };
 
-#endif

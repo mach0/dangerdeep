@@ -27,8 +27,7 @@
 /*                                                                                                            */
 /* This file was automatically generated on January 10, 2006, 6:46 pm */
 
-#ifndef _GLEXT_H_
-#define _GLEXT_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -11656,4 +11655,3 @@ extern "C"
 }
 #endif
 
-#endif /* _GLEXT_H_ */

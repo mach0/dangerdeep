@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // convoys
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef CONVOY_H
-#define CONVOY_H
+#pragma once
 
 #include "ai.h"
 #include "vector2.h"
@@ -107,4 +106,3 @@ class convoy
     virtual void add_contact(const vector3& pos);
 };
 
-#endif

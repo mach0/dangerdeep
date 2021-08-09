@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // SDL/OpenGL based textures
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#pragma once
 
 #ifdef WIN32
 // 2006-12-01 doc1972 added check to prevent double definition.
@@ -406,4 +405,3 @@ class texture3d : public texture
         unsigned th) const;
 };
 
-#endif

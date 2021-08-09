@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // key name definitions
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef KEYS_H
-#define KEYS_H
+#pragma once
 #include <cstddef>
 
 /// All commands to the simulation that can be triggered by a key press
@@ -102,4 +101,3 @@ struct key_name
 
 extern key_name key_names[std::size_t(key_command::number)];
 
-#endif

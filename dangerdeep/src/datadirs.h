@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // global defined directories for data.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef DATADIRS_H
-#define DATADIRS_H
+#pragma once
 
 #include "singleton.h"
 
@@ -92,4 +91,3 @@ inline const data_file_handler& data_file()
     return data_file_handler::instance();
 }
 
-#endif

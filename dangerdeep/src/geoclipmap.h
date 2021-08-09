@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef GEOCLIPMAP_H
-#define GEOCLIPMAP_H
+#pragma once
 
 #define geoclipmap_fperv 4
 
@@ -193,4 +192,3 @@ class geoclipmap
     bool wireframe; // for testing purposes only
 };
 
-#endif

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: torpedo tracking camera
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef TORPEDO_CAMERA_DISPLAY_H
-#define TORPEDO_CAMERA_DISPLAY_H
+#pragma once
 
 #include "freeview_display.h"
 
@@ -45,4 +44,3 @@ class torpedo_camera_display : public freeview_display
     void set_tracker(const class torpedo* t) { trackobj = t; }
 };
 
-#endif

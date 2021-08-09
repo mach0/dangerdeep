@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A generic generator for random numbers (C)+(W) 2008 Thorsten Jordan
 //
 
-#ifndef RANDOM_GENERATOR_H
-#define RANDOM_GENERATOR_H
+#pragma once
 
 #include <algorithm>
 #include <random>
@@ -79,4 +78,3 @@ class random_generator
     std::uniform_real_distribution<double> distribution;
 };
 
-#endif

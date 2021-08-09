@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to display the damage status of a submarine.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_DAMAGE_DISPLAY_H
-#define SUB_DAMAGE_DISPLAY_H
+#pragma once
 
 #include "submarine.h"
 #include "user_display.h"
@@ -40,4 +39,3 @@ class sub_damage_display : public user_display
     objcachet<texture>::reference notepadsheet;
 };
 
-#endif /* SUB_DAMAGE_DISPLAY_H */

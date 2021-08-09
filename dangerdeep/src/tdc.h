@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Simulation of the Torpedo Data Computer (TDC)
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef TDC_H
-#define TDC_H
+#pragma once
 
 #include "xml.h"
 
@@ -115,4 +114,3 @@ class tdc
     bool auto_mode_enabled() const { return auto_mode; }
 };
 
-#endif

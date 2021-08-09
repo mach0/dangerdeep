@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // ships
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SHIP_H
-#define SHIP_H
+#pragma once
 
 #include "bv_tree.h"
 #include "sea_object.h"
@@ -404,4 +403,3 @@ class ship : public sea_object
     virtual bv_tree::param compute_bv_tree_params() const;
 };
 
-#endif

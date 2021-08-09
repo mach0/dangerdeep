@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // sea objects
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SEA_OBJECT_H
-#define SEA_OBJECT_H
+#pragma once
 
 #include "ai.h"
 #include "angle.h"
@@ -463,4 +462,3 @@ class sea_object
     apply_collision_impulse(const vector3& collision_pos, const vector3& J);
 };
 
-#endif

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 2d circle (C)+(W) 2009 Thorsten Jordan
 //
 
-#ifndef CIRCLE_H
-#define CIRCLE_H
+#pragma once
 
 #include "vector3.h"
 
@@ -64,4 +63,3 @@ inline bool is_inside_circle(const vector3f& pos, const circle& c)
     return d.square_length() <= c.radius_sqr + epsilon;
 }
 
-#endif

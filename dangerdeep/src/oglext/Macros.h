@@ -21,8 +21,7 @@
 // along with  this  library;  if  not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-#ifndef _OGL_MACROS_H_
-#define _OGL_MACROS_H_
+#pragma once
 
 #if !defined(_WIN32) && (!defined(__APPLE__) || !defined(__GNUC__)) \
     && !defined(__MACOSX__)
@@ -371,4 +370,3 @@
     }
 #endif // _WIN32 && _DEBUG
 
-#endif // _OGL_MACROS_H_

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's torpedo setup display
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_TORPSETUP_DISPLAY_H
-#define SUB_TORPSETUP_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 
@@ -38,4 +37,3 @@ class sub_torpsetup_display : public user_display
     int which_element_is_turned{-1};
 };
 
-#endif

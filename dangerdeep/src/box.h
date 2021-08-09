@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3d box (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef BOX_H
-#define BOX_H
+#pragma once
 
 #include "vector3.h"
 
@@ -124,4 +123,3 @@ template <typename D> class box_t
 using box  = box_t<double>;
 using boxf = box_t<float>;
 
-#endif

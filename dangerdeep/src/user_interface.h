@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user interface for controlling a sea_object
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef USER_INTERFACE_H
-#define USER_INTERFACE_H
+#pragma once
 
 #include "caustics.h"
 #include "coastmap.h"
@@ -229,4 +228,3 @@ class user_interface : public input_event_handler
     }
 };
 
-#endif

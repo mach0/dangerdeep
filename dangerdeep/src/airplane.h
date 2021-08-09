@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // airplanes
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef AIRPLANE_H
-#define AIRPLANE_H
+#pragma once
 
 #include "quaternion.h"
 #include "sea_object.h"
@@ -68,4 +67,3 @@ class airplane : public sea_object
     virtual void pitch_zero();
 };
 
-#endif

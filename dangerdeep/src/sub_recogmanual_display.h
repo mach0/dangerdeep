@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to display the ship recognition manual
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_RECOGMANUAL_DISPLAY_H
-#define SUB_RECOGMANUAL_DISPLAY_H
+#pragma once
 
 #include "datadirs.h"
 #include "user_display.h"
@@ -66,4 +65,3 @@ class sub_recogmanual_display : public user_display
     void enter(bool is_day) override;
     void leave() override;
 };
-#endif

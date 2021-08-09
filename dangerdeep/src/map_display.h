@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: general map view
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef MAP_DISPLAY_H
-#define MAP_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 #include "vector2.h"
@@ -114,4 +113,3 @@ public:
 	bool handle_mouse_wheel_event(const mouse_wheel_data& ) override;
 };
 
-#endif

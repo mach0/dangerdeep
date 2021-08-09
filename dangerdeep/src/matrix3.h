@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3x3 matrix (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef MATRIX3_H
-#define MATRIX3_H
+#pragma once
 
 #include "matrix.h"
 
@@ -248,4 +247,3 @@ std::ostream& operator<<(std::ostream& os, const matrix3t<D>& m)
     return os;
 }
 
-#endif

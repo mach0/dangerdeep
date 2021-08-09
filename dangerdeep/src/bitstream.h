@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef BITSTREAM_H
-#define BITSTREAM_H
+#pragma once
 
 #include <iostream>
 #include <stdint.h>
@@ -74,4 +73,3 @@ class ibitstream
 
     uint16_t read(uint8_t len = 16);
 };
-#endif

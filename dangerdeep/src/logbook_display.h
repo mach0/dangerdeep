@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to create and display logbook entries.
 // subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
 
-#ifndef LOGBOOK_DISPLAY_H
-#define LOGBOOK_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 class image;
@@ -45,4 +44,3 @@ class logbook_display : public user_display
     void previous_page();
 };
 
-#endif

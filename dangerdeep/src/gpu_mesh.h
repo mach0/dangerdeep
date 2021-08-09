@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Displayer for a mesh
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef GPU_MESH_H
-#define GPU_MESH_H
+#pragma once
 
 #include "gpu_helper.h"
 #include "mesh.h"
@@ -76,4 +75,3 @@ template <> inline data_type to_data_type(::mesh::vertex_index)
 }
 } // namespace gpu
 
-#endif

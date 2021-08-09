@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // torpedoes
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef TORPEDO_H
-#define TORPEDO_H
+#pragma once
 
 #include "ship.h"
 
@@ -242,4 +241,3 @@ class torpedo : public ship
     bool test_magnetic_fuse(game& gm) const;
 };
 
-#endif

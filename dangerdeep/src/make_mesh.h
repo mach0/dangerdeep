@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // helper functions to create meshes
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef MAKE_MESH_H
-#define MAKE_MESH_H
+#pragma once
 
 #include "model.h"
 
@@ -81,4 +80,3 @@ model::mesh* heightfield(
 
 } // namespace make_mesh
 
-#endif

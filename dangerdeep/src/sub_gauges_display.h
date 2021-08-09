@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's gauges
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_GAUGES_DISPLAY_H
-#define SUB_GAUGES_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 
@@ -35,4 +34,3 @@ class sub_gauges_display : public user_display
     bool handle_mouse_button_event(const mouse_click_data&) override;
 };
 
-#endif
