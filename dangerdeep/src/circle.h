@@ -48,10 +48,13 @@ get_circle(const std::vector<vector3f>& pos, int v0, int v1, int v2)
     vector2f a   = pos[v0].xy();
     vector2f b   = pos[v1].xy();
     vector2f c   = pos[v2].xy();
+
     vector2f bao = (b - a).orthogonal();
     vector2f cbo = (c - b).orthogonal();
+
     float s = 0.f, t = 0.f;
     ((c - a) * 0.5f).solve(bao, cbo, s, t);
+
     vector2f ct = ((a + b) * 0.5f) + bao * s;
     return circle(ct, ct.square_distance(a));
 }

@@ -27,47 +27,52 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace constant
 {
 //> yet no c++ standard
-const double PI   = 3.14159265358979323846;
-const double PI_2 = 1.57079632679489661923;
+constexpr double PI   = 3.14159265358979323846;
+constexpr double PI_2 = 1.57079632679489661923;
 
 // a very "global" constant
-const double GRAVITY = 9.806;
+constexpr double GRAVITY = 9.806;
 
 // computed with an earth perimeter of 40030.17359km
-const double DEGREE_IN_METERS = 111194.9266388889;
-const double MINUTE_IN_METERS = 1853.248777315;
-const double SECOND_IN_METERS = 30.887479622;
+constexpr double DEGREE_IN_METERS = 111194.9266388889;
+constexpr double MINUTE_IN_METERS = 1853.248777315;
+constexpr double SECOND_IN_METERS = 30.887479622;
 
 // earth perimeter in meters
-const double EARTH_PERIMETER = 40030173.59;
+constexpr double EARTH_PERIMETER = 40030173.59;
 
 // Brutto register ton in cubic meters (100 cubic feet, 1 feet = 30.48cm)
-const double BRT_VOLUME = 2.8316846592;
+constexpr double BRT_VOLUME = 2.8316846592;
 
-const double WGS84_A = 6378137.0;
-const double WGS84_B = 6356752.314;
-const double WGS84_K = ::sqrt(WGS84_A * WGS84_A - WGS84_B * WGS84_B) / WGS84_A;
+constexpr double WGS84_A = 6378137.0;
+constexpr double WGS84_B = 6356752.314;
+constexpr double WGS84_K = ::sqrt(WGS84_A * WGS84_A - WGS84_B * WGS84_B) / WGS84_A;
 
 // earth radius in meters (radius of a globe with same volume as the GRS 80
 // ellipsoide)
-const double EARTH_RADIUS         = 6371000.785; // 6371km
-const double SUN_RADIUS           = 696e6;       // 696.000km
-const double MOON_RADIUS          = 1.738e6;     // 1738km
-const double EARTH_SUN_DISTANCE   = 149600e6;    // 149.6 million km.
-const double MOON_EARTH_DISTANCE  = 384.4e6;     // 384.000km
-const double EARTH_ROT_AXIS_ANGLE = 23.45;       // degrees.
-const double MOON_ORBIT_TIME_SIDEREAL =
+constexpr double EARTH_RADIUS         = 6371000.785; // 6371km
+constexpr double SUN_RADIUS           = 696e6;       // 696.000km
+constexpr double MOON_RADIUS          = 1.738e6;     // 1738km
+constexpr double EARTH_SUN_DISTANCE   = 149600e6;    // 149.6 million km.
+constexpr double MOON_EARTH_DISTANCE  = 384.4e6;     // 384.000km
+constexpr double EARTH_ROT_AXIS_ANGLE = 23.45;       // degrees.
+
+constexpr double MOON_ORBIT_TIME_SIDEREAL =
     27.3333333 * 86400.0; // sidereal month is 27 1/3 days
-const double MOON_ORBIT_TIME_SYNODIC =
+
+constexpr double MOON_ORBIT_TIME_SYNODIC =
     29.5306 * 86400.0; // synodic month is 29.5306 days
+
 // more precise values:
 // 29.53058867
 // new moon was on 18/11/1998 9:36:00 pm
-const double MOON_ORBIT_AXIS_ANGLE = 5.15;     // degrees
-const double EARTH_ROTATION_TIME   = 86164.09; // 23h56m4.09s, one sidereal day!
-const double EARTH_ORBIT_TIME =
+constexpr double MOON_ORBIT_AXIS_ANGLE = 5.15;     // degrees
+constexpr double EARTH_ROTATION_TIME   = 86164.09; // 23h56m4.09s, one sidereal day!
+
+constexpr double EARTH_ORBIT_TIME =
     31556926.5; // in seconds. 365 days, 5 hours, 48 minutes, 46.5 seconds
 
-const double MOON_POS_ADJUST = 300.0; // in degrees. Moon pos in its orbit
+constexpr double MOON_POS_ADJUST = 300.0; // in degrees. Moon pos in its orbit
                                       // on 1.1.1939 fixme: research the value
 } // namespace constant
+

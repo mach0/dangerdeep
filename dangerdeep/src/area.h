@@ -33,28 +33,35 @@ class area
 
     /// Construct empty area
     area() { }
+
     /// Construct by offset/size values
     area(vector2i offset_, vector2u size_) : offset(offset_), size(size_) { }
+
     /// Construct by separate offset/size values
     area(int x, int y, unsigned w, unsigned h) : offset(x, y), size(w, h) { }
+
     /// Construct by separate offset/size values
     area(unsigned x, unsigned y, unsigned w, unsigned h) :
         offset(int(x), int(y)), size(w, h)
     {
     }
+
     /// Check if coordinate is inside area
     bool is_inside(vector2i p) const
     {
         return (
-            p.x >= offset.x && p.x < offset.x + int(size.x) && p.y >= offset.y
-            && p.y < offset.y + int(size.y));
+            p.x >= offset.x && p.x < offset.x + int(size.x) &&
+            p.y >= offset.y && p.y < offset.y + int(size.y));
     }
+
     vector2i get_limit() const { return offset + vector2i(size); }
     bool empty() const { return (size.x * size.y == 0); }
+
     area operator*(unsigned factor) const
     {
         return area(offset * int(factor), size* factor);
     }
+
     area grow(unsigned n) const
     {
         return area(
@@ -63,6 +70,7 @@ class area
             size.x + n * 2,
             size.y + n * 2);
     }
+
     area half_scale() const
     {
         // we need to mask out last bit before dividing by 2, it makes a

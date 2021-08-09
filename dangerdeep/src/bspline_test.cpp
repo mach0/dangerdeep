@@ -1,5 +1,7 @@
 // some test code for the 2d bsplines!
+
 #include "bspline.h"
+#include "constant.h"
 
 #include <cstdlib>
 #include <fstream>
@@ -35,8 +37,9 @@ int main(int, char**)
 #else
 
     double risetime = 0.08, riseheight = 4.0;
-    double falltime = sqrt(riseheight * 2.0 / 9.806);
+    double falltime = sqrt(riseheight * 2.0 / constant::GRAVITY);
     double lifetime = risetime + falltime;
+
     std::vector<double> h, t;
 
     // initially height 0.
@@ -58,7 +61,7 @@ int main(int, char**)
     // compute some points for fall
     for (double tm = risetime; tm <= lifetime - risetime; tm += risetime)
     {
-        h.push_back(riseheight - tm * tm * 9.806 * 0.5);
+        h.push_back(riseheight - tm * tm * constant::GRAVITY * 0.5);
         t.push_back(tm + risetime);
     }
     h.push_back(0);

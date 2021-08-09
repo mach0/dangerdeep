@@ -60,6 +60,7 @@ class bivector
         }
         return data[p.x + p.y * datasize.x];
     }
+
     const T& at(const vector2i& p) const
     {
         if (p.x >= datasize.x || p.y >= datasize.y)
@@ -70,6 +71,7 @@ class bivector
         }
         return data[p.x + p.y * datasize.x];
     }
+
     T& at(int x, int y)
     {
         if (x >= datasize.x || y >= datasize.y)
@@ -80,6 +82,7 @@ class bivector
         }
         return data[x + y * datasize.x];
     }
+
     const T& at(int x, int y) const
     {
         if (x >= datasize.x || y >= datasize.y)
@@ -90,11 +93,15 @@ class bivector
         }
         return data[x + y * datasize.x];
     }
+
     T& operator[](const vector2i& p) { return at(p); }
     const T& operator[](const vector2i& p) const { return at(p); }
     const vector2i& size() const { return datasize; }
+
     void resize(const vector2i& newsz, const T& v = T());
+
     bivector<T> sub_area(const vector2i& offset, const vector2i& sz) const;
+
     ///@note bivector must have power of two dimensions for this!
     bivector<T> shifted(const vector2i& offset) const;
     bivector<T> transposed() const;
@@ -107,6 +114,7 @@ class bivector
 
     template<class U>
     bivector<U> convert() const;
+
     template<class U>
     bivector<U> convert(const T& minv, const T& maxv) const;
 
@@ -117,10 +125,12 @@ class bivector
     // special operations
     bivector<T> upsampled(bool wrap = false) const;
     bivector<T> downsampled(bool force_even_size = false) const;
+
     T get_min() const;
     T get_max() const;
     T get_min_abs() const;
     T get_max_abs() const;
+
     bivector<T>& operator*=(const T& s);
     bivector<T>& operator+=(const T& v);
     bivector<T>& operator+=(const bivector<T>& v);
@@ -131,8 +141,10 @@ class bivector
 
     bivector<T>&
     add_gauss_noise(const T& scal, random_generator_deprecated& rg);
+
     ///@note other bivector must have power of two dimensions for this!
     bivector<T>& add_tiled(const bivector<T>& other, const T& scal);
+
     ///@note other bivector must have power of two dimensions for this!
     bivector<T>& add_shifted(const bivector<T>& other, const vector2i& offset);
 
@@ -240,12 +252,16 @@ bivector<T>::sub_area(const vector2i& offset, const vector2i& sz) const
 {
     if (offset.y + sz.y > datasize.y)
         THROW(error, "bivector::sub_area, offset.y invalid");
+
     if (offset.x + sz.x > datasize.x)
         THROW(error, "bivector::sub_area, offset.x invalid");
+
     bivector<T> result(sz);
+
     for (int y = 0; y < result.datasize.y; ++y)
         for (int x = 0; x < result.datasize.x; ++x)
             result.at(x, y) = at(offset.x + x, offset.y + y);
+
     return result;
 }
 
@@ -302,8 +318,10 @@ bivector<T> bivector<T>::upsampled(bool wrap) const
     */
     if (datasize.x < 1 || datasize.y < 1)
         THROW(error, "bivector::upsampled base size invalid");
+
     vector2i resultsize = wrap ? datasize * 2 : datasize * 2 - vector2i(1, 1);
     bivector<T> result(resultsize);
+
     // copy values that are kept and interpolate missing values on even rows
     for (int y = 0; y < datasize.y; ++y)
     {
@@ -313,6 +331,7 @@ bivector<T> bivector<T>::upsampled(bool wrap) const
             result.at(2 * x + 1, 2 * y) = T((at(x, y) + at(x + 1, y)) * 0.5);
         }
     }
+
     // handle special cases on last column
     if (wrap)
     {
@@ -332,6 +351,7 @@ bivector<T> bivector<T>::upsampled(bool wrap) const
             result.at(2 * datasize.x - 2, 2 * y) = at(datasize.x - 1, y);
         }
     }
+
     // interpolate missing values on odd rows
     for (int y = 0; y < datasize.y - 1; ++y)
     {
@@ -341,6 +361,7 @@ bivector<T> bivector<T>::upsampled(bool wrap) const
                 T((result.at(x, 2 * y) + result.at(x, 2 * y + 2)) * 0.5);
         }
     }
+
     // handle special cases on last row
     if (wrap)
     {
@@ -370,11 +391,13 @@ bivector<T> bivector<T>::downsampled(bool force_even_size) const
     */
     vector2i newsize(datasize.x >> 1, datasize.y >> 1);
     vector2i resultsize = newsize;
+
     if (!force_even_size)
     {
         resultsize.x += datasize.x & 1;
         resultsize.y += datasize.x & 1;
     }
+
     bivector<T> result(resultsize);
     for (int y = 0; y < newsize.y; ++y)
         for (int x = 0; x < newsize.x; ++x)
@@ -382,6 +405,7 @@ bivector<T> bivector<T>::downsampled(bool force_even_size) const
                 T((at(2 * x, 2 * y) + at(2 * x + 1, 2 * y)
                    + at(2 * x, 2 * y + 1) + at(2 * x + 1, 2 * y + 1))
                   * 0.25);
+
     if (!force_even_size)
     {
         // downsample last row or column if original size is odd
@@ -392,6 +416,7 @@ bivector<T> bivector<T>::downsampled(bool force_even_size) const
                     (at(datasize.x - 1, 2 * y) + at(datasize.x - 1, 2 * y + 1))
                     * 0.5);
         }
+
         if (datasize.y & 1)
         {
             for (int x = 0; x < newsize.x; ++x)
@@ -399,6 +424,7 @@ bivector<T> bivector<T>::downsampled(bool force_even_size) const
                     (at(2 * x, datasize.y - 1) + at(2 * x + 1, datasize.y - 1))
                     * 0.5);
         }
+
         if ((datasize.x & datasize.y) & 1)
         {
             // copy corner, hasn't been handled yet
@@ -417,6 +443,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
        -1/16 9/16 9/16 -1/16 along one axis,
     */
     static const float c1[4] = {-1.0f / 16, 9.0f / 16, 9.0f / 16, -1.0f / 16};
+
     /* upsampling generates 3 new values out of the 16 surrounding
        values like this: (x - surrounding values, numbers: generated)
        x-x-x-x
@@ -435,12 +462,15 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
     */
     if (datasize.x < 3 || datasize.y < 3)
         THROW(error, "bivector::smooth_upsampled base size invalid");
+
     vector2i resultsize = wrap ? datasize * 2 : datasize * 2 - vector2i(1, 1);
     bivector<T> result(resultsize);
+
     // copy values that are kept and interpolate missing values on even rows
     for (int y = 0; y < datasize.y; ++y)
     {
         result.at(0, 2 * y) = at(0, y);
+
         for (int x = 1; x < datasize.x - 2; ++x)
         {
             result.at(2 * x, 2 * y) = at(x, y);
@@ -451,6 +481,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
         result.at(2 * datasize.x - 4, 2 * y) = at(datasize.x - 2, y);
         result.at(2 * datasize.x - 2, 2 * y) = at(datasize.x - 1, y);
     }
+
     if (wrap)
     {
         for (int y = 0; y < datasize.y; ++y)
@@ -458,9 +489,11 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
             result.at(1, 2 * y) =
                 T(at(datasize.x - 1, y) * c1[0] + at(0, y) * c1[1]
                   + at(1, y) * c1[2] + at(2, y) * c1[3]);
+
             result.at(2 * datasize.x - 3, 2 * y) =
                 T(at(datasize.x - 3, y) * c1[0] + at(datasize.x - 2, y) * c1[1]
                   + at(datasize.x - 1, y) * c1[2] + at(0, y) * c1[3]);
+
             result.at(2 * datasize.x - 1, 2 * y) =
                 T(at(datasize.x - 2, y) * c1[0] + at(datasize.x - 1, y) * c1[1]
                   + at(0, y) * c1[2] + at(1, y) * c1[3]);
@@ -473,12 +506,14 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
             result.at(1, 2 * y) =
                 T(at(0, y) * c1[0] + at(0, y) * c1[1] + at(1, y) * c1[2]
                   + at(2, y) * c1[3]);
+
             result.at(2 * datasize.x - 3, 2 * y) =
                 T(at(datasize.x - 3, y) * c1[0] + at(datasize.x - 2, y) * c1[1]
                   + at(datasize.x - 1, y) * c1[2]
                   + at(datasize.x - 1, y) * c1[3]);
         }
     }
+
     // interpolate missing values on odd rows
     for (int y = 1; y < datasize.y - 2; ++y)
     {
@@ -490,6 +525,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
                   + result.at(x, 2 * y + 4) * c1[3]);
         }
     }
+
     // handle special cases on last row
     if (wrap)
     {
@@ -500,11 +536,13 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
                 T(result.at(x, 2 * datasize.y - 2) * c1[0]
                   + result.at(x, 0) * c1[1] + result.at(x, 2) * c1[2]
                   + result.at(x, 4) * c1[3]);
+
             result.at(x, 2 * datasize.y - 3) =
                 T(result.at(x, 2 * datasize.y - 6) * c1[0]
                   + result.at(x, 2 * datasize.y - 4) * c1[1]
                   + result.at(x, 2 * datasize.y - 2) * c1[2]
                   + result.at(x, 0) * c1[3]);
+
             result.at(x, 2 * datasize.y - 1) =
                 T(result.at(x, 2 * datasize.y - 4) * c1[0]
                   + result.at(x, 2 * datasize.y - 2) * c1[1]
@@ -518,6 +556,7 @@ bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
             result.at(x, 1) =
                 T(result.at(x, 0) * c1[0] + result.at(x, 0) * c1[1]
                   + result.at(x, 2) * c1[2] + result.at(x, 4) * c1[3]);
+
             result.at(x, 2 * datasize.y - 3) =
                 T(result.at(x, 2 * datasize.y - 6) * c1[0]
                   + result.at(x, 2 * datasize.y - 4) * c1[1]
