@@ -164,7 +164,10 @@ void music::init()
 #endif
 }
 
-void music::loop() { command_queue.process_messages(); }
+void music::loop()
+{
+    command_queue.process_messages();
+}
 
 void music::deinit()
 {
@@ -273,7 +276,9 @@ bool music::is_playing()
 }
 
 bool music::play_sfx(
-    const std::string& category, const vector3& listener, angle listener_dir,
+    const std::string& category,
+    const vector3& listener,
+    angle listener_dir,
     const vector3& noise_pos)
 {
     return command_queue.send(std::unique_ptr<message>(new command_play_sfx(
@@ -378,7 +383,9 @@ void music::exec_set_music_position(float pos)
 }
 
 void music::exec_play_track(
-    unsigned nr, unsigned fadeouttime, unsigned fadeintime)
+    unsigned nr,
+    unsigned fadeouttime,
+    unsigned fadeintime)
 {
     if (!use_music)
         throw std::invalid_argument("no music support");
@@ -431,7 +438,10 @@ void music::exec_get_playlist(std::vector<std::string>& playlist_)
     playlist_ = playlist;
 }
 
-void music::exec_get_current_track(unsigned& track) { track = current_track; }
+void music::exec_get_current_track(unsigned& track)
+{
+    track = current_track;
+}
 
 void music::exec_is_playing(bool& isply)
 {
@@ -440,7 +450,9 @@ void music::exec_is_playing(bool& isply)
 }
 
 void music::exec_play_sfx(
-    const std::string& category, const vector3& listener, angle listener_dir,
+    const std::string& category,
+    const vector3& listener,
+    angle listener_dir,
     const vector3& noise_pos)
 {
     if (!use_music)

@@ -32,7 +32,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 /// a polyhedron in 3D space (closed body!)
-template <typename D> class polyhedron_t
+template<typename D>
+class polyhedron_t
 {
   public:
     /// One (half) edge of a polygonal side
@@ -151,8 +152,11 @@ template <typename D> class polyhedron_t
     /// Create polyhedron pyramid from five points (p0-p3 base plate and p4
     /// head)
     static polyhedron_t make_pyramid(
-        const vector3t<D>& p0, const vector3t<D>& p1, const vector3t<D>& p2,
-        const vector3t<D>& p3, const vector3t<D>& p4)
+        const vector3t<D>& p0,
+        const vector3t<D>& p1,
+        const vector3t<D>& p2,
+        const vector3t<D>& p3,
+        const vector3t<D>& p4)
     {
         polyhedron_t p;
         p.points = {p0, p1, p2, p3, p4};
@@ -163,7 +167,9 @@ template <typename D> class polyhedron_t
             side({half_edge(3, 1), half_edge(4, 3), half_edge(1, 4)}),
             side({half_edge(1, 2), half_edge(4, 0), half_edge(0, 4)}),
             side(
-                {half_edge(0, 0), half_edge(2, 1), half_edge(3, 2),
+                {half_edge(0, 0),
+                 half_edge(2, 1),
+                 half_edge(3, 2),
                  half_edge(1, 3)})};
         p.sides = std::move(sides);
         // if (!p.check()) THROW(error, "invalid pyramid");
@@ -476,4 +482,3 @@ template <typename D> class polyhedron_t
 
 typedef polyhedron_t<double> polyhedron;
 typedef polyhedron_t<float> polyhedronf;
-

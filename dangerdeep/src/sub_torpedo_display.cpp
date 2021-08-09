@@ -130,7 +130,9 @@ sub_torpedo_display::desc_text::str(unsigned startline, unsigned nrlines) const
 }
 
 void sub_torpedo_display::draw_torpedo(
-    class game& gm, bool usebow, const vector2i& pos,
+    class game& gm,
+    bool usebow,
+    const vector2i& pos,
     const submarine::stored_torpedo& st) const
 {
     if (usebow)
@@ -210,7 +212,8 @@ std::vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
             vector2i(161 + (j / k) * 138, 188 + (j % k - k / 2) * 13);
     }
     for (unsigned i = bow_deckreserve_indices.first;
-         i < bow_deckreserve_indices.second; ++i)
+         i < bow_deckreserve_indices.second;
+         ++i)
     {
         unsigned j    = i - bow_deckreserve_indices.first;
         tubecoords[i] = vector2i(161 + (j / 2) * 138, 145 + (j % 2) * 13);
@@ -222,13 +225,15 @@ std::vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
         tubecoords[i] = vector2i(823, 188 + j * 13);
     }
     for (unsigned i = stern_reserve_indices.first;
-         i < stern_reserve_indices.second; ++i)
+         i < stern_reserve_indices.second;
+         ++i)
     {
         unsigned j    = i - stern_reserve_indices.first;
         tubecoords[i] = vector2i(684, 188 + j * 13);
     }
     for (unsigned i = stern_deckreserve_indices.first;
-         i < stern_deckreserve_indices.second; ++i)
+         i < stern_deckreserve_indices.second;
+         ++i)
     {
         unsigned j    = i - stern_deckreserve_indices.first;
         tubecoords[i] = vector2i(684 - (j / 2) * 138, 145 + (j % 2) * 13);
@@ -302,16 +307,19 @@ void sub_torpedo_display::display() const
          ++i)
         draw_torpedo(gm, true, tubecoords[i], torpedoes[i]);
     for (unsigned i = bow_deckreserve_indices.first;
-         i < bow_deckreserve_indices.second; ++i)
+         i < bow_deckreserve_indices.second;
+         ++i)
         draw_torpedo(gm, true, tubecoords[i], torpedoes[i]);
     for (unsigned i = stern_tube_indices.first; i < stern_tube_indices.second;
          ++i)
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
     for (unsigned i = stern_reserve_indices.first;
-         i < stern_reserve_indices.second; ++i)
+         i < stern_reserve_indices.second;
+         ++i)
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
     for (unsigned i = stern_deckreserve_indices.first;
-         i < stern_deckreserve_indices.second; ++i)
+         i < stern_deckreserve_indices.second;
+         ++i)
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
 
     // draw transfer graphics if needed
@@ -327,7 +335,8 @@ void sub_torpedo_display::display() const
             vector2f(
                 tubecoords[torptranssrc].x + 124 / 2,
                 tubecoords[torptranssrc].y + 12 / 2),
-            vector2f(mouse_position), color::white())
+            vector2f(mouse_position),
+            color::white())
             .render();
     }
 
@@ -358,7 +367,11 @@ void sub_torpedo_display::display() const
             if (torp_desc_line > torpdesctext->nr_of_lines())
                 torp_desc_line = torpdesctext->nr_of_lines();
             font_vtremington12->print_wrapped(
-                100, 550, 570, 0, torpdesctext->str(torp_desc_line, 10),
+                100,
+                550,
+                570,
+                0,
+                torpdesctext->str(torp_desc_line, 10),
                 color(0, 0, 0));
         }
         if (torpedoes[tb].status == submarine::stored_torpedo::st_reloading
@@ -380,7 +393,8 @@ void sub_torpedo_display::display() const
             {
                 notepadsheet.get()->draw(mouse_position.x, mouse_position.y);
                 font_vtremington12->print(
-                    mouse_position.x + 32, mouse_position.y + 50,
+                    mouse_position.x + 32,
+                    mouse_position.y + 50,
                     texts::get(211)
                         + get_time_string(torpedoes[tb].remaining_time),
                     color(32, 0, 0));

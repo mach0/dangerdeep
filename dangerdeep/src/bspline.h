@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 ///\brief Represents a uniform/non-uniform-B-spline interpolation object
-template <class T, bool is_uniform = true> class bsplinet
+template<class T, bool is_uniform = true>
+class bsplinet
 {
   protected:
     unsigned n, m;
@@ -150,7 +151,8 @@ template <class T, bool is_uniform = true> class bsplinet
 };
 
 /// square b-splines, give square vector of control points
-template <class T> class bspline2dt
+template<class T>
+class bspline2dt
 {
   protected:
     unsigned n, m;
@@ -278,4 +280,3 @@ template <class T> class bspline2dt
 
 using bspline = bsplinet<double>;
 typedef bsplinet<double, false> non_uniform_bspline;
-

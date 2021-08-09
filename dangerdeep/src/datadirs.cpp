@@ -33,7 +33,10 @@ static std::string& get_global_data_dir()
 }
 
 /// Get global data directory
-const std::string& get_data_dir() { return get_global_data_dir(); }
+const std::string& get_data_dir()
+{
+    return get_global_data_dir();
+}
 
 /// Set global data directory, Note! call this only once, and very early in
 /// main()!
@@ -55,7 +58,8 @@ data_file_handler::data_file_handler()
 
 static const std::string data_file_ext = ".data";
 void data_file_handler::parse_for_data_files(
-    std::string dir, std::list<std::string>& idlist)
+    std::string dir,
+    std::list<std::string>& idlist)
 {
     directory d(get_data_dir() + dir);
     for (std::string f = d.read(); !f.empty(); f = d.read())
@@ -90,8 +94,9 @@ data_file_handler::get_rel_path(const std::string& objectid) const
     if (it == data_files.end())
     {
         THROW(
-            error, std::string("can't find path for object '") + objectid
-                       + std::string("'"));
+            error,
+            std::string("can't find path for object '") + objectid
+                + std::string("'"));
     }
     return it->second;
 }

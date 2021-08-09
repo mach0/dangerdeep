@@ -71,4 +71,3 @@ const double EARTH_ORBIT_TIME =
 const double MOON_POS_ADJUST = 300.0; // in degrees. Moon pos in its orbit
                                       // on 1.1.1939 fixme: research the value
 } // namespace constant
-

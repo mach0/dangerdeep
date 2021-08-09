@@ -37,7 +37,8 @@ that way glColor is obsolete
 class texture;
 
 /// this class models OpenGL primitives with fix vertex count
-template <unsigned size> class primitive
+template<unsigned size>
+class primitive
 {
     primitive() = delete;
 
@@ -62,7 +63,8 @@ template <unsigned size> class primitive
 };
 
 /// this class models OpenGL primitives with fix vertex count and colors
-template <unsigned size> class primitive_col
+template<unsigned size>
+class primitive_col
 {
     primitive_col() = delete;
 
@@ -72,7 +74,11 @@ template <unsigned size> class primitive_col
     {
         glVertexPointer(3, GL_FLOAT, sizeof(vector3f), &vertices[0]);
         glVertexAttribPointer(
-            glsl_shader_setup::idx_c_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0,
+            glsl_shader_setup::idx_c_color,
+            4,
+            GL_UNSIGNED_BYTE,
+            GL_TRUE,
+            0,
             &colors[0]);
         glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
         glDrawArrays(type, 0, size);
@@ -90,7 +96,8 @@ template <unsigned size> class primitive_col
 };
 
 /// this class models OpenGL primitives with fix vertex count and texcoords
-template <unsigned size> class primitive_tex
+template<unsigned size>
+class primitive_tex
 {
     primitive_tex() = delete;
 
@@ -126,7 +133,8 @@ template <unsigned size> class primitive_tex
 
 /// this class models OpenGL primitives with fix vertex count and colors +
 /// texcoords
-template <unsigned size> class primitive_coltex
+template<unsigned size>
+class primitive_coltex
 {
     primitive_coltex() = delete;
 
@@ -139,7 +147,11 @@ template <unsigned size> class primitive_coltex
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glTexCoordPointer(2, GL_FLOAT, sizeof(vector2f), &texcoords[0]);
         glVertexAttribPointer(
-            glsl_shader_setup::idx_ct_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0,
+            glsl_shader_setup::idx_ct_color,
+            4,
+            GL_UNSIGNED_BYTE,
+            GL_TRUE,
+            0,
             &colors[0]);
         glEnableVertexAttribArray(glsl_shader_setup::idx_ct_color);
         glDrawArrays(type, 0, size);
@@ -168,8 +180,10 @@ class primitives_plain
 
   public:
     primitives_plain(
-        int type, unsigned size, bool with_colors = false,
-        bool with_tex = false);
+        int type,
+        unsigned size,
+        bool with_colors = false,
+        bool with_tex    = false);
     void render();
 
     int type;
@@ -188,10 +202,13 @@ class primitives : public primitives_plain
     primitives(int type, unsigned size, const colorf& col); // uni-color
     primitives(int type, unsigned size);                    // per-vertex colors
     primitives(
-        int type, unsigned size, const colorf& col,
+        int type,
+        unsigned size,
+        const colorf& col,
         const texture& tex); // uni-color + tex
     primitives(
-        int type, unsigned size,
+        int type,
+        unsigned size,
         const texture& tex); // per-vertex colors, texcoords
     void render();
     void render_plain() { primitives_plain::render(); }
@@ -239,11 +256,16 @@ class primitives : public primitives_plain
         const colorf& col     = colorf(1, 1, 1, 1));
     /// render a 3d z-axis aligned cylinder
     static primitives cylinder_z(
-        double radius_bottom, double radius_top, double z_bottom, double z_top,
-        double alpha, const texture& tex, double u_scal, unsigned nr_segs,
+        double radius_bottom,
+        double radius_top,
+        double z_bottom,
+        double z_top,
+        double alpha,
+        const texture& tex,
+        double u_scal,
+        unsigned nr_segs,
         bool inside = false);
 
     colorf col;
     const texture* tex;
 };
-

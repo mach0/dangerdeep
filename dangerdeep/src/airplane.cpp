@@ -172,14 +172,32 @@ void airplane::simulate(double delta_time, game& gm)
 }
 
 // this all should be replaced by rudder states, fixme
-void airplane::roll_left() { rollfac = -1; }
+void airplane::roll_left()
+{
+    rollfac = -1;
+}
 
-void airplane::roll_right() { rollfac = 1; }
+void airplane::roll_right()
+{
+    rollfac = 1;
+}
 
-void airplane::roll_zero() { rollfac = 0; }
+void airplane::roll_zero()
+{
+    rollfac = 0;
+}
 
-void airplane::pitch_down() { pitchfac = -1; }
+void airplane::pitch_down()
+{
+    pitchfac = -1;
+}
 
-void airplane::pitch_up() { pitchfac = 1; }
+void airplane::pitch_up()
+{
+    pitchfac = 1;
+}
 
-void airplane::pitch_zero() { pitchfac = 0; }
+void airplane::pitch_zero()
+{
+    pitchfac = 0;
+}

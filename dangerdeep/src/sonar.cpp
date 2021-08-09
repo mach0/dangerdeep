@@ -104,10 +104,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 const double noise::dB_base          = 1.25892541179;
 const double noise::cavitation_noise = 2;
 
-const double noise::frequency_band_lower_limit[NR_OF_FREQUENCY_BANDS] = {
-    20, 1000, 3000, 6000};
-const double noise::frequency_band_upper_limit[NR_OF_FREQUENCY_BANDS] = {
-    1000, 3000, 6000, 7000};
+const double noise::frequency_band_lower_limit[NR_OF_FREQUENCY_BANDS] =
+    {20, 1000, 3000, 6000};
+const double noise::frequency_band_upper_limit[NR_OF_FREQUENCY_BANDS] =
+    {1000, 3000, 6000, 7000};
 const double noise::background_noise[NR_OF_FREQUENCY_BANDS] = {8, 10, 5, 2};
 const double noise::seastate_factor[NR_OF_FREQUENCY_BANDS]  = {60, 50, 40, 30};
 // noise absorption: dB per m, Harpoon3 uses 1/6, 1, 3 for L/M/H for range of
@@ -121,8 +121,8 @@ const double noise::seastate_factor[NR_OF_FREQUENCY_BANDS]  = {60, 50, 40, 30};
 // 500Hz: 5.25325e-5, 2kHz: 8.4052e-4, 7kHz: 0.01029637 fixme: compute with
 // formula, maybe build medium over frequency range! these values here are
 // hand-computed for 10� temperature with medium values.
-const double noise::noise_absorption[NR_OF_FREQUENCY_BANDS] = {
-    0.000066147, 0.000842717, 0.004083938, 0.002744233};
+const double noise::noise_absorption[NR_OF_FREQUENCY_BANDS] =
+    {0.000066147, 0.000842717, 0.004083938, 0.002744233};
 
 // if we want to make 900Hz sound detectable at 10sm, what would
 // noise_absorption have to be? take a merchant with 8 knots, basic noise is
@@ -139,8 +139,8 @@ const double noise_signature::typical_noise_signature
         {10, 40, 80, 70}    // torpedo, weak, many high frequencies
 };
 
-const double noise::typical_frequency[NR_OF_FREQUENCY_BANDS] = {
-    900, 2500, 5000, 6800};
+const double noise::typical_frequency[NR_OF_FREQUENCY_BANDS] =
+    {900, 2500, 5000, 6800};
 
 noise noise::compute_ambient_noise_strength(double seastate)
 {
@@ -154,7 +154,9 @@ noise noise::compute_ambient_noise_strength(double seastate)
 }
 
 noise noise_signature::compute_signal_strength(
-    double distance, double speed, bool caviation) const
+    double distance,
+    double speed,
+    bool caviation) const
 {
     noise result;
     for (unsigned band = 0; band < noise::NR_OF_FREQUENCY_BANDS; ++band)
@@ -193,8 +195,8 @@ noise noise_signature::compute_signal_strength(
     return result;
 }
 
-const double noise::frequency_band_strength_factor[NR_OF_FREQUENCY_BANDS] = {
-    1.0, 0.9, 0.8, 0.7};
+const double noise::frequency_band_strength_factor[NR_OF_FREQUENCY_BANDS] =
+    {1.0, 0.9, 0.8, 0.7};
 
 double noise::compute_total_noise_strength() const
 {
@@ -253,12 +255,15 @@ shipclass noise::determine_shipclass() const
 
 // translated from python script, refine later
 double compute_signal_strength_GHG(
-    angle signal_angle, double frequency, angle apparatus_angle)
+    angle signal_angle,
+    double frequency,
+    angle apparatus_angle)
 {
 #if 1
     double cosang = std::max(0.0, (signal_angle - apparatus_angle).cos());
     //	printf("siga=%f appa=%f diff=%f cos=%f\n",signal_angle.value(),
-    //apparatus_angle.value(), (signal_angle -apparatus_angle).value(), cosang);
+    // apparatus_angle.value(), (signal_angle -apparatus_angle).value(),
+    // cosang);
     // use 280 as exponent for 7kHz, so f * 0.04 = exponent.
     return pow(cosang, frequency * 0.04);
 #else
@@ -348,10 +353,9 @@ double compute_signal_strength_GHG(
     // is true for fov > 180�.
 
     // printf("max_strength=%f sum_cos=%f sum_sin=%f,
-    // x_extr=%f\n",max_strength,sum_cos,sum_sin,x_extr); std::ostringstream oss;
-    // oss << "plot [x=" << -0.5*M_PI << ":" << 0.5*M_PI << "] ";
-    // now the signal has an extreme value for x = x_extr, compute signal
-    // strength
+    // x_extr=%f\n",max_strength,sum_cos,sum_sin,x_extr); std::ostringstream
+    // oss; oss << "plot [x=" << -0.5*M_PI << ":" << 0.5*M_PI << "] "; now the
+    // signal has an extreme value for x = x_extr, compute signal strength
     double signalstrength = 0.0;
     for (unsigned i = 0; i < nr_hydrophones; ++i)
     {

@@ -54,10 +54,15 @@ class font
     unsigned blank_width;           // width of blank character
 
     void print_text(
-        int x, int y, const std::string& text,
+        int x,
+        int y,
+        const std::string& text,
         bool ignore_colors = false) const;
     void print_plain(
-        int x, int y, const std::string& text, color col,
+        int x,
+        int y,
+        const std::string& text,
+        color col,
         bool with_shadow) const;
 
     static std::unique_ptr<glsl_shader_setup> shader;
@@ -74,16 +79,28 @@ class font
     font(const std::string& basefilename, unsigned char_spacing = 1);
     ~font();
     void print(
-        int x, int y, const std::string& text, color col = color(255, 255, 255),
+        int x,
+        int y,
+        const std::string& text,
+        color col        = color(255, 255, 255),
         bool with_shadow = false) const;
     void print_hc(
-        int x, int y, const std::string& text, color col = color(255, 255, 255),
+        int x,
+        int y,
+        const std::string& text,
+        color col        = color(255, 255, 255),
         bool with_shadow = false) const;
     void print_vc(
-        int x, int y, const std::string& text, color col = color(255, 255, 255),
+        int x,
+        int y,
+        const std::string& text,
+        color col        = color(255, 255, 255),
         bool with_shadow = false) const;
     void print_c(
-        int x, int y, const std::string& text, color col = color(255, 255, 255),
+        int x,
+        int y,
+        const std::string& text,
+        color col        = color(255, 255, 255),
         bool with_shadow = false) const;
     /** print text with wrap around
         @param x - x position on screen in pixels
@@ -98,8 +115,13 @@ class font
        reached, or length of text
     */
     unsigned print_wrapped(
-        int x, int y, unsigned w, unsigned lineheight, const std::string& text,
-        color col = color(255, 255, 255), bool with_shadow = false,
+        int x,
+        int y,
+        unsigned w,
+        unsigned lineheight,
+        const std::string& text,
+        color col          = color(255, 255, 255),
+        bool with_shadow   = false,
         unsigned maxheight = 0) const;
     /** get screen size of text in pixels
         @param text - the text
@@ -114,7 +136,9 @@ class font
        reached)
     */
     std::pair<unsigned, unsigned> get_nr_of_lines_wrapped(
-        unsigned w, const std::string& text, unsigned maxlines = 0) const;
+        unsigned w,
+        const std::string& text,
+        unsigned maxlines = 0) const;
     unsigned get_char_width(unsigned c) const;
     unsigned get_height() const { return height; }
 
@@ -141,4 +165,3 @@ class font
     static std::string to_utf8(uint16_t unicode);
     static const unsigned invalid_utf8_char = 0xffffffff;
 };
-

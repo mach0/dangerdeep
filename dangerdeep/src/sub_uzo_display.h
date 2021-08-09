@@ -45,4 +45,3 @@ class sub_uzo_display : public freeview_display
 
     bool zoomed{false}; // use 1,5x (false) or 6x (true) zoom
 };
-

@@ -25,7 +25,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // this class is a bit pointless, can't be used with default shaders...
 
 primitives_plain::primitives_plain(
-    int type_, unsigned size, bool with_colors, bool with_tex) :
+    int type_,
+    unsigned size,
+    bool with_colors,
+    bool with_tex) :
     type(type_),
     vertices(size)
 {
@@ -64,7 +67,10 @@ primitives::primitives(int type_, unsigned size) :
 }
 
 primitives::primitives(
-    int type_, unsigned size, const colorf& col_, const texture& tex_) :
+    int type_,
+    unsigned size,
+    const colorf& col_,
+    const texture& tex_) :
     primitives_plain(type_, size, false, true),
     col(col_), tex(&tex_)
 {
@@ -179,7 +185,9 @@ primitive<3> primitives::triangle(
 }
 
 primitive<4> primitives::rectangle(
-    const vector2f& xy0, const vector2f& xy1, const colorf& col)
+    const vector2f& xy0,
+    const vector2f& xy1,
+    const colorf& col)
 {
     primitive<4> result(GL_LINE_LOOP, col);
     result.vertices[0].x = xy0.x;
@@ -268,8 +276,14 @@ primitive_tex<4> primitives::textured_quad(
 }
 
 primitives primitives::cylinder_z(
-    double radius_bottom, double radius_top, double z_bottom, double z_top,
-    double alpha, const texture& tex, double u_scal, unsigned nr_segs,
+    double radius_bottom,
+    double radius_top,
+    double z_bottom,
+    double z_top,
+    double alpha,
+    const texture& tex,
+    double u_scal,
+    unsigned nr_segs,
     bool inside)
 {
     primitives cyl(GL_QUAD_STRIP, (nr_segs + 1) * 2, tex);

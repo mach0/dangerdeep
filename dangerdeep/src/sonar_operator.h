@@ -82,4 +82,3 @@ class sonar_operator
     void load(const class xml_elem& parent);
     void save(class xml_elem& parent) const;
 };
-

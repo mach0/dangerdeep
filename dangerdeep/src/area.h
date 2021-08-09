@@ -58,7 +58,9 @@ class area
     area grow(unsigned n) const
     {
         return area(
-            offset.x - int(n), offset.y - int(n), size.x + n * 2,
+            offset.x - int(n),
+            offset.y - int(n),
+            size.x + n * 2,
             size.y + n * 2);
     }
     area half_scale() const
@@ -77,4 +79,3 @@ inline std::ostream& operator<<(std::ostream& os, const area& ar)
        << "; size_x=" << ar.size.x << "; size_y=" << ar.size.y;
     return os;
 }
-

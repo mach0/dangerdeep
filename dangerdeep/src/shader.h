@@ -279,4 +279,3 @@ class glsl_shader_setup
     glsl_shader vs, fs;
     glsl_program prog;
 };
-

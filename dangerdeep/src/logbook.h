@@ -48,4 +48,3 @@ class logbook
     }
     unsigned size() const { return unsigned(entries.size()); }
 };
-

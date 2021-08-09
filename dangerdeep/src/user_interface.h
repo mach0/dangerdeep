@@ -122,7 +122,7 @@ class user_interface : public input_event_handler
 
     // free view mode
     //	float freeviewsideang, freeviewupang;	// global spectators viewing
-    //angles 	vector3 freeviewpos;
+    // angles 	vector3 freeviewpos;
 
     user_interface& operator=(const user_interface& other);
     user_interface(const user_interface& other);
@@ -227,4 +227,3 @@ class user_interface : public input_event_handler
         mygeoclipmap->wireframe = !mygeoclipmap->wireframe;
     }
 };
-

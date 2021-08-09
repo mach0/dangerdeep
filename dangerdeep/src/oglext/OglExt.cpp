@@ -95,18 +95,39 @@ GLuint glexGetVersion()
 
 GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01V(BlendEquation, GLenum) GLvoid WRAPPER06V(
-        ColorSubTable, GLenum, GLsizei, GLsizei, GLenum, GLenum,
+        ColorSubTable,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER06V(
-        ColorTable, GLenum, GLenum, GLsizei, GLenum, GLenum,
+        ColorTable,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER03V(ColorTableParameterfv, GLenum, GLenum, GLfloat const*) GLvoid
     WRAPPER03V(ColorTableParameteriv, GLenum, GLenum, GLint const*) GLvoid
     WRAPPER06V(
-        ConvolutionFilter1D, GLenum, GLenum, GLsizei, GLenum, GLenum,
+        ConvolutionFilter1D,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER07V(
-        ConvolutionFilter2D, GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum,
+        ConvolutionFilter2D,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER03V(ConvolutionParameterf, GLenum, GLenum, GLfloat) GLvoid
     WRAPPER03V(ConvolutionParameterfv, GLenum, GLenum, GLfloat const*) GLvoid
@@ -116,13 +137,31 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER05V(CopyColorTable, GLenum, GLenum, GLint, GLint, GLsizei) GLvoid
     WRAPPER05V(CopyConvolutionFilter1D, GLenum, GLenum, GLint, GLint, GLsizei)
         GLvoid WRAPPER06V(
-            CopyConvolutionFilter2D, GLenum, GLenum, GLint, GLint, GLsizei,
+            CopyConvolutionFilter2D,
+            GLenum,
+            GLenum,
+            GLint,
+            GLint,
+            GLsizei,
             GLsizei) GLvoid
     WRAPPER09V(
-        CopyTexSubImage3D, GLenum, GLint, GLint, GLint, GLint, GLint, GLint,
-        GLsizei, GLsizei) GLvoid
+        CopyTexSubImage3D,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei) GLvoid
     WRAPPER06V(
-        DrawRangeElements, GLenum, GLuint, GLuint, GLsizei, GLenum,
+        DrawRangeElements,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER04V(GetColorTable, GLenum, GLenum, GLenum, GLvoid*) GLvoid
     WRAPPER03V(GetColorTableParameterfv, GLenum, GLenum, GLfloat*) GLvoid
@@ -136,20 +175,51 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER05V(GetMinmax, GLenum, GLboolean, GLenum, GLenum, GLvoid*) GLvoid
     WRAPPER03V(GetMinmaxParameterfv, GLenum, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetMinmaxParameteriv, GLenum, GLenum, GLint*) GLvoid WRAPPER06V(
-        GetSeparableFilter, GLenum, GLenum, GLenum, GLvoid*, GLvoid*,
+        GetSeparableFilter,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLvoid*,
+        GLvoid*,
         GLvoid*) GLvoid
     WRAPPER04V(Histogram, GLenum, GLsizei, GLenum, GLboolean) GLvoid
     WRAPPER03V(Minmax, GLenum, GLenum, GLboolean) GLvoid
     WRAPPER01V(ResetHistogram, GLenum) GLvoid
     WRAPPER01V(ResetMinmax, GLenum) GLvoid WRAPPER08V(
-        SeparableFilter2D, GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum,
-        GLvoid const*, GLvoid const*) GLvoid
+        SeparableFilter2D,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
+        GLvoid const*) GLvoid
     WRAPPER10V(
-        TexImage3D, GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint,
-        GLenum, GLenum, GLvoid const*) GLvoid
+        TexImage3D,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
+        GLvoid const*) GLvoid
     WRAPPER11V(
-        TexSubImage3D, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei,
-        GLsizei, GLenum, GLenum, GLvoid const*)
+        TexSubImage3D,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*)
 
 #endif /* GL_VERSION_1_2_OGLEXT */
 
@@ -160,23 +230,68 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
         GLvoid WRAPPER01V(ActiveTexture, GLenum) GLvoid
     WRAPPER01V(ClientActiveTexture, GLenum) GLvoid WRAPPER07V(
-        CompressedTexImage1D, GLenum, GLint, GLenum, GLsizei, GLint, GLsizei,
+        CompressedTexImage1D,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*) GLvoid
     WRAPPER08V(
-        CompressedTexImage2D, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint,
-        GLsizei, GLvoid const*) GLvoid
-    WRAPPER09V(
-        CompressedTexImage3D, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei,
-        GLint, GLsizei, GLvoid const*) GLvoid
-    WRAPPER07V(
-        CompressedTexSubImage1D, GLenum, GLint, GLint, GLsizei, GLenum, GLsizei,
+        CompressedTexImage2D,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*) GLvoid
     WRAPPER09V(
-        CompressedTexSubImage2D, GLenum, GLint, GLint, GLint, GLsizei, GLsizei,
-        GLenum, GLsizei, GLvoid const*) GLvoid
+        CompressedTexImage3D,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*) GLvoid
+    WRAPPER07V(
+        CompressedTexSubImage1D,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
+    WRAPPER09V(
+        CompressedTexSubImage2D,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER11V(
-        CompressedTexSubImage3D, GLenum, GLint, GLint, GLint, GLint, GLsizei,
-        GLsizei, GLsizei, GLenum, GLsizei, GLvoid const*) GLvoid
+        CompressedTexSubImage3D,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER03V(GetCompressedTexImage, GLenum, GLint, GLvoid*) GLvoid
     WRAPPER01V(LoadTransposeMatrixd, GLdouble const*) GLvoid
     WRAPPER01V(LoadTransposeMatrixf, GLfloat const*) GLvoid
@@ -203,15 +318,15 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER04V(MultiTexCoord3i, GLenum, GLint, GLint, GLint) GLvoid
     WRAPPER02V(MultiTexCoord3iv, GLenum, GLint const*) GLvoid
     WRAPPER04V(MultiTexCoord3s, GLenum, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(MultiTexCoord3sv, GLenum, GLshort const*) GLvoid WRAPPER05V(
-        MultiTexCoord4d, GLenum, GLdouble, GLdouble, GLdouble, GLdouble) GLvoid
-    WRAPPER02V(MultiTexCoord4dv, GLenum, GLdouble const*) GLvoid WRAPPER05V(
-        MultiTexCoord4f, GLenum, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(MultiTexCoord4fv, GLenum, GLfloat const*) GLvoid
+    WRAPPER02V(MultiTexCoord3sv, GLenum, GLshort const*) GLvoid
+    WRAPPER05V(MultiTexCoord4d, GLenum, GLdouble, GLdouble, GLdouble, GLdouble)
+        GLvoid WRAPPER02V(MultiTexCoord4dv, GLenum, GLdouble const*) GLvoid
+    WRAPPER05V(MultiTexCoord4f, GLenum, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(MultiTexCoord4fv, GLenum, GLfloat const*) GLvoid
     WRAPPER05V(MultiTexCoord4i, GLenum, GLint, GLint, GLint, GLint) GLvoid
-    WRAPPER02V(MultiTexCoord4iv, GLenum, GLint const*) GLvoid WRAPPER05V(
-        MultiTexCoord4s, GLenum, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(MultiTexCoord4sv, GLenum, GLshort const*) GLvoid
+    WRAPPER02V(MultiTexCoord4iv, GLenum, GLint const*) GLvoid
+    WRAPPER05V(MultiTexCoord4s, GLenum, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(MultiTexCoord4sv, GLenum, GLshort const*) GLvoid
     WRAPPER01V(MultTransposeMatrixd, GLdouble const*) GLvoid
     WRAPPER01V(MultTransposeMatrixf, GLfloat const*) GLvoid
     WRAPPER02V(SampleCoverage, GLclampf, GLboolean)
@@ -232,7 +347,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(FogCoordPointer, GLenum, GLsizei, GLvoid const*) GLvoid
     WRAPPER04V(MultiDrawArrays, GLenum, GLint*, GLsizei*, GLsizei) GLvoid
     WRAPPER05V(
-        MultiDrawElements, GLenum, GLsizei const*, GLenum, GLvoid const**,
+        MultiDrawElements,
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
         GLsizei) GLvoid WRAPPER02V(PointParameterf, GLenum, GLfloat) GLvoid
     WRAPPER02V(PointParameterfv, GLenum, GLfloat const*) GLvoid
     WRAPPER02V(PointParameteri, GLenum, GLint) GLvoid
@@ -252,9 +371,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(SecondaryColor3ui, GLuint, GLuint, GLuint) GLvoid
     WRAPPER01V(SecondaryColor3uiv, GLuint const*) GLvoid
     WRAPPER03V(SecondaryColor3us, GLushort, GLushort, GLushort) GLvoid
-    WRAPPER01V(SecondaryColor3usv, GLushort const*) GLvoid WRAPPER04V(
-        SecondaryColorPointer, GLint, GLenum, GLsizei, GLvoid const*) GLvoid
-    WRAPPER02V(WindowPos2d, GLdouble, GLdouble) GLvoid
+    WRAPPER01V(SecondaryColor3usv, GLushort const*) GLvoid
+    WRAPPER04V(SecondaryColorPointer, GLint, GLenum, GLsizei, GLvoid const*)
+        GLvoid WRAPPER02V(WindowPos2d, GLdouble, GLdouble) GLvoid
     WRAPPER01V(WindowPos2dv, GLdouble const*) GLvoid
     WRAPPER02V(WindowPos2f, GLfloat, GLfloat) GLvoid
     WRAPPER01V(WindowPos2fv, GLfloat const*) GLvoid
@@ -293,8 +412,8 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetQueryiv, GLenum, GLenum, GLint*) GLvoid
     WRAPPER03V(GetQueryObjectiv, GLuint, GLenum, GLint*) GLvoid
     WRAPPER03V(GetQueryObjectuiv, GLuint, GLenum, GLuint*) GLboolean
-    WRAPPER01R(IsBuffer, GLuint) GLboolean WRAPPER01R(
-        IsQuery, GLuint) GLvoid* WRAPPER02R(MapBuffer, GLenum, GLenum) GLboolean
+    WRAPPER01R(IsBuffer, GLuint) GLboolean WRAPPER01R(IsQuery, GLuint)
+        GLvoid* WRAPPER02R(MapBuffer, GLenum, GLenum) GLboolean
     WRAPPER01R(UnmapBuffer, GLenum)
 
 #endif /* GL_VERSION_1_5_OGLEXT */
@@ -315,10 +434,22 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01V(DisableVertexAttribArray, GLuint) GLvoid
     WRAPPER02V(DrawBuffers, GLsizei, GLenum const*) GLvoid
     WRAPPER01V(EnableVertexAttribArray, GLuint) GLvoid WRAPPER07V(
-        GetActiveAttrib, GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*,
+        GetActiveAttrib,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
         GLchar*) GLvoid
     WRAPPER07V(
-        GetActiveUniform, GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*,
+        GetActiveUniform,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
         GLchar*) GLvoid
     WRAPPER04V(GetAttachedShaders, GLuint, GLsizei, GLsizei*, GLuint*) GLint
     WRAPPER02R(GetAttribLocation, GLuint, GLchar const*) GLvoid
@@ -335,8 +466,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetVertexAttribiv, GLuint, GLenum, GLint*) GLvoid
     WRAPPER03V(GetVertexAttribPointerv, GLuint, GLenum, GLvoid**) GLboolean
     WRAPPER01R(IsProgram, GLuint) GLboolean WRAPPER01R(IsShader, GLuint) GLvoid
-    WRAPPER01V(LinkProgram, GLuint) GLvoid WRAPPER04V(
-        ShaderSource, GLuint, GLsizei, GLchar const**, GLint const*) GLvoid
+    WRAPPER01V(LinkProgram, GLuint) GLvoid
+    WRAPPER04V(ShaderSource, GLuint, GLsizei, GLchar const**, GLint const*)
+        GLvoid
     WRAPPER04V(StencilFuncSeparate, GLenum, GLenum, GLint, GLuint) GLvoid
     WRAPPER02V(StencilMaskSeparate, GLenum, GLuint) GLvoid
     WRAPPER04V(StencilOpSeparate, GLenum, GLenum, GLenum, GLenum) GLvoid
@@ -355,12 +487,13 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER05V(Uniform4f, GLint, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
     WRAPPER03V(Uniform4fv, GLint, GLsizei, GLfloat const*) GLvoid
     WRAPPER05V(Uniform4i, GLint, GLint, GLint, GLint, GLint) GLvoid
-    WRAPPER03V(Uniform4iv, GLint, GLsizei, GLint const*) GLvoid WRAPPER04V(
-        UniformMatrix2fv, GLint, GLsizei, GLboolean, GLfloat const*) GLvoid
+    WRAPPER03V(Uniform4iv, GLint, GLsizei, GLint const*) GLvoid
+    WRAPPER04V(UniformMatrix2fv, GLint, GLsizei, GLboolean, GLfloat const*)
+        GLvoid
     WRAPPER04V(UniformMatrix3fv, GLint, GLsizei, GLboolean, GLfloat const*)
-        GLvoid WRAPPER04V(
-            UniformMatrix4fv, GLint, GLsizei, GLboolean, GLfloat const*) GLvoid
-    WRAPPER01V(UseProgram, GLuint) GLvoid
+        GLvoid
+    WRAPPER04V(UniformMatrix4fv, GLint, GLsizei, GLboolean, GLfloat const*)
+        GLvoid WRAPPER01V(UseProgram, GLuint) GLvoid
     WRAPPER01V(ValidateProgram, GLuint) GLvoid
     WRAPPER02V(VertexAttrib1d, GLuint, GLdouble) GLvoid
     WRAPPER02V(VertexAttrib1dv, GLuint, GLdouble const*) GLvoid
@@ -380,25 +513,30 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER02V(VertexAttrib3fv, GLuint, GLfloat const*) GLvoid
     WRAPPER04V(VertexAttrib3s, GLuint, GLshort, GLshort, GLshort) GLvoid
     WRAPPER02V(VertexAttrib3sv, GLuint, GLshort const*) GLvoid
-    WRAPPER02V(VertexAttrib4bv, GLuint, GLbyte const*) GLvoid WRAPPER05V(
-        VertexAttrib4d, GLuint, GLdouble, GLdouble, GLdouble, GLdouble) GLvoid
-    WRAPPER02V(VertexAttrib4dv, GLuint, GLdouble const*) GLvoid WRAPPER05V(
-        VertexAttrib4f, GLuint, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(VertexAttrib4fv, GLuint, GLfloat const*) GLvoid
+    WRAPPER02V(VertexAttrib4bv, GLuint, GLbyte const*) GLvoid
+    WRAPPER05V(VertexAttrib4d, GLuint, GLdouble, GLdouble, GLdouble, GLdouble)
+        GLvoid WRAPPER02V(VertexAttrib4dv, GLuint, GLdouble const*) GLvoid
+    WRAPPER05V(VertexAttrib4f, GLuint, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(VertexAttrib4fv, GLuint, GLfloat const*) GLvoid
     WRAPPER02V(VertexAttrib4iv, GLuint, GLint const*) GLvoid
     WRAPPER02V(VertexAttrib4Nbv, GLuint, GLbyte const*) GLvoid
     WRAPPER02V(VertexAttrib4Niv, GLuint, GLint const*) GLvoid
-    WRAPPER02V(VertexAttrib4Nsv, GLuint, GLshort const*) GLvoid WRAPPER05V(
-        VertexAttrib4Nub, GLuint, GLubyte, GLubyte, GLubyte, GLubyte) GLvoid
-    WRAPPER02V(VertexAttrib4Nubv, GLuint, GLubyte const*) GLvoid
+    WRAPPER02V(VertexAttrib4Nsv, GLuint, GLshort const*) GLvoid
+    WRAPPER05V(VertexAttrib4Nub, GLuint, GLubyte, GLubyte, GLubyte, GLubyte)
+        GLvoid WRAPPER02V(VertexAttrib4Nubv, GLuint, GLubyte const*) GLvoid
     WRAPPER02V(VertexAttrib4Nuiv, GLuint, GLuint const*) GLvoid
-    WRAPPER02V(VertexAttrib4Nusv, GLuint, GLushort const*) GLvoid WRAPPER05V(
-        VertexAttrib4s, GLuint, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(VertexAttrib4sv, GLuint, GLshort const*) GLvoid
+    WRAPPER02V(VertexAttrib4Nusv, GLuint, GLushort const*) GLvoid
+    WRAPPER05V(VertexAttrib4s, GLuint, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(VertexAttrib4sv, GLuint, GLshort const*) GLvoid
     WRAPPER02V(VertexAttrib4ubv, GLuint, GLubyte const*) GLvoid
     WRAPPER02V(VertexAttrib4uiv, GLuint, GLuint const*) GLvoid
     WRAPPER02V(VertexAttrib4usv, GLuint, GLushort const*) GLvoid WRAPPER06V(
-        VertexAttribPointer, GLuint, GLint, GLenum, GLboolean, GLsizei,
+        VertexAttribPointer,
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
         GLvoid const*)
 
 #endif /* GL_VERSION_2_0_OGLEXT */
@@ -423,14 +561,26 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
             GLvoid
     WRAPPER03V(DrawElementArrayAPPLE, GLenum, GLint, GLsizei) GLvoid WRAPPER05V(
-        DrawRangeElementArrayAPPLE, GLenum, GLuint, GLuint, GLint,
+        DrawRangeElementArrayAPPLE,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint,
         GLsizei) GLvoid
     WRAPPER02V(ElementPointerAPPLE, GLenum, GLvoid const*) GLvoid WRAPPER04V(
-        MultiDrawElementArrayAPPLE, GLenum, GLint const*, GLsizei const*,
+        MultiDrawElementArrayAPPLE,
+        GLenum,
+        GLint const*,
+        GLsizei const*,
         GLsizei) GLvoid
     WRAPPER06V(
-        MultiDrawRangeElementArrayAPPLE, GLenum, GLuint, GLuint, GLint const*,
-        GLsizei const*, GLsizei)
+        MultiDrawRangeElementArrayAPPLE,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei)
 
 #endif /* GL_APPLE_element_array_OGLEXT */
 
@@ -544,15 +694,19 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER02V(MultiTexCoord3ivARB, GLenum, GLint const*) GLvoid
     WRAPPER04V(MultiTexCoord3sARB, GLenum, GLshort, GLshort, GLshort) GLvoid
     WRAPPER02V(MultiTexCoord3svARB, GLenum, GLshort const*) GLvoid WRAPPER05V(
-        MultiTexCoord4dARB, GLenum, GLdouble, GLdouble, GLdouble,
+        MultiTexCoord4dARB,
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble) GLvoid
-    WRAPPER02V(MultiTexCoord4dvARB, GLenum, GLdouble const*) GLvoid WRAPPER05V(
-        MultiTexCoord4fARB, GLenum, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(MultiTexCoord4fvARB, GLenum, GLfloat const*) GLvoid
+    WRAPPER02V(MultiTexCoord4dvARB, GLenum, GLdouble const*) GLvoid
+    WRAPPER05V(MultiTexCoord4fARB, GLenum, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(MultiTexCoord4fvARB, GLenum, GLfloat const*) GLvoid
     WRAPPER05V(MultiTexCoord4iARB, GLenum, GLint, GLint, GLint, GLint) GLvoid
-    WRAPPER02V(MultiTexCoord4ivARB, GLenum, GLint const*) GLvoid WRAPPER05V(
-        MultiTexCoord4sARB, GLenum, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(MultiTexCoord4svARB, GLenum, GLshort const*)
+    WRAPPER02V(MultiTexCoord4ivARB, GLenum, GLint const*) GLvoid
+    WRAPPER05V(MultiTexCoord4sARB, GLenum, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(MultiTexCoord4svARB, GLenum, GLshort const*)
 
 #endif /* GL_ARB_multitexture_OGLEXT */
 
@@ -561,7 +715,7 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_ARB_occlusion_query_OGLEXT
 
-        GLvoid WRAPPER02V(BeginQueryARB, GLenum, GLuint) GLvoid
+            GLvoid WRAPPER02V(BeginQueryARB, GLenum, GLuint) GLvoid
     WRAPPER02V(DeleteQueriesARB, GLsizei, GLuint const*) GLvoid
     WRAPPER01V(EndQueryARB, GLenum) GLvoid
     WRAPPER02V(GenQueriesARB, GLsizei, GLuint*) GLvoid
@@ -593,10 +747,19 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01R(CreateShaderObjectARB, GLenum) GLvoid
     WRAPPER01V(DeleteObjectARB, GLhandleARB) GLvoid
     WRAPPER02V(DetachObjectARB, GLhandleARB, GLhandleARB) GLvoid WRAPPER07V(
-        GetActiveUniformARB, GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*,
-        GLenum*, GLcharARB*) GLvoid
+        GetActiveUniformARB,
+        GLhandleARB,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLcharARB*) GLvoid
     WRAPPER04V(
-        GetAttachedObjectsARB, GLhandleARB, GLsizei, GLsizei*,
+        GetAttachedObjectsARB,
+        GLhandleARB,
+        GLsizei,
+        GLsizei*,
         GLhandleARB*) GLhandleARB WRAPPER01R(GetHandleARB, GLenum) GLvoid
     WRAPPER04V(GetInfoLogARB, GLhandleARB, GLsizei, GLsizei*, GLcharARB*) GLvoid
     WRAPPER03V(GetObjectParameterfvARB, GLhandleARB, GLenum, GLfloat*) GLvoid
@@ -606,7 +769,10 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetUniformivARB, GLhandleARB, GLint, GLint*) GLint
     WRAPPER02R(GetUniformLocationARB, GLhandleARB, GLcharARB const*) GLvoid
     WRAPPER01V(LinkProgramARB, GLhandleARB) GLvoid WRAPPER04V(
-        ShaderSourceARB, GLhandleARB, GLsizei, GLcharARB const**,
+        ShaderSourceARB,
+        GLhandleARB,
+        GLsizei,
+        GLcharARB const**,
         GLint const*) GLvoid WRAPPER02V(Uniform1fARB, GLint, GLfloat) GLvoid
     WRAPPER03V(Uniform1fvARB, GLint, GLsizei, GLfloat const*) GLvoid
     WRAPPER02V(Uniform1iARB, GLint, GLint) GLvoid
@@ -622,10 +788,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER05V(Uniform4fARB, GLint, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
     WRAPPER03V(Uniform4fvARB, GLint, GLsizei, GLfloat const*) GLvoid
     WRAPPER05V(Uniform4iARB, GLint, GLint, GLint, GLint, GLint) GLvoid
-    WRAPPER03V(Uniform4ivARB, GLint, GLsizei, GLint const*) GLvoid WRAPPER04V(
-        UniformMatrix2fvARB, GLint, GLsizei, GLboolean, GLfloat const*) GLvoid
-    WRAPPER04V(
-        UniformMatrix3fvARB, GLint, GLsizei, GLboolean, GLfloat const*) GLvoid
+    WRAPPER03V(Uniform4ivARB, GLint, GLsizei, GLint const*) GLvoid
+    WRAPPER04V(UniformMatrix2fvARB, GLint, GLsizei, GLboolean, GLfloat const*)
+        GLvoid
+    WRAPPER04V(UniformMatrix3fvARB, GLint, GLsizei, GLboolean, GLfloat const*)
+        GLvoid
     WRAPPER04V(UniformMatrix4fvARB, GLint, GLsizei, GLboolean, GLfloat const*)
         GLvoid WRAPPER01V(UseProgramObjectARB, GLhandleARB) GLvoid
     WRAPPER01V(ValidateProgramARB, GLhandleARB)
@@ -638,23 +805,68 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_ARB_texture_compression_OGLEXT
 
         GLvoid WRAPPER07V(
-            CompressedTexImage1DARB, GLenum, GLint, GLenum, GLsizei, GLint,
-            GLsizei, GLvoid const*) GLvoid
+            CompressedTexImage1DARB,
+            GLenum,
+            GLint,
+            GLenum,
+            GLsizei,
+            GLint,
+            GLsizei,
+            GLvoid const*) GLvoid
     WRAPPER08V(
-        CompressedTexImage2DARB, GLenum, GLint, GLenum, GLsizei, GLsizei, GLint,
-        GLsizei, GLvoid const*) GLvoid
+        CompressedTexImage2DARB,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER09V(
-        CompressedTexImage3DARB, GLenum, GLint, GLenum, GLsizei, GLsizei,
-        GLsizei, GLint, GLsizei, GLvoid const*) GLvoid
+        CompressedTexImage3DARB,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER07V(
-        CompressedTexSubImage1DARB, GLenum, GLint, GLint, GLsizei, GLenum,
-        GLsizei, GLvoid const*) GLvoid
+        CompressedTexSubImage1DARB,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER09V(
-        CompressedTexSubImage2DARB, GLenum, GLint, GLint, GLint, GLsizei,
-        GLsizei, GLenum, GLsizei, GLvoid const*) GLvoid
+        CompressedTexSubImage2DARB,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER11V(
-        CompressedTexSubImage3DARB, GLenum, GLint, GLint, GLint, GLint, GLsizei,
-        GLsizei, GLsizei, GLenum, GLsizei, GLvoid const*) GLvoid
+        CompressedTexSubImage3DARB,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*) GLvoid
     WRAPPER03V(GetCompressedTexImageARB, GLenum, GLint, GLvoid*)
 
 #endif /* GL_ARB_texture_compression_OGLEXT */
@@ -694,18 +906,21 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_ARB_vertex_buffer_object_OGLEXT
 
-        GLvoid WRAPPER02V(BindBufferARB, GLenum, GLuint) GLvoid WRAPPER04V(
-            BufferDataARB, GLenum, GLsizeiptrARB, GLvoid const*, GLenum) GLvoid
-    WRAPPER04V(
-        BufferSubDataARB, GLenum, GLintptrARB, GLsizeiptrARB,
-        GLvoid const*) GLvoid
+        GLvoid WRAPPER02V(BindBufferARB, GLenum, GLuint) GLvoid
+    WRAPPER04V(BufferDataARB, GLenum, GLsizeiptrARB, GLvoid const*, GLenum)
+        GLvoid WRAPPER04V(
+            BufferSubDataARB,
+            GLenum,
+            GLintptrARB,
+            GLsizeiptrARB,
+            GLvoid const*) GLvoid
     WRAPPER02V(DeleteBuffersARB, GLsizei, GLuint const*) GLvoid
     WRAPPER02V(GenBuffersARB, GLsizei, GLuint*) GLvoid
     WRAPPER03V(GetBufferParameterivARB, GLenum, GLenum, GLint*) GLvoid
     WRAPPER03V(GetBufferPointervARB, GLenum, GLenum, GLvoid**) GLvoid
     WRAPPER04V(GetBufferSubDataARB, GLenum, GLintptrARB, GLsizeiptrARB, GLvoid*)
-        GLboolean WRAPPER01R(IsBufferARB, GLuint) GLvoid* WRAPPER02R(
-            MapBufferARB, GLenum, GLenum) GLboolean
+        GLboolean WRAPPER01R(IsBufferARB, GLuint)
+            GLvoid* WRAPPER02R(MapBufferARB, GLenum, GLenum) GLboolean
     WRAPPER01R(UnmapBufferARB, GLenum)
 
 #endif /* GL_ARB_vertex_buffer_object_OGLEXT */
@@ -731,22 +946,42 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetVertexAttribivARB, GLuint, GLenum, GLint*) GLvoid
     WRAPPER03V(GetVertexAttribPointervARB, GLuint, GLenum, GLvoid**) GLboolean
     WRAPPER01R(IsProgramARB, GLuint) GLvoid WRAPPER06V(
-        ProgramEnvParameter4dARB, GLenum, GLuint, GLdouble, GLdouble, GLdouble,
+        ProgramEnvParameter4dARB,
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble) GLvoid
     WRAPPER03V(ProgramEnvParameter4dvARB, GLenum, GLuint, GLdouble const*)
         GLvoid WRAPPER06V(
-            ProgramEnvParameter4fARB, GLenum, GLuint, GLfloat, GLfloat, GLfloat,
+            ProgramEnvParameter4fARB,
+            GLenum,
+            GLuint,
+            GLfloat,
+            GLfloat,
+            GLfloat,
             GLfloat) GLvoid
     WRAPPER03V(ProgramEnvParameter4fvARB, GLenum, GLuint, GLfloat const*) GLvoid
     WRAPPER06V(
-        ProgramLocalParameter4dARB, GLenum, GLuint, GLdouble, GLdouble,
-        GLdouble, GLdouble) GLvoid
+        ProgramLocalParameter4dARB,
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble) GLvoid
     WRAPPER03V(ProgramLocalParameter4dvARB, GLenum, GLuint, GLdouble const*)
         GLvoid WRAPPER06V(
-            ProgramLocalParameter4fARB, GLenum, GLuint, GLfloat, GLfloat,
-            GLfloat, GLfloat) GLvoid
-    WRAPPER03V(
-        ProgramLocalParameter4fvARB, GLenum, GLuint, GLfloat const*) GLvoid
+            ProgramLocalParameter4fARB,
+            GLenum,
+            GLuint,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat) GLvoid
+    WRAPPER03V(ProgramLocalParameter4fvARB, GLenum, GLuint, GLfloat const*)
+        GLvoid
     WRAPPER04V(ProgramStringARB, GLenum, GLenum, GLsizei, GLvoid const*) GLvoid
     WRAPPER02V(VertexAttrib1dARB, GLuint, GLdouble) GLvoid
     WRAPPER02V(VertexAttrib1dvARB, GLuint, GLdouble const*) GLvoid
@@ -767,25 +1002,34 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER04V(VertexAttrib3sARB, GLuint, GLshort, GLshort, GLshort) GLvoid
     WRAPPER02V(VertexAttrib3svARB, GLuint, GLshort const*) GLvoid
     WRAPPER02V(VertexAttrib4bvARB, GLuint, GLbyte const*) GLvoid WRAPPER05V(
-        VertexAttrib4dARB, GLuint, GLdouble, GLdouble, GLdouble,
+        VertexAttrib4dARB,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble) GLvoid
-    WRAPPER02V(VertexAttrib4dvARB, GLuint, GLdouble const*) GLvoid WRAPPER05V(
-        VertexAttrib4fARB, GLuint, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(VertexAttrib4fvARB, GLuint, GLfloat const*) GLvoid
+    WRAPPER02V(VertexAttrib4dvARB, GLuint, GLdouble const*) GLvoid
+    WRAPPER05V(VertexAttrib4fARB, GLuint, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(VertexAttrib4fvARB, GLuint, GLfloat const*) GLvoid
     WRAPPER02V(VertexAttrib4ivARB, GLuint, GLint const*) GLvoid
     WRAPPER02V(VertexAttrib4NbvARB, GLuint, GLbyte const*) GLvoid
     WRAPPER02V(VertexAttrib4NivARB, GLuint, GLint const*) GLvoid
-    WRAPPER02V(VertexAttrib4NsvARB, GLuint, GLshort const*) GLvoid WRAPPER05V(
-        VertexAttrib4NubARB, GLuint, GLubyte, GLubyte, GLubyte, GLubyte) GLvoid
-    WRAPPER02V(VertexAttrib4NubvARB, GLuint, GLubyte const*) GLvoid
+    WRAPPER02V(VertexAttrib4NsvARB, GLuint, GLshort const*) GLvoid
+    WRAPPER05V(VertexAttrib4NubARB, GLuint, GLubyte, GLubyte, GLubyte, GLubyte)
+        GLvoid WRAPPER02V(VertexAttrib4NubvARB, GLuint, GLubyte const*) GLvoid
     WRAPPER02V(VertexAttrib4NuivARB, GLuint, GLuint const*) GLvoid
-    WRAPPER02V(VertexAttrib4NusvARB, GLuint, GLushort const*) GLvoid WRAPPER05V(
-        VertexAttrib4sARB, GLuint, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(VertexAttrib4svARB, GLuint, GLshort const*) GLvoid
+    WRAPPER02V(VertexAttrib4NusvARB, GLuint, GLushort const*) GLvoid
+    WRAPPER05V(VertexAttrib4sARB, GLuint, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(VertexAttrib4svARB, GLuint, GLshort const*) GLvoid
     WRAPPER02V(VertexAttrib4ubvARB, GLuint, GLubyte const*) GLvoid
     WRAPPER02V(VertexAttrib4uivARB, GLuint, GLuint const*) GLvoid
     WRAPPER02V(VertexAttrib4usvARB, GLuint, GLushort const*) GLvoid WRAPPER06V(
-        VertexAttribPointerARB, GLuint, GLint, GLenum, GLboolean, GLsizei,
+        VertexAttribPointerARB,
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
         GLvoid const*)
 
 #endif /* GL_ARB_vertex_program_OGLEXT */
@@ -795,11 +1039,17 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_ARB_vertex_shader_OGLEXT
 
-        GLvoid WRAPPER03V(
-            BindAttribLocationARB, GLhandleARB, GLuint, GLcharARB const*) GLvoid
-    WRAPPER07V(
-        GetActiveAttribARB, GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*,
-        GLenum*, GLcharARB*) GLint
+        GLvoid
+    WRAPPER03V(BindAttribLocationARB, GLhandleARB, GLuint, GLcharARB const*)
+        GLvoid WRAPPER07V(
+            GetActiveAttribARB,
+            GLhandleARB,
+            GLuint,
+            GLsizei,
+            GLsizei*,
+            GLint*,
+            GLenum*,
+            GLcharARB*) GLint
     WRAPPER02R(GetAttribLocationARB, GLhandleARB, GLcharARB const*)
 
 #endif /* GL_ARB_vertex_shader_OGLEXT */
@@ -866,25 +1116,74 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_ATI_fragment_shader_OGLEXT
 
         GLvoid WRAPPER06V(
-            AlphaFragmentOp1ATI, GLenum, GLuint, GLuint, GLuint, GLuint,
+            AlphaFragmentOp1ATI,
+            GLenum,
+            GLuint,
+            GLuint,
+            GLuint,
+            GLuint,
             GLuint) GLvoid
     WRAPPER09V(
-        AlphaFragmentOp2ATI, GLenum, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint) GLvoid
+        AlphaFragmentOp2ATI,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint) GLvoid
     WRAPPER12V(
-        AlphaFragmentOp3ATI, GLenum, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint, GLuint, GLuint, GLuint) GLvoid
-    WRAPPER00V(BeginFragmentShaderATI) GLvoid
+        AlphaFragmentOp3ATI,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint) GLvoid WRAPPER00V(BeginFragmentShaderATI) GLvoid
     WRAPPER01V(BindFragmentShaderATI, GLuint) GLvoid WRAPPER07V(
-        ColorFragmentOp1ATI, GLenum, GLuint, GLuint, GLuint, GLuint, GLuint,
+        ColorFragmentOp1ATI,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
         GLuint) GLvoid
     WRAPPER10V(
-        ColorFragmentOp2ATI, GLenum, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint, GLuint) GLvoid
+        ColorFragmentOp2ATI,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint) GLvoid
     WRAPPER13V(
-        ColorFragmentOp3ATI, GLenum, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint) GLvoid
-    WRAPPER01V(DeleteFragmentShaderATI, GLuint) GLvoid
+        ColorFragmentOp3ATI,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint) GLvoid WRAPPER01V(DeleteFragmentShaderATI, GLuint) GLvoid
     WRAPPER00V(EndFragmentShaderATI) GLuint
     WRAPPER01R(GenFragmentShadersATI, GLuint) GLvoid
     WRAPPER03V(PassTexCoordATI, GLuint, GLuint, GLenum) GLvoid
@@ -941,7 +1240,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01R(IsObjectBufferATI, GLuint) GLuint
     WRAPPER03R(NewObjectBufferATI, GLsizei, GLvoid const*, GLenum) GLvoid
     WRAPPER05V(
-        UpdateObjectBufferATI, GLuint, GLuint, GLsizei, GLvoid const*,
+        UpdateObjectBufferATI,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLvoid const*,
         GLenum) GLvoid
     WRAPPER05V(VariantArrayObjectATI, GLuint, GLenum, GLsizei, GLuint, GLuint)
 
@@ -956,8 +1259,14 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetVertexAttribArrayObjectfvATI, GLuint, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetVertexAttribArrayObjectivATI, GLuint, GLenum, GLint*) GLvoid
     WRAPPER07V(
-        VertexAttribArrayObjectATI, GLuint, GLint, GLenum, GLboolean, GLsizei,
-        GLuint, GLuint)
+        VertexAttribArrayObjectATI,
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLuint,
+        GLuint)
 
 #endif /* GL_ATI_vertex_attrib_array_object_OGLEXT */
 
@@ -1003,15 +1312,19 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER02V(VertexStream3ivATI, GLenum, GLint const*) GLvoid
     WRAPPER04V(VertexStream3sATI, GLenum, GLshort, GLshort, GLshort) GLvoid
     WRAPPER02V(VertexStream3svATI, GLenum, GLshort const*) GLvoid WRAPPER05V(
-        VertexStream4dATI, GLenum, GLdouble, GLdouble, GLdouble,
+        VertexStream4dATI,
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble) GLvoid
-    WRAPPER02V(VertexStream4dvATI, GLenum, GLdouble const*) GLvoid WRAPPER05V(
-        VertexStream4fATI, GLenum, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(VertexStream4fvATI, GLenum, GLfloat const*) GLvoid
+    WRAPPER02V(VertexStream4dvATI, GLenum, GLdouble const*) GLvoid
+    WRAPPER05V(VertexStream4fATI, GLenum, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(VertexStream4fvATI, GLenum, GLfloat const*) GLvoid
     WRAPPER05V(VertexStream4iATI, GLenum, GLint, GLint, GLint, GLint) GLvoid
-    WRAPPER02V(VertexStream4ivATI, GLenum, GLint const*) GLvoid WRAPPER05V(
-        VertexStream4sATI, GLenum, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(VertexStream4svATI, GLenum, GLshort const*)
+    WRAPPER02V(VertexStream4ivATI, GLenum, GLint const*) GLvoid
+    WRAPPER05V(VertexStream4sATI, GLenum, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(VertexStream4svATI, GLenum, GLshort const*)
 
 #endif /* GL_ATI_vertex_streams_OGLEXT */
 
@@ -1020,7 +1333,8 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_EXT_blend_color_OGLEXT
 
-        GLvoid WRAPPER04V(BlendColorEXT, GLclampf, GLclampf, GLclampf, GLclampf)
+            GLvoid
+    WRAPPER04V(BlendColorEXT, GLclampf, GLclampf, GLclampf, GLclampf)
 
 #endif /* GL_EXT_blend_color_OGLEXT */
 
@@ -1029,7 +1343,7 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_EXT_blend_equation_separate_OGLEXT
 
-            GLvoid WRAPPER02V(BlendEquationSeparateEXT, GLenum, GLenum)
+        GLvoid WRAPPER02V(BlendEquationSeparateEXT, GLenum, GLenum)
 
 #endif /* GL_EXT_blend_equation_separate_OGLEXT */
 
@@ -1038,7 +1352,7 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_EXT_blend_func_separate_OGLEXT
 
-                GLvoid
+            GLvoid
     WRAPPER04V(BlendFuncSeparateEXT, GLenum, GLenum, GLenum, GLenum)
 
 #endif /* GL_EXT_blend_func_separate_OGLEXT */
@@ -1081,30 +1395,62 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_convolution_OGLEXT
 
         GLvoid WRAPPER06V(
-            ConvolutionFilter1DEXT, GLenum, GLenum, GLsizei, GLenum, GLenum,
+            ConvolutionFilter1DEXT,
+            GLenum,
+            GLenum,
+            GLsizei,
+            GLenum,
+            GLenum,
             GLvoid const*) GLvoid
     WRAPPER07V(
-        ConvolutionFilter2DEXT, GLenum, GLenum, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*) GLvoid
+        ConvolutionFilter2DEXT,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*) GLvoid
     WRAPPER03V(ConvolutionParameterfEXT, GLenum, GLenum, GLfloat) GLvoid
     WRAPPER03V(ConvolutionParameterfvEXT, GLenum, GLenum, GLfloat const*) GLvoid
     WRAPPER03V(ConvolutionParameteriEXT, GLenum, GLenum, GLint) GLvoid
     WRAPPER03V(ConvolutionParameterivEXT, GLenum, GLenum, GLint const*) GLvoid
     WRAPPER05V(
-        CopyConvolutionFilter1DEXT, GLenum, GLenum, GLint, GLint,
+        CopyConvolutionFilter1DEXT,
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
         GLsizei) GLvoid
     WRAPPER06V(
-        CopyConvolutionFilter2DEXT, GLenum, GLenum, GLint, GLint, GLsizei,
+        CopyConvolutionFilter2DEXT,
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
         GLsizei) GLvoid
     WRAPPER04V(GetConvolutionFilterEXT, GLenum, GLenum, GLenum, GLvoid*) GLvoid
     WRAPPER03V(GetConvolutionParameterfvEXT, GLenum, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetConvolutionParameterivEXT, GLenum, GLenum, GLint*) GLvoid
     WRAPPER06V(
-        GetSeparableFilterEXT, GLenum, GLenum, GLenum, GLvoid*, GLvoid*,
+        GetSeparableFilterEXT,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLvoid*,
+        GLvoid*,
         GLvoid*) GLvoid
     WRAPPER08V(
-        SeparableFilter2DEXT, GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum,
-        GLvoid const*, GLvoid const*)
+        SeparableFilter2DEXT,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
+        GLvoid const*)
 
 #endif /* GL_EXT_convolution_OGLEXT */
 
@@ -1144,20 +1490,53 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_copy_texture_OGLEXT
 
         GLvoid WRAPPER07V(
-            CopyTexImage1DEXT, GLenum, GLint, GLenum, GLint, GLint, GLsizei,
+            CopyTexImage1DEXT,
+            GLenum,
+            GLint,
+            GLenum,
+            GLint,
+            GLint,
+            GLsizei,
             GLint) GLvoid
     WRAPPER08V(
-        CopyTexImage2DEXT, GLenum, GLint, GLenum, GLint, GLint, GLsizei,
-        GLsizei, GLint) GLvoid
+        CopyTexImage2DEXT,
+        GLenum,
+        GLint,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLint) GLvoid
     WRAPPER06V(
-        CopyTexSubImage1DEXT, GLenum, GLint, GLint, GLint, GLint,
+        CopyTexSubImage1DEXT,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
         GLsizei) GLvoid
     WRAPPER08V(
-        CopyTexSubImage2DEXT, GLenum, GLint, GLint, GLint, GLint, GLint,
-        GLsizei, GLsizei) GLvoid
+        CopyTexSubImage2DEXT,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei) GLvoid
     WRAPPER09V(
-        CopyTexSubImage3DEXT, GLenum, GLint, GLint, GLint, GLint, GLint, GLint,
-        GLsizei, GLsizei)
+        CopyTexSubImage3DEXT,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei)
 
 #endif /* GL_EXT_copy_texture_OGLEXT */
 
@@ -1186,7 +1565,12 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_draw_range_elements_OGLEXT
 
             GLvoid WRAPPER06V(
-                DrawRangeElementsEXT, GLenum, GLuint, GLuint, GLsizei, GLenum,
+                DrawRangeElementsEXT,
+                GLenum,
+                GLuint,
+                GLuint,
+                GLsizei,
+                GLenum,
                 GLvoid const*)
 
 #endif /* GL_EXT_draw_range_elements_OGLEXT */
@@ -1214,17 +1598,25 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01R(CheckFramebufferStatusEXT, GLenum) GLvoid
     WRAPPER02V(DeleteFramebuffersEXT, GLsizei, GLuint const*) GLvoid
     WRAPPER02V(DeleteRenderbuffersEXT, GLsizei, GLuint const*) GLvoid
-    WRAPPER04V(
-        FramebufferRenderbufferEXT, GLenum, GLenum, GLenum, GLuint) GLvoid
-    WRAPPER05V(
-        FramebufferTexture1DEXT, GLenum, GLenum, GLenum, GLuint, GLint) GLvoid
+    WRAPPER04V(FramebufferRenderbufferEXT, GLenum, GLenum, GLenum, GLuint)
+        GLvoid
+    WRAPPER05V(FramebufferTexture1DEXT, GLenum, GLenum, GLenum, GLuint, GLint)
+        GLvoid
     WRAPPER05V(FramebufferTexture2DEXT, GLenum, GLenum, GLenum, GLuint, GLint)
         GLvoid WRAPPER06V(
-            FramebufferTexture3DEXT, GLenum, GLenum, GLenum, GLuint, GLint,
+            FramebufferTexture3DEXT,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLuint,
+            GLint,
             GLint) GLvoid WRAPPER01V(GenerateMipmapEXT, GLenum) GLvoid
     WRAPPER02V(GenFramebuffersEXT, GLsizei, GLuint*) GLvoid
     WRAPPER02V(GenRenderbuffersEXT, GLsizei, GLuint*) GLvoid WRAPPER04V(
-        GetFramebufferAttachmentParameterivEXT, GLenum, GLenum, GLenum,
+        GetFramebufferAttachmentParameterivEXT,
+        GLenum,
+        GLenum,
+        GLenum,
         GLint*) GLvoid
     WRAPPER03V(GetRenderbufferParameterivEXT, GLenum, GLenum, GLint*) GLboolean
     WRAPPER01R(IsFramebufferEXT, GLuint) GLboolean
@@ -1238,8 +1630,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_EXT_histogram_OGLEXT
 
-        GLvoid WRAPPER05V(
-            GetHistogramEXT, GLenum, GLboolean, GLenum, GLenum, GLvoid*) GLvoid
+        GLvoid
+    WRAPPER05V(GetHistogramEXT, GLenum, GLboolean, GLenum, GLenum, GLvoid*)
+        GLvoid
     WRAPPER03V(GetHistogramParameterfvEXT, GLenum, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetHistogramParameterivEXT, GLenum, GLenum, GLint*) GLvoid
     WRAPPER05V(GetMinmaxEXT, GLenum, GLboolean, GLenum, GLenum, GLvoid*) GLvoid
@@ -1289,7 +1682,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
         GLvoid
     WRAPPER04V(MultiDrawArraysEXT, GLenum, GLint*, GLsizei*, GLsizei) GLvoid
     WRAPPER05V(
-        MultiDrawElementsEXT, GLenum, GLsizei const*, GLenum, GLvoid const**,
+        MultiDrawElementsEXT,
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
         GLsizei)
 
 #endif /* GL_EXT_multi_draw_arrays_OGLEXT */
@@ -1310,10 +1707,20 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_paletted_texture_OGLEXT
 
         GLvoid WRAPPER06V(
-            ColorSubTableEXT, GLenum, GLsizei, GLsizei, GLenum, GLenum,
+            ColorSubTableEXT,
+            GLenum,
+            GLsizei,
+            GLsizei,
+            GLenum,
+            GLenum,
             GLvoid const*) GLvoid
     WRAPPER06V(
-        ColorTableEXT, GLenum, GLenum, GLsizei, GLenum, GLenum,
+        ColorTableEXT,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER04V(GetColorTableEXT, GLenum, GLenum, GLenum, GLvoid*) GLvoid
     WRAPPER03V(GetColorTableParameterfvEXT, GLenum, GLenum, GLfloat*) GLvoid
@@ -1328,8 +1735,8 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
         GLvoid
     WRAPPER03V(PixelTransformParameterfEXT, GLenum, GLenum, GLfloat) GLvoid
-    WRAPPER03V(
-        PixelTransformParameterfvEXT, GLenum, GLenum, GLfloat const*) GLvoid
+    WRAPPER03V(PixelTransformParameterfvEXT, GLenum, GLenum, GLfloat const*)
+        GLvoid
     WRAPPER03V(PixelTransformParameteriEXT, GLenum, GLenum, GLint) GLvoid
     WRAPPER03V(PixelTransformParameterivEXT, GLenum, GLenum, GLint const*)
 
@@ -1395,11 +1802,25 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_subtexture_OGLEXT
 
             GLvoid WRAPPER07V(
-                TexSubImage1DEXT, GLenum, GLint, GLint, GLsizei, GLenum, GLenum,
+                TexSubImage1DEXT,
+                GLenum,
+                GLint,
+                GLint,
+                GLsizei,
+                GLenum,
+                GLenum,
                 GLvoid const*) GLvoid
     WRAPPER09V(
-        TexSubImage2DEXT, GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*)
+        TexSubImage2DEXT,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*)
 
 #endif /* GL_EXT_subtexture_OGLEXT */
 
@@ -1409,11 +1830,30 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_EXT_texture3D_OGLEXT
 
         GLvoid WRAPPER10V(
-            TexImage3DEXT, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei,
-            GLint, GLenum, GLenum, GLvoid const*) GLvoid
+            TexImage3DEXT,
+            GLenum,
+            GLint,
+            GLenum,
+            GLsizei,
+            GLsizei,
+            GLsizei,
+            GLint,
+            GLenum,
+            GLenum,
+            GLvoid const*) GLvoid
     WRAPPER11V(
-        TexSubImage3DEXT, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei,
-        GLsizei, GLenum, GLenum, GLvoid const*)
+        TexSubImage3DEXT,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*)
 
 #endif /* GL_EXT_texture3D_OGLEXT */
 
@@ -1422,9 +1862,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_EXT_texture_object_OGLEXT
 
-        GLboolean WRAPPER03R(
-            AreTexturesResidentEXT, GLsizei, GLuint const*, GLboolean*) GLvoid
-    WRAPPER02V(BindTextureEXT, GLenum, GLuint) GLvoid
+        GLboolean
+    WRAPPER03R(AreTexturesResidentEXT, GLsizei, GLuint const*, GLboolean*)
+        GLvoid WRAPPER02V(BindTextureEXT, GLenum, GLuint) GLvoid
     WRAPPER02V(DeleteTexturesEXT, GLsizei, GLuint const*) GLvoid
     WRAPPER02V(GenTexturesEXT, GLsizei, GLuint*) GLboolean
     WRAPPER01R(IsTextureEXT, GLuint) GLvoid
@@ -1454,7 +1894,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER04V(IndexPointerEXT, GLenum, GLsizei, GLsizei, GLvoid const*) GLvoid
     WRAPPER04V(NormalPointerEXT, GLenum, GLsizei, GLsizei, GLvoid const*) GLvoid
     WRAPPER05V(
-        TexCoordPointerEXT, GLint, GLenum, GLsizei, GLsizei,
+        TexCoordPointerEXT,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
         GLvoid const*) GLvoid
     WRAPPER05V(VertexPointerEXT, GLint, GLenum, GLsizei, GLsizei, GLvoid const*)
 
@@ -1539,8 +1983,8 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(GetImageTransformParameterfvHP, GLenum, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetImageTransformParameterivHP, GLenum, GLenum, GLint*) GLvoid
     WRAPPER03V(ImageTransformParameterfHP, GLenum, GLenum, GLfloat) GLvoid
-    WRAPPER03V(
-        ImageTransformParameterfvHP, GLenum, GLenum, GLfloat const*) GLvoid
+    WRAPPER03V(ImageTransformParameterfvHP, GLenum, GLenum, GLfloat const*)
+        GLvoid
     WRAPPER03V(ImageTransformParameteriHP, GLenum, GLenum, GLint) GLvoid
     WRAPPER03V(ImageTransformParameterivHP, GLenum, GLenum, GLint const*)
 
@@ -1552,11 +1996,20 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_IBM_multimode_draw_arrays_OGLEXT
 
         GLvoid WRAPPER05V(
-            MultiModeDrawArraysIBM, GLenum const*, GLint const*, GLsizei const*,
-            GLsizei, GLint) GLvoid
+            MultiModeDrawArraysIBM,
+            GLenum const*,
+            GLint const*,
+            GLsizei const*,
+            GLsizei,
+            GLint) GLvoid
     WRAPPER06V(
-        MultiModeDrawElementsIBM, GLenum const*, GLsizei const*, GLenum,
-        GLvoid const* const*, GLsizei, GLint)
+        MultiModeDrawElementsIBM,
+        GLenum const*,
+        GLsizei const*,
+        GLenum,
+        GLvoid const* const*,
+        GLsizei,
+        GLint)
 
 #endif /* GL_IBM_multimode_draw_arrays_OGLEXT */
 
@@ -1566,21 +2019,34 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_IBM_vertex_array_lists_OGLEXT
 
         GLvoid
-    WRAPPER05V(
-        ColorPointerListIBM, GLint, GLenum, GLint, GLvoid const**, GLint) GLvoid
+    WRAPPER05V(ColorPointerListIBM, GLint, GLenum, GLint, GLvoid const**, GLint)
+        GLvoid
     WRAPPER03V(EdgeFlagPointerListIBM, GLint, GLboolean const**, GLint) GLvoid
-    WRAPPER04V(
-        FogCoordPointerListIBM, GLenum, GLint, GLvoid const**, GLint) GLvoid
+    WRAPPER04V(FogCoordPointerListIBM, GLenum, GLint, GLvoid const**, GLint)
+        GLvoid
     WRAPPER04V(IndexPointerListIBM, GLenum, GLint, GLvoid const**, GLint) GLvoid
     WRAPPER04V(NormalPointerListIBM, GLenum, GLint, GLvoid const**, GLint)
         GLvoid WRAPPER05V(
-            SecondaryColorPointerListIBM, GLint, GLenum, GLint, GLvoid const**,
+            SecondaryColorPointerListIBM,
+            GLint,
+            GLenum,
+            GLint,
+            GLvoid const**,
             GLint) GLvoid
     WRAPPER05V(
-        TexCoordPointerListIBM, GLint, GLenum, GLint, GLvoid const**,
+        TexCoordPointerListIBM,
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
         GLint) GLvoid
     WRAPPER05V(
-        VertexPointerListIBM, GLint, GLenum, GLint, GLvoid const**, GLint)
+        VertexPointerListIBM,
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
+        GLint)
 
 #endif /* GL_IBM_vertex_array_lists_OGLEXT */
 
@@ -1653,14 +2119,22 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_NV_element_array_OGLEXT
 
         GLvoid WRAPPER03V(DrawElementArrayNV, GLenum, GLint, GLsizei) GLvoid
-    WRAPPER05V(
-        DrawRangeElementArrayNV, GLenum, GLuint, GLuint, GLint, GLsizei) GLvoid
-    WRAPPER02V(ElementPointerNV, GLenum, GLvoid const*) GLvoid WRAPPER04V(
-        MultiDrawElementArrayNV, GLenum, GLint const*, GLsizei const*,
+    WRAPPER05V(DrawRangeElementArrayNV, GLenum, GLuint, GLuint, GLint, GLsizei)
+        GLvoid WRAPPER02V(ElementPointerNV, GLenum, GLvoid const*) GLvoid
+    WRAPPER04V(
+        MultiDrawElementArrayNV,
+        GLenum,
+        GLint const*,
+        GLsizei const*,
         GLsizei) GLvoid
     WRAPPER06V(
-        MultiDrawRangeElementArrayNV, GLenum, GLuint, GLuint, GLint const*,
-        GLsizei const*, GLsizei)
+        MultiDrawRangeElementArrayNV,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei)
 
 #endif /* GL_NV_element_array_OGLEXT */
 
@@ -1669,16 +2143,31 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_NV_evaluators_OGLEXT
 
-        GLvoid WRAPPER02V(EvalMapsNV, GLenum, GLenum) GLvoid WRAPPER04V(
-            GetMapAttribParameterfvNV, GLenum, GLuint, GLenum, GLfloat*) GLvoid
+        GLvoid WRAPPER02V(EvalMapsNV, GLenum, GLenum) GLvoid
+    WRAPPER04V(GetMapAttribParameterfvNV, GLenum, GLuint, GLenum, GLfloat*)
+        GLvoid
     WRAPPER04V(GetMapAttribParameterivNV, GLenum, GLuint, GLenum, GLint*) GLvoid
     WRAPPER07V(
-        GetMapControlPointsNV, GLenum, GLuint, GLenum, GLsizei, GLsizei,
-        GLboolean, GLvoid*) GLvoid
+        GetMapControlPointsNV,
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLboolean,
+        GLvoid*) GLvoid
     WRAPPER03V(GetMapParameterfvNV, GLenum, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetMapParameterivNV, GLenum, GLenum, GLint*) GLvoid WRAPPER09V(
-        MapControlPointsNV, GLenum, GLuint, GLenum, GLsizei, GLsizei, GLint,
-        GLint, GLboolean, GLvoid const*) GLvoid
+        MapControlPointsNV,
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLint,
+        GLboolean,
+        GLvoid const*) GLvoid
     WRAPPER03V(MapParameterfvNV, GLenum, GLenum, GLfloat const*) GLvoid
     WRAPPER03V(MapParameterivNV, GLenum, GLenum, GLint const*)
 
@@ -1705,22 +2194,46 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_NV_fragment_program_OGLEXT
 
         GLvoid WRAPPER04V(
-            GetProgramNamedParameterdvNV, GLuint, GLsizei, GLubyte const*,
+            GetProgramNamedParameterdvNV,
+            GLuint,
+            GLsizei,
+            GLubyte const*,
             GLdouble*) GLvoid
     WRAPPER04V(
-        GetProgramNamedParameterfvNV, GLuint, GLsizei, GLubyte const*,
+        GetProgramNamedParameterfvNV,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
         GLfloat*) GLvoid
     WRAPPER07V(
-        ProgramNamedParameter4dNV, GLuint, GLsizei, GLubyte const*, GLdouble,
-        GLdouble, GLdouble, GLdouble) GLvoid
+        ProgramNamedParameter4dNV,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble) GLvoid
     WRAPPER04V(
-        ProgramNamedParameter4dvNV, GLuint, GLsizei, GLubyte const*,
+        ProgramNamedParameter4dvNV,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
         GLdouble const*) GLvoid
     WRAPPER07V(
-        ProgramNamedParameter4fNV, GLuint, GLsizei, GLubyte const*, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
+        ProgramNamedParameter4fNV,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER04V(
-        ProgramNamedParameter4fvNV, GLuint, GLsizei, GLubyte const*,
+        ProgramNamedParameter4fvNV,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
         GLfloat const*)
 
 #endif /* GL_NV_fragment_program_OGLEXT */
@@ -1742,7 +2255,11 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER02V(MultiTexCoord2hvNV, GLenum, GLhalfNV const*) GLvoid
     WRAPPER04V(MultiTexCoord3hNV, GLenum, GLhalfNV, GLhalfNV, GLhalfNV) GLvoid
     WRAPPER02V(MultiTexCoord3hvNV, GLenum, GLhalfNV const*) GLvoid WRAPPER05V(
-        MultiTexCoord4hNV, GLenum, GLhalfNV, GLhalfNV, GLhalfNV,
+        MultiTexCoord4hNV,
+        GLenum,
+        GLhalfNV,
+        GLhalfNV,
+        GLhalfNV,
         GLhalfNV) GLvoid
     WRAPPER02V(MultiTexCoord4hvNV, GLenum, GLhalfNV const*) GLvoid
     WRAPPER03V(Normal3hNV, GLhalfNV, GLhalfNV, GLhalfNV) GLvoid
@@ -1768,9 +2285,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(VertexAttrib2hNV, GLuint, GLhalfNV, GLhalfNV) GLvoid
     WRAPPER02V(VertexAttrib2hvNV, GLuint, GLhalfNV const*) GLvoid
     WRAPPER04V(VertexAttrib3hNV, GLuint, GLhalfNV, GLhalfNV, GLhalfNV) GLvoid
-    WRAPPER02V(VertexAttrib3hvNV, GLuint, GLhalfNV const*) GLvoid WRAPPER05V(
-        VertexAttrib4hNV, GLuint, GLhalfNV, GLhalfNV, GLhalfNV, GLhalfNV) GLvoid
-    WRAPPER02V(VertexAttrib4hvNV, GLuint, GLhalfNV const*) GLvoid
+    WRAPPER02V(VertexAttrib3hvNV, GLuint, GLhalfNV const*) GLvoid
+    WRAPPER05V(VertexAttrib4hNV, GLuint, GLhalfNV, GLhalfNV, GLhalfNV, GLhalfNV)
+        GLvoid WRAPPER02V(VertexAttrib4hvNV, GLuint, GLhalfNV const*) GLvoid
     WRAPPER03V(VertexAttribs1hvNV, GLuint, GLsizei, GLhalfNV const*) GLvoid
     WRAPPER03V(VertexAttribs2hvNV, GLuint, GLsizei, GLhalfNV const*) GLvoid
     WRAPPER03V(VertexAttribs3hvNV, GLuint, GLsizei, GLhalfNV const*) GLvoid
@@ -1833,24 +2350,42 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
         GLvoid
     WRAPPER06V(CombinerInputNV, GLenum, GLenum, GLenum, GLenum, GLenum, GLenum)
         GLvoid WRAPPER10V(
-            CombinerOutputNV, GLenum, GLenum, GLenum, GLenum, GLenum, GLenum,
-            GLenum, GLboolean, GLboolean, GLboolean) GLvoid
+            CombinerOutputNV,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLenum,
+            GLboolean,
+            GLboolean,
+            GLboolean) GLvoid
     WRAPPER02V(CombinerParameterfNV, GLenum, GLfloat) GLvoid
     WRAPPER02V(CombinerParameterfvNV, GLenum, GLfloat const*) GLvoid
     WRAPPER02V(CombinerParameteriNV, GLenum, GLint) GLvoid
     WRAPPER02V(CombinerParameterivNV, GLenum, GLint const*) GLvoid
     WRAPPER04V(FinalCombinerInputNV, GLenum, GLenum, GLenum, GLenum) GLvoid
     WRAPPER05V(
-        GetCombinerInputParameterfvNV, GLenum, GLenum, GLenum, GLenum,
+        GetCombinerInputParameterfvNV,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
         GLfloat*) GLvoid
     WRAPPER05V(
-        GetCombinerInputParameterivNV, GLenum, GLenum, GLenum, GLenum,
+        GetCombinerInputParameterivNV,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
         GLint*) GLvoid
-    WRAPPER04V(
-        GetCombinerOutputParameterfvNV, GLenum, GLenum, GLenum, GLfloat*) GLvoid
+    WRAPPER04V(GetCombinerOutputParameterfvNV, GLenum, GLenum, GLenum, GLfloat*)
+        GLvoid
     WRAPPER04V(GetCombinerOutputParameterivNV, GLenum, GLenum, GLenum, GLint*)
-        GLvoid WRAPPER03V(
-            GetFinalCombinerInputParameterfvNV, GLenum, GLenum, GLfloat*) GLvoid
+        GLvoid
+    WRAPPER03V(GetFinalCombinerInputParameterfvNV, GLenum, GLenum, GLfloat*)
+        GLvoid
     WRAPPER03V(GetFinalCombinerInputParameterivNV, GLenum, GLenum, GLint*)
 
 #endif /* GL_NV_register_combiners_OGLEXT */
@@ -1860,8 +2395,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 
 #ifdef GL_NV_register_combiners2_OGLEXT
 
-        GLvoid WRAPPER03V(
-            CombinerStageParameterfvNV, GLenum, GLenum, GLfloat const*) GLvoid
+        GLvoid
+    WRAPPER03V(CombinerStageParameterfvNV, GLenum, GLenum, GLfloat const*)
+        GLvoid
     WRAPPER03V(GetCombinerStageParameterfvNV, GLenum, GLenum, GLfloat*)
 
 #endif /* GL_NV_register_combiners2_OGLEXT */
@@ -1896,8 +2432,9 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER02V(DeleteProgramsNV, GLsizei, GLuint const*) GLvoid
     WRAPPER03V(ExecuteProgramNV, GLenum, GLuint, GLfloat const*) GLvoid
     WRAPPER02V(GenProgramsNV, GLsizei, GLuint*) GLvoid
-    WRAPPER03V(GetProgramivNV, GLuint, GLenum, GLint*) GLvoid WRAPPER04V(
-        GetProgramParameterdvNV, GLenum, GLuint, GLenum, GLdouble*) GLvoid
+    WRAPPER03V(GetProgramivNV, GLuint, GLenum, GLint*) GLvoid
+    WRAPPER04V(GetProgramParameterdvNV, GLenum, GLuint, GLenum, GLdouble*)
+        GLvoid
     WRAPPER04V(GetProgramParameterfvNV, GLenum, GLuint, GLenum, GLfloat*) GLvoid
     WRAPPER03V(GetProgramStringNV, GLuint, GLenum, GLubyte*) GLvoid
     WRAPPER04V(GetTrackMatrixivNV, GLenum, GLuint, GLenum, GLint*) GLvoid
@@ -1908,17 +2445,27 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER01R(IsProgramNV, GLuint) GLvoid
     WRAPPER04V(LoadProgramNV, GLenum, GLuint, GLsizei, GLubyte const*) GLvoid
     WRAPPER06V(
-        ProgramParameter4dNV, GLenum, GLuint, GLdouble, GLdouble, GLdouble,
+        ProgramParameter4dNV,
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble) GLvoid
     WRAPPER03V(ProgramParameter4dvNV, GLenum, GLuint, GLdouble const*) GLvoid
     WRAPPER06V(
-        ProgramParameter4fNV, GLenum, GLuint, GLfloat, GLfloat, GLfloat,
+        ProgramParameter4fNV,
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER03V(ProgramParameter4fvNV, GLenum, GLuint, GLfloat const*) GLvoid
-    WRAPPER04V(
-        ProgramParameters4dvNV, GLenum, GLuint, GLuint, GLdouble const*) GLvoid
-    WRAPPER04V(
-        ProgramParameters4fvNV, GLenum, GLuint, GLuint, GLfloat const*) GLvoid
+    WRAPPER04V(ProgramParameters4dvNV, GLenum, GLuint, GLuint, GLdouble const*)
+        GLvoid
+    WRAPPER04V(ProgramParameters4fvNV, GLenum, GLuint, GLuint, GLfloat const*)
+        GLvoid
     WRAPPER02V(RequestResidentProgramsNV, GLsizei, GLuint const*) GLvoid
     WRAPPER04V(TrackMatrixNV, GLenum, GLuint, GLenum, GLenum) GLvoid
     WRAPPER02V(VertexAttrib1dNV, GLuint, GLdouble) GLvoid
@@ -1938,16 +2485,21 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER04V(VertexAttrib3fNV, GLuint, GLfloat, GLfloat, GLfloat) GLvoid
     WRAPPER02V(VertexAttrib3fvNV, GLuint, GLfloat const*) GLvoid
     WRAPPER04V(VertexAttrib3sNV, GLuint, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(VertexAttrib3svNV, GLuint, GLshort const*) GLvoid WRAPPER05V(
-        VertexAttrib4dNV, GLuint, GLdouble, GLdouble, GLdouble, GLdouble) GLvoid
-    WRAPPER02V(VertexAttrib4dvNV, GLuint, GLdouble const*) GLvoid WRAPPER05V(
-        VertexAttrib4fNV, GLuint, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER02V(VertexAttrib4fvNV, GLuint, GLfloat const*) GLvoid WRAPPER05V(
-        VertexAttrib4sNV, GLuint, GLshort, GLshort, GLshort, GLshort) GLvoid
-    WRAPPER02V(VertexAttrib4svNV, GLuint, GLshort const*) GLvoid WRAPPER05V(
-        VertexAttrib4ubNV, GLuint, GLubyte, GLubyte, GLubyte, GLubyte) GLvoid
-    WRAPPER02V(VertexAttrib4ubvNV, GLuint, GLubyte const*) GLvoid WRAPPER05V(
-        VertexAttribPointerNV, GLuint, GLint, GLenum, GLsizei,
+    WRAPPER02V(VertexAttrib3svNV, GLuint, GLshort const*) GLvoid
+    WRAPPER05V(VertexAttrib4dNV, GLuint, GLdouble, GLdouble, GLdouble, GLdouble)
+        GLvoid WRAPPER02V(VertexAttrib4dvNV, GLuint, GLdouble const*) GLvoid
+    WRAPPER05V(VertexAttrib4fNV, GLuint, GLfloat, GLfloat, GLfloat, GLfloat)
+        GLvoid WRAPPER02V(VertexAttrib4fvNV, GLuint, GLfloat const*) GLvoid
+    WRAPPER05V(VertexAttrib4sNV, GLuint, GLshort, GLshort, GLshort, GLshort)
+        GLvoid WRAPPER02V(VertexAttrib4svNV, GLuint, GLshort const*) GLvoid
+    WRAPPER05V(VertexAttrib4ubNV, GLuint, GLubyte, GLubyte, GLubyte, GLubyte)
+        GLvoid WRAPPER02V(VertexAttrib4ubvNV, GLuint, GLubyte const*) GLvoid
+    WRAPPER05V(
+        VertexAttribPointerNV,
+        GLuint,
+        GLint,
+        GLenum,
+        GLsizei,
         GLvoid const*) GLvoid
     WRAPPER03V(VertexAttribs1dvNV, GLuint, GLsizei, GLdouble const*) GLvoid
     WRAPPER03V(VertexAttribs1fvNV, GLuint, GLsizei, GLfloat const*) GLvoid
@@ -1993,7 +2545,12 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
     WRAPPER03V(ColorTableParameterfvSGI, GLenum, GLenum, GLfloat const*) GLvoid
     WRAPPER03V(ColorTableParameterivSGI, GLenum, GLenum, GLint const*) GLvoid
     WRAPPER06V(
-        ColorTableSGI, GLenum, GLenum, GLsizei, GLenum, GLenum,
+        ColorTableSGI,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*) GLvoid
     WRAPPER05V(CopyColorTableSGI, GLenum, GLenum, GLint, GLint, GLsizei) GLvoid
     WRAPPER03V(GetColorTableParameterfvSGI, GLenum, GLenum, GLfloat*) GLvoid
@@ -2074,11 +2631,33 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_SGIS_texture4D_OGLEXT
 
         GLvoid WRAPPER11V(
-            TexImage4DSGIS, GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei,
-            GLsizei, GLint, GLenum, GLenum, GLvoid const*) GLvoid
+            TexImage4DSGIS,
+            GLenum,
+            GLint,
+            GLenum,
+            GLsizei,
+            GLsizei,
+            GLsizei,
+            GLsizei,
+            GLint,
+            GLenum,
+            GLenum,
+            GLvoid const*) GLvoid
     WRAPPER13V(
-        TexSubImage4DSGIS, GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei,
-        GLsizei, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*)
+        TexSubImage4DSGIS,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*)
 
 #endif /* GL_SGIS_texture4D_OGLEXT */
 
@@ -2213,12 +2792,36 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_SGIX_polynomial_ffd_OGLEXT
 
             GLvoid WRAPPER14V(
-                DeformationMap3dSGIX, GLenum, GLdouble, GLdouble, GLint, GLint,
-                GLdouble, GLdouble, GLint, GLint, GLdouble, GLdouble, GLint,
-                GLint, GLdouble const*) GLvoid
+                DeformationMap3dSGIX,
+                GLenum,
+                GLdouble,
+                GLdouble,
+                GLint,
+                GLint,
+                GLdouble,
+                GLdouble,
+                GLint,
+                GLint,
+                GLdouble,
+                GLdouble,
+                GLint,
+                GLint,
+                GLdouble const*) GLvoid
     WRAPPER14V(
-        DeformationMap3fSGIX, GLenum, GLfloat, GLfloat, GLint, GLint, GLfloat,
-        GLfloat, GLint, GLint, GLfloat, GLfloat, GLint, GLint,
+        DeformationMap3fSGIX,
+        GLenum,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
         GLfloat const*) GLvoid WRAPPER01V(DeformSGIX, GLbitfield) GLvoid
     WRAPPER01V(LoadIdentityDeformationMapSGIX, GLbitfield)
 
@@ -2301,113 +2904,283 @@ GLvoid WRAPPER04V(BlendColor, GLclampf, GLclampf, GLclampf, GLclampf) GLvoid
 #ifdef GL_SUN_vertex_OGLEXT
 
         GLvoid WRAPPER06V(
-            Color3fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+            Color3fVertex3fSUN,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
             GLfloat) GLvoid
     WRAPPER02V(Color3fVertex3fvSUN, GLfloat const*, GLfloat const*) GLvoid
     WRAPPER10V(
-        Color4fNormal3fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
+        Color4fNormal3fVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        Color4fNormal3fVertex3fvSUN, GLfloat const*, GLfloat const*,
+        Color4fNormal3fVertex3fvSUN,
+        GLfloat const*,
+        GLfloat const*,
         GLfloat const*) GLvoid
     WRAPPER06V(
-        Color4ubVertex2fSUN, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat,
+        Color4ubVertex2fSUN,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER02V(Color4ubVertex2fvSUN, GLubyte const*, GLfloat const*) GLvoid
     WRAPPER07V(
-        Color4ubVertex3fSUN, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat,
-        GLfloat, GLfloat) GLvoid
+        Color4ubVertex3fSUN,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER02V(Color4ubVertex3fvSUN, GLubyte const*, GLfloat const*) GLvoid
     WRAPPER06V(
-        Normal3fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+        Normal3fVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER02V(Normal3fVertex3fvSUN, GLfloat const*, GLfloat const*) GLvoid
     WRAPPER07V(
-        ReplacementCodeuiColor3fVertex3fSUN, GLuint, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
+        ReplacementCodeuiColor3fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        ReplacementCodeuiColor3fVertex3fvSUN, GLuint const*, GLfloat const*,
+        ReplacementCodeuiColor3fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
         GLfloat const*) GLvoid
     WRAPPER11V(
-        ReplacementCodeuiColor4fNormal3fVertex3fSUN, GLuint, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+        ReplacementCodeuiColor4fNormal3fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER04V(
-        ReplacementCodeuiColor4fNormal3fVertex3fvSUN, GLuint const*,
-        GLfloat const*, GLfloat const*, GLfloat const*) GLvoid
+        ReplacementCodeuiColor4fNormal3fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
     WRAPPER08V(
-        ReplacementCodeuiColor4ubVertex3fSUN, GLuint, GLubyte, GLubyte, GLubyte,
-        GLubyte, GLfloat, GLfloat, GLfloat) GLvoid
+        ReplacementCodeuiColor4ubVertex3fSUN,
+        GLuint,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        ReplacementCodeuiColor4ubVertex3fvSUN, GLuint const*, GLubyte const*,
+        ReplacementCodeuiColor4ubVertex3fvSUN,
+        GLuint const*,
+        GLubyte const*,
         GLfloat const*) GLvoid
     WRAPPER07V(
-        ReplacementCodeuiNormal3fVertex3fSUN, GLuint, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
+        ReplacementCodeuiNormal3fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        ReplacementCodeuiNormal3fVertex3fvSUN, GLuint const*, GLfloat const*,
+        ReplacementCodeuiNormal3fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
         GLfloat const*) GLvoid
     WRAPPER13V(
-        ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN, GLuint, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
+        ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER05V(
-        ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN, GLuint const*,
-        GLfloat const*, GLfloat const*, GLfloat const*, GLfloat const*) GLvoid
+        ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
     WRAPPER09V(
-        ReplacementCodeuiTexCoord2fNormal3fVertex3fSUN, GLuint, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER04V(
-        ReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN, GLuint const*,
-        GLfloat const*, GLfloat const*, GLfloat const*) GLvoid
-    WRAPPER06V(
-        ReplacementCodeuiTexCoord2fVertex3fSUN, GLuint, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER03V(
-        ReplacementCodeuiTexCoord2fVertex3fvSUN, GLuint const*, GLfloat const*,
-        GLfloat const*) GLvoid
-    WRAPPER04V(ReplacementCodeuiVertex3fSUN, GLuint, GLfloat, GLfloat, GLfloat)
-        GLvoid WRAPPER02V(
-            ReplacementCodeuiVertex3fvSUN, GLuint const*, GLfloat const*) GLvoid
-    WRAPPER08V(
-        TexCoord2fColor3fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
-    WRAPPER03V(
-        TexCoord2fColor3fVertex3fvSUN, GLfloat const*, GLfloat const*,
-        GLfloat const*) GLvoid
-    WRAPPER12V(
-        TexCoord2fColor4fNormal3fVertex3fSUN, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+        ReplacementCodeuiTexCoord2fNormal3fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER04V(
-        TexCoord2fColor4fNormal3fVertex3fvSUN, GLfloat const*, GLfloat const*,
-        GLfloat const*, GLfloat const*) GLvoid
-    WRAPPER09V(
-        TexCoord2fColor4ubVertex3fSUN, GLfloat, GLfloat, GLubyte, GLubyte,
-        GLubyte, GLubyte, GLfloat, GLfloat, GLfloat) GLvoid
+        ReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
+    WRAPPER06V(
+        ReplacementCodeuiTexCoord2fVertex3fSUN,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        TexCoord2fColor4ubVertex3fvSUN, GLfloat const*, GLubyte const*,
+        ReplacementCodeuiTexCoord2fVertex3fvSUN,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
+    WRAPPER04V(ReplacementCodeuiVertex3fSUN, GLuint, GLfloat, GLfloat, GLfloat)
+        GLvoid
+    WRAPPER02V(ReplacementCodeuiVertex3fvSUN, GLuint const*, GLfloat const*)
+        GLvoid WRAPPER08V(
+            TexCoord2fColor3fVertex3fSUN,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat,
+            GLfloat) GLvoid
+    WRAPPER03V(
+        TexCoord2fColor3fVertex3fvSUN,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
+    WRAPPER12V(
+        TexCoord2fColor4fNormal3fVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
+    WRAPPER04V(
+        TexCoord2fColor4fNormal3fVertex3fvSUN,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
+    WRAPPER09V(
+        TexCoord2fColor4ubVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
+    WRAPPER03V(
+        TexCoord2fColor4ubVertex3fvSUN,
+        GLfloat const*,
+        GLubyte const*,
         GLfloat const*) GLvoid
     WRAPPER08V(
-        TexCoord2fNormal3fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
+        TexCoord2fNormal3fVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER03V(
-        TexCoord2fNormal3fVertex3fvSUN, GLfloat const*, GLfloat const*,
+        TexCoord2fNormal3fVertex3fvSUN,
+        GLfloat const*,
+        GLfloat const*,
         GLfloat const*) GLvoid
     WRAPPER05V(
-        TexCoord2fVertex3fSUN, GLfloat, GLfloat, GLfloat, GLfloat,
+        TexCoord2fVertex3fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat) GLvoid
     WRAPPER02V(TexCoord2fVertex3fvSUN, GLfloat const*, GLfloat const*) GLvoid
     WRAPPER15V(
-        TexCoord4fColor4fNormal3fVertex4fSUN, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat) GLvoid
+        TexCoord4fColor4fNormal3fVertex4fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER04V(
-        TexCoord4fColor4fNormal3fVertex4fvSUN, GLfloat const*, GLfloat const*,
-        GLfloat const*, GLfloat const*) GLvoid
+        TexCoord4fColor4fNormal3fVertex4fvSUN,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*) GLvoid
     WRAPPER08V(
-        TexCoord4fVertex4fSUN, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat) GLvoid
+        TexCoord4fVertex4fSUN,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat) GLvoid
     WRAPPER02V(TexCoord4fVertex4fvSUN, GLfloat const*, GLfloat const*)
 
 #endif /* GL_SUN_vertex_OGLEXT */

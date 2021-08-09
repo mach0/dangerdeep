@@ -37,11 +37,12 @@ using std::vector;
 
 // fixme: we have bspline code ready. convoys should follow their routes along a
 // bspline curve for realistic results.
-#define WPEXACTNESS          100 // how exact a waypoint has to be hit in meters
-#define AI_THINK_CYCLE_TIME  10  // sec
-#define DC_ATTACK_RADIUS     100 // distance to target before DC launching starts
-#define DC_ATTACK_RUN_RADIUS 600 // distance to contact until escort switches to
-                                 // maximum speed
+#define WPEXACTNESS         100 // how exact a waypoint has to be hit in meters
+#define AI_THINK_CYCLE_TIME 10  // sec
+#define DC_ATTACK_RADIUS    100 // distance to target before DC launching starts
+#define DC_ATTACK_RUN_RADIUS                                                   \
+    600 // distance to contact until escort switches to
+        // maximum speed
 
 // fixme:
 // should ai know class game?
@@ -385,21 +386,21 @@ void ai::act_convoy(ship& parent, game& gm, double delta_time)
     // rel. position as waypoint! or set all wps at the beginning. fixme is this
     // really a good idea? this could be done in the constructor! 	for
     //(list<pair<ship*, vector2> >::iterator it = merchants.begin(); it !=
-    //merchants.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
-    //it->second);
+    // merchants.end(); ++it) {
+    // it->first->get_ai()->set_waypoint(position.xy() + it->second);
     //	}
 
     // war ships follow their course, with zigzags / evasive manouvers /
     // increasing speed
     //	for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it !=
-    //warships.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
-    //it->second);
+    // warships.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy()
+    // + it->second);
     //	}
 
     // escorts follow their escort pattern or attack if alarmed
     //	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it !=
-    //escorts.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy() +
-    //it->second);
+    // escorts.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy()
+    // + it->second);
     //	}
 }
 
@@ -449,15 +450,15 @@ bool ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos)
         //	this code computes the curve that hits the target
         //	but it is much better to turn fast and then steam straight ahead.
         //	however, the straight path does not hit the target exactly, since
-        //the ship moves 	while turning. In reality the ship would turn until it
-        //is facing the target 	directly. Here the ai recomputes the path every
-        //10seconds, so this doesn't matter. 	2004/02/24. an even better course
-        //would be: turn to a course so that when it is reached 	the target
-        //position lies exactly in that direction, e.g. target bearing is 30
-        //degrees, 	if we turn to 30, we're already a bit off the target (bearing
-        //then is not 0, maybe 5) 	so turn to ~35 degrees and then run straight.
-        //Such exact path computation is not 	realistic though, humans are no
-        //computers...
+        // the ship moves 	while turning. In reality the ship would turn until
+        // it is facing the target 	directly. Here the ai recomputes the path
+        // every 10seconds, so this doesn't matter. 	2004/02/24. an even better
+        // course would be: turn to a course so that when it is reached 	the
+        // target position lies exactly in that direction, e.g. target bearing is
+        // 30 degrees, 	if we turn to 30, we're already a bit off the target
+        // (bearing then is not 0, maybe 5) 	so turn to ~35 degrees and then run
+        // straight. Such exact path computation is not 	realistic though, humans
+        // are no computers...
         /*
                 double needed_turn_rate = (r1 == 0) ? 0 : 1.0/r1; //speed/r1;
                 double fac =

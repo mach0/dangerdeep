@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 
 ///\brief This class represents clockwise angles. It is used for rotations or
-///nautical angles
+/// nautical angles
 /** note that mathematical angles go counter clockwise and nautical angles
     clockwise. conversion from/to mathematical angles ignores this because
     it is used for conversion of angle differences.
@@ -137,4 +137,3 @@ inline std::ostream& operator<<(std::ostream& os, const angle& a)
     os << a.value();
     return os;
 }
-

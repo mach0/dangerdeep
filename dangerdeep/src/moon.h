@@ -36,7 +36,7 @@ class moon
     moon();
 
     void display(
-        const vector3& moon_pos, const vector3& sun_pos,
+        const vector3& moon_pos,
+        const vector3& sun_pos,
         double max_view_dist) const;
 };
-

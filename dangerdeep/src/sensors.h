@@ -148,7 +148,9 @@ class sensor
        would lead to a non-uniform interface for sensors. To be fixed...
     */
     virtual bool is_detected(
-        const game* gm, const sea_object* d, const sea_object* t) const = 0;
+        const game* gm,
+        const sea_object* d,
+        const sea_object* t) const = 0;
 };
 
 ///\brief Class for lookout.
@@ -215,7 +217,9 @@ class passive_sonar_sensor : public sensor
         @param t target unit
     */
     virtual bool is_detected(
-        double& sound_level, const game* gm, const sea_object* d,
+        double& sound_level,
+        const game* gm,
+        const sea_object* d,
         const sea_object* t) const;
 };
 
@@ -309,4 +313,3 @@ class active_sonar_sensor : public active_sensor
     bool is_detected(const game* gm, const sea_object* d, const sea_object* t)
         const override;
 };
-

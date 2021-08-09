@@ -125,4 +125,3 @@ class submarine_interface : public user_interface
     virtual unsigned get_selected_tube() const { return selected_tube; }
     virtual void select_tube(unsigned nr) { selected_tube = nr; }
 };
-

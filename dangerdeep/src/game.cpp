@@ -170,13 +170,19 @@ game::game()
     // myheightgen.reset(new height_generator_map("default.xml"));
 
     myheightgen = std::make_unique<terrain<int16_t>>(
-        get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/",
+        get_map_dir() + "terrain/terrain.xml",
+        get_map_dir() + "terrain/",
         TERRAIN_NR_LEVELS + 1);
 }
 
 game::game(
-    const string& subtype, unsigned cvsize, unsigned cvesc, unsigned timeofday,
-    const date& timeperioddate, player_info pi, unsigned nr_of_players) :
+    const string& subtype,
+    unsigned cvsize,
+    unsigned cvesc,
+    unsigned timeofday,
+    const date& timeperioddate,
+    player_info pi,
+    unsigned nr_of_players) :
     playerinfo(std::move(pi))
 {
     /****************************************************************
@@ -236,7 +242,8 @@ game::game(
     // myheightgen.reset(new height_generator_map("default.xml"));
 
     myheightgen = std::make_unique<terrain<int16_t>>(
-        get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/",
+        get_map_dir() + "terrain/terrain.xml",
+        get_map_dir() + "terrain/",
         TERRAIN_NR_LEVELS + 1);
 
     // Convoy-constructor creates all the objects and spawns them in this game
@@ -364,7 +371,8 @@ game::game(const string& filename) :
     // myheightgen.reset(new height_generator_map("default.xml"));
 
     myheightgen = std::make_unique<terrain<int16_t>>(
-        get_map_dir() + "terrain/terrain.xml", get_map_dir() + "terrain/",
+        get_map_dir() + "terrain/terrain.xml",
+        get_map_dir() + "terrain/",
         TERRAIN_NR_LEVELS + 1);
 
     // create empty objects so references can be filled.
@@ -678,7 +686,8 @@ void game::compute_max_view_dist()
         5000.0 + compute_light_brightness(player->get_pos(), sundir) * 25000;
 }
 
-template <class T> void cleanup(std::unordered_map<sea_object_id, T>& s)
+template<class T>
+void cleanup(std::unordered_map<sea_object_id, T>& s)
 {
     for (auto it = s.begin(); it != s.end();)
     {
@@ -693,7 +702,8 @@ template <class T> void cleanup(std::unordered_map<sea_object_id, T>& s)
     }
 }
 
-template <class T> void cleanup(std::vector<T>& s)
+template<class T>
+void cleanup(std::vector<T>& s)
 {
     for (auto it = s.begin(); it != s.end();)
     {
@@ -849,7 +859,9 @@ void game::simulate(double delta_t)
 }
 
 void game::simulate_objects(
-    double delta_t, bool record, double& nearest_contact)
+    double delta_t,
+    bool record,
+    double& nearest_contact)
 {
     // ------------------------------ ships ------------------------------
     for (auto& [id, ship] : ships)
@@ -984,9 +996,10 @@ matrix from left and right and evaluate the result.
 
 ******************************************************************************************/
 
-template <class T>
+template<class T>
 inline vector<const T*> visible_obj(
-    const game* gm, const std::unordered_map<sea_object_id, T>& v,
+    const game* gm,
+    const std::unordered_map<sea_object_id, T>& v,
     const sea_object* o)
 {
     vector<const T*> result;
@@ -1009,7 +1022,7 @@ inline vector<const T*> visible_obj(
     return result;
 }
 
-template <class T>
+template<class T>
 inline vector<const T*>
 visible_obj(const game* gm, const std::vector<T>& v, const sea_object* o)
 {
@@ -1489,8 +1502,12 @@ void game::ship_sunk(const ship* s)
     oss << texts::get(83) << " " << s->get_description(2);
     date d((unsigned) time);
     sunken_ships.emplace_back(
-        d, s->get_description(2), s->get_modelname(), s->get_specfilename(),
-        s->get_skin_layout(), s->get_tonnage());
+        d,
+        s->get_description(2),
+        s->get_modelname(),
+        s->get_specfilename(),
+        s->get_skin_layout(),
+        s->get_tonnage());
 }
 
 /*
@@ -1504,7 +1521,9 @@ void game::ship_sunk(const ship* s)
    (for simplicity of network game this would be useful)
 */
 void game::ping_ASDIC(
-    list<vector3>& contacts, sea_object* d, const bool& move_sensor,
+    list<vector3>& contacts,
+    sea_object* d,
+    const bool& move_sensor,
     const angle& dir)
 {
     sensor* s                = d->get_sensor(d->active_sonar_system);
@@ -1520,8 +1539,11 @@ void game::ping_ASDIC(
         // remember ping (for drawing)
         // fixme: seems redundant with event list...!
         pings.emplace_back(
-            d->get_pos().xy(), ass->get_bearing() + d->get_heading(), time,
-            ass->get_range(), ass->get_detection_cone());
+            d->get_pos().xy(),
+            ass->get_bearing() + d->get_heading(),
+            time,
+            ass->get_range(),
+            ass->get_detection_cone());
         events.push_back(std::make_unique<event_ping>(d->get_pos()));
 
         // fixme: noise from ships can disturb ASDIC or may generate more
@@ -1551,7 +1573,7 @@ void game::ping_ASDIC(
     }
 }
 
-template <class C>
+template<class C>
 ship* check_units(torpedo* t, std::unordered_map<sea_object_id, C>& units)
 {
     const vector3& t_pos = t->get_pos();
@@ -1559,7 +1581,8 @@ ship* check_units(torpedo* t, std::unordered_map<sea_object_id, C>& units)
     for (auto& [id, obj] : units)
     {
         // fixme use bv_trees here with special code for magnetic ignition
-        // torpedoes like intersection of sphere around torpedo head with bv tree
+        // torpedoes like intersection of sphere around torpedo head with bv
+        // tree
         const vector3& partner_pos = obj.get_pos();
         matrix4 rel_trans          = matrix4::trans(partner_pos - t_pos);
         bv_tree::param p1          = obj.compute_bv_tree_params();
@@ -1638,7 +1661,8 @@ game::contact_in_direction(const sea_object* o, const angle& direction) const
 }
 
 sea_object_id game::ship_in_direction_from_pos(
-    const sea_object* o, const angle& direction) const
+    const sea_object* o,
+    const angle& direction) const
 {
     const sensor* s          = o->get_sensor(o->lookout_system);
     const lookout_sensor* ls = nullptr;
@@ -1669,7 +1693,8 @@ sea_object_id game::ship_in_direction_from_pos(
 }
 
 sea_object_id game::sub_in_direction_from_pos(
-    const sea_object* o, const angle& direction) const
+    const sea_object* o,
+    const angle& direction) const
 {
     const sensor* s          = o->get_sensor(o->lookout_system);
     const lookout_sensor* ls = nullptr;
@@ -2017,8 +2042,8 @@ it != clientcons.end(); ++it) {
 */
 
 // fixme: it would be better to keep such a vector around and not recompute it
-// for every object that needs it it must be recomputed only when spawn is called
-// or compress removes objects
+// for every object that needs it it must be recomputed only when spawn is
+// called or compress removes objects
 vector<const ship*> game::get_all_ships() const
 {
     vector<const ship*> allships(
@@ -2081,7 +2106,8 @@ void game::check_collisions()
             {
                 collision_response(
                     const_cast<ship&>(*allships[i]),
-                    const_cast<ship&>(*allships[j]), contact_point + actor_pos);
+                    const_cast<ship&>(*allships[j]),
+                    contact_point + actor_pos);
             }
 #endif
         }
@@ -2107,7 +2133,9 @@ void game::check_collisions()
 }
 
 void game::collision_response(
-    sea_object& a, sea_object& b, const vector3& collision_pos)
+    sea_object& a,
+    sea_object& b,
+    const vector3& collision_pos)
 {
 #if 0
 	// for debugging - fixme not visible. is position correct?!
@@ -2296,7 +2324,7 @@ void game::unfreeze_time()
 {
     unsigned freezetime_end = SYS().millisec();
     //	printf("time UNfrozen at: %u (%u)\n", freezetime_end, freezetime_end -
-    //freezetime_start);
+    // freezetime_start);
     freezetime += freezetime_end - freezetime_start;
     freezetime_start = 0;
 }

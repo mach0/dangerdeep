@@ -30,7 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 /// A generic class for graphs
-template <typename NodeData, typename EdgeData> class graph
+template<typename NodeData, typename EdgeData>
+class graph
 {
   public:
     /// Constructor
@@ -90,7 +91,8 @@ template <typename NodeData, typename EdgeData> class graph
 
     /// Run function for all neighbors of a node
     void for_all_adjacent_nodes(
-        unsigned n, const std::function<void(unsigned)>& func)
+        unsigned n,
+        const std::function<void(unsigned)>& func)
     {
         compute_adjacency();
         for (unsigned i = neighbor_indices[n]; i < neighbor_indices[n + 1]; ++i)
@@ -159,7 +161,8 @@ template <typename NodeData, typename EdgeData> class graph
                     vector2u(nodes_of_edge[i].y, nodes_of_edge[i].x);
             }
             std::sort(
-                all_edges.begin(), all_edges.end(),
+                all_edges.begin(),
+                all_edges.end(),
                 [](const vector2u& a, const vector2u& b) {
                     return (a.x == b.x) ? (a.y < b.y) : (a.x < b.x);
                 });
@@ -181,4 +184,3 @@ template <typename NodeData, typename EdgeData> class graph
         }
     }
 };
-

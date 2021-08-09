@@ -5,7 +5,10 @@
 #include <fstream>
 using namespace std;
 
-double rnd() { return double(rand()) / RAND_MAX; }
+double rnd()
+{
+    return double(rand()) / RAND_MAX;
+}
 
 #if 1
 int main(int, char**)

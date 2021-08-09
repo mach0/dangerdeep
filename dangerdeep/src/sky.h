@@ -64,7 +64,9 @@ class sky
     void compute_clouds();
     std::vector<std::vector<uint8_t>> compute_noisemaps();
     uint8_t get_value_from_bytemap(
-        unsigned x, unsigned y, unsigned level,
+        unsigned x,
+        unsigned y,
+        unsigned level,
         const std::vector<uint8_t>& nmap);
     void smooth_and_equalize_bytemap(unsigned s, std::vector<uint8_t>& map1);
 
@@ -95,12 +97,14 @@ class sky
     // call this whenever time or viewpos has changed, it will modify the
     // mutable variables.
     void rebuild_colors(
-        const vector3& sunpos_, const vector3& moonpos_,
+        const vector3& sunpos_,
+        const vector3& moonpos_,
         const vector3& viewpos) const;
 
     void display(
-        const colorf& lightcolor, const vector3& viewpos, double max_view_dist,
+        const colorf& lightcolor,
+        const vector3& viewpos,
+        double max_view_dist,
         bool isreflection) const;
     color get_horizon_color(const game& gm, const vector3& viewpos) const;
 };
-

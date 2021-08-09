@@ -194,64 +194,150 @@ enum class primitive_type
 };
 
 /// deduce data type from argument type
-template <typename T>
+template<typename T>
 data_type to_data_type(T); // intentionally no definition, so linker fails! We
                            // need to provide explicit data type definitions!
-template <> inline data_type to_data_type(char)
+template<>
+inline data_type to_data_type(char)
 {
     return data_type::ubyte;
 } // use char as 8bit float representation
-template <> inline data_type to_data_type(uint8_t) { return data_type::u8; }
-template <> inline data_type to_data_type(uint16_t) { return data_type::u16; }
-template <> inline data_type to_data_type(uint32_t) { return data_type::u32; }
-template <> inline data_type to_data_type(uint64_t) { return data_type::u64; }
-template <> inline data_type to_data_type(int8_t) { return data_type::i8; }
-template <> inline data_type to_data_type(int16_t) { return data_type::i16; }
-template <> inline data_type to_data_type(int32_t) { return data_type::i32; }
-template <> inline data_type to_data_type(int64_t) { return data_type::i64; }
-template <> inline data_type to_data_type(float) { return data_type::f32; }
-template <> inline data_type to_data_type(double) { return data_type::f64; }
-template <> inline data_type to_data_type(color) { return data_type::ubyte; }
-template <> inline data_type to_data_type(colorf) { return data_type::f32; }
-template <typename T> inline data_type to_data_type(vector2t<T>)
+template<>
+inline data_type to_data_type(uint8_t)
+{
+    return data_type::u8;
+}
+template<>
+inline data_type to_data_type(uint16_t)
+{
+    return data_type::u16;
+}
+template<>
+inline data_type to_data_type(uint32_t)
+{
+    return data_type::u32;
+}
+template<>
+inline data_type to_data_type(uint64_t)
+{
+    return data_type::u64;
+}
+template<>
+inline data_type to_data_type(int8_t)
+{
+    return data_type::i8;
+}
+template<>
+inline data_type to_data_type(int16_t)
+{
+    return data_type::i16;
+}
+template<>
+inline data_type to_data_type(int32_t)
+{
+    return data_type::i32;
+}
+template<>
+inline data_type to_data_type(int64_t)
+{
+    return data_type::i64;
+}
+template<>
+inline data_type to_data_type(float)
+{
+    return data_type::f32;
+}
+template<>
+inline data_type to_data_type(double)
+{
+    return data_type::f64;
+}
+template<>
+inline data_type to_data_type(color)
+{
+    return data_type::ubyte;
+}
+template<>
+inline data_type to_data_type(colorf)
+{
+    return data_type::f32;
+}
+template<typename T>
+inline data_type to_data_type(vector2t<T>)
 {
     return to_data_type(T());
 }
-template <typename T> inline data_type to_data_type(vector3t<T>)
+template<typename T>
+inline data_type to_data_type(vector3t<T>)
 {
     return to_data_type(T());
 }
-template <typename T, size_t sz>
+template<typename T, size_t sz>
 inline data_type to_data_type(std::array<T, sz>)
 {
     return to_data_type(T());
 }
 /// deduce data count from argument type
-template <typename T> inline int to_data_count(T) { return 1; }
-template <typename T> inline int to_data_count(vector2t<T>) { return 2; }
-template <typename T> inline int to_data_count(vector3t<T>) { return 3; }
-template <typename T> inline int to_data_count(vector4t<T>) { return 4; }
-template <typename T, size_t sz> inline int to_data_count(std::array<T, sz>)
+template<typename T>
+inline int to_data_count(T)
+{
+    return 1;
+}
+template<typename T>
+inline int to_data_count(vector2t<T>)
+{
+    return 2;
+}
+template<typename T>
+inline int to_data_count(vector3t<T>)
+{
+    return 3;
+}
+template<typename T>
+inline int to_data_count(vector4t<T>)
+{
+    return 4;
+}
+template<typename T, size_t sz>
+inline int to_data_count(std::array<T, sz>)
 {
     return int(sz);
 }
-template <> inline int to_data_count(color) { return 4; }
-template <> inline int to_data_count(colorf) { return 4; }
+template<>
+inline int to_data_count(color)
+{
+    return 4;
+}
+template<>
+inline int to_data_count(colorf)
+{
+    return 4;
+}
 /// deduce data type from argument type for texture data
-template <typename T>
+template<typename T>
 data_type
     to_tex_data_type(T); // intentionally no definition, so linker fails! We
                          // need to provide explicit data type definitions!
-template <> inline data_type to_tex_data_type(uint8_t)
+template<>
+inline data_type to_tex_data_type(uint8_t)
 {
     return data_type::ubyte;
 }
-template <> inline data_type to_tex_data_type(float) { return data_type::f32; }
-template <> inline data_type to_tex_data_type(color)
+template<>
+inline data_type to_tex_data_type(float)
+{
+    return data_type::f32;
+}
+template<>
+inline data_type to_tex_data_type(color)
 {
     return data_type::ubyte;
 }
-template <> inline data_type to_tex_data_type(colorf) { return data_type::f32; }
+template<>
+inline data_type to_tex_data_type(colorf)
+{
+    return data_type::f32;
+}
 
 /// a base class for any object on GPU that has an ID. Can not be copied nor
 /// assigned, only moved.
@@ -371,7 +457,8 @@ class vertex_buffer : public buffer
 {
   public:
     /// access handle class
-    template <typename T> class access
+    template<typename T>
+    class access
     {
         friend class vertex_buffer;
 
@@ -413,9 +500,10 @@ class vertex_buffer : public buffer
      * @param data the data to use
      * @param usage usage type of buffer
      */
-    template <typename T>
+    template<typename T>
     void init(
-        unsigned nr_of_elements_, const T* data = nullptr,
+        unsigned nr_of_elements_,
+        const T* data    = nullptr,
         usage_type usage = usage_type::static_draw)
     {
         nr_of_elements   = nr_of_elements_;
@@ -428,7 +516,7 @@ class vertex_buffer : public buffer
      * @param data the data to use
      * @param usage usage type of buffer
      */
-    template <typename T>
+    template<typename T>
     void
     init(const std::vector<T>& data, usage_type usage = usage_type::static_draw)
     {
@@ -444,9 +532,10 @@ class vertex_buffer : public buffer
      * @param data the data to use
      * @param usage usage type of buffer
      */
-    template <typename T>
+    template<typename T>
     void update(
-        const std::vector<T>& data, usage_type usage = usage_type::static_draw)
+        const std::vector<T>& data,
+        usage_type usage = usage_type::static_draw)
     {
         if (data.empty())
             THROW(error, "buffer update with empty data");
@@ -459,7 +548,8 @@ class vertex_buffer : public buffer
     /** call to update data - size must fit in buffer!
      * @param data the data to use
      */
-    template <typename T> void update_data(const std::vector<T>& data)
+    template<typename T>
+    void update_data(const std::vector<T>& data)
     {
         if (data.empty())
             THROW(error, "buffer update with empty data");
@@ -472,14 +562,15 @@ class vertex_buffer : public buffer
     }
 
     /// map VBO and access data easily
-    template <typename T>
+    template<typename T>
     access<T> access_data(access_type ac = access_type::write_only)
     {
         return access<T>(*this, ac);
     }
 
     /// copy data to buffer
-    template <typename T> void copy_data_from(const std::vector<T>& vec)
+    template<typename T>
+    void copy_data_from(const std::vector<T>& vec)
     {
         if (vec.empty())
             THROW(error, "buffer copy_data_from with empty data");
@@ -538,7 +629,8 @@ class uniform_buffer : public buffer
 {
   public:
     /// access handle class
-    template <class U> class access
+    template<class U>
+    class access
     {
         friend class uniform_buffer;
 
@@ -574,32 +666,35 @@ class uniform_buffer : public buffer
     uniform_buffer& operator=(uniform_buffer&& source);
 
     /// Initialize for certain structure
-    template <class U> void init(usage_type usage, const U* data = nullptr)
+    template<class U>
+    void init(usage_type usage, const U* data = nullptr)
     {
         init_buffer(sizeof(U), data, usage);
     }
 
     /// Initialize for certain structure
-    template <class U> void init(usage_type usage, const U& data = nullptr)
+    template<class U>
+    void init(usage_type usage, const U& data = nullptr)
     {
         init_buffer(sizeof(U), &data, usage);
     }
 
     /// Initialize for vector auf simple data
-    template <class U> void init(usage_type usage, const std::vector<U>& data)
+    template<class U>
+    void init(usage_type usage, const std::vector<U>& data)
     {
         init_buffer(sizeof(U) * unsigned(data.size()), &data[0], usage);
     }
 
     /// Initialize for array auf simple data
-    template <class U, std::size_t sz>
+    template<class U, std::size_t sz>
     void init(usage_type usage, const std::array<U, sz>& data)
     {
         init_buffer(sizeof(U) * unsigned(sz), &data[0], usage);
     }
 
     /// Initialize for array auf simple data
-    template <class U>
+    template<class U>
     void
     init(usage_type usage, unsigned nr_of_elements, const U* data = nullptr)
     {
@@ -607,13 +702,15 @@ class uniform_buffer : public buffer
     }
 
     /// Update for array auf simple data (only growing)
-    template <class U> void update(usage_type usage, const std::vector<U>& data)
+    template<class U>
+    void update(usage_type usage, const std::vector<U>& data)
     {
         update_buffer(sizeof(U) * unsigned(data.size()), &data[0], usage);
     }
 
     /// Update data of buffer - buffer must already be initialized!
-    template <class U> void update_data(const U& data)
+    template<class U>
+    void update_data(const U& data)
     {
         update_buffer_data(sizeof(U), &data);
     }
@@ -621,7 +718,8 @@ class uniform_buffer : public buffer
     /** call to update data - size must fit in buffer!
      * @param data the data to use
      */
-    template <class U> void update_data(const std::vector<U>& data)
+    template<class U>
+    void update_data(const std::vector<U>& data)
     {
         if (data.empty())
             THROW(error, "buffer update with empty data");
@@ -631,7 +729,7 @@ class uniform_buffer : public buffer
     /** call to update data - size must fit in buffer!
      * @param data the data to use
      */
-    template <class U, std::size_t sz>
+    template<class U, std::size_t sz>
     void update_data(const std::array<U, sz>& data)
     {
         if (data.empty())
@@ -640,7 +738,7 @@ class uniform_buffer : public buffer
     }
 
     /// map UBO and access data easily
-    template <class U>
+    template<class U>
     access<U> access_data(access_type ac = access_type::write_only)
     {
         return access<U>(*this, ac);
@@ -677,9 +775,11 @@ class texture : public object
      * with that bump height
      */
     texture(
-        const std::string& filename, data_type dt = data_type::ubyte,
-        bool use_mipmap = false, bool use_compression = false,
-        float bump_height = -1.f);
+        const std::string& filename,
+        data_type dt         = data_type::ubyte,
+        bool use_mipmap      = false,
+        bool use_compression = false,
+        float bump_height    = -1.f);
 
     /** Create texture from raw pixel data with user defined data type.
      * @param pixels pixel data
@@ -691,9 +791,13 @@ class texture : public object
      * @param dt pixel format per channel
      */
     texture(
-        const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned nc,
-        bool use_mipmap = false, bool use_compression = false,
-        data_type dt = data_type::ubyte);
+        const std::vector<uint8_t>& pixels,
+        unsigned w,
+        unsigned h,
+        unsigned nc,
+        bool use_mipmap      = false,
+        bool use_compression = false,
+        data_type dt         = data_type::ubyte);
 
     /** Create texture from raw pixel data with data type taken from template.
      * double will get converted to float!
@@ -705,11 +809,15 @@ class texture : public object
      * @param use_compression use compression for internal data storage
      * @param use_half_float internally use half float texture
      */
-    template <typename T>
+    template<typename T>
     texture(
-        const std::vector<T>& pixels, unsigned w, unsigned h, unsigned nc,
-        bool use_mipmap = false, bool use_compression = false,
-        bool use_half_float = false) :
+        const std::vector<T>& pixels,
+        unsigned w,
+        unsigned h,
+        unsigned nc,
+        bool use_mipmap      = false,
+        bool use_compression = false,
+        bool use_half_float  = false) :
         gpu_format(0),
         width(w), height(h), nr_of_channels(nc), has_mipmap(use_mipmap)
     {
@@ -740,7 +848,10 @@ class texture : public object
      * @param use_mipmap create mipmaps?
      */
     texture(
-        unsigned w, unsigned h, unsigned nc, data_type dt = data_type::ubyte,
+        unsigned w,
+        unsigned h,
+        unsigned nc,
+        data_type dt    = data_type::ubyte,
         bool use_mipmap = false);
 
     /** Move to new object
@@ -775,19 +886,26 @@ class texture : public object
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
     void set_data_generic(
-        const void* pixels, unsigned count, data_type dt,
-        unsigned mipmap_level = 0, bool update_mipmap = true);
+        const void* pixels,
+        unsigned count,
+        data_type dt,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true);
 
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
-    template <typename T>
+    template<typename T>
     void set_data(
-        const std::vector<T>& pixels, unsigned mipmap_level = 0,
-        bool update_mipmap = true)
+        const std::vector<T>& pixels,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true)
     {
         set_data_generic(
-            &pixels[0], unsigned(pixels.size()) * to_data_count(T()),
-            to_data_type(T()), mipmap_level, update_mipmap);
+            &pixels[0],
+            unsigned(pixels.size()) * to_data_count(T()),
+            to_data_type(T()),
+            mipmap_level,
+            update_mipmap);
     }
 
     /// change sub-area of texture from memory values
@@ -796,10 +914,13 @@ class texture : public object
     /// @param data_offset offset index in data
     /// @param stride line width in pixels of data (not bytes!)
     /// @param update_mipmap update mipmap if texture has one?
-    template <typename T>
+    template<typename T>
     void sub_image(
-        const area& ar, const std::vector<T>& pixels, unsigned data_offset = 0,
-        unsigned stride = 0, bool update_mipmap = false)
+        const area& ar,
+        const std::vector<T>& pixels,
+        unsigned data_offset = 0,
+        unsigned stride      = 0,
+        bool update_mipmap   = false)
     {
         data_type dt = to_tex_data_type(T());
         sub_image(ar, dt, &pixels[data_offset], stride, update_mipmap);
@@ -821,18 +942,25 @@ class texture : public object
 
     /// copy data to GPU, set parameters, only used internally
     void init(
-        const void* data, data_type dt, bool use_compression,
+        const void* data,
+        data_type dt,
+        bool use_compression,
         const std::string* name = nullptr);
 
     /// copy data to GPU, set parameters, only used internally - custom mipmap
     /// version
     void init(
-        const std::vector<const void*> data, data_type dt, bool use_compression,
+        const std::vector<const void*> data,
+        data_type dt,
+        bool use_compression,
         const std::string* name = nullptr);
 
     /// Update parts of texture, only used internally
     void sub_image(
-        const area& ar, data_type dt, const void* pixels, unsigned stride,
+        const area& ar,
+        data_type dt,
+        const void* pixels,
+        unsigned stride,
         bool update_mipmap = false);
 };
 
@@ -850,7 +978,8 @@ class texture_array : public object
      */
     texture_array(
         const std::vector<std::string>& filenames,
-        data_type dt = data_type::ubyte, bool use_mipmap = false);
+        data_type dt    = data_type::ubyte,
+        bool use_mipmap = false);
 
     /** Create empty texture array
      * @param w width
@@ -861,8 +990,12 @@ class texture_array : public object
      * @param use_mipmap create mipmaps?
      */
     texture_array(
-        unsigned w, unsigned h, unsigned l, unsigned nc,
-        data_type dt = data_type::ubyte, bool use_mipmap = false);
+        unsigned w,
+        unsigned h,
+        unsigned l,
+        unsigned nc,
+        data_type dt    = data_type::ubyte,
+        bool use_mipmap = false);
 
     /** Move to new object
      * @param source source object
@@ -899,19 +1032,29 @@ class texture_array : public object
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
     void set_data_generic(
-        unsigned layer, const void* pixels, unsigned count, data_type dt,
-        unsigned mipmap_level = 0, bool update_mipmap = true);
+        unsigned layer,
+        const void* pixels,
+        unsigned count,
+        data_type dt,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true);
 
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
-    template <typename T>
+    template<typename T>
     void set_data(
-        unsigned layer, const std::vector<T>& pixels, unsigned mipmap_level = 0,
-        bool update_mipmap = true)
+        unsigned layer,
+        const std::vector<T>& pixels,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true)
     {
         set_data_generic(
-            layer, &pixels[0], unsigned(pixels.size()) * to_data_count(T()),
-            to_data_type(T()), mipmap_level, update_mipmap);
+            layer,
+            &pixels[0],
+            unsigned(pixels.size()) * to_data_count(T()),
+            to_data_type(T()),
+            mipmap_level,
+            update_mipmap);
     }
 
     /// change sub-area of texture from memory values
@@ -921,11 +1064,14 @@ class texture_array : public object
     /// @param data_offset offset index in data
     /// @param stride line width in pixels of data (not bytes!)
     /// @param update_mipmap update mipmap if texture has one
-    template <typename T>
+    template<typename T>
     void sub_image(
-        unsigned layer, const area& ar, const std::vector<T>& pixels,
-        unsigned data_offset = 0, unsigned stride = 0,
-        bool update_mipmap = false)
+        unsigned layer,
+        const area& ar,
+        const std::vector<T>& pixels,
+        unsigned data_offset = 0,
+        unsigned stride      = 0,
+        bool update_mipmap   = false)
     {
         data_type dt = to_tex_data_type(T());
         sub_image(layer, ar, dt, &pixels[data_offset], stride, update_mipmap);
@@ -951,13 +1097,19 @@ class texture_array : public object
 
     /// copy data to GPU, set parameters, only used internally
     void init(
-        const void** data, unsigned nr_of_layers, data_type dt,
+        const void** data,
+        unsigned nr_of_layers,
+        data_type dt,
         const std::string* name = nullptr);
 
     /// Update parts of texture, only used internally
     void sub_image(
-        unsigned layer, const area& ar, data_type dt, const void* pixels,
-        unsigned stride, bool update_mipmap = false);
+        unsigned layer,
+        const area& ar,
+        data_type dt,
+        const void* pixels,
+        unsigned stride,
+        bool update_mipmap = false);
 };
 
 /// Handles a GPU based 3D texture.
@@ -976,8 +1128,12 @@ class texture_3D : public object
      * @param use_mipmap create mipmaps?
      */
     texture_3D(
-        unsigned w, unsigned h, unsigned d, unsigned nc,
-        data_type dt = data_type::ubyte, bool use_mipmap = false);
+        unsigned w,
+        unsigned h,
+        unsigned d,
+        unsigned nc,
+        data_type dt    = data_type::ubyte,
+        bool use_mipmap = false);
 
     /** Move to new object
      * @param source source object
@@ -1014,19 +1170,29 @@ class texture_3D : public object
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
     void set_data_generic(
-        unsigned z, const void* pixels, unsigned count, data_type dt,
-        unsigned mipmap_level = 0, bool update_mipmap = true);
+        unsigned z,
+        const void* pixels,
+        unsigned count,
+        data_type dt,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true);
 
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
-    template <typename T>
+    template<typename T>
     void set_data(
-        unsigned z, const std::vector<T>& pixels, unsigned mipmap_level = 0,
-        bool update_mipmap = true)
+        unsigned z,
+        const std::vector<T>& pixels,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true)
     {
         set_data_generic(
-            z, &pixels[0], unsigned(pixels.size()) * to_data_count(T()),
-            to_data_type(T()), mipmap_level, update_mipmap);
+            z,
+            &pixels[0],
+            unsigned(pixels.size()) * to_data_count(T()),
+            to_data_type(T()),
+            mipmap_level,
+            update_mipmap);
     }
 
     /// change sub-area of texture from memory values
@@ -1036,11 +1202,14 @@ class texture_3D : public object
     /// @param data_offset offset index in data
     /// @param stride line width in pixels of data (not bytes!)
     /// @param update_mipmap update mipmap if texture has one
-    template <typename T>
+    template<typename T>
     void sub_image(
-        unsigned z, const area& ar, const std::vector<T>& pixels,
-        unsigned data_offset = 0, unsigned stride = 0,
-        bool update_mipmap = false)
+        unsigned z,
+        const area& ar,
+        const std::vector<T>& pixels,
+        unsigned data_offset = 0,
+        unsigned stride      = 0,
+        bool update_mipmap   = false)
     {
         data_type dt = to_tex_data_type(T());
         sub_image(z, ar, dt, &pixels[data_offset], stride, update_mipmap);
@@ -1063,8 +1232,12 @@ class texture_3D : public object
 
     /// Update parts of texture, only used internally
     void sub_image(
-        unsigned z, const area& ar, data_type dt, const void* pixels,
-        unsigned stride, bool update_mipmap = false);
+        unsigned z,
+        const area& ar,
+        data_type dt,
+        const void* pixels,
+        unsigned stride,
+        bool update_mipmap = false);
 };
 
 /// Handles a GPU based cube map texture.
@@ -1081,7 +1254,8 @@ class texture_cube : public object
      */
     texture_cube(
         const std::array<std::string, 6>& filenames,
-        data_type dt = data_type::ubyte, bool use_mipmap = false);
+        data_type dt    = data_type::ubyte,
+        bool use_mipmap = false);
 
     /** Create empty texture array
      * @param w width
@@ -1091,7 +1265,10 @@ class texture_cube : public object
      * @param use_mipmap create mipmaps?
      */
     texture_cube(
-        unsigned w, unsigned h, unsigned nc, data_type dt = data_type::ubyte,
+        unsigned w,
+        unsigned h,
+        unsigned nc,
+        data_type dt    = data_type::ubyte,
         bool use_mipmap = false);
 
     /** Move to new object
@@ -1126,19 +1303,29 @@ class texture_cube : public object
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
     void set_data_generic(
-        unsigned cube_side, const void* pixels, unsigned count, data_type dt,
-        unsigned mipmap_level = 0, bool update_mipmap = true);
+        unsigned cube_side,
+        const void* pixels,
+        unsigned count,
+        data_type dt,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true);
 
     /// Replace texture data with new values, optionally update mipmap if
     /// texture has one
-    template <typename T>
+    template<typename T>
     void set_data(
-        unsigned cube_side, const std::vector<T>& pixels,
-        unsigned mipmap_level = 0, bool update_mipmap = true)
+        unsigned cube_side,
+        const std::vector<T>& pixels,
+        unsigned mipmap_level = 0,
+        bool update_mipmap    = true)
     {
         set_data_generic(
-            cube_side, &pixels[0], unsigned(pixels.size()) * to_data_count(T()),
-            to_data_type(T()), mipmap_level, update_mipmap);
+            cube_side,
+            &pixels[0],
+            unsigned(pixels.size()) * to_data_count(T()),
+            to_data_type(T()),
+            mipmap_level,
+            update_mipmap);
     }
 
     /// change sub-area of texture from memory values
@@ -1148,11 +1335,14 @@ class texture_cube : public object
     /// @param data_offset offset index in data
     /// @param stride line width in pixels of data (not bytes!)
     /// @param update_mipmap update mipmap if texture has one
-    template <typename T>
+    template<typename T>
     void sub_image(
-        unsigned cube_side, const area& ar, const std::vector<T>& pixels,
-        unsigned data_offset = 0, unsigned stride = 0,
-        bool update_mipmap = false)
+        unsigned cube_side,
+        const area& ar,
+        const std::vector<T>& pixels,
+        unsigned data_offset = 0,
+        unsigned stride      = 0,
+        bool update_mipmap   = false)
     {
         data_type dt = to_tex_data_type(T());
         sub_image(
@@ -1175,13 +1365,19 @@ class texture_cube : public object
 
     /// copy data to GPU, set parameters, only used internally
     void init(
-        const std::array<const void*, 6>& data, data_type dt,
-        const std::string* name = nullptr, bool use_compression = false);
+        const std::array<const void*, 6>& data,
+        data_type dt,
+        const std::string* name = nullptr,
+        bool use_compression    = false);
 
     /// Update parts of texture, only used internally
     void sub_image(
-        unsigned cube_side, const area& ar, data_type dt, const void* pixels,
-        unsigned stride, bool update_mipmap = false);
+        unsigned cube_side,
+        const area& ar,
+        data_type dt,
+        const void* pixels,
+        unsigned stride,
+        bool update_mipmap = false);
 };
 
 /// How a texture unit is used, e.g. a texture is sampled
@@ -1243,7 +1439,9 @@ class frame_buffer : public object
      * @param withdepthbuffer add depth information buffer?
      */
     frame_buffer(
-        const texture* tex, unsigned level, bool withdepthbuffer = false);
+        const texture* tex,
+        unsigned level,
+        bool withdepthbuffer = false);
 
     /// Move constructor.
     frame_buffer(frame_buffer&& source);
@@ -1298,7 +1496,9 @@ class shader : public object
      * @param defines defines for shader
      */
     shader(
-        const std::string& filename, type stype, bool immediate,
+        const std::string& filename,
+        type stype,
+        bool immediate,
         std::initializer_list<std::string> defines = {});
 
     /// move a ahder
@@ -1381,7 +1581,8 @@ class render_context : public object
      * instances (0 for every vertex)
      */
     void
-    add(unsigned location, const vertex_buffer& vb,
+    add(unsigned location,
+        const vertex_buffer& vb,
         unsigned attrib_divisor = 0);
 
     /** Bind and hold a vertex buffer to a location
@@ -1499,7 +1700,8 @@ class render_context : public object
      * @param nr_of_indices number of indices to use
      */
     void draw_primitives(
-        primitive_type type, unsigned first_index,
+        primitive_type type,
+        unsigned first_index,
         unsigned nr_of_indices) const;
 
     /** Draw primitives with current render context (directly or with indices,
@@ -1510,7 +1712,9 @@ class render_context : public object
      * @param nr_of_instances number of instances to render
      */
     void draw_primitives(
-        primitive_type type, unsigned first_index, unsigned nr_of_indices,
+        primitive_type type,
+        unsigned first_index,
+        unsigned nr_of_indices,
         unsigned nr_of_instances) const;
 
     /// Set number of instances to render, 0 to turn off instanced rendering
@@ -1557,7 +1761,8 @@ class render_context : public object
                                           ///< refer correctly to internally
                                           ///< stored buffers
     void add_tex_id(
-        unsigned unit, unsigned tex_id,
+        unsigned unit,
+        unsigned tex_id,
         sampler::type smp); ///< Internal add texture ID
 };
 
@@ -1662,7 +1867,10 @@ class interface : public singleton<interface>
 
     /// Initialize frame buffer
     void init_frame_buffer(
-        unsigned offset_x, unsigned offset_y, unsigned width, unsigned height);
+        unsigned offset_x,
+        unsigned offset_y,
+        unsigned width,
+        unsigned height);
 
     /// get maximum size of textures
     unsigned get_max_texture_size() const { return max_texture_size; }
@@ -1748,5 +1956,7 @@ class interface : public singleton<interface>
 } // namespace gpu
 
 /// get the singleton
-inline gpu::interface& GPU() { return gpu::interface::instance(); }
-
+inline gpu::interface& GPU()
+{
+    return gpu::interface::instance();
+}

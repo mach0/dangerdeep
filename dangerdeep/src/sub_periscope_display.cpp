@@ -71,7 +71,8 @@ vector3 sub_periscope_display::get_viewpos(class game& gm) const
 }
 
 void sub_periscope_display::set_modelview_matrix(
-    game& gm, const vector3& viewpos) const
+    game& gm,
+    const vector3& viewpos) const
 {
     glLoadIdentity();
 

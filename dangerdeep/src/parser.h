@@ -58,4 +58,3 @@ class parser
     std::string::size_type currcol;
     std::string cell;
 };
-

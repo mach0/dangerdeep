@@ -89,7 +89,8 @@ class water
             std::vector<uint8_t> normals_tex;
             ///> generate data from downsampled version of wd
             mipmap_level(
-                const std::vector<vector3f>& wd, unsigned res_shift,
+                const std::vector<vector3f>& wd,
+                unsigned res_shift,
                 double sampledist);
             ///> create data from displacements and heights (mostly for level 0)
             mipmap_level(
@@ -169,7 +170,8 @@ class water
     water(const water& other);
 
     void setup_textures(
-        const matrix4& reflection_projmvmat, const vector2f& transl,
+        const matrix4& reflection_projmvmat,
+        const vector2f& transl,
         bool under_water) const;
     void cleanup_textures() const;
 
@@ -177,7 +179,8 @@ class water
 
     void compute_amount_of_foam();
     void generate_wavetile(
-        ocean_wave_generator<float>& myowg, double tiletime,
+        ocean_wave_generator<float>& myowg,
+        double tiletime,
         wavetile_phase& wtp);
     void generate_subdetail_texture();
 
@@ -195,8 +198,12 @@ class water
       public:
         geoclipmap_patch(
             unsigned geoclipmap_resolution, // "N"
-            unsigned level, unsigned border, unsigned xoff, unsigned yoff,
-            unsigned columns, unsigned rows);
+            unsigned level,
+            unsigned border,
+            unsigned xoff,
+            unsigned yoff,
+            unsigned columns,
+            unsigned rows);
         // generate horizon patch
         geoclipmap_patch(
             unsigned geoclipmap_resolution, // "N"
@@ -232,7 +239,8 @@ class water
     };
 
     void construction_threaded(
-        ocean_wave_generator<float>& myowg, unsigned phase_start,
+        ocean_wave_generator<float>& myowg,
+        unsigned phase_start,
         unsigned phase_add);
 
   public:
@@ -244,15 +252,19 @@ class water
     void set_time(double tm);
 
     void draw_foam_for_ship(
-        const game& gm, const ship* shp, const vector3& viewpos) const;
+        const game& gm,
+        const ship* shp,
+        const vector3& viewpos) const;
     void compute_amount_of_foam_texture(
-        const game& gm, const vector3& viewpos,
+        const game& gm,
+        const vector3& viewpos,
         const std::vector<const ship*>& allships) const;
 
     // give absolute position of viewer as viewpos, but modelview matrix without
     // translational component!
     void display(
-        const vector3& viewpos, double max_view_dist,
+        const vector3& viewpos,
+        double max_view_dist,
         bool under_water = false) const;
     float get_height(const vector2& pos) const;
     // give f as multiplier for difference to (0,0,1)
@@ -266,4 +278,3 @@ class water
     /// finish mirror drawing
     void refltex_render_unbind() const;
 };
-

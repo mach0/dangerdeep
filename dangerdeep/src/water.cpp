@@ -168,7 +168,12 @@ water::water(double tm) :
 {
     // generate geoclipmap index data.
     patches[0] = std::make_unique<geoclipmap_patch>(
-        geoclipmap_resolution, 0, 0, 0, 0, geoclipmap_resolution,
+        geoclipmap_resolution,
+        0,
+        0,
+        0,
+        0,
+        geoclipmap_resolution,
         geoclipmap_resolution);
     unsigned N2 = geoclipmap_resolution / 2, N4 = geoclipmap_resolution / 4,
              N34 = geoclipmap_resolution * 3 / 4;
@@ -195,15 +200,30 @@ water::water(double tm) :
                 patches[pn + 3] = std::make_unique<geoclipmap_patch>(
                     geoclipmap_resolution, j, 0x02, 0, N4 + y, N4 + x - 1, N2);
                 patches[pn + 4] = std::make_unique<geoclipmap_patch>(
-                    geoclipmap_resolution, j, 0x08, N34 + x + 1, N4 + y,
-                    N4 - x - 1, N2);
+                    geoclipmap_resolution,
+                    j,
+                    0x08,
+                    N34 + x + 1,
+                    N4 + y,
+                    N4 - x - 1,
+                    N2);
                 patches[pn + 5] = std::make_unique<geoclipmap_patch>(
                     geoclipmap_resolution, j, 0x10, 0, N34 + y, N4 + x, N4 - y);
                 patches[pn + 6] = std::make_unique<geoclipmap_patch>(
-                    geoclipmap_resolution, j, 0x04, N4 + x, N34 + y + 1, N2,
+                    geoclipmap_resolution,
+                    j,
+                    0x04,
+                    N4 + x,
+                    N34 + y + 1,
+                    N2,
                     N4 - y - 1);
                 patches[pn + 7] = std::make_unique<geoclipmap_patch>(
-                    geoclipmap_resolution, j, 0x20, N34 + x, N34 + y, N4 - x,
+                    geoclipmap_resolution,
+                    j,
+                    0x20,
+                    N34 + x,
+                    N34 + y,
+                    N4 - x,
                     N4 - y);
             }
         }
@@ -305,14 +325,20 @@ water::water(double tm) :
     loc_uw_tex_normal = glsl_under_water->get_uniform_location("tex_normal");
 
     foamtex = std::make_unique<texture>(
-        get_texture_dir() + "foam.png", texture::LINEAR,
+        get_texture_dir() + "foam.png",
+        texture::LINEAR,
         texture::REPEAT); // fixme maybe mipmap it
     foamamounttex = std::make_unique<texture>(
-        FOAMAMOUNTRES, FOAMAMOUNTRES, GL_RGB, texture::LINEAR, texture::CLAMP,
+        FOAMAMOUNTRES,
+        FOAMAMOUNTRES,
+        GL_RGB,
+        texture::LINEAR,
+        texture::CLAMP,
         true);
 
     foamamounttrail = std::make_unique<texture>(
-        get_texture_dir() + "foamamounttrail.png", texture::LINEAR,
+        get_texture_dir() + "foamamounttrail.png",
+        texture::LINEAR,
         texture::REPEAT); // fixme maybe mipmap it
 
     // check FBO usage
@@ -355,8 +381,12 @@ water::water(double tm) :
         }
     }
     foamperimetertex = std::make_unique<texture>(
-        perimetertex, perimetertexs, perimetertexs, GL_LUMINANCE_ALPHA,
-        texture::LINEAR, texture::CLAMP);
+        perimetertex,
+        perimetertexs,
+        perimetertexs,
+        GL_LUMINANCE_ALPHA,
+        texture::LINEAR,
+        texture::CLAMP);
 
     fresnelcolortexd.resize(FRESNEL_FCT_RES * REFRAC_COLOR_RES * 4);
     for (unsigned f = 0; f < FRESNEL_FCT_RES; ++f)
@@ -419,7 +449,8 @@ water::water(double tm) :
 }
 
 void water::construction_threaded(
-    ocean_wave_generator<float>& myowg, unsigned phase_start,
+    ocean_wave_generator<float>& myowg,
+    unsigned phase_start,
     unsigned phase_add)
 {
     for (unsigned i = phase_start; i < wave_phases; i += phase_add)
@@ -430,7 +461,8 @@ void water::construction_threaded(
 }
 
 void water::setup_textures(
-    const matrix4& reflection_projmvmat, const vector2f& transl,
+    const matrix4& reflection_projmvmat,
+    const vector2f& transl,
     bool under_water) const
 {
     if (under_water)
@@ -566,7 +598,9 @@ void water::setup_textures(
 void water::cleanup_textures() const { }
 
 void water::draw_foam_for_ship(
-    const game& gm, const ship* shp, const vector3& viewpos) const
+    const game& gm,
+    const ship* shp,
+    const vector3& viewpos) const
 {
     /* fixme: for each prev pos store also heading (as direction vector)
        then hdg.ortho = normal!
@@ -632,8 +666,8 @@ void water::draw_foam_for_ship(
         // with 34kts.
         double maxwidth  = pit->speed * 2.0;
         double foamwidth = (1.0 - 1.0 / (age * 0.25 + 1.0)) * maxwidth;
-        // 		cout << "[" << ctr++ << "] age=" << age << " amt=" << foamamount <<
-        // " maxw=" << maxwidth
+        // 		cout << "[" << ctr++ << "] age=" << age << " amt=" << foamamount
+        // << " maxw=" << maxwidth
         // 		     << " fw=" << foamwidth << "\n";
         ++pit; // now pit points to next point
         if (pit == prevposn.end())
@@ -664,7 +698,8 @@ void water::draw_foam_for_ship(
 
 // static unsigned nrfm=0;
 void water::compute_amount_of_foam_texture(
-    const game& gm, const vector3& viewpos,
+    const game& gm,
+    const vector3& viewpos,
     const vector<const ship*>& allships) const
 {
     //	glPushMatrix();
@@ -764,7 +799,9 @@ static inline double round_(double x)
 }
 
 void water::display(
-    const vector3& viewpos, double max_view_dist, bool under_water) const
+    const vector3& viewpos,
+    double max_view_dist,
+    bool under_water) const
 {
     // get projection and modelview matrix
     matrix4 proj                 = matrix4::get_gl(GL_PROJECTION_MATRIX);
@@ -795,7 +832,7 @@ void water::display(
     rerender_viewpos = viewpos;
 
     // fixme: in setup_textures wird texmatrix von modelviewmatrix gesetzt, die
-    // veraendern wir aber hier nochmal, das passt dann nicht mehr...   wirklich?
+    // veraendern wir aber hier nochmal, das passt dann nicht mehr... wirklich?
     // pruefe das!!!
 
     // render levels from nearest to farest.
@@ -997,7 +1034,11 @@ void water::display(
     glEnableClientState(GL_NORMAL_ARRAY);
     glNormalPointer(GL_FLOAT, nr_vert_attr * 4, (float*) nullptr + 3);
     glVertexAttribPointer(
-        vattr_aof_index, 1, GL_FLOAT, GL_FALSE, nr_vert_attr * 4,
+        vattr_aof_index,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        nr_vert_attr * 4,
         (float*) nullptr + 6);
     glEnableVertexAttribArray(vattr_aof_index);
     vertices.unbind();
@@ -1015,7 +1056,7 @@ void water::display(
         // viewer position (viewpos_mod)
         // this multiply with 0.5 then round then *2 lets the patches map to
         //"even" vertices and must be used to determine which patch number to
-        //render.
+        // render.
         int x_base[4] = {
             int(round_(0.5 * viewpos_mod.x / L_l - 0.25 * N) * 2),
             int(round_(viewpos_mod.x / L_l - 0.25 * N)),
@@ -1062,7 +1103,8 @@ void water::display(
                 vector3(offset.x, offset.y, -viewpos.z),
                 vector3(offset.x + x_size[j] * L_l, offset.y, -viewpos.z),
                 vector3(
-                    offset.x + x_size[j] * L_l, offset.y + y_size[k] * L_l,
+                    offset.x + x_size[j] * L_l,
+                    offset.y + y_size[k] * L_l,
                     -viewpos.z),
                 vector3(offset.x, offset.y + y_size[k] * L_l, -viewpos.z));
             if (!viewfrustum.clip(patchpoly).empty())
@@ -1157,7 +1199,9 @@ vector3f water::get_normal(const vector2& pos, double rollfac) const
 }
 
 void water::generate_wavetile(
-    ocean_wave_generator<float>& myowg, double tiletime, wavetile_phase& wtp)
+    ocean_wave_generator<float>& myowg,
+    double tiletime,
+    wavetile_phase& wtp)
 {
     vector<float> heights;
     myowg.set_time(helper::mod(tiletime, wave_tidecycle_time));
@@ -1188,7 +1232,7 @@ void water::generate_wavetile(
     // unsigned hs = heights.size();
 
     //	cout << "absolute height +- of tile " << max(fabs(wtp.minh),
-    //fabs(wtp.maxh)) << "\n";
+    // fabs(wtp.maxh)) << "\n";
 
     // choppy factor: formula from "waterengine": 0.5*WX/N =
     // 0.5*wavelength/waveres, here = 1.0 fixme 5.0 default? - it seems that
@@ -1362,7 +1406,8 @@ void water::compute_amount_of_foam()
                 wavetile_data[k - wave_phases].mipmaps[0];
             mm0.amount_of_foam = aof;
             for (unsigned j = 1;
-                 j < wavetile_data[k - wave_phases].mipmaps.size(); ++j)
+                 j < wavetile_data[k - wave_phases].mipmaps.size();
+                 ++j)
             {
                 unsigned res = wave_resolution >> j;
                 const wavetile_phase::mipmap_level& mm1 =
@@ -1415,8 +1460,12 @@ void water::generate_subdetail_texture()
         // fixme: mipmap levels > 0 are not updated...
         // can we use automatic creation of mipmaps here?
         water_bumpmap->sub_image(
-            0, 0, wave_resolution, wave_resolution,
-            curr_wtp->mipmaps[0].normals_tex, GL_RGB);
+            0,
+            0,
+            wave_resolution,
+            wave_resolution,
+            curr_wtp->mipmaps[0].normals_tex,
+            GL_RGB);
     }
     else
     {
@@ -1425,8 +1474,12 @@ void water::generate_subdetail_texture()
         // this could explain some artifacts in the distance, at least
         // when using relief mapping - heights are not downsampled...?!
         water_bumpmap = std::make_unique<texture>(
-            curr_wtp->mipmaps[0].normals_tex, wave_resolution, wave_resolution,
-            GL_RGB, texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT);
+            curr_wtp->mipmaps[0].normals_tex,
+            wave_resolution,
+            wave_resolution,
+            GL_RGB,
+            texture::LINEAR_MIPMAP_LINEAR,
+            texture::REPEAT);
     }
 }
 
@@ -1486,8 +1539,8 @@ void water::set_refraction_color(const colorf& light_color)
     // color (light blue in tropic waters), water depth also important etc. this
     // depends on sky color... good weather
     //	color wavetop = color(color(10, 10, 10), color(18, 93, 77),
-    //light_brightness); 	color wavebottom = color(color(10, 10, 20), color(18,
-    //73, 107), light_brightness);
+    // light_brightness); 	color wavebottom = color(color(10, 10, 20),
+    // color(18, 73, 107), light_brightness);
     // rather bad weather
     // fixme: multiply with light color here, not only light brightness.
     // dim yellow light should result in dim yellow-green upwelling color, not
@@ -1523,8 +1576,12 @@ void water::set_refraction_color(const colorf& light_color)
         }
     }
     fresnelcolortex = std::make_unique<texture>(
-        fresnelcolortexd, FRESNEL_FCT_RES, REFRAC_COLOR_RES, GL_RGBA,
-        texture::LINEAR /*_MIPMAP_LINEAR*/, texture::CLAMP);
+        fresnelcolortexd,
+        FRESNEL_FCT_RES,
+        REFRAC_COLOR_RES,
+        GL_RGBA,
+        texture::LINEAR /*_MIPMAP_LINEAR*/,
+        texture::CLAMP);
 }
 
 void water::refltex_render_bind() const
@@ -1558,15 +1615,23 @@ void water::refltex_render_unbind() const
     {
         reflectiontex->set_gl_texture();
         glCopyTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGB, 0, 0, reflectiontex->get_width(),
-            reflectiontex->get_height(), 0);
+            GL_TEXTURE_2D,
+            0,
+            GL_RGB,
+            0,
+            0,
+            reflectiontex->get_width(),
+            reflectiontex->get_height(),
+            0);
         // ^ glCopyTexSubImage may be faster! but we use FBOs anyway on modern
         // cards...
     }
 }
 
 water::wavetile_phase::mipmap_level::mipmap_level(
-    const std::vector<vector3f>& wd, unsigned res_shift, double sampledist_) :
+    const std::vector<vector3f>& wd,
+    unsigned res_shift,
+    double sampledist_) :
     resolution(1 << res_shift),
     resolution_shift(res_shift), sampledist(sampledist_)
 {
@@ -1725,8 +1790,13 @@ void water::wavetile_phase::mipmap_level::debug_dump()
 }
 
 water::geoclipmap_patch::geoclipmap_patch(
-    unsigned N, unsigned level, unsigned border, unsigned xoff, unsigned yoff,
-    unsigned columns, unsigned rows) :
+    unsigned N,
+    unsigned level,
+    unsigned border,
+    unsigned xoff,
+    unsigned yoff,
+    unsigned columns,
+    unsigned rows) :
     vbo(true),
     min_vertex_index(0xffffffff), max_vertex_index(0), nr_indices(0),
     use_fan(false)
@@ -1999,7 +2069,9 @@ water::geoclipmap_patch::geoclipmap_patch(
 }
 
 water::geoclipmap_patch::geoclipmap_patch(
-    unsigned N, unsigned highest_level, unsigned border) :
+    unsigned N,
+    unsigned highest_level,
+    unsigned border) :
     vbo(true),
     min_vertex_index(0xffffffff), max_vertex_index(0), nr_indices(0),
     use_fan(true)
@@ -2109,7 +2181,11 @@ void water::geoclipmap_patch::render() const
     // vertex/texture pointers are already set up
     vbo.bind();
     glDrawRangeElements(
-        use_fan ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP, min_vertex_index,
-        max_vertex_index, nr_indices, GL_UNSIGNED_INT, nullptr);
+        use_fan ? GL_TRIANGLE_FAN : GL_TRIANGLE_STRIP,
+        min_vertex_index,
+        max_vertex_index,
+        nr_indices,
+        GL_UNSIGNED_INT,
+        nullptr);
     vbo.unbind();
 }

@@ -101,4 +101,3 @@ class cfg : public singleton<class cfg>
 };
 
 bool is_configured_key(key_command kc, const input_event_handler::key_data& kd);
-

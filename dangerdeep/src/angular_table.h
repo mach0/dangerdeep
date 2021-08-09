@@ -27,7 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 /// A 1D table with wrap around interpolation indexed by an angle
-template <typename T> class angular_table
+template<typename T>
+class angular_table
 {
   public:
     angular_table(std::vector<T>&& values_ = std::vector<T>()) :
@@ -46,4 +47,3 @@ template <typename T> class angular_table
   protected:
     std::vector<T> values;
 };
-

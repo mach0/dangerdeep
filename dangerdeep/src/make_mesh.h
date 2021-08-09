@@ -30,31 +30,62 @@ namespace make_mesh
 // helper functions
 vector3f vec(int vi);
 void quadface(
-    model::mesh* m, unsigned bv, float uscal, float vscal, bool out, int ni,
+    model::mesh* m,
+    unsigned bv,
+    float uscal,
+    float vscal,
+    bool out,
+    int ni,
     int ti);
 
 // size in x,y,z direction
 model::mesh* cube(
-    float w, float l, float h, float uscal = 1.0f, float vscal = 1.0f,
-    bool out = true, const std::string& name = "cube");
+    float w,
+    float l,
+    float h,
+    float uscal             = 1.0f,
+    float vscal             = 1.0f,
+    bool out                = true,
+    const std::string& name = "cube");
 // no geosphere, sorry.
 model::mesh* sphere(
-    float radius, float height, unsigned slices = 16, unsigned stacks = 16,
-    float uscal = 1.0f, float vscal = 1.0f, bool out = true,
+    float radius,
+    float height,
+    unsigned slices         = 16,
+    unsigned stacks         = 16,
+    float uscal             = 1.0f,
+    float vscal             = 1.0f,
+    bool out                = true,
     const std::string& name = "sphere");
 model::mesh* cylinder(
-    float r, float h, unsigned rsegs = 16, float uscal = 1.0f,
-    float vscal = 1.0f, bool cap = true, bool out = true,
+    float r,
+    float h,
+    unsigned rsegs          = 16,
+    float uscal             = 1.0f,
+    float vscal             = 1.0f,
+    bool cap                = true,
+    bool out                = true,
     const std::string& name = "cylinder");
 // the cone has a crease at its top.
 model::mesh* cone(
-    float r0, float r1, float h, unsigned rsegs = 16, float uscal = 1.0f,
-    float vscal = 1.0f, bool cap = true, bool out = true,
+    float r0,
+    float r1,
+    float h,
+    unsigned rsegs          = 16,
+    float uscal             = 1.0f,
+    float vscal             = 1.0f,
+    bool cap                = true,
+    bool out                = true,
     const std::string& name = "cone");
 model::mesh* torus(
-    float outerr, float innerr, unsigned outerrsegs = 32,
-    unsigned innerrsegs = 16, float uscal = 1.0f, float vscal = 1.0f,
-    bool out = true, const std::string& name = "torus");
+    float outerr,
+    float innerr,
+    unsigned outerrsegs     = 32,
+    unsigned innerrsegs     = 16,
+    float uscal             = 1.0f,
+    float vscal             = 1.0f,
+    bool out                = true,
+    const std::string& name = "torus");
 
 /*
 // make a cylinder that is screwed around itself
@@ -73,10 +104,15 @@ model::mesh part_of_torus(float outerr, float innerr,
 */
 
 model::mesh* heightfield(
-    unsigned resx, unsigned resy, const std::vector<uint8_t>& heights,
-    float xscal, float yscal, float zscal, float xnoise = 0.0f,
-    float ynoise = 0.0f, float znoise = 0.0f,
+    unsigned resx,
+    unsigned resy,
+    const std::vector<uint8_t>& heights,
+    float xscal,
+    float yscal,
+    float zscal,
+    float xnoise            = 0.0f,
+    float ynoise            = 0.0f,
+    float znoise            = 0.0f,
     const std::string& name = "heightfield");
 
 } // namespace make_mesh
-

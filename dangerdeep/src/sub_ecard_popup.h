@@ -29,4 +29,3 @@ class sub_ecard_popup : public user_popup
   public:
     sub_ecard_popup(class user_interface& ui_);
 };
-

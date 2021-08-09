@@ -50,7 +50,10 @@ void install_segfault_handler()
 #include <windows.h>
 
 typedef BOOL(WINAPI* MINIDUMPWRITEDUMP)(
-    HANDLE hprocess, DWORD pid, HANDLE hfile, MINIDUMP_TYPE dumptype,
+    HANDLE hprocess,
+    DWORD pid,
+    HANDLE hfile,
+    MINIDUMP_TYPE dumptype,
     CONST PMINIDUMP_EXCEPTION_INFORMATION exceptionparam,
     CONST PMINIDUMP_USER_STREAM_INFORMATION userstreamparam,
     CONST PMINIDUMP_CALLBACK_INFORMATION callbackparam);
@@ -83,15 +86,27 @@ DangerdeepCrashDump(struct _EXCEPTION_POINTERS* pexceptioninfo)
 
 #ifdef UNICODE
     _snwprintf_s(
-        file, MAX_PATH, TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"),
-        sysTime.wYear, sysTime.wMonth, sysTime.wDay, sysTime.wHour,
-        sysTime.wMinute, sysTime.wSecond);
+        file,
+        MAX_PATH,
+        TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"),
+        sysTime.wYear,
+        sysTime.wMonth,
+        sysTime.wDay,
+        sysTime.wHour,
+        sysTime.wMinute,
+        sysTime.wSecond);
     std::wstring foo = path;
 #else
     _snprintf_s(
-        file, MAX_PATH, TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"),
-        sysTime.wYear, sysTime.wMonth, sysTime.wDay, sysTime.wHour,
-        sysTime.wMinute, sysTime.wSecond);
+        file,
+        MAX_PATH,
+        TEXT("\\dangerdeep-%04u-%02u-%02u_%02u-%02u-%02u.dmp"),
+        sysTime.wYear,
+        sysTime.wMonth,
+        sysTime.wDay,
+        sysTime.wHour,
+        sysTime.wMinute,
+        sysTime.wSecond);
     std::string foo = path;
 #endif
     foo              = foo + file;
@@ -103,16 +118,26 @@ DangerdeepCrashDump(struct _EXCEPTION_POINTERS* pexceptioninfo)
     exinfo.ClientPointers    = FALSE;
 
     m_hfile = CreateFile(
-        foo.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_NEW,
-        FILE_ATTRIBUTE_NORMAL, nullptr);
+        foo.c_str(),
+        GENERIC_WRITE,
+        FILE_SHARE_WRITE,
+        nullptr,
+        CREATE_NEW,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr);
 
     m_hdll = LoadLibrary(TEXT("DBGHELP.DLL"));
 
     m_dump = (MINIDUMPWRITEDUMP)::GetProcAddress(m_hdll, "MiniDumpWriteDump");
 
     ok = m_dump(
-        GetCurrentProcess(), GetCurrentProcessId(), m_hfile, MiniDumpNormal,
-        &exinfo, nullptr, nullptr);
+        GetCurrentProcess(),
+        GetCurrentProcessId(),
+        m_hfile,
+        MiniDumpNormal,
+        &exinfo,
+        nullptr,
+        nullptr);
 
 #ifdef UNICODE
     foo =
@@ -127,7 +152,9 @@ DangerdeepCrashDump(struct _EXCEPTION_POINTERS* pexceptioninfo)
     if (ok)
     {
         MessageBox(
-            nullptr, foo.c_str(), TEXT("Core dumped"),
+            nullptr,
+            foo.c_str(),
+            TEXT("Core dumped"),
             MB_OK | MB_TASKMODAL | MB_ICONERROR);
         return EXCEPTION_EXECUTE_HANDLER;
     }
@@ -252,7 +279,9 @@ void sigsegv_handler(int)
     abort();
 }
 
-void install_segfault_handler() { signal(SIGSEGV, sigsegv_handler); }
+void install_segfault_handler()
+{
+    signal(SIGSEGV, sigsegv_handler);
+}
 
 #endif // WIN32 || MacOSX
-

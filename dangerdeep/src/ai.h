@@ -168,7 +168,8 @@ class ai
     virtual void act_dumb(ship& parent, game& g, double delta_time);
     virtual void act_convoy(ship& parent, game& g, double delta_time);
     virtual bool set_course_to_pos(
-        ship& parent, game& gm,
+        ship& parent,
+        game& gm,
         const vector2& pos); // steer parent to pos, returns true if direct turn
                              // is possible
     virtual void
@@ -177,4 +178,3 @@ class ai
     follow(game& gm, sea_object_id t = {}); // follows path if t is 0
     void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };
-

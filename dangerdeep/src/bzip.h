@@ -126,8 +126,10 @@ class bzip_ostream : public std::ostream
 {
   public:
     bzip_ostream(
-        std::ostream* os, int blocksize = 9, int workbuffer = 30,
-        int buffsize = 256) :
+        std::ostream* os,
+        int blocksize  = 9,
+        int workbuffer = 30,
+        int buffsize   = 256) :
         std::ostream(new bzip_streambuf(os, blocksize, workbuffer, buffsize))
     {
     }

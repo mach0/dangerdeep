@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 ///\brief This class groups system related functions like graphic output or user
-///input.
+/// input.
 class system_interface : public singleton<system_interface>
 {
   public:
@@ -187,7 +187,8 @@ class system_interface : public singleton<system_interface>
     bool fetch_event(std::function<bool(input_event_handler&)> func)
     {
         for (auto it = input_event_handlers.rbegin();
-             it != input_event_handlers.rend(); ++it)
+             it != input_event_handlers.rend();
+             ++it)
         {
             auto ptr = it->lock();
             if (ptr != nullptr)
@@ -201,5 +202,7 @@ class system_interface : public singleton<system_interface>
 };
 
 // to make user's code even shorter
-inline class system_interface& SYS() { return system_interface::instance(); }
-
+inline class system_interface& SYS()
+{
+    return system_interface::instance();
+}

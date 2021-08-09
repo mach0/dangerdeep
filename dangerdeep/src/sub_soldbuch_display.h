@@ -31,4 +31,3 @@ class sub_soldbuch_display : public user_display
     sub_soldbuch_display(class user_interface& ui_);
     void display() const override;
 };
-

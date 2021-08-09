@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define PINGANGLE      15     // angle
 #define PINGLENGTH     1000   // meters. for drawing
 #define ASDICRANGE     1500.0 // meters fixme: historic values?
-#define MAX_ACUSTIC_CONTACTS \
+#define MAX_ACUSTIC_CONTACTS                                                   \
     5 // max. nr of simultaneous trackable acustic contacts
 #define TERRAIN_NR_LEVELS    10
 #define TERRAIN_RESOLUTION_N 7
@@ -87,7 +87,10 @@ class game
         double range;
         angle ping_angle;
         ping(
-            const vector2& p, angle d, double t, double range,
+            const vector2& p,
+            angle d,
+            double t,
+            double range,
             const angle& ping_angle_) :
             pos(p),
             dir(d), time(t), range(range), ping_angle(ping_angle_)
@@ -108,8 +111,12 @@ class game
         std::string layoutname;   // model skin
         unsigned tons;
         sink_record(
-            date d, std::string s, std::string m, std::string sn,
-            std::string ln, unsigned t) :
+            date d,
+            std::string s,
+            std::string m,
+            std::string sn,
+            std::string ln,
+            unsigned t) :
             dat(d),
             descr(std::move(s)), mdlname(std::move(m)),
             specfilename(std::move(sn)), layoutname(std::move(ln)), tons(t)
@@ -221,7 +228,9 @@ class game
     /// check objects collide with any other object
     void check_collisions();
     void collision_response(
-        sea_object& a, sea_object& b, const vector3& collision_pos);
+        sea_object& a,
+        sea_object& b,
+        const vector3& collision_pos);
 
     random_generator_deprecated random_gen;
 
@@ -234,8 +243,11 @@ class game
     // expects: size small,medium,large, escort size none,small,medium,large,
     // time of day [0,4) night,dawn,day,dusk
     game(
-        const std::string& subtype, unsigned cvsize, unsigned cvesc,
-        unsigned timeofday, const date& timeperioddate,
+        const std::string& subtype,
+        unsigned cvsize,
+        unsigned cvesc,
+        unsigned timeofday,
+        const date& timeperioddate,
         player_info pi         = player_info() /*fixme - must be always given*/,
         unsigned nr_of_players = 1);
 
@@ -348,7 +360,7 @@ class game
     sonar_listen_ships(const ship* listener, angle listening_direction) const;
 
     // append objects to vector
-    template <class T>
+    template<class T>
     static void
     append_vec(std::vector<const sea_object*>& vec, const std::vector<T*>& vec2)
     {
@@ -378,7 +390,9 @@ class game
     // simulation actions, fixme send something over net for them, fixme : maybe
     // vector not list?
     virtual void ping_ASDIC(
-        std::list<vector3>& contacts, sea_object* d, const bool& move_sensor,
+        std::list<vector3>& contacts,
+        sea_object* d,
+        const bool& move_sensor,
         const angle& dir = angle(0.0f));
 
     // various functions (fixme: sort, cleanup)
@@ -393,9 +407,11 @@ class game
     sea_object_id
     contact_in_direction(const sea_object* o, const angle& direction) const;
     sea_object_id ship_in_direction_from_pos(
-        const sea_object* o, const angle& direction) const;
+        const sea_object* o,
+        const angle& direction) const;
     sea_object_id sub_in_direction_from_pos(
-        const sea_object* o, const angle& direction) const;
+        const sea_object* o,
+        const angle& direction) const;
 
     const torpedo* get_torpedo_for_camera_track(unsigned nr) const;
 
@@ -407,8 +423,8 @@ class game
     virtual bool is_editor() const { return false; }
 
     // sun/moon and light color/brightness
-    double compute_light_brightness(
-        const vector3& viewpos, vector3& sundir) const; // depends on sun/moon
+    double compute_light_brightness(const vector3& viewpos, vector3& sundir)
+        const; // depends on sun/moon
     colorf
     compute_light_color(const vector3& viewpos) const; // depends on sun/moon
     vector3 compute_sun_pos(const vector3& viewpos) const;
@@ -458,4 +474,3 @@ class game
     /// Check if sea_object_id is valid
     bool is_valid(sea_object_id id) const;
 };
-

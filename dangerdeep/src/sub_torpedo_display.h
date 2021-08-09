@@ -57,7 +57,9 @@ class sub_torpedo_display : public user_display
     mutable objcachet<desc_text> desc_texts;
 
     void draw_torpedo(
-        class game& gm, bool usebow, const vector2i& pos,
+        class game& gm,
+        bool usebow,
+        const vector2i& pos,
         const submarine::stored_torpedo& st) const;
 
     vector2i mouse_position;
@@ -73,4 +75,3 @@ class sub_torpedo_display : public user_display
     unsigned
     get_tube_below_mouse(const std::vector<vector2i>& tubecoords) const;
 };
-

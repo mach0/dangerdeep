@@ -42,7 +42,8 @@
 #define IA 1366
 #define IC 150889
 
-template <class T> class terrain : public height_generator
+template<class T>
+class terrain : public height_generator
 {
   private:
     terrain() = delete;
@@ -67,13 +68,20 @@ template <class T> class terrain : public height_generator
     double uni();
     double gauss_noise();
     bivector<float> generate_patch(
-        int detail, const vector2i& coord_bl, const vector2i& coord_sz);
+        int detail,
+        const vector2i& coord_bl,
+        const vector2i& coord_sz);
 
   public:
     terrain(const std::string&, const std::string&, unsigned);
     void compute_heights(
-        int, const vector2i&, const vector2i&, float*, unsigned = 0,
-        unsigned = 0, bool = true) override;
+        int,
+        const vector2i&,
+        const vector2i&,
+        float*,
+        unsigned = 0,
+        unsigned = 0,
+        bool     = true) override;
 
     void get_min_max_height(double& minh, double& maxh) const override
     {
@@ -82,9 +90,10 @@ template <class T> class terrain : public height_generator
     }
 };
 
-template <class T>
+template<class T>
 terrain<T>::terrain(
-    const std::string& header_file, const std::string& data_dir,
+    const std::string& header_file,
+    const std::string& data_dir,
     unsigned _num_levels) :
     num_levels(_num_levels),
     noise_seed(1349555), noise_switch(false)
@@ -121,35 +130,54 @@ terrain<T>::terrain(
     sample_spacing = elem.attrf("value");
 
     base_texture.reset(new texture(
-        get_texture_dir() += "terrain_base.png", texture::LINEAR,
+        get_texture_dir() += "terrain_base.png",
+        texture::LINEAR,
         texture::REPEAT));
     noise_texture.reset(new texture(
-        get_texture_dir() += "terrain_noise.dds", true,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_noise.dds",
+        true,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     sand_texture.reset(new texture(
-        get_texture_dir() += "terrain_sand.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_sand.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     mud_texture.reset(new texture(
-        get_texture_dir() += "terrain_mud.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_mud.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     forest_texture.reset(new texture(
-        get_texture_dir() += "terrain_forest.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_forest.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     grass_texture.reset(new texture(
-        get_texture_dir() += "terrain_grass.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_grass.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     rock_texture.reset(new texture(
-        get_texture_dir() += "terrain_rock.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_rock.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     snow_texture.reset(new texture(
-        get_texture_dir() += "terrain_snow.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_snow.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     forest_brdf_texture.reset(new texture(
-        get_texture_dir() += "terrain_forest_brdf.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_forest_brdf.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     rock_brdf_texture.reset(new texture(
-        get_texture_dir() += "terrain_rock_brdf.dds", false,
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        get_texture_dir() += "terrain_rock_brdf.dds",
+        false,
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
 
     frac = std::make_unique<fractal_noise>(
         noise_h, noise_lac, num_levels + 1, noise_off, noise_gain);
@@ -167,10 +195,15 @@ terrain<T>::terrain(
             noise_map.at(x, y) = gauss_noise();
 }
 
-template <class T>
+template<class T>
 void terrain<T>::compute_heights(
-    int detail, const vector2i& coord_bl, const vector2i& coord_sz, float* dest,
-    unsigned stride, unsigned line_stride, bool noise)
+    int detail,
+    const vector2i& coord_bl,
+    const vector2i& coord_sz,
+    float* dest,
+    unsigned stride,
+    unsigned line_stride,
+    bool noise)
 {
     if (!stride)
         stride = 1;
@@ -191,9 +224,11 @@ void terrain<T>::compute_heights(
     }
 }
 
-template <class T>
+template<class T>
 bivector<float> terrain<T>::generate_patch(
-    int detail, const vector2i& coord_bl, const vector2i& coord_sz)
+    int detail,
+    const vector2i& coord_bl,
+    const vector2i& coord_sz)
 {
     bivector<float> patch;
     double noise, scale = noise_scale / (1.0 / (float) detail);
@@ -263,7 +298,8 @@ bivector<float> terrain<T>::generate_patch(
     return patch;
 }
 
-template <class T> double terrain<T>::gauss_noise()
+template<class T>
+double terrain<T>::gauss_noise()
 {
     double fac, r, v1, v2;
 
@@ -287,7 +323,8 @@ template <class T> double terrain<T>::gauss_noise()
     }
 }
 
-template <class T> double terrain<T>::uni()
+template<class T>
+double terrain<T>::uni()
 {
 
     double rm, r1;

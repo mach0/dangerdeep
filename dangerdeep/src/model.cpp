@@ -214,7 +214,9 @@ void model::object::display_mirror_clip() const
 }
 
 void model::object::compute_bounds(
-    vector3f& min, vector3f& max, const matrix4f& transmat) const
+    vector3f& min,
+    vector3f& max,
+    const matrix4f& transmat) const
 {
     matrix4f mytransmat = transmat * get_transformation();
     // handle vertices of mymesh if present
@@ -256,20 +258,24 @@ void model::render_init()
     dl.push_back("USE_SPECULARMAP");
     glsl_color_normal_specular = std::make_unique<glsl_shader_setup>(
         get_shader_dir() + "modelrender.vshader",
-        get_shader_dir() + "modelrender.fshader", dl);
+        get_shader_dir() + "modelrender.fshader",
+        dl);
     dl = dl2;
     dl.push_back("USE_CAUSTIC");
     glsl_color_normal_caustic = std::make_unique<glsl_shader_setup>(
         get_shader_dir() + "modelrender.vshader",
-        get_shader_dir() + "modelrender.fshader", dl);
+        get_shader_dir() + "modelrender.fshader",
+        dl);
     dl.push_back("USE_SPECULARMAP");
     glsl_color_normal_specular_caustic = std::make_unique<glsl_shader_setup>(
         get_shader_dir() + "modelrender.vshader",
-        get_shader_dir() + "modelrender.fshader", dl);
+        get_shader_dir() + "modelrender.fshader",
+        dl);
     dl               = dl2;
     glsl_mirror_clip = std::make_unique<glsl_shader_setup>(
         get_shader_dir() + "modelrender_mirrorclip.vshader",
-        get_shader_dir() + "modelrender_mirrorclip.fshader", dl);
+        get_shader_dir() + "modelrender_mirrorclip.fshader",
+        dl);
     // request uniform locations
     glsl_color->use();
     loc_c_tex_color = glsl_color->get_uniform_location("tex_color");
@@ -539,7 +545,9 @@ void model::mesh::compute_vertex_bounds()
 }
 
 void model::mesh::compute_bounds(
-    vector3f& totmin, vector3f& totmax, const matrix4f& transmat)
+    vector3f& totmin,
+    vector3f& totmax,
+    const matrix4f& transmat)
 {
     if (vertices.size() == 0)
         return;
@@ -701,8 +709,12 @@ model::mesh::mesh(string nm) :
 }
 
 model::mesh::mesh(
-    unsigned w, unsigned h, const std::vector<float>& heights,
-    const vector3f& scales, const vector3f& trans, std::string nm) :
+    unsigned w,
+    unsigned h,
+    const std::vector<float>& heights,
+    const vector3f& scales,
+    const vector3f& trans,
+    std::string nm) :
     name(std::move(nm)),
     mymaterial(nullptr), vbo_positions(false), vbo_normals(false),
     vbo_texcoords(false), vbo_tangents_righthanded(false), vbo_colors(false),
@@ -723,7 +735,8 @@ model::mesh::mesh(
         {
             vertices.push_back(
                 vector3f(
-                    float(x) - rw * 0.5f, float(y) - rh * 0.5f,
+                    float(x) - rw * 0.5f,
+                    float(y) - rh * 0.5f,
                     heights[y * w + x])
                     .coeff_mul(scales)
                 + trans);
@@ -845,7 +858,8 @@ void model::mesh::set_indices_type(primitive_type pt)
 }
 
 bool model::mesh::intersects(
-    const mesh& other, const matrix4f& transformation_this_to_other) const
+    const mesh& other,
+    const matrix4f& transformation_this_to_other) const
 {
     // we need to handle transformation of meshes.
     // compare transformed vertices: T * v == o.T * o.v
@@ -890,7 +904,10 @@ bool model::mesh::intersects(
 }
 
 bool model::mesh::is_degenerated(
-    const vector3f& v0, const vector3f& v1, const vector3f& v2, const float eps)
+    const vector3f& v0,
+    const vector3f& v1,
+    const vector3f& v2,
+    const float eps)
 {
     float eps2 = eps * eps;
     if (v0.square_distance(v1) < eps2)
@@ -974,7 +991,8 @@ void model::mesh::compile()
     // performance. OpenGL can do it for use, when we use glDrawRangeElements()
     // later.
     index_data.init_data(
-        indices.size() * 4 /* index type is uint32_t! */, &indices[0],
+        indices.size() * 4 /* index type is uint32_t! */,
+        &indices[0],
         GL_STATIC_DRAW);
 }
 
@@ -1296,7 +1314,10 @@ struct adjacency_edge_aux_data
     unsigned triangle, edge;
     unsigned v0, v1;
     adjacency_edge_aux_data(
-        unsigned t, unsigned e, unsigned v0_, unsigned v1_) :
+        unsigned t,
+        unsigned e,
+        unsigned v0_,
+        unsigned v1_) :
         triangle(t),
         edge(e), v0(v0_), v1(v1_)
     {
@@ -1477,8 +1498,12 @@ void model::material::map::register_layout(
             // load texture. Skins are expected in the same path as the model
             // itself.
             it->second.mytexture = new texture(
-                basepath + it->second.filename, mapping, texture::CLAMP,
-                makenormalmap, detailh, rgb2grey);
+                basepath + it->second.filename,
+                mapping,
+                texture::CLAMP,
+                makenormalmap,
+                detailh,
+                rgb2grey);
         }
         ++(it->second.ref_count);
     }
@@ -1490,14 +1515,22 @@ void model::material::map::register_layout(
             try
             {
                 mytexture = std::make_unique<texture>(
-                    basepath + filename, mapping, texture::CLAMP, makenormalmap,
-                    detailh, rgb2grey);
+                    basepath + filename,
+                    mapping,
+                    texture::CLAMP,
+                    makenormalmap,
+                    detailh,
+                    rgb2grey);
             }
             catch (std::exception& e)
             {
                 mytexture = std::make_unique<texture>(
-                    get_texture_dir() + filename, mapping, texture::CLAMP,
-                    makenormalmap, detailh, rgb2grey);
+                    get_texture_dir() + filename,
+                    mapping,
+                    texture::CLAMP,
+                    makenormalmap,
+                    detailh,
+                    rgb2grey);
             }
         }
         ++ref_count;
@@ -1576,7 +1609,9 @@ void model::material::map::set_gl_texture() const
 }
 
 void model::material::map::set_gl_texture(
-    const glsl_program& prog, unsigned loc, unsigned texunitnr) const
+    const glsl_program& prog,
+    unsigned loc,
+    unsigned texunitnr) const
 {
     if (!tex)
         THROW(error, "set_gl_texture(shader) with empty texture");
@@ -1584,7 +1619,9 @@ void model::material::map::set_gl_texture(
 }
 
 void model::material::map::set_gl_texture(
-    const glsl_shader_setup& gss, unsigned loc, unsigned texunitnr) const
+    const glsl_shader_setup& gss,
+    unsigned loc,
+    unsigned texunitnr) const
 {
     if (!tex)
         THROW(error, "set_gl_texture(shader) with empty texture");
@@ -1629,13 +1666,16 @@ void model::material::set_gl_values(const texture* caustic_map) const
             {
                 glsl_color_normal_specular_caustic->use();
                 glsl_color_normal_specular_caustic->set_gl_texture(
-                    *const_cast<texture*>(caustic_map), loc_cnsc_tex_caustic,
+                    *const_cast<texture*>(caustic_map),
+                    loc_cnsc_tex_caustic,
                     3);
                 specularmap->set_gl_texture(
-                    *glsl_color_normal_specular_caustic, loc_cnsc_tex_specular,
+                    *glsl_color_normal_specular_caustic,
+                    loc_cnsc_tex_specular,
                     2);
                 normalmap->set_gl_texture(
-                    *glsl_color_normal_specular_caustic, loc_cnsc_tex_normal,
+                    *glsl_color_normal_specular_caustic,
+                    loc_cnsc_tex_normal,
                     1);
                 colormap->set_gl_texture(
                     *glsl_color_normal_specular_caustic, loc_cnsc_tex_color, 0);
@@ -1687,7 +1727,8 @@ void model::material::set_gl_values_mirror_clip() const
 }
 
 void model::material::register_layout(
-    const std::string& name, const std::string& basepath)
+    const std::string& name,
+    const std::string& basepath)
 {
     if (colormap.get())
         colormap->register_layout(name, basepath, model::mapping);
@@ -1701,8 +1742,12 @@ void model::material::register_layout(
     float normalmapheight = 4.0f;
     if (normalmap.get())
         normalmap->register_layout(
-            name, basepath, texture::LINEAR /*_MIPMAP_LINEAR*/, true,
-            normalmapheight, true);
+            name,
+            basepath,
+            texture::LINEAR /*_MIPMAP_LINEAR*/,
+            true,
+            normalmapheight,
+            true);
     if (specularmap.get())
         specularmap->register_layout(
             name, basepath, texture::LINEAR_MIPMAP_LINEAR, false, 0.0f, true);
@@ -1739,7 +1784,9 @@ void model::material::get_all_layout_names(std::set<std::string>& result) const
 }
 
 model::material_glsl::material_glsl(
-    const std::string& nm, const std::string& vsfn, const std::string& fsfn) :
+    const std::string& nm,
+    const std::string& vsfn,
+    const std::string& fsfn) :
     material(nm),
     vertexshaderfn(vsfn), fragmentshaderfn(fsfn),
     shadersetup(get_shader_dir() + vsfn, get_shader_dir() + fsfn), nrtex(0)
@@ -1788,7 +1835,8 @@ void model::material_glsl::set_gl_values_mirror_clip() const
 }
 
 void model::material_glsl::register_layout(
-    const std::string& name, const std::string& basepath)
+    const std::string& name,
+    const std::string& basepath)
 {
     for (unsigned i = 0; i < nrtex; ++i)
     {
@@ -1906,8 +1954,12 @@ void model::mesh::display(const texture* caustic_map) const
     // render geometry, glDrawRangeElements is faster than glDrawElements.
     index_data.bind();
     glDrawRangeElements(
-        gl_primitive_type(), 0, vertices.size() - 1, indices.size(),
-        GL_UNSIGNED_INT, nullptr);
+        gl_primitive_type(),
+        0,
+        vertices.size() - 1,
+        indices.size(),
+        GL_UNSIGNED_INT,
+        nullptr);
     index_data.unbind();
 
     // maybe: add code to show normals as Lines
@@ -1962,8 +2014,12 @@ void model::mesh::display_mirror_clip() const
     // render geometry
     index_data.bind();
     glDrawRangeElements(
-        gl_primitive_type(), 0, vertices.size() - 1, indices.size(),
-        GL_UNSIGNED_INT, nullptr);
+        gl_primitive_type(),
+        0,
+        vertices.size() - 1,
+        indices.size(),
+        GL_UNSIGNED_INT,
+        nullptr);
     index_data.unbind();
 
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -2023,9 +2079,15 @@ void model::display_mirror_clip() const
     }
 }
 
-model::mesh& model::get_mesh(unsigned nr) { return *meshes.at(nr); }
+model::mesh& model::get_mesh(unsigned nr)
+{
+    return *meshes.at(nr);
+}
 
-const model::mesh& model::get_mesh(unsigned nr) const { return *meshes.at(nr); }
+const model::mesh& model::get_mesh(unsigned nr) const
+{
+    return *meshes.at(nr);
+}
 
 model::mesh& model::get_base_mesh()
 {
@@ -2170,7 +2232,9 @@ void model::read_phys_file(const string& filename)
                             ixx + 0.5 + bmin.x / voxel_size.x,
                             iyy + 0.5 + bmin.y / voxel_size.y,
                             izz + 0.5 + bmin.z / voxel_size.z),
-                        f, m, f * voxel_volume * volume_rcp);
+                        f,
+                        m,
+                        f * voxel_volume * volume_rcp);
                     mass_part_sum += m;
                 }
                 ++ptr;
@@ -2265,7 +2329,8 @@ void model::compile()
 // -------------------------------- dftd model file writing
 // -------------------------------------- write our own model file format.
 void model::write_to_dftd_model_file(
-    const std::string& filename, bool store_normals) const
+    const std::string& filename,
+    bool store_normals) const
 {
     xml_doc doc(filename);
     xml_elem root = doc.add_child("dftd-model");
@@ -2418,7 +2483,9 @@ void model::write_to_dftd_model_file(
 }
 
 void model::write_color_to_dftd_model_file(
-    xml_elem& parent, const color& c, const string& type) const
+    xml_elem& parent,
+    const color& c,
+    const string& type) const
 {
     xml_elem cl = parent.add_child(type);
     ostringstream osscl;
@@ -2428,7 +2495,8 @@ void model::write_color_to_dftd_model_file(
 }
 
 color model::read_color_from_dftd_model_file(
-    const xml_elem& parent, const std::string& type)
+    const xml_elem& parent,
+    const std::string& type)
 {
     xml_elem ecol = parent.child(type);
     if (!ecol.has_attr("color"))
@@ -2441,7 +2509,8 @@ color model::read_color_from_dftd_model_file(
 }
 
 void model::material::map::write_to_dftd_model_file(
-    xml_elem& parent, const std::string& type) const
+    xml_elem& parent,
+    const std::string& type) const
 {
     xml_elem mmap = parent.add_child("map");
     // write here possible skin children, fixme
@@ -2621,7 +2690,8 @@ void model::read_dftd_model_file(const std::string& filename)
                 else
                 {
                     THROW(
-                        xml_error, string("unknown material map type ") + type,
+                        xml_error,
+                        string("unknown material map type ") + type,
                         emap.doc_name());
                 }
             }
@@ -2631,7 +2701,8 @@ void model::read_dftd_model_file(const std::string& filename)
                 xml_elem eshin = e.child("shininess");
                 if (!eshin.has_attr("exponent"))
                     THROW(
-                        xml_error, "shininess defined but no exponent given!",
+                        xml_error,
+                        "shininess defined but no exponent given!",
                         e.doc_name());
                 mat->shininess = eshin.attrf("exponent");
             }
@@ -2761,7 +2832,8 @@ void model::read_dftd_model_file(const std::string& filename)
             ++nr_of_objecttrees;
             if (nr_of_objecttrees > 1)
                 THROW(
-                    xml_error, "more than one object tree defined!",
+                    xml_error,
+                    "more than one object tree defined!",
                     e.doc_name());
         }
         else

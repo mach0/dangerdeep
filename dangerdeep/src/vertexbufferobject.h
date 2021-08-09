@@ -26,9 +26,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 ///> this class handles a OpenGL Vertex Buffer Object
 ///> Note! older cards support at max 64k vertices (Geforce4MX), but it doesn't
-///make sense > to use more than 64k vertices per buffer in most cases. One
-///could use GL_UNSIGNED_SHORT > as index format then, which saves memory and
-///copy bandwidth.
+/// make sense > to use more than 64k vertices per buffer in most cases. One
+/// could use GL_UNSIGNED_SHORT > as index format then, which saves memory and
+/// copy bandwidth.
 class vertexbufferobject
 {
     GLuint id{0};
@@ -38,7 +38,7 @@ class vertexbufferobject
 
   public:
     ///> create buffer. Tell the handler if you wish to store indices or other
-    ///data.
+    /// data.
     vertexbufferobject(bool indexbuffer = false);
     ///> free buffer
     ~vertexbufferobject();
@@ -56,11 +56,10 @@ class vertexbufferobject
     ///> unbind buffer
     void unbind() const;
     ///> map buffer to address, access is one of GL_READ_ONLY_ARB,
-    ///GL_WRITE_ONLY_ARB, > GL_READ_WRITE_ARB.
+    /// GL_WRITE_ONLY_ARB, > GL_READ_WRITE_ARB.
     void* map(int access);
     ///> get size of mapped space
     unsigned get_map_size() const { return size; }
     ///> unmap buffer
     void unmap();
 };
-

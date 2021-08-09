@@ -32,13 +32,17 @@ class mesh
 {
   public:
     mesh(
-        const ::mesh& m, const program& material_prog,
+        const ::mesh& m,
+        const program& material_prog,
         const gpu::program& material_underwater_prog,
         const program& material_mirrorclip_prog,
-        const uniform_buffer& material_ubo, const scene& myscene);
+        const uniform_buffer& material_ubo,
+        const scene& myscene);
     mesh(
-        const ::mesh& m, const program& material_custom_prog,
-        const uniform_buffer& material_ubo, const scene& myscene);
+        const ::mesh& m,
+        const program& material_custom_prog,
+        const uniform_buffer& material_ubo,
+        const scene& myscene);
     void display(const matrix4& transformation);
     void display_under_water(const matrix4& transformation);
     void display_mirror_clip(const matrix4& transformation);
@@ -61,7 +65,8 @@ class mesh
 
     void display_generic(const program& prg, const matrix4& transformation);
     void init(
-        const ::mesh& m, const program& ctx_init_program,
+        const ::mesh& m,
+        const program& ctx_init_program,
         const uniform_buffer& material_ubo);
 
   private:
@@ -69,9 +74,9 @@ class mesh
 };
 
 /// provide data type deduction
-template <> inline data_type to_data_type(::mesh::vertex_index)
+template<>
+inline data_type to_data_type(::mesh::vertex_index)
 {
     return data_type::u32;
 }
 } // namespace gpu
-

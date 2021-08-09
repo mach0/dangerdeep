@@ -49,16 +49,24 @@ void vertexbufferobject::init_data(unsigned size_, const void* data, int usage)
 }
 
 void vertexbufferobject::init_sub_data(
-    unsigned offset, unsigned subsize, const void* data)
+    unsigned offset,
+    unsigned subsize,
+    const void* data)
 {
     bind();
     glBufferSubData(target, offset, subsize, data);
     unbind();
 }
 
-void vertexbufferobject::bind() const { glBindBuffer(target, id); }
+void vertexbufferobject::bind() const
+{
+    glBindBuffer(target, id);
+}
 
-void vertexbufferobject::unbind() const { glBindBuffer(target, 0); }
+void vertexbufferobject::unbind() const
+{
+    glBindBuffer(target, 0);
+}
 
 void* vertexbufferobject::map(int access)
 {

@@ -40,7 +40,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // NOT return plain pointers from the cache. Because if we generate resources by
 // ref'ing the cache in some code and an exception is thrown, the ref'd objects
 // won't get unref'd again, leading to memory waste (though NOT memory leaks)
-template <class T> class objcachet
+template<class T>
+class objcachet
 {
     std::map<std::string, std::pair<unsigned, T*>> cache;
     std::string basedir;
@@ -156,10 +157,10 @@ template <class T> class objcachet
     void print() const
     {
         std::cout << "objcache: " << cache.size() << " entries.\n";
-        for (typename std::map<
-                 std::string, std::pair<unsigned, T*>>::const_iterator it =
-                 cache.begin();
-             it != cache.end(); ++it)
+        for (typename std::map<std::string, std::pair<unsigned, T*>>::
+                 const_iterator it = cache.begin();
+             it != cache.end();
+             ++it)
             std::cout << "key=\"" << it->first << "\" ref=" << it->second.first
                       << " addr=" << it->second.second << "\n";
     }
@@ -181,7 +182,8 @@ template <class T> class objcachet
 };
 
 /// handle class to use as reference
-template <class C, typename Key = std::string> class object_handle
+template<class C, typename Key = std::string>
+class object_handle
 {
   public:
     object_handle() = default;
@@ -228,4 +230,3 @@ template <class C, typename Key = std::string> class object_handle
     Key key;
     C* storage{nullptr};
 };
-

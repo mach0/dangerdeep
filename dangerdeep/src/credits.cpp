@@ -262,11 +262,28 @@ matrix4 camera::get_transformation() const
     vector3 p(xdir * position, ydir * position, zdir * position);
 
     return matrix4(
-        xdir.x, xdir.y, xdir.z, -p.x, ydir.x, ydir.y, ydir.z, -p.y, zdir.x,
-        zdir.y, zdir.z, -p.z, 0, 0, 0, 1);
+        xdir.x,
+        xdir.y,
+        xdir.z,
+        -p.x,
+        ydir.x,
+        ydir.y,
+        ydir.z,
+        -p.y,
+        zdir.x,
+        zdir.y,
+        zdir.z,
+        -p.z,
+        0,
+        0,
+        0,
+        1);
 }
 
-void camera::set_gl_trans() const { get_transformation().multiply_gl(); }
+void camera::set_gl_trans() const
+{
+    get_transformation().multiply_gl();
+}
 
 class canyon
 {
@@ -414,7 +431,10 @@ void canyon::canyon_material::set_gl_values(const texture* /* unused */) const
     cyn.myshader.set_gl_texture(*cyn.grasstex.get(), cyn.loc_texgrass, 2);
 }
 
-void canyon::display() const { mymesh->display(); }
+void canyon::display() const
+{
+    mymesh->display();
+}
 
 class plant
 {
@@ -438,7 +458,9 @@ struct plant_alpha_sortidx
     plant_alpha_sortidx() = default;
 
     plant_alpha_sortidx(
-        const std::vector<plant>& plants, unsigned i, const vector2f& viewpos) :
+        const std::vector<plant>& plants,
+        unsigned i,
+        const vector2f& viewpos) :
         sqd(plants[i].pos.xy().square_distance(viewpos)),
         idx(i)
     {
@@ -887,7 +909,8 @@ void generate_fadein_pixels(vector<uint8_t>& pix, unsigned ctr, unsigned s)
     }
 }
 
-template <class T, unsigned size> class lookup_function
+template<class T, unsigned size>
+class lookup_function
 {
     typename std::vector<T> values;
     float dmin, dmax, drange_rcp;
@@ -947,10 +970,18 @@ void show_credits()
     // compute bspline for camera path
     std::vector<vector3f> bsppts;
     vector2f bsp[13] = {
-        vector2f(0.00, 0.75),  vector2f(0.75, 0.75),  vector2f(0.75, 0.00),
-        vector2f(0.00, 0.00),  vector2f(-0.75, 0.00), vector2f(-0.75, -0.75),
-        vector2f(0.00, -0.75), vector2f(0.75, -0.75), vector2f(0.75, 0.00),
-        vector2f(0.00, 0.00),  vector2f(-0.75, 0.00), vector2f(-0.75, 0.75),
+        vector2f(0.00, 0.75),
+        vector2f(0.75, 0.75),
+        vector2f(0.75, 0.00),
+        vector2f(0.00, 0.00),
+        vector2f(-0.75, 0.00),
+        vector2f(-0.75, -0.75),
+        vector2f(0.00, -0.75),
+        vector2f(0.75, -0.75),
+        vector2f(0.75, 0.00),
+        vector2f(0.00, 0.00),
+        vector2f(-0.75, 0.00),
+        vector2f(-0.75, 0.75),
         vector2f(0.00, 0.75)};
 
     for (auto& j : bsp)

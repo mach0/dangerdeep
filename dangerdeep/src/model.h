@@ -43,7 +43,7 @@ class xml_elem;
 #define DFTD_MAX_TEXTURE_UNITS 8
 
 ///\brief Handles a 3D model, it's animation and OpenGL based rendering and
-///display.
+/// display.
 class model
 {
   public:
@@ -86,22 +86,28 @@ class model
             map();
             ~map();
             void write_to_dftd_model_file(
-                xml_elem& parent, const std::string& type) const;
+                xml_elem& parent,
+                const std::string& type) const;
             // read and construct from dftd model file
             map(const xml_elem& parent);
             // set up opengl texture matrix with map transformation values
             void set_gl_texture() const;
             void set_gl_texture(
-                const glsl_program& prog, unsigned loc,
+                const glsl_program& prog,
+                unsigned loc,
                 unsigned texunitnr) const;
             void set_gl_texture(
-                const glsl_shader_setup& gss, unsigned loc,
+                const glsl_shader_setup& gss,
+                unsigned loc,
                 unsigned texunitnr) const;
             void set_texture(texture* t);
             void register_layout(
-                const std::string& name, const std::string& basepath,
-                texture::mapping_mode mapping, bool makenormalmap = false,
-                float detailh = 1.0f, bool rgb2grey = false);
+                const std::string& name,
+                const std::string& basepath,
+                texture::mapping_mode mapping,
+                bool makenormalmap = false,
+                float detailh      = 1.0f,
+                bool rgb2grey      = false);
             void unregister_layout(const std::string& name);
             void set_layout(const std::string& layout);
             void get_all_layout_names(std::set<std::string>& result) const;
@@ -143,12 +149,14 @@ class model
 
       public:
         material_glsl(
-            const std::string& nm, const std::string& vsfn,
+            const std::string& nm,
+            const std::string& vsfn,
             const std::string& fsfn);
         void set_gl_values(const texture* caustic_map = nullptr) const override;
         void set_gl_values_mirror_clip() const override;
         void register_layout(
-            const std::string& name, const std::string& basepath) override;
+            const std::string& name,
+            const std::string& basepath) override;
         void unregister_layout(const std::string& name) override;
         void set_layout(const std::string& layout) override;
         void get_all_layout_names(std::set<std::string>& result) const override;
@@ -252,7 +260,9 @@ class model
         void display_mirror_clip() const;
         void compute_vertex_bounds();
         void compute_bounds(
-            vector3f& totmin, vector3f& totmax, const matrix4f& transmat);
+            vector3f& totmin,
+            vector3f& totmax,
+            const matrix4f& transmat);
         void compute_normals();
         bool compute_tangentx(unsigned i0, unsigned i1, unsigned i2);
 
@@ -266,9 +276,12 @@ class model
         ///@param trans - translation for each vertex
         ///@nm - name
         mesh(
-            unsigned w, unsigned h, const std::vector<float>& heights,
-            const vector3f& scales, const vector3f& trans = vector3f(),
-            std::string nm = "Heightfield");
+            unsigned w,
+            unsigned h,
+            const std::vector<float>& heights,
+            const vector3f& scales,
+            const vector3f& trans = vector3f(),
+            std::string nm        = "Heightfield");
 
         // make display list if possible
         void compile();
@@ -322,14 +335,17 @@ class model
 
         /// check wether a triangle is degenerated
         static bool is_degenerated(
-            const vector3f& v0, const vector3f& v1, const vector3f& v2,
+            const vector3f& v0,
+            const vector3f& v1,
+            const vector3f& v2,
             const float eps = 1e-3f);
 
       protected:
         primitive_type indices_type;
         bv_tree bounding_volume_tree;
         void (model::mesh::*get_triangle_ptr)(
-            unsigned triangle, uint32_t indices[3]) const;
+            unsigned triangle,
+            uint32_t indices[3]) const;
 
       private:
         mesh()            = delete;
@@ -395,7 +411,9 @@ class model
         void display(const texture* caustic_map = nullptr) const;
         void display_mirror_clip() const;
         void compute_bounds(
-            vector3f& min, vector3f& max, const matrix4f& transmat) const;
+            vector3f& min,
+            vector3f& max,
+            const matrix4f& transmat) const;
         matrix4f get_transformation() const;
     };
 
@@ -477,9 +495,12 @@ class model
 
     void read_dftd_model_file(const std::string& filename);
     void write_color_to_dftd_model_file(
-        xml_elem& parent, const color& c, const std::string& type) const;
+        xml_elem& parent,
+        const color& c,
+        const std::string& type) const;
     color read_color_from_dftd_model_file(
-        const xml_elem& parent, const std::string& type);
+        const xml_elem& parent,
+        const std::string& type);
 
     // store shared lookup functions for pow function (specular lighting)
     // fixme: check if exponent is integer or float.
@@ -536,7 +557,8 @@ class model
 
     // write our own model file format.
     void write_to_dftd_model_file(
-        const std::string& filename, bool store_normals = true) const;
+        const std::string& filename,
+        bool store_normals = true) const;
 
     // manipulate object angle(s), returns false on error (wrong id or angle out
     // of bounds)
@@ -615,4 +637,3 @@ class model
     /// get radius of bounding sphere
     double get_bounding_sphere_radius() const { return boundsphere_radius; }
 };
-

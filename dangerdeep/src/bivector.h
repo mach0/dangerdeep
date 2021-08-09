@@ -36,7 +36,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //#include <iostream>
 
 ///\brief Template class for a two-dimensional generic vector.
-template <class T> class bivector
+template<class T>
+class bivector
 {
   protected:
     vector2i datasize;
@@ -104,8 +105,10 @@ template <class T> class bivector
         std::swap(datasize, other.datasize);
     }
 
-    template <class U> bivector<U> convert() const;
-    template <class U> bivector<U> convert(const T& minv, const T& maxv) const;
+    template<class U>
+    bivector<U> convert() const;
+    template<class U>
+    bivector<U> convert(const T& minv, const T& maxv) const;
 
     // get pointer to storage, be very careful with that!
     T* data_ptr() { return &data[0]; }
@@ -135,10 +138,12 @@ template <class T> class bivector
 
     bivector<T>& insert(const bivector<T>& other, const vector2i& offset);
 
-    template <class U> friend class bivector;
+    template<class U>
+    friend class bivector;
 };
 
-template <class T> void bivector<T>::resize(const vector2i& newsz, const T& v)
+template<class T>
+void bivector<T>::resize(const vector2i& newsz, const T& v)
 {
     // fixme: not correct that way
     data.resize(newsz.x * newsz.y, v);
@@ -156,26 +161,27 @@ template <class T> void bivector<T>::resize(const vector2i& newsz, const T& v)
     */
 }
 
-#define bivector_FOREACH(cmd)                  \
-    for (int z = 0; z < int(data.size()); ++z) \
-    {                                          \
-        cmd;                                   \
+#define bivector_FOREACH(cmd)                                                  \
+    for (int z = 0; z < int(data.size()); ++z)                                 \
+    {                                                                          \
+        cmd;                                                                   \
     }
-#define bivector_FOREACH_XY(cmd)             \
-    for (int y = 0; y < datasize.y; ++y)     \
-        for (int x = 0; x < datasize.x; ++x) \
-        {                                    \
-            cmd;                             \
+#define bivector_FOREACH_XY(cmd)                                               \
+    for (int y = 0; y < datasize.y; ++y)                                       \
+        for (int x = 0; x < datasize.x; ++x)                                   \
+        {                                                                      \
+            cmd;                                                               \
         }
-#define bivector_FOREACH_XYZ(cmd)                 \
-    for (int y = 0, z = 0; y < datasize.y; ++y)   \
-        for (int x = 0; x < datasize.x; ++x, ++z) \
-        {                                         \
-            cmd;                                  \
+#define bivector_FOREACH_XYZ(cmd)                                              \
+    for (int y = 0, z = 0; y < datasize.y; ++y)                                \
+        for (int x = 0; x < datasize.x; ++x, ++z)                              \
+        {                                                                      \
+            cmd;                                                               \
         }
 #define bivector_abs(x) ((x > 0) ? x : -x)
 
-template <class T> T bivector<T>::get_min() const
+template<class T>
+T bivector<T>::get_min() const
 {
     if (data.empty())
         THROW(error, "bivector::get_min data empty");
@@ -183,7 +189,8 @@ template <class T> T bivector<T>::get_min() const
     bivector_FOREACH(m = std::min(m, data[z])) return m;
 }
 
-template <class T> T bivector<T>::get_max() const
+template<class T>
+T bivector<T>::get_max() const
 {
     if (data.empty())
         THROW(error, "bivector::get_max data empty");
@@ -191,7 +198,8 @@ template <class T> T bivector<T>::get_max() const
     bivector_FOREACH(m = std::max(m, data[z])) return m;
 }
 
-template <class T> T bivector<T>::get_min_abs() const
+template<class T>
+T bivector<T>::get_min_abs() const
 {
     if (data.empty())
         THROW(error, "bivector::get_min_abs data empty");
@@ -199,7 +207,8 @@ template <class T> T bivector<T>::get_min_abs() const
     bivector_FOREACH(m = std::min(m, abs(data[z]))) return m;
 }
 
-template <class T> T bivector<T>::get_max_abs() const
+template<class T>
+T bivector<T>::get_max_abs() const
 {
     if (data.empty())
         THROW(error, "bivector::get_max_abs data empty");
@@ -207,22 +216,25 @@ template <class T> T bivector<T>::get_max_abs() const
     bivector_FOREACH(m = std::max(m, (T) abs(data[z]))) return m;
 }
 
-template <class T> bivector<T>& bivector<T>::operator*=(const T& s)
+template<class T>
+bivector<T>& bivector<T>::operator*=(const T& s)
 {
     bivector_FOREACH(data[z] *= s) return *this;
 }
 
-template <class T> bivector<T>& bivector<T>::operator+=(const T& v)
+template<class T>
+bivector<T>& bivector<T>::operator+=(const T& v)
 {
     bivector_FOREACH(data[z] += v) return *this;
 }
 
-template <class T> bivector<T>& bivector<T>::operator+=(const bivector<T>& v)
+template<class T>
+bivector<T>& bivector<T>::operator+=(const bivector<T>& v)
 {
     bivector_FOREACH(data[z] += v.data[z]) return *this;
 }
 
-template <class T>
+template<class T>
 bivector<T>
 bivector<T>::sub_area(const vector2i& offset, const vector2i& sz) const
 {
@@ -237,7 +249,7 @@ bivector<T>::sub_area(const vector2i& offset, const vector2i& sz) const
     return result;
 }
 
-template <class T>
+template<class T>
 bivector<T> bivector<T>::shifted(const vector2i& offset) const
 {
     bivector<T> result(datasize);
@@ -247,20 +259,23 @@ bivector<T> bivector<T>::shifted(const vector2i& offset) const
             (y + offset.y) & (datasize.y - 1)) = data[z]) return result;
 }
 
-template <class T> bivector<T> bivector<T>::transposed() const
+template<class T>
+bivector<T> bivector<T>::transposed() const
 {
     bivector<T> result(vector2i(datasize.y, datasize.x));
     bivector_FOREACH_XYZ(result.at(y, x) = data[z]) return result;
 }
 
-template <class T> template <class U> bivector<U> bivector<T>::convert() const
+template<class T>
+template<class U>
+bivector<U> bivector<T>::convert() const
 {
     bivector<U> result(datasize);
     bivector_FOREACH(result.data[z] = U(data[z])) return result;
 }
 
-template <class T>
-template <class U>
+template<class T>
+template<class U>
 bivector<U> bivector<T>::convert(const T& minv, const T& maxv) const
 {
     bivector<U> result(datasize);
@@ -269,7 +284,8 @@ bivector<U> bivector<T>::convert(const T& minv, const T& maxv) const
             U(std::max(minv, std::min(maxv, data[z])))) return result;
 }
 
-template <class T> bivector<T> bivector<T>::upsampled(bool wrap) const
+template<class T>
+bivector<T> bivector<T>::upsampled(bool wrap) const
 {
     /* upsampling generates 3 new values out of the 4 surrounding
        values like this: (x - surrounding values, numbers: generated)
@@ -338,7 +354,7 @@ template <class T> bivector<T> bivector<T>::upsampled(bool wrap) const
     return result;
 }
 
-template <class T>
+template<class T>
 bivector<T> bivector<T>::downsampled(bool force_even_size) const
 {
     /* downsampling builds the average of 2x2 pixels.
@@ -393,7 +409,8 @@ bivector<T> bivector<T>::downsampled(bool force_even_size) const
     return result;
 }
 
-template <class T> bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
+template<class T>
+bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
 {
     /* interpolate one new value out of four neighbours,
        or out of 4x4 neighbours with a coefficient matrix:
@@ -515,7 +532,7 @@ template <class T> bivector<T> bivector<T>::smooth_upsampled(bool wrap) const
 #define M_PI 3.1415927
 #endif
 
-template <class T>
+template<class T>
 bivector<T>&
 bivector<T>::add_gauss_noise(const T& scal, random_generator_deprecated& rg)
 {
@@ -535,7 +552,7 @@ bivector<T>::add_gauss_noise(const T& scal, random_generator_deprecated& rg)
     return *this;
 }
 
-template <class T>
+template<class T>
 bivector<T>& bivector<T>::add_tiled(const bivector<T>& other, const T& scal)
 {
     bivector_FOREACH_XY(
@@ -544,7 +561,7 @@ bivector<T>& bivector<T>::add_tiled(const bivector<T>& other, const T& scal)
         * scal;) return *this;
 }
 
-template <class T>
+template<class T>
 bivector<T>&
 bivector<T>::add_shifted(const bivector<T>& other, const vector2i& offset)
 {
@@ -554,7 +571,7 @@ bivector<T>::add_shifted(const bivector<T>& other, const vector2i& offset)
             (y + offset.y) & (other.datasize.y - 1));) return *this;
 }
 
-template <class T>
+template<class T>
 bivector<T>&
 bivector<T>::insert(const bivector<T>& other, const vector2i& offset)
 {

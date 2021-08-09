@@ -29,17 +29,50 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <string>
 
 const std::string& get_data_dir();
-inline std::string get_texture_dir() { return get_data_dir() + "textures/"; }
-inline std::string get_font_dir() { return get_data_dir() + "fonts/"; }
-inline std::string get_model_dir() { return get_data_dir() + "models/"; }
-inline std::string get_sound_dir() { return get_data_dir() + "sounds/"; }
-inline std::string get_image_dir() { return get_data_dir() + "images/"; }
-inline std::string get_mission_dir() { return get_data_dir() + "missions/"; }
-inline std::string get_map_dir() { return get_data_dir() + "maps/"; }
-inline std::string get_shader_dir() { return get_data_dir() + "shaders/"; }
-inline std::string get_menu_dir() { return get_data_dir() + "menus/"; }
-inline std::string get_display_dir() { return get_data_dir() + "displays/"; }
-inline std::string get_popup_dir() { return get_data_dir() + "popups/"; }
+inline std::string get_texture_dir()
+{
+    return get_data_dir() + "textures/";
+}
+inline std::string get_font_dir()
+{
+    return get_data_dir() + "fonts/";
+}
+inline std::string get_model_dir()
+{
+    return get_data_dir() + "models/";
+}
+inline std::string get_sound_dir()
+{
+    return get_data_dir() + "sounds/";
+}
+inline std::string get_image_dir()
+{
+    return get_data_dir() + "images/";
+}
+inline std::string get_mission_dir()
+{
+    return get_data_dir() + "missions/";
+}
+inline std::string get_map_dir()
+{
+    return get_data_dir() + "maps/";
+}
+inline std::string get_shader_dir()
+{
+    return get_data_dir() + "shaders/";
+}
+inline std::string get_menu_dir()
+{
+    return get_data_dir() + "menus/";
+}
+inline std::string get_display_dir()
+{
+    return get_data_dir() + "displays/";
+}
+inline std::string get_popup_dir()
+{
+    return get_data_dir() + "popups/";
+}
 
 // Note! call this at most once and very early in main()!
 void set_data_dir(const std::string& datadir);
@@ -90,4 +123,3 @@ inline const data_file_handler& data_file()
 {
     return data_file_handler::instance();
 }
-

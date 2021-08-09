@@ -25,8 +25,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "user_interface.h"
 
 sub_recogmanual_popup::widget_button_next::widget_button_next(
-    int x, int y, int w, int h, int dir, int& att_page,
-    const std::string& text_, const std::string& bg_image_, widget* parent_) :
+    int x,
+    int y,
+    int w,
+    int h,
+    int dir,
+    int& att_page,
+    const std::string& text_,
+    const std::string& bg_image_,
+    widget* parent_) :
     widget_button(x, y, w, h, text_, parent_, bg_image_),
     direction(dir), page(att_page)
 {
@@ -147,19 +154,26 @@ void sub_recogmanual_popup::display() const
 
         // fixme: change this after the authentic overlay is implemented
         font_vtremington12->print(
-            off_text_x, off_text_y + step_y * (i % 3), classes[i],
+            off_text_x,
+            off_text_y + step_y * (i % 3),
+            classes[i],
             color(0, 0, 0));
         font_vtremington12->print(
-            off_text_x, off_text_y + 15 + step_y * (i % 3),
+            off_text_x,
+            off_text_y + 15 + step_y * (i % 3),
             std::string("Length: ") + lengths[i]
                 + std::string("   Displacement:") + displacements[i],
             color(0, 0, 0));
         font_vtremington12->print(
-            off_text_x, off_text_y + 30 + step_y * (i % 3),
-            std::string("Countries: ") + countries[i], color(0, 0, 0));
+            off_text_x,
+            off_text_y + 30 + step_y * (i % 3),
+            std::string("Countries: ") + countries[i],
+            color(0, 0, 0));
         font_vtremington12->print(
-            off_text_x, off_text_y + 45 + step_y * (i % 3),
-            std::string("Weapons: ") + weapons[i], color(0, 0, 0));
+            off_text_x,
+            off_text_y + 45 + step_y * (i % 3),
+            std::string("Weapons: ") + weapons[i],
+            color(0, 0, 0));
     }
 
     btn_left.draw();

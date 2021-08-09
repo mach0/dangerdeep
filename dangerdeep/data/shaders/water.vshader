@@ -45,7 +45,8 @@ void main()
     gl_FrontColor.xyz =
         upwelltopbot
             * clamp(
-                (gl_Vertex.z + viewpos.z) * 0.1111111 + N.z - 0.4666667, 0.0,
+                (gl_Vertex.z + viewpos.z) * 0.1111111 + N.z - 0.4666667,
+                0.0,
                 1.0)
         + upwellbot;
 

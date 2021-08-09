@@ -56,7 +56,9 @@ enum element_type
 };
 
 void check_for_parallax(
-    const vector2i& mpos, const user_display::elem2D& elem, tdc& TDC)
+    const vector2i& mpos,
+    const user_display::elem2D& elem,
+    tdc& TDC)
 {
     if (elem.is_mouse_over(mpos))
     {

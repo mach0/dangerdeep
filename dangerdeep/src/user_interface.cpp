@@ -140,23 +140,51 @@ user_interface::user_interface(game& gm) :
     }
     playlist_repeat_checkbox = &music_playlist->add_child_near_last_child(
         std::make_unique<widget_caller_checkbox<user_interface&>>(
-            0, 0, music_playlist_width / 2, 32, texts::get(263), nullptr, false,
-            [](auto& ui) { ui.playlist_mode_changed(); }, *this));
+            0,
+            0,
+            music_playlist_width / 2,
+            32,
+            texts::get(263),
+            nullptr,
+            false,
+            [](auto& ui) { ui.playlist_mode_changed(); },
+            *this));
     playlist_shuffle_checkbox = &music_playlist->add_child_near_last_child(
         std::make_unique<widget_caller_checkbox<user_interface&>>(
-            0, 0, music_playlist_width / 2, 32, texts::get(264), nullptr, false,
-            [](auto& ui) { ui.playlist_mode_changed(); }, *this),
-        0, 1);
+            0,
+            0,
+            music_playlist_width / 2,
+            32,
+            texts::get(264),
+            nullptr,
+            false,
+            [](auto& ui) { ui.playlist_mode_changed(); },
+            *this),
+        0,
+        1);
     playlist_mute_checkbox = &music_playlist->add_child_near_last_child(
         std::make_unique<widget_caller_checkbox<user_interface&>>(
-            0, 0, music_playlist_width / 2, 32, texts::get(265), nullptr, false,
-            [](user_interface& ui) { ui.playlist_mute(); }, *this),
+            0,
+            0,
+            music_playlist_width / 2,
+            32,
+            texts::get(265),
+            nullptr,
+            false,
+            [](user_interface& ui) { ui.playlist_mute(); },
+            *this),
         0);
     playlist_mute_checkbox->move_pos(vector2i(-music_playlist_width, 0));
     music_playlist->add_child_near_last_child(
         std::make_unique<widget_caller_button<bool&>>(
-            0, 0, music_playlist_width, 32, texts::get(260), nullptr,
-            [](auto& b) { b = false; }, playlist_visible));
+            0,
+            0,
+            music_playlist_width,
+            32,
+            texts::get(260),
+            nullptr,
+            [](auto& b) { b = false; },
+            playlist_visible));
     music_playlist->clip_to_children_area();
     music_playlist->set_pos(vector2i(0, 0));
     // enable music switching finally, to avoid on_sel_change changing the music
@@ -168,27 +196,63 @@ user_interface::user_interface(game& gm) :
     main_menu->set_background(nullptr);
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<user_interface&>>(
-            0, 0, 256, 32, texts::get(266), nullptr,
-            [](auto& ui) { ui.show_screen_selector(); }, *this));
+            0,
+            0,
+            256,
+            32,
+            texts::get(266),
+            nullptr,
+            [](auto& ui) { ui.show_screen_selector(); },
+            *this));
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<user_interface&>>(
-            0, 0, 256, 32, texts::get(267), nullptr,
-            [](auto& ui) { ui.toggle_popup(); }, *this));
+            0,
+            0,
+            256,
+            32,
+            texts::get(267),
+            nullptr,
+            [](auto& ui) { ui.toggle_popup(); },
+            *this));
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<user_interface&>>(
-            0, 0, 256, 32, texts::get(261), nullptr,
-            [](auto& ui) { ui.show_playlist(); }, *this));
+            0,
+            0,
+            256,
+            32,
+            texts::get(261),
+            nullptr,
+            [](auto& ui) { ui.show_playlist(); },
+            *this));
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<user_interface&>>(
-            0, 0, 256, 32, texts::get(268), nullptr,
-            [](auto& ui) { ui.toggle_pause(); }, *this));
+            0,
+            0,
+            256,
+            32,
+            texts::get(268),
+            nullptr,
+            [](auto& ui) { ui.toggle_pause(); },
+            *this));
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<user_interface&>>(
-            0, 0, 256, 32, texts::get(177), nullptr,
-            [](auto& ui) { ui.request_abort(true); }, *this));
+            0,
+            0,
+            256,
+            32,
+            texts::get(177),
+            nullptr,
+            [](auto& ui) { ui.request_abort(true); },
+            *this));
     main_menu->add_child_near_last_child(
         std::make_unique<widget_caller_button<bool&>>(
-            0, 0, 256, 32, texts::get(260), nullptr, [](auto& b) { b = false; },
+            0,
+            0,
+            256,
+            32,
+            texts::get(260),
+            nullptr,
+            [](auto& b) { b = false; },
             main_menu_visible));
     main_menu->clip_to_children_area();
     vector2i mmp = SYS().get_res_2d() - main_menu->get_size();
@@ -228,9 +292,14 @@ user_interface::user_interface(game& gm) :
             raintmptex[(RAIN_TEX_W * pos.y + pos.x) * 2 + 1] = 255;
         }
         raintex.reset(
-            j, new texture(
-                   raintmptex, RAIN_TEX_W, RAIN_TEX_H, GL_LUMINANCE_ALPHA,
-                   texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+            j,
+            new texture(
+                raintmptex,
+                RAIN_TEX_W,
+                RAIN_TEX_H,
+                GL_LUMINANCE_ALPHA,
+                texture::LINEAR_MIPMAP_LINEAR,
+                texture::REPEAT));
     }
 #endif
     // snow
@@ -313,9 +382,14 @@ user_interface::user_interface(game& gm) :
            SNOW_TEX_H);
         */
         snowtex.reset(
-            i, new texture(
-                   snowtmptex, SNOW_TEX_W, SNOW_TEX_H, GL_LUMINANCE_ALPHA,
-                   texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+            i,
+            new texture(
+                snowtmptex,
+                SNOW_TEX_W,
+                SNOW_TEX_H,
+                GL_LUMINANCE_ALPHA,
+                texture::LINEAR_MIPMAP_LINEAR,
+                texture::REPEAT));
     }
 #endif
 
@@ -339,7 +413,10 @@ user_interface::user_interface(game& gm) :
     add_loading_screen("terrain loaded");
 }
 
-void user_interface::finish_construction() { mycoastmap.finish_construction(); }
+void user_interface::finish_construction()
+{
+    mycoastmap.finish_construction();
+}
 
 std::shared_ptr<user_interface> user_interface::create(game& gm)
 {
@@ -357,9 +434,15 @@ std::shared_ptr<user_interface> user_interface::create(game& gm)
     return ui;
 }
 
-user_interface::~user_interface() { particle::deinit(); }
+user_interface::~user_interface()
+{
+    particle::deinit();
+}
 
-const water& user_interface::get_water() const { return mygame->get_water(); }
+const water& user_interface::get_water() const
+{
+    return mygame->get_water();
+}
 
 angle user_interface::get_relative_bearing() const
 {
@@ -375,11 +458,20 @@ angle user_interface::get_absolute_bearing() const
     return bearing;
 }
 
-angle user_interface::get_elevation() const { return elevation; }
+angle user_interface::get_elevation() const
+{
+    return elevation;
+}
 
-void user_interface::add_bearing(angle a) { bearing += a; }
+void user_interface::add_bearing(angle a)
+{
+    bearing += a;
+}
 
-void user_interface::add_elevation(angle a) { elevation += a; }
+void user_interface::add_elevation(angle a)
+{
+    elevation += a;
+}
 
 void user_interface::display() const
 {
@@ -642,7 +734,11 @@ bool user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m)
 }
 
 void user_interface::show_target(
-    double vx, double vy, double w, double h, const vector3& viewpos)
+    double vx,
+    double vy,
+    double w,
+    double h,
+    const vector3& viewpos)
 {
     if (mygame && mygame->is_valid(mygame->get_player()->get_target()))
     {
@@ -650,7 +746,7 @@ void user_interface::show_target(
         // find screen position of target by projecting its position to screen
         // coordinates.
         //@todo/fixme: target could be different than ship, don't request target
-        //from sea_object!
+        // from sea_object!
         vector4 tgtscr =
             (matrix4::get_glf(GL_PROJECTION_MATRIX)
              * matrix4::get_glf(GL_MODELVIEW_MATRIX))
@@ -677,7 +773,10 @@ void user_interface::show_target(
 }
 
 void user_interface::draw_terrain(
-    const vector3& viewpos, angle dir, double max_view_dist, bool mirrored,
+    const vector3& viewpos,
+    angle dir,
+    double max_view_dist,
+    bool mirrored,
     int above_water) const
 {
 #if 0
@@ -846,11 +945,14 @@ void user_interface::add_message(const string& s)
 }
 
 void user_interface::play_sound_effect(
-    const string& se, const vector3& noise_source /*, bool loop*/) const
+    const string& se,
+    const vector3& noise_source /*, bool loop*/) const
 {
     music::instance().play_sfx(
-        se, mygame->get_player()->get_pos(),
-        mygame->get_player()->get_heading(), noise_source);
+        se,
+        mygame->get_player()->get_pos(),
+        mygame->get_player()->get_heading(),
+        noise_source);
 }
 
 void user_interface::set_allowed_popup()

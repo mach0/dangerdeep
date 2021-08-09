@@ -33,4 +33,3 @@ class sub_tdc_display : public user_display
     bool handle_mouse_motion_event(const mouse_motion_data&) override;
     void display() const override;
 };
-

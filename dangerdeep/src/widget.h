@@ -113,8 +113,12 @@ class widget
         int frame_size() const;
         int icon_size() const;
         theme(
-            const char* elements_filename, const char* icons_filename,
-            const font* fnt, color tc, color tsc, color tdc);
+            const char* elements_filename,
+            const char* icons_filename,
+            const font* fnt,
+            color tc,
+            color tsc,
+            color tdc);
     };
 
     /* fixme wtf?! delete that!
@@ -144,7 +148,11 @@ class widget
         const widget* source;
         const int mx, my, rx, ry, mb;
         mouse_drag_event(
-            const widget* _source, int _mx, int _my, int _rx, int _ry,
+            const widget* _source,
+            int _mx,
+            int _my,
+            int _rx,
+            int _ry,
             int _mb) :
             source(_source),
             mx(_mx), my(_my), rx(_rx), ry(_ry), mb(_mb)
@@ -181,12 +189,17 @@ class widget
     static const theme* get_theme() { return globaltheme.get(); }
     static std::unique_ptr<theme> replace_theme(std::unique_ptr<theme> t);
     widget(
-        int x, int y, int w, int h, std::string text_,
+        int x,
+        int y,
+        int w,
+        int h,
+        std::string text_,
         widget* parent_              = nullptr,
         const std::string& backgrimg = std::string());
     widget(xml_elem&, widget* parent = nullptr);
     virtual ~widget();
-    template <typename T> T& add_child(std::unique_ptr<T>&& w)
+    template<typename T>
+    T& add_child(std::unique_ptr<T>&& w)
     {
         auto& ref = *w;
         w->set_parent(this);
@@ -199,10 +212,14 @@ class widget
        left) A distance < 0 means use theme border width * -distance (default
        children distance) */
     virtual void add_child_near_last_child_generic(
-        std::unique_ptr<widget>&&, int distance = -2, unsigned direction = 2);
-    template <typename T>
+        std::unique_ptr<widget>&&,
+        int distance       = -2,
+        unsigned direction = 2);
+    template<typename T>
     T& add_child_near_last_child(
-        std::unique_ptr<T>&& w, int distance = -2, unsigned direction = 2)
+        std::unique_ptr<T>&& w,
+        int distance       = -2,
+        unsigned direction = 2)
     {
         auto& ref = *w;
         add_child_near_last_child_generic(
@@ -276,20 +293,29 @@ class widget
 
     // run() always returns 1    - fixme: make own widget classes for them?
     static std::unique_ptr<widget> create_dialogue_ok(
-        widget* parent_, const std::string& title, const std::string& text = "",
-        int w = 0, int h = 0);
+        widget* parent_,
+        const std::string& title,
+        const std::string& text = "",
+        int w                   = 0,
+        int h                   = 0);
     std::unique_ptr<widget> create_dialogue_ok(
-        const std::string& title, const std::string& text = "", int w = 0,
-        int h = 0)
+        const std::string& title,
+        const std::string& text = "",
+        int w                   = 0,
+        int h                   = 0)
     {
         return create_dialogue_ok(this, title, text, w, h);
     }
     // run() returns 1 for ok, 0 for cancel
     static std::unique_ptr<widget> create_dialogue_ok_cancel(
-        widget* parent_, const std::string& title, const std::string& text = "",
-        int w = 0, int h = 0);
+        widget* parent_,
+        const std::string& title,
+        const std::string& text = "",
+        int w                   = 0,
+        int h                   = 0);
     std::unique_ptr<widget> create_dialogue_ok_cancel(
-        const std::string& title, const std::string& text = "")
+        const std::string& title,
+        const std::string& text = "")
     {
         return create_dialogue_ok_cancel(this, title, text);
     }
@@ -299,16 +325,21 @@ class widget
     // returns if do_stacking is false only this widget is drawn, but none of
     // its parents
     static int
-    run(widget& w, unsigned timeout = 0, bool do_stacking = true,
+    run(widget& w,
+        unsigned timeout          = 0,
+        bool do_stacking          = true,
         widget* focussed_at_begin = nullptr);
     static bool
     handle_key_event(widget& w, const input_event_handler::key_data& k);
     static bool handle_mouse_button_event(
-        widget& w, const input_event_handler::mouse_click_data& m);
+        widget& w,
+        const input_event_handler::mouse_click_data& m);
     static bool handle_mouse_motion_event(
-        widget& w, const input_event_handler::mouse_motion_data& m);
+        widget& w,
+        const input_event_handler::mouse_motion_data& m);
     static bool handle_mouse_wheel_event(
-        widget& w, const input_event_handler::mouse_wheel_data& m);
+        widget& w,
+        const input_event_handler::mouse_wheel_data& m);
     static bool handle_text_input_event(widget& w, const std::string& t);
 
     virtual void
@@ -333,8 +364,13 @@ class widget_text : public widget
 
   public:
     widget_text(
-        int x, int y, int w, int h, const std::string& text_,
-        widget* parent_ = nullptr, bool sunken_ = false) :
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
+        widget* parent_ = nullptr,
+        bool sunken_    = false) :
         widget(x, y, w, h, text_, parent_),
         sunken(sunken_)
     {
@@ -355,7 +391,12 @@ class widget_checkbox : public widget
 
   public:
     widget_checkbox(
-        int x, int y, int w, int h, bool checked_, const std::string& text_,
+        int x,
+        int y,
+        int w,
+        int h,
+        bool checked_,
+        const std::string& text_,
         widget* parent_ = nullptr) :
         widget(x, y, w, h, text_, parent_),
         checked(checked_)
@@ -379,7 +420,11 @@ class widget_button : public widget
 
   public:
     widget_button(
-        int x, int y, int w, int h, const std::string& text_,
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
         widget* parent_              = nullptr,
         const std::string& backgrimg = std::string()) :
         widget(x, y, w, h, text_, parent_, backgrimg),
@@ -397,15 +442,22 @@ class widget_button : public widget
 /// A class that can be used to call any function with any parameters, i.e. also
 /// a member function via lambda that calls the member, when the object is the
 /// first parameter. Can also be used to set values.
-template <typename... Types> class widget_caller_button : public widget_button
+template<typename... Types>
+class widget_caller_button : public widget_button
 {
     std::function<void(Types...)> func;
     std::tuple<Types...> args;
 
   public:
     widget_caller_button(
-        int x, int y, int w, int h, const std::string& text, widget* parent,
-        std::function<void(Types...)> func_, Types... args_) :
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text,
+        widget* parent,
+        std::function<void(Types...)> func_,
+        Types... args_) :
         widget_button(x, y, w, h, text, parent),
         func(func_), args(args_...)
     {
@@ -422,7 +474,7 @@ template <typename... Types> class widget_caller_button : public widget_button
     }
 };
 
-template <typename... Types>
+template<typename... Types>
 class widget_caller_checkbox : public widget_checkbox
 {
     std::function<void(Types...)> func;
@@ -430,8 +482,15 @@ class widget_caller_checkbox : public widget_checkbox
 
   public:
     widget_caller_checkbox(
-        int x, int y, int w, int h, const std::string& text, widget* parent,
-        bool checked, std::function<void(Types...)> func_, Types... args_) :
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text,
+        widget* parent,
+        bool checked,
+        std::function<void(Types...)> func_,
+        Types... args_) :
         widget_checkbox(x, y, w, h, checked, text, parent),
         func(func_), args(args_...)
     {
@@ -458,8 +517,13 @@ class widget_menu : public widget
 
   public:
     widget_menu(
-        int x, int y, int w, int h, const std::string& text_,
-        bool horizontal_ = false, widget* parent_ = nullptr);
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
+        bool horizontal_ = false,
+        widget* parent_  = nullptr);
     widget_menu(xml_elem& elem, widget* _parent = nullptr);
     void set_entry_spacing(int spc) { entryspacing = spc; }
     void adjust_buttons(unsigned totalsize); // width or height
@@ -496,7 +560,8 @@ class widget_scrollbar : public widget
     void draw() const override;
     void on_click(vector2i position, mouse_button btn) override;
     void on_drag(
-        vector2i position, vector2i motion,
+        vector2i position,
+        vector2i motion,
         mouse_button_state btnstate) override;
     void on_wheel(input_action wd) override;
     virtual void on_scroll() { }
@@ -535,7 +600,8 @@ class widget_list : public widget
     void draw() const override;
     void on_click(vector2i position, mouse_button btn) override;
     void on_drag(
-        vector2i position, vector2i motion,
+        vector2i position,
+        vector2i motion,
         mouse_button_state btnstate) override;
     void on_wheel(input_action wd) override;
     virtual void on_sel_change() { }
@@ -557,7 +623,11 @@ class widget_edit : public widget
 
   public:
     widget_edit(
-        int x, int y, int w, int h, const std::string& text_,
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
         widget* parent_ = nullptr) :
         widget(x, y, w, h, text_, parent_),
         cursorpos(text_.length())
@@ -603,7 +673,11 @@ class widget_fileselector : public widget
 
   public:
     widget_fileselector(
-        int x, int y, int w, int h, const std::string& text_,
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
         widget* parent_ = nullptr);
     widget_fileselector(xml_elem& elem, widget* _parent = nullptr);
     std::string get_filename() const
@@ -626,7 +700,8 @@ class widget_3dview : public widget
 
     void on_wheel(input_action wd) override;
     void on_drag(
-        vector2i position, vector2i motion,
+        vector2i position,
+        vector2i motion,
         mouse_button_state btnstate) override;
 
     widget_3dview();
@@ -635,7 +710,12 @@ class widget_3dview : public widget
 
   public:
     widget_3dview(
-        int x, int y, int w, int h, std::unique_ptr<model> mdl, color bgcol,
+        int x,
+        int y,
+        int w,
+        int h,
+        std::unique_ptr<model> mdl,
+        color bgcol,
         widget* parent_ = nullptr);
     widget_3dview(xml_elem& elem, widget* _parent = nullptr);
     void draw() const override;
@@ -663,14 +743,23 @@ class widget_slider : public widget
     /// Note: height is for full widget, so give enough space for descriptions +
     /// text + slider bar
     widget_slider(
-        int x, int y, int w, int h, const std::string& text_, int minv,
-        int maxv, int currv, int descrstep, widget* parent_ = nullptr);
+        int x,
+        int y,
+        int w,
+        int h,
+        const std::string& text_,
+        int minv,
+        int maxv,
+        int currv,
+        int descrstep,
+        widget* parent_ = nullptr);
     widget_slider(xml_elem& elem, widget* _parent = nullptr);
     void draw() const override;
     void on_key(key_code, key_mod) override;
     void on_click(vector2i position, mouse_button btn) override;
     void on_drag(
-        vector2i position, vector2i motion,
+        vector2i position,
+        vector2i motion,
         mouse_button_state btnstate) override;
     virtual void set_values(int minv, int maxv, int currv, int descrstep);
     virtual void on_change() { }
@@ -678,4 +767,3 @@ class widget_slider : public widget
     virtual int get_curr_value() const { return currvalue; }
     virtual int get_max_value() const { return maxvalue; }
 };
-

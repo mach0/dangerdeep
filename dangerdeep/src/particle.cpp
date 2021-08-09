@@ -121,7 +121,10 @@ vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
 }
 
 unsigned particle::interpolate_2d_map(
-    const vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y,
+    const vector<uint8_t>& mp,
+    unsigned res,
+    unsigned x,
+    unsigned y,
     unsigned res2)
 {
     unsigned fac = res2 / res;
@@ -265,7 +268,11 @@ void particle::init()
             }
         }
         tex_smoke[i] = new texture(
-            smoketmp, 64, 64, GL_LUMINANCE_ALPHA, texture::LINEAR_MIPMAP_LINEAR,
+            smoketmp,
+            64,
+            64,
+            GL_LUMINANCE_ALPHA,
+            texture::LINEAR_MIPMAP_LINEAR,
             texture::CLAMP);
     }
 
@@ -278,18 +285,27 @@ void particle::init()
         }
     }
     tex_spray = new texture(
-        smoketmp, 64, 64, GL_LUMINANCE_ALPHA, texture::LINEAR_MIPMAP_LINEAR,
+        smoketmp,
+        64,
+        64,
+        GL_LUMINANCE_ALPHA,
+        texture::LINEAR_MIPMAP_LINEAR,
         texture::CLAMP);
 
     // compute random fire textures here.
     tex_fire.resize(NR_OF_FIRE_TEXTURES);
 #define FIRE_RES 64
     vector<color> firepal(256);
-    color firepal_p[9] = {color(0, 0, 0, 0),        color(255, 128, 32, 16),
-                          color(255, 128, 32, 32),  color(255, 0, 0, 64),
-                          color(255, 64, 32, 128),  color(255, 160, 16, 160),
-                          color(255, 255, 0, 192),  color(255, 255, 64, 192),
-                          color(255, 255, 255, 255)};
+    color firepal_p[9] = {
+        color(0, 0, 0, 0),
+        color(255, 128, 32, 16),
+        color(255, 128, 32, 32),
+        color(255, 0, 0, 64),
+        color(255, 64, 32, 128),
+        color(255, 160, 16, 160),
+        color(255, 255, 0, 192),
+        color(255, 255, 64, 192),
+        color(255, 255, 255, 255)};
     for (unsigned i = 1; i < 256; ++i)
     {
         unsigned j = i / 32;
@@ -345,7 +361,8 @@ void particle::init()
         char tmp[20];
         sprintf(tmp, "exbg%04u.png", i + 1);
         explosionbig[i] = new texture(
-            get_texture_dir() + "explosion01/" + tmp, texture::LINEAR,
+            get_texture_dir() + "explosion01/" + tmp,
+            texture::LINEAR,
             texture::CLAMP);
     }
     explosionsml.resize(EXPL_FRAMES);
@@ -354,7 +371,8 @@ void particle::init()
         char tmp[20];
         sprintf(tmp, "exsm%04u.png", i + 1);
         explosionsml[i] = new texture(
-            get_texture_dir() + "explosion02/" + tmp, texture::LINEAR,
+            get_texture_dir() + "explosion02/" + tmp,
+            texture::LINEAR,
             texture::CLAMP);
     }
 
@@ -371,7 +389,8 @@ void particle::init()
     tex_fireworks = new texture(
         get_texture_dir() + "fireworks.png", texture::LINEAR, texture::CLAMP);
     tex_fireworks_flare = new texture(
-        get_texture_dir() + "fireworks_flare.png", texture::LINEAR,
+        get_texture_dir() + "fireworks_flare.png",
+        texture::LINEAR,
         texture::CLAMP);
     tex_marker = new texture(
         get_texture_dir() + "marker.png", texture::LINEAR, texture::CLAMP);
@@ -408,7 +427,9 @@ void particle::simulate(game& gm, double delta_t)
 }
 
 void particle::display_all(
-    const vector<const particle*>& pts, const vector3& viewpos, class game& gm,
+    const vector<const particle*>& pts,
+    const vector3& viewpos,
+    class game& gm,
     const colorf& light_color)
 {
     glDepthMask(GL_FALSE);
@@ -527,7 +548,9 @@ double smoke_particle::get_height() const
 }
 
 const texture& smoke_particle::get_tex_and_col(
-    game& gm, const colorf& light_color, colorf& col) const
+    game& gm,
+    const colorf& light_color,
+    colorf& col) const
 {
     col = colorf(0.5f, 0.5f, 0.5f, life) * light_color;
     return *tex_smoke[texnr];
@@ -581,7 +604,9 @@ double explosion_particle::get_height() const
 }
 
 const texture& explosion_particle::get_tex_and_col(
-    game& gm, const colorf& /*light_color*/, colorf& col) const
+    game& gm,
+    const colorf& /*light_color*/,
+    colorf& col) const
 {
     col    = colorf(1, 1, 1, 1);
     auto f = unsigned(EXPL_FRAMES * (1.0 - life));
@@ -626,7 +651,9 @@ double fire_particle::get_height() const
 }
 
 const texture& fire_particle::get_tex_and_col(
-    game& gm, const colorf& /*light_color*/, colorf& col) const
+    game& gm,
+    const colorf& /*light_color*/,
+    colorf& col) const
 {
     col    = colorf(1, 1, 1, 1);
     auto i = unsigned(tex_fire.size() * (1.0 - life));
@@ -645,12 +672,20 @@ spray_particle::spray_particle(const vector3& pos, const vector3& velo) :
 {
 }
 
-double spray_particle::get_width() const { return (1.0 - life) * 6.0 + 2.0; }
+double spray_particle::get_width() const
+{
+    return (1.0 - life) * 6.0 + 2.0;
+}
 
-double spray_particle::get_height() const { return get_width(); }
+double spray_particle::get_height() const
+{
+    return get_width();
+}
 
 const texture& spray_particle::get_tex_and_col(
-    game& gm, const colorf& light_color, colorf& col) const
+    game& gm,
+    const colorf& light_color,
+    colorf& col) const
 {
     col = colorf(1.0f, 1.0f, 1.0f, life) * light_color;
     return *tex_spray;
@@ -695,7 +730,9 @@ void fireworks_particle::simulate(game& gm, double delta_t)
 }
 
 void fireworks_particle::custom_display(
-    const vector3& viewpos, const vector3& dx, const vector3& dy) const
+    const vector3& viewpos,
+    const vector3& dx,
+    const vector3& dy) const
 {
     // particle lives 6 seconds:
     // 2 seconds raise to sky (100m height)
@@ -728,7 +765,9 @@ void fireworks_particle::custom_display(
         // draw glowing lines from center to flares
         const unsigned fls = 8;
         primitives flarelines(
-            GL_LINES, 2 * flares.size() * fls, colorf(1, 1, 1, decayfac),
+            GL_LINES,
+            2 * flares.size() * fls,
+            colorf(1, 1, 1, decayfac),
             *tex_fireworks);
         double t0 = 2.0 / 3 - (2.0 / 3 - life) / 2.0;
         for (unsigned i = 0; i < flares.size(); ++i)
@@ -762,11 +801,14 @@ void fireworks_particle::custom_display(
         glEnable(GL_POINT_SPRITE); // fixme: move to display_all
         glPointSize(4);
         glTexEnvi(
-            GL_POINT_SPRITE, GL_COORD_REPLACE,
+            GL_POINT_SPRITE,
+            GL_COORD_REPLACE,
             GL_TRUE); // could be done once...
         // texcoords are not needed for points, so this is a bit waste...
         primitives pts(
-            GL_POINTS, flares.size(), colorf(1, 1, 1, decayfac),
+            GL_POINTS,
+            flares.size(),
+            colorf(1, 1, 1, decayfac),
             *tex_fireworks_flare);
         for (unsigned i = 0; i < flares.size(); ++i)
         {
@@ -783,7 +825,9 @@ void fireworks_particle::custom_display(
 }
 
 const texture& fireworks_particle::get_tex_and_col(
-    game& /*gm*/, const colorf& /*light_color*/, colorf& /*col*/) const
+    game& /*gm*/,
+    const colorf& /*light_color*/,
+    colorf& /*col*/) const
 {
     THROW(error, "invalid call");
 }
@@ -803,10 +847,15 @@ double marker_particle::get_width() const
     return myfrac(life * 1000) * 19 + 1;
 }
 
-double marker_particle::get_height() const { return get_width(); }
+double marker_particle::get_height() const
+{
+    return get_width();
+}
 
 const texture& marker_particle::get_tex_and_col(
-    game& gm, const colorf& /*light_color*/, colorf& col) const
+    game& gm,
+    const colorf& /*light_color*/,
+    colorf& col) const
 {
     col = colorf(1, 1, 1, 1);
     return *tex_marker;

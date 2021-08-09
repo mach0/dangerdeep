@@ -76,8 +76,12 @@ class date
        makes calling this c'tor ambiguous
     */
     date(
-        unsigned year, unsigned month, unsigned day, unsigned hour = 0,
-        unsigned minute = 0, unsigned second = 0);
+        unsigned year,
+        unsigned month,
+        unsigned day,
+        unsigned hour   = 0,
+        unsigned minute = 0,
+        unsigned second = 0);
 
     // construct from linear time
     date(unsigned lt = 0);
@@ -102,4 +106,3 @@ class date
     void load(const xml_elem& parent);
     void save(xml_elem& parent) const;
 };
-

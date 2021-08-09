@@ -108,8 +108,11 @@ system_interface::system_interface(const parameters& params_) : params(params_)
     }
 
     SDL_Window* main_window = SDL_CreateWindow(
-        params.window_caption.c_str(), SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED, params.resolution.x, params.resolution.y,
+        params.window_caption.c_str(),
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        params.resolution.x,
+        params.resolution.y,
         (params.fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_OPENGL);
     if (!main_window)
         THROW(error, "SDL Window creation failed");
@@ -187,7 +190,8 @@ bool system_interface::set_parameters(const parameters& params_)
     {
         // fixme this maybe doesn't work for fullscreen modes...
         SDL_SetWindowSize(
-            (SDL_Window*) sdl_main_window, params_.resolution.x,
+            (SDL_Window*) sdl_main_window,
+            params_.resolution.x,
             params_.resolution.y);
     }
 
@@ -208,7 +212,7 @@ uint32_t system_interface::millisec()
                         current_time - start_time)
                         .count();
     //	std::cout << "duration " << duration << " tpws " <<
-    //time_passed_while_sleeping << "\n";
+    // time_passed_while_sleeping << "\n";
     return uint32_t(duration) - time_passed_while_sleeping;
     //	return SDL_GetTicks() - time_passed_while_sleeping;
 }
@@ -895,7 +899,10 @@ void system_interface::screenshot(const std::string& filename)
 }
 
 void system_interface::gl_perspective_fovx(
-    double fovx, double aspect, double znear, double zfar)
+    double fovx,
+    double aspect,
+    double znear,
+    double zfar)
 {
     double tanfovx2 = tan(M_PI * fovx / 360.0);
     double tanfovy2 = tanfovx2 / aspect;
@@ -963,8 +970,10 @@ void system_interface::prepare_new_resolution()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gl_perspective_fovx(
-        90.0, (GLdouble) params.resolution.x / (GLdouble) params.resolution.y,
-        params.near_z, params.far_z);
+        90.0,
+        (GLdouble) params.resolution.x / (GLdouble) params.resolution.y,
+        params.near_z,
+        params.far_z);
     float m[16];
     glGetFloatv(GL_PROJECTION_MATRIX, m);
     // xscal_2d = 2*params.near_z/m[0];

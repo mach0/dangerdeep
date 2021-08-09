@@ -98,12 +98,14 @@ const int TiXmlBase::utf8ByteTable[256] = {
 };
 
 void TiXmlBase::ConvertUTF32ToUTF8(
-    unsigned long input, char* output, int* length)
+    unsigned long input,
+    char* output,
+    int* length)
 {
     const unsigned long BYTE_MASK          = 0xBF;
     const unsigned long BYTE_MARK          = 0x80;
-    const unsigned long FIRST_BYTE_MARK[7] = {0x00, 0x00, 0xC0, 0xE0,
-                                              0xF0, 0xF8, 0xFC};
+    const unsigned long FIRST_BYTE_MARK[7] = {
+        0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
     if (input < 0x80)
         *length = 1;
@@ -463,7 +465,10 @@ TiXmlBase::ReadName(const char* p, TIXML_STRING* name, TiXmlEncoding encoding)
 }
 
 const char* TiXmlBase::GetEntity(
-    const char* p, char* value, int* length, TiXmlEncoding encoding)
+    const char* p,
+    char* value,
+    int* length,
+    TiXmlEncoding encoding)
 {
     // Presume an entity, and pull it out.
     TIXML_STRING ent;
@@ -563,7 +568,10 @@ const char* TiXmlBase::GetEntity(
 }
 
 bool TiXmlBase::StringEqual(
-    const char* p, const char* tag, bool ignoreCase, TiXmlEncoding encoding)
+    const char* p,
+    const char* tag,
+    bool ignoreCase,
+    TiXmlEncoding encoding)
 {
     assert(p);
     assert(tag);
@@ -739,7 +747,9 @@ void TiXmlDocument::StreamIn(std::istream* in, TIXML_STRING* tag)
 #endif
 
 const char* TiXmlDocument::Parse(
-    const char* p, TiXmlParsingData* prevData, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* prevData,
+    TiXmlEncoding encoding)
 {
     ClearError();
 
@@ -842,7 +852,10 @@ const char* TiXmlDocument::Parse(
 }
 
 void TiXmlDocument::SetError(
-    int err, const char* pError, TiXmlParsingData* data, TiXmlEncoding encoding)
+    int err,
+    const char* pError,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     // The first error in a chain is more accurate - don't set again!
     if (error)
@@ -1102,7 +1115,9 @@ void TiXmlElement::StreamIn(std::istream* in, TIXML_STRING* tag)
 #endif
 
 const char* TiXmlElement::Parse(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     p                       = SkipWhiteSpace(p, encoding);
     TiXmlDocument* document = GetDocument();
@@ -1261,7 +1276,9 @@ const char* TiXmlElement::Parse(
 }
 
 const char* TiXmlElement::ReadValue(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     TiXmlDocument* document = GetDocument();
 
@@ -1362,7 +1379,9 @@ void TiXmlUnknown::StreamIn(std::istream* in, TIXML_STRING* tag)
 #endif
 
 const char* TiXmlUnknown::Parse(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     TiXmlDocument* document = GetDocument();
     p                       = SkipWhiteSpace(p, encoding);
@@ -1429,7 +1448,9 @@ void TiXmlComment::StreamIn(std::istream* in, TIXML_STRING* tag)
 #endif
 
 const char* TiXmlComment::Parse(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     TiXmlDocument* document = GetDocument();
     value                   = "";
@@ -1485,7 +1506,9 @@ const char* TiXmlComment::Parse(
 }
 
 const char* TiXmlAttribute::Parse(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding encoding)
 {
     p = SkipWhiteSpace(p, encoding);
     if (!p || !*p)
@@ -1686,7 +1709,9 @@ void TiXmlDeclaration::StreamIn(std::istream* in, TIXML_STRING* tag)
 #endif
 
 const char* TiXmlDeclaration::Parse(
-    const char* p, TiXmlParsingData* data, TiXmlEncoding _encoding)
+    const char* p,
+    TiXmlParsingData* data,
+    TiXmlEncoding _encoding)
 {
     p = SkipWhiteSpace(p, _encoding);
     // Find the beginning, find the end, and look for

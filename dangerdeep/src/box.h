@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 /// a 3d-box
-template <typename D> class box_t
+template<typename D>
+class box_t
 {
   public:
     vector3t<D> minpos, maxpos; ///< Minimum and maximum values
@@ -122,4 +123,3 @@ template <typename D> class box_t
 
 using box  = box_t<double>;
 using boxf = box_t<float>;
-

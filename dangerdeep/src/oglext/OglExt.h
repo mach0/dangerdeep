@@ -39,7 +39,7 @@ extern "C"
     /* ---[ ADDITIONAL MACRO FOR VERSION COMPARISON
      * ]------------------------------------------------------------ */
 
-#define GLEX_VERSION(MAJOR, MINOR, RELEASE) \
+#define GLEX_VERSION(MAJOR, MINOR, RELEASE)                                    \
     ((GLuint)((MAJOR << 24) | (MINOR << 16) | (RELEASE << 0)))
 
     /* ---[ ADDITIONAL API FUNCTIONS
@@ -53,4 +53,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-

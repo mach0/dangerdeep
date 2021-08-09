@@ -27,7 +27,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "xml.h"
 
 user_display::user_display(
-    class user_interface& ui_, const char* display_name) :
+    class user_interface& ui_,
+    const char* display_name) :
     ui(ui_)
 {
     // if displays use no elements they give nullptr as definition
@@ -266,8 +267,8 @@ void user_display::elem2D::draw() const
     }
 }
 
-bool user_display::elem2D::is_mouse_over(
-    const vector2i& pos, int tolerance) const
+bool user_display::elem2D::is_mouse_over(const vector2i& pos, int tolerance)
+    const
 {
     if (click_radius > 0)
     {
@@ -366,7 +367,9 @@ user_display::elem2D::set_value_uint(const vector2i& pos) const
 }
 
 void user_display::elem2D::set_filename(
-    const std::string& fn, bool day, unsigned phase)
+    const std::string& fn,
+    bool day,
+    unsigned phase)
 {
     if (phase < nr_of_phases())
     {

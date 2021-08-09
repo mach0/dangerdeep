@@ -120,9 +120,11 @@ void sub_captainscabin_display::display() const
         if (element_for_id(i).is_mouse_over(mouse_position))
         {
             font_vtremington12->print_hc(
-                mouse_position.x, mouse_position.y - font_arial->get_height(),
+                mouse_position.x,
+                mouse_position.y - font_arial->get_height(),
                 texts::get(get_description(element_type(i))),
-                get_color(element_type(i)), true);
+                get_color(element_type(i)),
+                true);
             break;
         }
     }

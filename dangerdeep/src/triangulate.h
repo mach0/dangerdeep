@@ -54,11 +54,14 @@ struct triangulate
     }
 
     static bool is_inside_triangle(
-        const vector2& a, const vector2& b, const vector2& c, const vector2& p);
+        const vector2& a,
+        const vector2& b,
+        const vector2& c,
+        const vector2& p);
 
     static std::vector<unsigned> compute(const std::vector<vector2>& vertices);
 
     static void debug_test(
-        const std::vector<vector2>& vertices, const std::string& outputfile);
+        const std::vector<vector2>& vertices,
+        const std::string& outputfile);
 };
-

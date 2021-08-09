@@ -30,10 +30,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>
 
 int framebufferobject::fbo_supported = -1;
-bool framebufferobject::supported() { return true; }
+bool framebufferobject::supported()
+{
+    return true;
+}
 
 framebufferobject::framebufferobject(
-    class texture& attachedtex, bool withdepthbuffer) :
+    class texture& attachedtex,
+    bool withdepthbuffer) :
     id(0),
     depthbuf_id(0), mytex(attachedtex), bound(false)
 {
@@ -46,7 +50,9 @@ framebufferobject::framebufferobject(
         glGenRenderbuffersEXT(1, &depthbuf_id);
         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthbuf_id);
         glRenderbufferStorageEXT(
-            GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, mytex.get_gl_width(),
+            GL_RENDERBUFFER_EXT,
+            GL_DEPTH_COMPONENT,
+            mytex.get_gl_width(),
             mytex.get_gl_height());
     }
 
@@ -54,14 +60,19 @@ framebufferobject::framebufferobject(
     glGenFramebuffersEXT(1, &id);
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id);
     glFramebufferTexture2DEXT(
-        GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-        mytex.get_opengl_name(), 0);
+        GL_FRAMEBUFFER_EXT,
+        GL_COLOR_ATTACHMENT0_EXT,
+        GL_TEXTURE_2D,
+        mytex.get_opengl_name(),
+        0);
 
     // attach depth buffer if requested
     if (withdepthbuffer)
     {
         glFramebufferRenderbufferEXT(
-            GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+            GL_FRAMEBUFFER_EXT,
+            GL_DEPTH_ATTACHMENT_EXT,
+            GL_RENDERBUFFER_EXT,
             depthbuf_id);
     }
 
@@ -108,7 +119,10 @@ const char* framebufferobject::init_failure_reason(int status)
     }
 }
 
-framebufferobject::~framebufferobject() { destroy(); }
+framebufferobject::~framebufferobject()
+{
+    destroy();
+}
 
 void framebufferobject::destroy()
 {

@@ -32,8 +32,8 @@
 /// base class for threads.
 ///@note Each thread should be an instance of a class that inherits
 ///	from class thread. Overload some member functions to fill in code for the
-///thread, 	like init(), deinit(), loop() 	threads must be allocated with new.\n
-///	Inherit from this class and implement init() / loop() / deinit()
+/// thread, 	like init(), deinit(), loop() 	threads must be allocated with
+/// new.\n 	Inherit from this class and implement init() / loop() / deinit()
 class thread
 {
   private:
@@ -97,7 +97,8 @@ class thread
     bool is_running();
 
     /// an unique_ptr similar class for threads
-    template <class T> class ptr
+    template<class T>
+    class ptr
     {
         ptr(const ptr&) = delete;
         ptr& operator=(const ptr&) = delete;
@@ -139,4 +140,3 @@ class thread_function : public ::thread
   protected:
     std::function<void()> myfunction;
 };
-

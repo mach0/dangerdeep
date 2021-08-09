@@ -51,7 +51,8 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
     }
     if (iss3.fail())
         THROW(
-            file_context_error, "error reading inside volume data",
+            file_context_error,
+            "error reading inside volume data",
             ve.doc_name());
 
     std::vector<float> massdistri;
@@ -65,7 +66,8 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
         }
         if (iss4.fail())
             THROW(
-                file_context_error, "error reading mass distribution data",
+                file_context_error,
+                "error reading mass distribution data",
                 ve.doc_name());
     }
 
@@ -106,7 +108,9 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
                             ixx + 0.5 + bmin.x / voxel_size.x,
                             iyy + 0.5f + bmin.y / voxel_size.y,
                             izz + 0.5f + bmin.z / voxel_size.z)),
-                        f, m, float(f * voxel_volume * volume_rcp));
+                        f,
+                        m,
+                        float(f * voxel_volume * volume_rcp));
                     mass_part_sum += m;
                 }
                 ++ptr;

@@ -37,8 +37,14 @@ using std::list;
 using std::string;
 
 void sea_object::degrees2meters(
-    bool west, unsigned degx, unsigned minx, bool south, unsigned degy,
-    unsigned miny, double& x, double& y)
+    bool west,
+    unsigned degx,
+    unsigned minx,
+    bool south,
+    unsigned degy,
+    unsigned miny,
+    double& x,
+    double& y)
 {
     x = (west ? -1.0 : 1.0) * (double(degx) + double(minx) / 60.0)
         * constant::EARTH_PERIMETER / 360.0;
@@ -47,8 +53,14 @@ void sea_object::degrees2meters(
 }
 
 void sea_object::meters2degrees(
-    double x, double y, bool& west, unsigned& degx, unsigned& minx, bool& south,
-    unsigned& degy, unsigned& miny)
+    double x,
+    double y,
+    bool& west,
+    unsigned& degx,
+    unsigned& minx,
+    bool& south,
+    unsigned& degy,
+    unsigned& miny)
 {
     double fracdegrx = fabs(x * 360.0 / constant::EARTH_PERIMETER);
     double fracdegry = fabs(y * 360.0 / constant::EARTH_PERIMETER);
@@ -60,8 +72,8 @@ void sea_object::meters2degrees(
     south            = (y < 0.0);
 }
 
-void sea_object::compute_force_and_torque(
-    vector3& F, vector3& T, game& gm) const
+void sea_object::compute_force_and_torque(vector3& F, vector3& T, game& gm)
+    const
 {
     // force is in world space!
     /* general formulas:
@@ -366,7 +378,8 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
         skin_variants.push_back(sv);
         // 		cout << "read skin variant: " << sv.name << " ctr=" <<
         // sv.countries
-        // 		     << " rgn=" << sv.regions << " from=" << sv.from << " until="
+        // 		     << " rgn=" << sv.regions << " from=" << sv.from << "
+        // until="
         // << sv.until
         // 		     << "\n";
     }
@@ -406,7 +419,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
             party   = party_of_country(
                 country,
                 gm_.get_date()); // fixme the only position where gm_ is used,
-                                 // rather give date on construction!
+                                   // rather give date on construction!
         }
     }
     xml_elem ds = parent.child("description");
@@ -491,9 +504,10 @@ void sea_object::load(const xml_elem& parent)
     // string...
     if (specfilename != specfilename2)
         THROW(
-            error, string("stored specfilename does not match, type=")
-                       + specfilename2 + string(", but read ") + specfilename
-                       + string(" from spec file"));
+            error,
+            string("stored specfilename does not match, type=") + specfilename2
+                + string(", but read ") + specfilename
+                + string(" from spec file"));
     xml_elem st      = parent.child("state");
     position         = st.child("position").attrv3();
     orientation      = st.child("orientation").attrq();
@@ -512,7 +526,7 @@ void sea_object::load(const xml_elem& parent)
         for (int i = UNKNOWNCOUNTRY; i < NR_OF_COUNTRIES; ++i)
         {
             //			cout << "load cmp ctr '" << sc << "' '" <<
-            //string(countrycodes[i]) << "'\n";
+            // string(countrycodes[i]) << "'\n";
             if (sc == string(countrycodes[i]))
             {
                 skin_country = countrycode(i);
@@ -662,8 +676,8 @@ void sea_object::simulate(double delta_time, game& gm)
     // rotation quaternion from w' and set new orientation as
     // produkt of old orientation and w'.
     // 	std::cout << "torque=" << torque << " angular momentum=" <<
-    // angular_momentum << "\n"; 	std::cout << "compute w, angular_momentum=" <<
-    // angular_momentum << " inertiainv:\n";
+    // angular_momentum << "\n"; 	std::cout << "compute w, angular_momentum="
+    // << angular_momentum << " inertiainv:\n";
     vector3 w = orientation.rotate(
         inertia_tensor_inv * orientation.conj().rotate(angular_momentum));
     vector3 w2 = w * delta_time;
@@ -676,8 +690,8 @@ void sea_object::simulate(double delta_time, game& gm)
         // avoid too small numbers
         quaternion q = quaternion::rot_rad(w2l, w2 * (1.0 / w2l));
         // multiply orientation with q: combined rotation.
-        // 		std::cout << "q=" << q << " orientation old=" << orientation << "
-        // new=" << q * orientation << "\n";
+        // 		std::cout << "q=" << q << " orientation old=" << orientation <<
+        // " new=" << q * orientation << "\n";
         orientation = q * orientation;
         // we should renormalize orientation regularly, to avoid that
         // orientation isn't a valid rotation after many changes.
@@ -747,7 +761,10 @@ bool sea_object::damage(const vector3& fromwhere, unsigned strength, game& gm)
     return true;
 }
 
-unsigned sea_object::calc_damage() const { return is_dead() ? 100 : 0; }
+unsigned sea_object::calc_damage() const
+{
+    return is_dead() ? 100 : 0;
+}
 
 void sea_object::set_inactive()
 {
@@ -865,7 +882,9 @@ const model& sea_object::get_model() const
 }
 
 unsigned sea_object::get_min_max_voxel_index_for_polyset(
-    const std::vector<polygon>& polys, vector3i& vxmin, vector3i& vxmax) const
+    const std::vector<polygon>& polys,
+    vector3i& vxmin,
+    vector3i& vxmax) const
 {
     quaternion cjq       = orientation.conj();
     matrix4f obj2voxel   = get_model().get_base_mesh_transformation().inverse();
@@ -910,7 +929,8 @@ vector3 sea_object::compute_linear_velocity(const vector3& p) const
 }
 
 double sea_object::compute_collision_response_value(
-    const vector3& collision_pos, const vector3& N) const
+    const vector3& collision_pos,
+    const vector3& N) const
 {
     vector3 r = collision_pos - position;
     return mass_inv
@@ -923,7 +943,8 @@ double sea_object::compute_collision_response_value(
 }
 
 void sea_object::apply_collision_impulse(
-    const vector3& collision_pos, const vector3& J)
+    const vector3& collision_pos,
+    const vector3& J)
 {
     vector3 r = collision_pos - position;
     linear_momentum += J;

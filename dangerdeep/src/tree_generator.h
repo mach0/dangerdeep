@@ -64,13 +64,24 @@ class tree_generator
   protected:
     // bend: evtl. gebe besser axis unten und oben an, dazwischen einfach biegen
     vector3f generate_log(
-        model::mesh& msh, model::mesh& mshleaves, unsigned lvl,
-        const vector3f& root, const vector3f& axis, unsigned segs, float length,
-        float radius0, float radius1, float bend_factor = 0.0f,
-        unsigned bend_segs = 1, bool generate_leaves = false) const;
+        model::mesh& msh,
+        model::mesh& mshleaves,
+        unsigned lvl,
+        const vector3f& root,
+        const vector3f& axis,
+        unsigned segs,
+        float length,
+        float radius0,
+        float radius1,
+        float bend_factor    = 0.0f,
+        unsigned bend_segs   = 1,
+        bool generate_leaves = false) const;
     void generate_tree(
-        model::mesh& msh, model::mesh& mshleaves, unsigned lvl,
-        const vector3f& root, const vector3f& axis) const;
+        model::mesh& msh,
+        model::mesh& mshleaves,
+        unsigned lvl,
+        const vector3f& root,
+        const vector3f& axis) const;
 };
 
 std::unique_ptr<model> tree_generator::generate() const
@@ -82,7 +93,10 @@ std::unique_ptr<model> tree_generator::generate() const
         for (int x = -2; x <= 2; ++x)
         {
             generate_tree(
-                *msh, *mshleaves, 0, vector3f(3 * x, 3 * y, 0),
+                *msh,
+                *mshleaves,
+                0,
+                vector3f(3 * x, 3 * y, 0),
                 vector3f(0, 0, 1));
         }
     }
@@ -98,11 +112,13 @@ std::unique_ptr<model> tree_generator::generate() const
     auto* bmap = new model::material::map();
     // model::material::map* smap = new model::material::map();
     dmap->set_texture(new texture(
-        get_texture_dir() + "barktest1.png", texture::LINEAR_MIPMAP_LINEAR,
+        get_texture_dir() + "barktest1.png",
+        texture::LINEAR_MIPMAP_LINEAR,
         texture::REPEAT));
     bmap->set_texture(new texture(
         get_texture_dir() + "treebarktest_normal.png",
-        texture::LINEAR_MIPMAP_LINEAR, texture::REPEAT));
+        texture::LINEAR_MIPMAP_LINEAR,
+        texture::REPEAT));
     // smap->set_texture(new texture(get_texture_dir() +
     // "treebarktest_specular.png", texture::LINEAR_MIPMAP_LINEAR,
     // texture::REPEAT)); model::material* mat = new model::material();
@@ -127,7 +143,8 @@ std::unique_ptr<model> tree_generator::generate() const
 
     dmap = new model::material::map();
     dmap->set_texture(new texture(
-        get_texture_dir() + "leaves.png", texture::LINEAR_MIPMAP_LINEAR,
+        get_texture_dir() + "leaves.png",
+        texture::LINEAR_MIPMAP_LINEAR,
         texture::CLAMP));
 #if 0
 	dmap->set_texture(new texture(get_texture_dir() + "leaves_log.png", texture::LINEAR_MIPMAP_LINEAR, texture::CLAMP));
@@ -153,9 +170,17 @@ std::unique_ptr<model> tree_generator::generate() const
 }
 
 vector3f tree_generator::generate_log(
-    model::mesh& msh, model::mesh& mshleaves, unsigned lvl,
-    const vector3f& root, const vector3f& axis, unsigned segs, float length,
-    float radius0, float radius1, float bend_factor, unsigned bend_segs,
+    model::mesh& msh,
+    model::mesh& mshleaves,
+    unsigned lvl,
+    const vector3f& root,
+    const vector3f& axis,
+    unsigned segs,
+    float length,
+    float radius0,
+    float radius1,
+    float bend_factor,
+    unsigned bend_segs,
     bool generate_leaves) const
 {
     if (segs < 3 || bend_segs < 1)
@@ -315,8 +340,11 @@ vector3f tree_generator::generate_log(
 }
 
 void tree_generator::generate_tree(
-    model::mesh& msh, model::mesh& mshleaves, unsigned lvl,
-    const vector3f& root, const vector3f& axis) const
+    model::mesh& msh,
+    model::mesh& mshleaves,
+    unsigned lvl,
+    const vector3f& root,
+    const vector3f& axis) const
 {
     static const unsigned segs[5]      = {16, 12, 8, 6, 3};
     static const float length0[5]      = {1.0, 0.4, 0.3, 0.25, 0.2};
@@ -329,8 +357,18 @@ void tree_generator::generate_tree(
     static const float bendfac[5]      = {0.3, 0.5, 0.6, 0.7, 0.8};
     float len      = (length1[lvl] - length0[lvl]) * rnd() + length0[lvl];
     vector3f rootc = generate_log(
-        msh, mshleaves, lvl, root, axis, segs[lvl], len, radius0[lvl],
-        radius1[lvl], bendfac[lvl], 4, lvl == 4);
+        msh,
+        mshleaves,
+        lvl,
+        root,
+        axis,
+        segs[lvl],
+        len,
+        radius0[lvl],
+        radius1[lvl],
+        bendfac[lvl],
+        4,
+        lvl == 4);
     if (lvl == 4)
     {
         return;
@@ -352,4 +390,3 @@ void tree_generator::generate_tree(
         }
     }
 }
-

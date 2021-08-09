@@ -105,4 +105,3 @@ class convoy
     // used for AI and control of convoy. Add known enemy contact.
     virtual void add_contact(const vector3& pos);
 };
-

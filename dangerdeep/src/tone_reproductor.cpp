@@ -24,7 +24,10 @@
 
 namespace
 {
-auto mypow10(double x) { return pow(10.0, x); }
+auto mypow10(double x)
+{
+    return pow(10.0, x);
+}
 } // namespace
 
 // Set some values to prevent bugs in case of bad use

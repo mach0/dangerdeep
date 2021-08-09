@@ -52,4 +52,3 @@ class image
     unsigned get_width() const { return width; };
     unsigned get_height() const { return height; };
 };
-

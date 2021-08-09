@@ -38,4 +38,3 @@ class sub_bridge_display : public freeview_display
     projection_data get_projection_data(class game& gm) const override;
     void post_display() const override;
 };
-

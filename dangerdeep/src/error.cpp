@@ -38,14 +38,16 @@ error::error(const std::string& location, const std::string& message) :
 }
 
 file_context_error::file_context_error(
-    const std::string& location, const std::string& message,
+    const std::string& location,
+    const std::string& message,
     const std::string& filename) :
     error(location, message + ", regarding file: " + filename)
 {
 }
 
 file_read_error::file_read_error(
-    const std::string& location, const std::string& filename) :
+    const std::string& location,
+    const std::string& filename) :
     error(location, std::string("failed to load: ") + filename)
 {
 }

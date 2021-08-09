@@ -36,36 +36,38 @@ double log2(double n);
 #endif
 #endif
 
-#define bivector_FOREACH(cmd)                  \
-    for (int z = 0; z < int(data.size()); ++z) \
-    {                                          \
-        cmd;                                   \
+#define bivector_FOREACH(cmd)                                                  \
+    for (int z = 0; z < int(data.size()); ++z)                                 \
+    {                                                                          \
+        cmd;                                                                   \
     }
-#define bivector_FOREACH_XY(cmd)           \
-    for (int y = 0; y < datasize; ++y)     \
-        for (int x = 0; x < datasize; ++x) \
-        {                                  \
-            cmd;                           \
+#define bivector_FOREACH_XY(cmd)                                               \
+    for (int y = 0; y < datasize; ++y)                                         \
+        for (int x = 0; x < datasize; ++x)                                     \
+        {                                                                      \
+            cmd;                                                               \
         }
-#define bivector_FOREACH_XYZ(cmd)               \
-    for (int y = 0, z = 0; y < datasize; ++y)   \
-        for (int x = 0; x < datasize; ++x, ++z) \
-        {                                       \
-            cmd;                                \
+#define bivector_FOREACH_XYZ(cmd)                                              \
+    for (int y = 0, z = 0; y < datasize; ++y)                                  \
+        for (int x = 0; x < datasize; ++x, ++z)                                \
+        {                                                                      \
+            cmd;                                                               \
         }
 #define bivector_abs(x) ((x > 0) ? x : -x)
 #ifndef M_PI
 #define M_PI 3.1415927
 #endif
 
-template <class T> class morton_bivector
+template<class T>
+class morton_bivector
 {
   private:
     std::vector<long> morton_x, morton_y;
     long datasize{0};
     std::vector<T> data;
 
-    template <class U> friend class bivector;
+    template<class U>
+    friend class bivector;
 
   public:
     morton_bivector() = default;
@@ -166,8 +168,9 @@ template <class T> class morton_bivector
         morton_y.swap(other.morton_y);
     }
 
-    template <class U> morton_bivector<U> convert() const;
-    template <class U>
+    template<class U>
+    morton_bivector<U> convert() const;
+    template<class U>
     morton_bivector<U> convert(const T& minv, const T& maxv) const;
 
     // get pointer to storage, be very careful with that!
@@ -205,7 +208,7 @@ template <class T> class morton_bivector
     inline unsigned long coord_to_morton(const vector2i& coord) const;
 };
 
-template <class T>
+template<class T>
 void morton_bivector<T>::resize(const long& newsz, const T& v)
 {
     data.resize(newsz * newsz, v);
@@ -221,9 +224,10 @@ void morton_bivector<T>::resize(const long& newsz, const T& v)
         datasize = newsz;
 }
 
-template <class T>
+template<class T>
 inline void morton_bivector<T>::generate_morton_tables(
-    std::vector<long>& table_x, std::vector<long>& table_y)
+    std::vector<long>& table_x,
+    std::vector<long>& table_y)
 {
     long d0 = 0, d1 = 0, ones0 = 0, ones1 = 0;
 
@@ -247,26 +251,27 @@ inline void morton_bivector<T>::generate_morton_tables(
     }
 }
 
-template <class T>
+template<class T>
 inline unsigned long morton_bivector<T>::coord_to_morton(vector2i& coord)
 {
     return morton_x[coord.x] + morton_y[coord.y];
 }
 
-template <class T>
+template<class T>
 inline unsigned long
 morton_bivector<T>::coord_to_morton(const vector2i& coord) const
 {
     return morton_x[coord.x] + morton_y[coord.y];
 }
 
-template <class T>
+template<class T>
 inline unsigned long morton_bivector<T>::coord_to_morton(const vector2i& coord)
 {
     return morton_x[coord.x] + morton_y[coord.y];
 }
 
-template <class T> T morton_bivector<T>::get_min() const
+template<class T>
+T morton_bivector<T>::get_min() const
 {
     if (data.empty())
         THROW(error, "morton_bivector::get_min data empty");
@@ -274,7 +279,8 @@ template <class T> T morton_bivector<T>::get_min() const
     bivector_FOREACH(m = std::min(m, data[z])) return m;
 }
 
-template <class T> T morton_bivector<T>::get_max() const
+template<class T>
+T morton_bivector<T>::get_max() const
 {
     if (data.empty())
         THROW(error, "morton_bivector::get_max data empty");
@@ -282,7 +288,8 @@ template <class T> T morton_bivector<T>::get_max() const
     bivector_FOREACH(m = std::max(m, data[z])) return m;
 }
 
-template <class T> T morton_bivector<T>::get_min_abs() const
+template<class T>
+T morton_bivector<T>::get_min_abs() const
 {
     if (data.empty())
         THROW(error, "morton_bivector::get_min_abs data empty");
@@ -290,7 +297,8 @@ template <class T> T morton_bivector<T>::get_min_abs() const
     bivector_FOREACH(m = std::min(m, abs(data[z]))) return m;
 }
 
-template <class T> T morton_bivector<T>::get_max_abs() const
+template<class T>
+T morton_bivector<T>::get_max_abs() const
 {
     if (data.empty())
         THROW(error, "morton_bivector::get_max_abs data empty");
@@ -298,25 +306,25 @@ template <class T> T morton_bivector<T>::get_max_abs() const
     bivector_FOREACH(m = std::max(m, (T) abs(data[z]))) return m;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>& morton_bivector<T>::operator*=(const T& s)
 {
     bivector_FOREACH(data[z] *= s) return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>& morton_bivector<T>::operator+=(const T& v)
 {
     bivector_FOREACH(data[z] += v) return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>& morton_bivector<T>::operator+=(const bivector<T>& v)
 {
     bivector_FOREACH(data[z] += v.data[z]) return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>
 morton_bivector<T>::sub_area(const vector2i& offset, const long& sz) const
 {
@@ -331,7 +339,7 @@ morton_bivector<T>::sub_area(const vector2i& offset, const long& sz) const
     return result;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T> morton_bivector<T>::shifted(const vector2i& offset) const
 {
     bivector<T> result(datasize);
@@ -341,22 +349,23 @@ morton_bivector<T> morton_bivector<T>::shifted(const vector2i& offset) const
             data[z]) return result;
 }
 
-template <class T> morton_bivector<T> morton_bivector<T>::transposed() const
+template<class T>
+morton_bivector<T> morton_bivector<T>::transposed() const
 {
     bivector<T> result(datasize);
     bivector_FOREACH_XYZ(result.at(y, x) = data[z]) return result;
 }
 
-template <class T>
-template <class U>
+template<class T>
+template<class U>
 morton_bivector<U> morton_bivector<T>::convert() const
 {
     bivector<U> result(datasize);
     bivector_FOREACH(result.data[z] = U(data[z])) return result;
 }
 
-template <class T>
-template <class U>
+template<class T>
+template<class U>
 morton_bivector<U>
 morton_bivector<T>::convert(const T& minv, const T& maxv) const
 {
@@ -366,7 +375,7 @@ morton_bivector<T>::convert(const T& minv, const T& maxv) const
             U(std::max(minv, std::min(maxv, data[z])))) return result;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T> morton_bivector<T>::upsampled(bool wrap) const
 {
     /* upsampling generates 3 new values out of the 4 surrounding
@@ -436,7 +445,7 @@ morton_bivector<T> morton_bivector<T>::upsampled(bool wrap) const
     return result;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T> morton_bivector<T>::downsampled(bool force_even_size) const
 {
     /* downsampling builds the average of 2x2 pixels.
@@ -486,7 +495,7 @@ morton_bivector<T> morton_bivector<T>::downsampled(bool force_even_size) const
     return result;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T> morton_bivector<T>::smooth_upsampled(bool wrap) const
 {
     /* interpolate one new value out of four neighbours,
@@ -603,9 +612,10 @@ morton_bivector<T> morton_bivector<T>::smooth_upsampled(bool wrap) const
     return result;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>& morton_bivector<T>::add_gauss_noise(
-    const T& scal, random_generator_deprecated& rg)
+    const T& scal,
+    random_generator_deprecated& rg)
 {
     for (int z = 0; z < int(data.size()); ++z)
     {
@@ -623,7 +633,7 @@ morton_bivector<T>& morton_bivector<T>::add_gauss_noise(
     return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>&
 morton_bivector<T>::add_tiled(const bivector<T>& other, const T& scal)
 {
@@ -632,9 +642,10 @@ morton_bivector<T>::add_tiled(const bivector<T>& other, const T& scal)
                     * scal;) return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>& morton_bivector<T>::add_shifted(
-    const bivector<T>& other, const vector2i& offset)
+    const bivector<T>& other,
+    const vector2i& offset)
 {
     bivector_FOREACH_XY(
         at(x, y) += other.at(
@@ -642,7 +653,7 @@ morton_bivector<T>& morton_bivector<T>::add_shifted(
             (y + offset.y) & (other.datasize - 1));) return *this;
 }
 
-template <class T>
+template<class T>
 morton_bivector<T>&
 morton_bivector<T>::insert(const bivector<T>& other, const vector2i& offset)
 {

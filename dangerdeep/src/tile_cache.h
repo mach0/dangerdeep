@@ -32,7 +32,8 @@
  * The tiles are stored in a std::map atm. Maybe a std::unsorted_map should be
  * used when TR1 goes into the C++ Standard.
  */
-template <class T> class tile_cache
+template<class T>
+class tile_cache
 {
   public:
     /* A simple struct which holds all configuration related variables. Just
@@ -81,8 +82,12 @@ template <class T> class tile_cache
      * wasn't accessed. zero means infinite
      */
     tile_cache(
-        const std::string tile_folder, int overall_rows, int overall_cols,
-        int tile_size, unsigned int slots, unsigned long expire)
+        const std::string tile_folder,
+        int overall_rows,
+        int overall_cols,
+        int tile_size,
+        unsigned int slots,
+        unsigned long expire)
     {
         configuration.tile_folder  = tile_folder;
         configuration.overall_rows = overall_rows;
@@ -119,7 +124,8 @@ template <class T> class tile_cache
     inline vector2i coord_to_tile(vector2i& coord);
 };
 
-template <class T> T tile_cache<T>::get_value(vector2i coord)
+template<class T>
+T tile_cache<T>::get_value(vector2i coord)
 {
     T return_value;
     coord.y = configuration.overall_rows - coord.y;
@@ -163,7 +169,8 @@ template <class T> T tile_cache<T>::get_value(vector2i coord)
     return return_value;
 }
 
-template <class T> inline void tile_cache<T>::free_slot()
+template<class T>
+inline void tile_cache<T>::free_slot()
 {
     unsigned long min = SYS().millisec();
     vector2i min_key;
@@ -178,7 +185,8 @@ template <class T> inline void tile_cache<T>::free_slot()
     tile_list.erase(min_key);
 }
 
-template <class T> inline void tile_cache<T>::erase_expired()
+template<class T>
+inline void tile_cache<T>::erase_expired()
 {
     if (configuration.expire > 0)
     {
@@ -195,9 +203,14 @@ template <class T> inline void tile_cache<T>::erase_expired()
     }
 }
 
-template <class T> void tile_cache<T>::flush() { tile_list.clear(); }
+template<class T>
+void tile_cache<T>::flush()
+{
+    tile_list.clear();
+}
 
-template <class T> inline vector2i tile_cache<T>::coord_to_tile(vector2i& coord)
+template<class T>
+inline vector2i tile_cache<T>::coord_to_tile(vector2i& coord)
 {
     return vector2i(
         (coord.x / configuration.tile_size) * configuration.tile_size,

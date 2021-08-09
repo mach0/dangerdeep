@@ -37,7 +37,10 @@ enum element_type
 };
 }
 
-void sub_uzo_display::pre_display() const { glClear(GL_DEPTH_BUFFER_BIT); }
+void sub_uzo_display::pre_display() const
+{
+    glClear(GL_DEPTH_BUFFER_BIT);
+}
 
 freeview_display::projection_data
 sub_uzo_display::get_projection_data(class game& gm) const
@@ -55,8 +58,8 @@ sub_uzo_display::get_projection_data(class game& gm) const
     return pd;
 }
 
-void sub_uzo_display::set_modelview_matrix(
-    game& gm, const vector3& viewpos) const
+void sub_uzo_display::set_modelview_matrix(game& gm, const vector3& viewpos)
+    const
 {
     glLoadIdentity();
 

@@ -35,8 +35,12 @@ class gun_shell : public sea_object
     gun_shell() = default;
     gun_shell(game& gm_); // for loading
     gun_shell(
-        game& gm_, const vector3& pos, angle direction, angle elevation,
-        double initial_velocity, double damage,
+        game& gm_,
+        const vector3& pos,
+        angle direction,
+        angle elevation,
+        double initial_velocity,
+        double damage,
         double caliber_); // for creation
 
     void load(const xml_elem& parent) override;
@@ -56,10 +60,13 @@ class gun_shell : public sea_object
 
     void check_collision(game& gm);
     void check_collision_precise(
-        game& gm, const ship& s, const vector3& oldrelpos,
+        game& gm,
+        const ship& s,
+        const vector3& oldrelpos,
         const vector3& newrelpos);
     void check_collision_voxel(
-        game& gm, const ship& s, const vector3f& oldrelpos,
+        game& gm,
+        const ship& s,
+        const vector3f& oldrelpos,
         const vector3f& newrelpos);
 };
-

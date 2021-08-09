@@ -80,27 +80,47 @@ void add_loading_screen(const std::string& msg);
 std::string get_time_string(double tm);
 
 // handle modulo calculation for negative values the way I need it
-inline float myfrac(float a) { return a - floorf(a); }
-inline double myfrac(double a) { return a - floor(a); }
+inline float myfrac(float a)
+{
+    return a - floorf(a);
+}
+inline double myfrac(double a)
+{
+    return a - floor(a);
+}
 inline float mysgn(float a)
 {
     return (a < 0) ? -1.0f : ((a > 0) ? 1.0f : 0.0f);
 }
-inline double mysgn(double a) { return (a < 0) ? -1.0 : ((a > 0) ? 1.0 : 0.0); }
-template <class T> inline T myclamp(const T& v, const T& minv, const T& maxv)
+inline double mysgn(double a)
+{
+    return (a < 0) ? -1.0 : ((a > 0) ? 1.0 : 0.0);
+}
+template<class T>
+inline T myclamp(const T& v, const T& minv, const T& maxv)
 {
     return std::min(maxv, std::max(minv, v));
 }
-template <class C> inline void add_saturated(C& sum, const C& add, const C& max)
+template<class C>
+inline void add_saturated(C& sum, const C& add, const C& max)
 {
     sum = std::min(sum + add, max);
 }
 // return a random value in [0, 1(
-inline double rnd() { return double(rand()) / RAND_MAX; }
-inline unsigned rnd(unsigned b) { return unsigned(b * rnd()); }
+inline double rnd()
+{
+    return double(rand()) / RAND_MAX;
+}
+inline unsigned rnd(unsigned b)
+{
+    return unsigned(b * rnd());
+}
 
 // fast clamping
-inline int32_t clamp_zero(int32_t x) { return x & ~(x >> 31); }
+inline int32_t clamp_zero(int32_t x)
+{
+    return x & ~(x >> 31);
+}
 inline int32_t clamp_value(int32_t x, int32_t val)
 {
     return val - clamp_zero(val - x);
@@ -120,7 +140,10 @@ inline unsigned nextgteqpow2(unsigned x)
     return i;
 }
 
-inline bool ispow2(unsigned x) { return (x & (x - 1)) == 0; }
+inline bool ispow2(unsigned x)
+{
+    return (x & (x - 1)) == 0;
+}
 
 // give degrees,minutes like this 123/45x with x = N,W,E,S
 double transform_nautic_posx_to_real(const std::string& s);
@@ -133,22 +156,25 @@ string_split(const std::string& src, char splitter = ',');
 
 // save a PGM (for debugging mostly)
 void save_pgm(
-    const char* fn, unsigned w, unsigned h, const uint8_t* d,
+    const char* fn,
+    unsigned w,
+    unsigned h,
+    const uint8_t* d,
     unsigned stride = 0);
 
 ///> transform any data type to a string for easier error reporting etc.
-template <typename T> std::string str(const T& x)
+template<typename T>
+std::string str(const T& x)
 {
     std::ostringstream oss;
     oss << x;
     return oss.str();
 }
 ///> do the same with width and filler
-template <typename T>
+template<typename T>
 std::string str_wf(const T& x, unsigned width, char filler = '0')
 {
     std::ostringstream oss;
     oss << std::setw(width) << std::setfill(filler) << x;
     return oss.str();
 }
-

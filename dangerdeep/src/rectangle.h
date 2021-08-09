@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <vector>
 
 /// A 2D rectangle with template coordinate types
-template <typename D> class rectangle_t
+template<typename D>
+class rectangle_t
 {
   public:
     vector2t<D> minpos, maxpos; ///< Minimum and maximum values
@@ -144,4 +145,3 @@ template <typename D> class rectangle_t
 typedef rectangle_t<double> rectangle;
 typedef rectangle_t<float> rectanglef;
 typedef rectangle_t<int> rect;
-

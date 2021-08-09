@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 class game;
 
 ///\brief Base class for all ships and ship-like objects: ships, submarines,
-///torpedoes.
+/// torpedoes.
 /** Handles steering and rudder simulation,
     damage control and other things.
     Ship attributes are defined via specification XML file. */
@@ -124,7 +124,11 @@ class ship : public sea_object
         /// To make it storeable in containers, don't use
         generic_rudder() = default;
         generic_rudder(
-            const vector3& p, int a, double ma, double ar, double mts) :
+            const vector3& p,
+            int a,
+            double ma,
+            double ar,
+            double mts) :
             pos(p),
             axis(a), max_angle(ma), area(ar), max_turn_speed(mts), angle(0),
             to_angle(0)
@@ -147,8 +151,11 @@ class ship : public sea_object
             @returns modified flow force
         */
         double compute_force_and_torque(
-            vector3& F, vector3& T, const vector3& parent_local_velocity,
-            const double& water_density, const double& flow_force = 0) const;
+            vector3& F,
+            vector3& T,
+            const vector3& parent_local_velocity,
+            const double& water_density,
+            const double& flow_force = 0) const;
     };
 
     generic_rudder rudder;
@@ -305,7 +312,9 @@ class ship : public sea_object
     bool
     is_target_in_blindspot(const struct gun_turret* gun, angle bearingToTarget);
     bool calculate_gun_angle(
-        const double distance, angle& elevation, const double initial_velocity);
+        const double distance,
+        angle& elevation,
+        const double initial_velocity);
     void calc_max_gun_range(double initial_velocity);
 
     bool detect_other_sea_objects() const override { return true; }
@@ -402,4 +411,3 @@ class ship : public sea_object
     /// compute bv_tree parameter values for collision tests
     virtual bv_tree::param compute_bv_tree_params() const;
 };
-

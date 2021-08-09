@@ -29,4 +29,3 @@ class sub_tdc_popup : public user_popup
   public:
     sub_tdc_popup(class user_interface& ui_);
 };
-

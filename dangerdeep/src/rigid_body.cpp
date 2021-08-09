@@ -117,7 +117,8 @@ force3d rigid_body::compute_default_gravity_force() const
 
 /// set mass and inertia tensor - use only this method to set it!
 void rigid_body::set_mass_and_inertia_tensor(
-    mass1d mass_, const matrix3& inertia_tensor_)
+    mass1d mass_,
+    const matrix3& inertia_tensor_)
 {
     mass               = mass_;
     inertia_tensor     = inertia_tensor;
@@ -173,7 +174,9 @@ void rigid_body::save(xml_elem& parent) const
 
 /// simulate next state of rigid body with time delta and force/torque applied
 void rigid_body::simulate(
-    duration delta_time, const force3d& force, const torque3d& torque)
+    duration delta_time,
+    const force3d& force,
+    const torque3d& torque)
 {
     // compute new position by integrating linear_momentum
     // M^-1 * P = v, linear_momentum is in world space!
@@ -244,7 +247,8 @@ void rigid_body::simulate(
         local_torque += data.first.cross(data.second);
     }
     simulate(
-        delta_time, orientation.rotate(local_force),
+        delta_time,
+        orientation.rotate(local_force),
         orientation.rotate(local_torque));
 }
 
@@ -263,7 +267,8 @@ rigid_body::compute_linear_velocity(const vector3& position_global) const
 
 /// handle collision response - return value is velocity/mass
 double rigid_body::compute_collision_response_value(
-    const vector3& collision_pos, const vector3& N) const
+    const vector3& collision_pos,
+    const vector3& N) const
 {
     // WTF is N and what is this formula about? some force acting locally gives
     // force/torque. why not apply collision force?!
@@ -279,7 +284,8 @@ double rigid_body::compute_collision_response_value(
 
 /// apply impulse caused by a collision to the rigid body
 void rigid_body::apply_collision_impulse(
-    const vector3& collision_pos, const momentum3d& J)
+    const vector3& collision_pos,
+    const momentum3d& J)
 {
     const vector3 relative_position = collision_pos - position;
     linear_momentum += J;

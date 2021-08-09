@@ -103,7 +103,7 @@ struct noise
     }
 
     ///\brief transform all strength values from absolute, linear values to dB
-    ///values
+    /// values
     noise to_dB() const
     {
         noise result;
@@ -154,17 +154,17 @@ struct noise
     }
 
     ///\brief returns background noise (ambient noise) of environment, flat, not
-    ///in dB
+    /// in dB
     /** @param	seastate	roughness of sea (1.0 = highest storm, 0.2=normal)
      */
     static noise compute_ambient_noise_strength(double seastate = 0.2);
 
     ///\brief compute medium total strength of noise from all frequency bands,
-    ///flat, not in dB
+    /// flat, not in dB
     double compute_total_noise_strength() const;
 
     ///\brief compute medium total strength of noise from all frequency bands,
-    ///in dB
+    /// in dB
     double compute_total_noise_strength_dB() const
     {
         return absolute_to_dB(compute_total_noise_strength());
@@ -192,17 +192,20 @@ struct noise_signature
     band_noise_data band_data[noise::NR_OF_FREQUENCY_BANDS];
 
     ///\brief returns total noise of source (background + artificial noise),
-    ///flat, not in dB
+    /// flat, not in dB
     /** @param	distance	distance to source in meters
         @param	speed		speed of source in m/s
         @param	cavitation	wether target causes caviation
         @param	seastate	roughness of sea (1.0 = highest storm, 0.2=normal)
     */
     noise compute_signal_strength(
-        double distance, double speed, bool caviation = false) const;
+        double distance,
+        double speed,
+        bool caviation = false) const;
 };
 
 // move to a GHG class later, fixme
 double compute_signal_strength_GHG(
-    angle signal_angle, double frequency, angle apparatus_angle);
-
+    angle signal_angle,
+    double frequency,
+    angle apparatus_angle);

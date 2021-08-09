@@ -50,9 +50,11 @@ class perlinnoise
         mutable fixed32 linefac1;
         mutable fixed32 linefac2;
         void set_line_for_interpolation(
-            const std::vector<fixed32>& interpolation_func, fixed32 y) const;
+            const std::vector<fixed32>& interpolation_func,
+            fixed32 y) const;
         uint8_t interpolate(
-            const std::vector<fixed32>& interpolation_func, fixed32 x) const;
+            const std::vector<fixed32>& interpolation_func,
+            fixed32 x) const;
         uint8_t interpolate_sqr(fixed32 x, fixed32 y) const;
     };
 
@@ -84,21 +86,30 @@ class perlinnoise
     /// generate noise data for potentially very large noise maps
     ///@param levelsize - size of a level (power of two)
     ///@param sizeminfreq - size of smallest detail data in pixels (power of
-    ///two)
+    /// two)
     ///@param levels - number of levels (at least 1)
     ///@param dummy - unused, trick to distinguish constructors
     ///@note total size will be levelsize * sizeminfreq * 2^(levels-1).
     ///@note do not call generate() on objects constructed with this constructor
     perlinnoise(
-        unsigned levelsize, unsigned sizeminfreq, unsigned levels, bool dummy);
+        unsigned levelsize,
+        unsigned sizeminfreq,
+        unsigned levels,
+        bool dummy);
 
     uint8_t value(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
     float valuef(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
     std::vector<uint8_t> values(
-        unsigned x, unsigned y, unsigned w, unsigned h,
+        unsigned x,
+        unsigned y,
+        unsigned w,
+        unsigned h,
         unsigned depth = 0xffffffff) const;
     std::vector<float> valuesf(
-        unsigned x, unsigned y, unsigned w, unsigned h,
+        unsigned x,
+        unsigned y,
+        unsigned w,
+        unsigned h,
         unsigned depth = 0xffffffff) const;
 };
 
@@ -116,7 +127,10 @@ class perlinnoise3d
         float phasez;
         // create random noise function
         noise_func(
-            unsigned s, unsigned f, float px = 0.0f, float py = 0.0f,
+            unsigned s,
+            unsigned f,
+            float px = 0.0f,
+            float py = 0.0f,
             float pz = 0.0f);
 
         // fixme: must be there for a plane too
@@ -126,11 +140,13 @@ class perlinnoise3d
         mutable float linefac1, linefac2;
         mutable float planefac1, planefac2;
         void set_line_for_interpolation(
-            const std::vector<float>& interpolation_func, float y) const;
+            const std::vector<float>& interpolation_func,
+            float y) const;
         void set_plane_for_interpolation(
-            const std::vector<float>& interpolation_func, float z) const;
-        float interpolate(
-            const std::vector<float>& interpolation_func, float x) const;
+            const std::vector<float>& interpolation_func,
+            float z) const;
+        float interpolate(const std::vector<float>& interpolation_func, float x)
+            const;
     };
 
   protected:
@@ -155,7 +171,7 @@ class perlinnoise3d
     // generate a composition of the noise functions
     std::vector<float> generate(float& minv, float& maxv) const;
 
-    float valuef(
-        unsigned x, unsigned y, unsigned z, unsigned depth = 0xffffffff) const;
+    float
+    valuef(unsigned x, unsigned y, unsigned z, unsigned depth = 0xffffffff)
+        const;
 };
-

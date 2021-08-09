@@ -91,14 +91,19 @@ void torpedo::setup_data::save(xml_elem& parent) const
 }
 
 torpedo::torpedo(
-    game& gm, const xml_elem& parent, const setup_data& torpsetup) :
+    game& gm,
+    const xml_elem& parent,
+    const setup_data& torpsetup) :
     ship(gm, parent),
     setup(torpsetup), temperature(15), // degrees C
     probability_of_rundepth_failure(
         0.2), // basically high before mid 1942, fixme
     run_length(0), steering_device_phase(0),
     dive_planes(
-        vector3(0, -3.5, 0 /*not used yet*/), 1, 20, 0.25 * 0.1 /*area*/,
+        vector3(0, -3.5, 0 /*not used yet*/),
+        1,
+        20,
+        0.25 * 0.1 /*area*/,
         40) // read consts from spec file, fixme
 {
     date dt = gm.get_equipment_date();
@@ -107,7 +112,8 @@ torpedo::torpedo(
     date availdt           = date(eavailability.attr("date"));
     if (dt < availdt)
         THROW(
-            xml_error, "torpedo type not available at this date!",
+            xml_error,
+            "torpedo type not available at this date!",
             parent.doc_name());
 
     set_skin_layout(model::default_layout);
@@ -223,7 +229,8 @@ torpedo::torpedo(
     {
         if (haslut > 0)
             THROW(
-                xml_error, "steering device must be EITHER LuT OR FaT!",
+                xml_error,
+                "steering device must be EITHER LuT OR FaT!",
                 parent.doc_name());
         steering_device = (hasfat == 1) ? FATI : FATII;
     }
@@ -299,14 +306,16 @@ torpedo::torpedo(
             else
             {
                 THROW(
-                    xml_error, "illegal throttle attribute!",
+                    xml_error,
+                    "illegal throttle attribute!",
                     parent.doc_name());
             }
         }
         else
         {
             THROW(
-                xml_error, "illegal speed/range type attributes!",
+                xml_error,
+                "illegal speed/range type attributes!",
                 parent.doc_name());
         }
         range[srt] = erange.attrf("distance");
@@ -433,7 +442,8 @@ void torpedo::simulate(double delta_time, game& gm)
                 {
                     // for LUT devices we turn now to the LUT main course
                     head_to_course(
-                        setup.lut_angle, 0 /* auto direction */,
+                        setup.lut_angle,
+                        0 /* auto direction */,
                         true /* small turn circle */);
                 }
                 else if (steering_device == FATII && setup.short_secondary_run)
@@ -476,7 +486,8 @@ void torpedo::simulate(double delta_time, game& gm)
                                   << " left=" << setup.initialturn_left
                                   << " turn=" << turn_left);
                     head_to_course(
-                        get_heading() + setup.turnangle, turn_left ? -1 : 1,
+                        get_heading() + setup.turnangle,
+                        turn_left ? -1 : 1,
                         is_lut /* hard rudder for lut*/);
                     steering_device_phase = 2;
                 }
@@ -501,7 +512,8 @@ void torpedo::simulate(double delta_time, game& gm)
                               << " left=" << setup.initialturn_left
                               << " turn=" << turn_left);
                 head_to_course(
-                    get_heading() + setup.turnangle, turn_left ? -1 : 1,
+                    get_heading() + setup.turnangle,
+                    turn_left ? -1 : 1,
                     is_lut /* hard rudder for lut*/);
                 steering_device_phase = 1;
             }

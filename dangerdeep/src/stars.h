@@ -46,4 +46,3 @@ class stars
 
     void display(const float max_view_dist) const;
 };
-

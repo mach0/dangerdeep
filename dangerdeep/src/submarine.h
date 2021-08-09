@@ -34,7 +34,7 @@ class game;
 // class torpedo;
 
 ///\brief Represents a submarine with all attributes like torpedo storage and
-///handling, depth rudder control etc.
+/// handling, depth rudder control etc.
 /** Submarine attributes are defined via specification XML file.
  */
 class submarine : public ship
@@ -94,8 +94,8 @@ class submarine : public ship
         dive_state_preparing_for_crashdive =
             4, // prepare to crash dive, gun is unmanned etc.
                // dive_state_running_silent,
-        // dive_state_snorkeling,
-        // surface torpedo transfer?
+               // dive_state_snorkeling,
+               // surface torpedo transfer?
     };
 
   protected:
@@ -153,8 +153,8 @@ class submarine : public ship
 
     std::vector<part> parts; // read from data/spec file, fixme do that!
 
-    // fixme: add: double temperature;	// overall temperature in submarine. used
-    // for torpedo preheating computation
+    // fixme: add: double temperature;	// overall temperature in submarine.
+    // used for torpedo preheating computation
 
     int find_stored_torpedo(bool usebow); // returns index or -1 if none
 
@@ -455,4 +455,3 @@ class submarine : public ship
     }
     virtual gauges_type get_gauges_type() const { return gauges; }
 };
-

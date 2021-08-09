@@ -221,8 +221,12 @@ widget_list::widget_list(xml_elem& elem, widget* _parent) :
     };
     int fw      = globaltheme->frame_size();
     myscrollbar = &add_child(std::make_unique<wls>(
-        listpos, size.x - 3 * fw - globaltheme->icons[0]->get_width(), fw,
-        globaltheme->icons[0]->get_width() + 2 * fw, size.y - 2 * fw, this));
+        listpos,
+        size.x - 3 * fw - globaltheme->icons[0]->get_width(),
+        fw,
+        globaltheme->icons[0]->get_width() + 2 * fw,
+        size.y - 2 * fw,
+        this));
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
         align(elem.attri("align_x"), elem.attri("align_y"));
     if (elem.has_attr("column_width"))
@@ -249,7 +253,13 @@ widget_fileselector::widget_fileselector(xml_elem& elem, widget* _parent) :
     add_child(std::make_unique<widget_caller_button<widget&>>(
         20, 80, 80, 32, text_ok, nullptr, [](auto& w) { w.close(1); }, *this));
     add_child(std::make_unique<widget_caller_button<widget&>>(
-        20, 120, 80, 32, text_cancel, nullptr, [](auto& w) { w.close(0); },
+        20,
+        120,
+        80,
+        32,
+        text_cancel,
+        nullptr,
+        [](auto& w) { w.close(0); },
         *this));
 
     read_current_dir();
@@ -353,13 +363,23 @@ void widget::set_image_cache(objcachet<class image>* imagecache)
     myimagecache = imagecache;
 }
 
-int widget::theme::frame_size() const { return frame[0]->get_height(); }
+int widget::theme::frame_size() const
+{
+    return frame[0]->get_height();
+}
 
-int widget::theme::icon_size() const { return icons[0]->get_height(); }
+int widget::theme::icon_size() const
+{
+    return icons[0]->get_height();
+}
 
 widget::theme::theme(
-    const char* elements_filename, const char* icons_filename, const font* fnt,
-    color tc, color tsc, color tdc) :
+    const char* elements_filename,
+    const char* icons_filename,
+    const font* fnt,
+    color tc,
+    color tsc,
+    color tdc) :
     myfont(fnt),
     textcol(tc), textselectcol(tsc), textdisabledcol(tdc)
 {
@@ -394,7 +414,12 @@ widget::replace_theme(std::unique_ptr<widget::theme> t)
 }
 
 widget::widget(
-    int x, int y, int w, int h, string text_, widget* parent_,
+    int x,
+    int y,
+    int w,
+    int h,
+    string text_,
+    widget* parent_,
     const std::string& backgrimg) :
     pos(x, y),
     size(w, h), text(std::move(text_)), parent(parent_),
@@ -418,7 +443,9 @@ widget::~widget()
 }
 
 void widget::add_child_near_last_child_generic(
-    std::unique_ptr<widget>&& w, int distance, unsigned direction)
+    std::unique_ptr<widget>&& w,
+    int distance,
+    unsigned direction)
 {
     if (distance < 0)
         distance = globaltheme->frame_size() * -distance;
@@ -501,7 +528,10 @@ void widget::remove_child(widget* w)
     }
 }
 
-void widget::remove_children() { children.clear(); }
+void widget::remove_children()
+{
+    children.clear();
+}
 
 void widget::move_pos(const vector2i& p)
 {
@@ -538,12 +568,18 @@ void widget::draw() const
     if (text.length() > 0)
     {
         draw_rect(
-            p.x + fw, p.y + fw, size.x - 2 * fw,
-            globaltheme->myfont->get_height(), false);
+            p.x + fw,
+            p.y + fw,
+            size.x - 2 * fw,
+            globaltheme->myfont->get_height(),
+            false);
         color tcol =
             is_enabled() ? globaltheme->textcol : globaltheme->textdisabledcol;
         globaltheme->myfont->print_hc(
-            p.x + size.x / 2, p.y + globaltheme->frame_size(), text, tcol,
+            p.x + size.x / 2,
+            p.y + globaltheme->frame_size(),
+            text,
+            tcol,
             true);
     }
     // fixme: if childs have the same size as parent, don't draw parent?
@@ -597,9 +633,15 @@ bool widget::is_enabled() const
     return e;
 }
 
-void widget::enable() { enabled = true; }
+void widget::enable()
+{
+    enabled = true;
+}
 
-void widget::disable() { enabled = false; }
+void widget::disable()
+{
+    enabled = false;
+}
 
 void widget::redraw()
 {
@@ -687,7 +729,11 @@ bool widget::is_mouse_over(int mx, int my) const
 }
 
 std::unique_ptr<widget> widget::create_dialogue_ok(
-    widget* parent_, const string& title, const string& text, int w, int h)
+    widget* parent_,
+    const string& title,
+    const string& text,
+    int w,
+    int h)
 {
     unsigned res_x = SYS().get_res_x_2d();
     unsigned res_y = SYS().get_res_y_2d();
@@ -704,13 +750,23 @@ std::unique_ptr<widget> widget::create_dialogue_ok(
     int fh   = int(globaltheme->myfont->get_height());
     int butw = 4 * fh + 2 * fw;
     wi->add_child(std::make_unique<widget_caller_button<widget&>>(
-        w / 2 - butw / 2, h - 64, butw, fh + 4 * fw, text_ok, nullptr,
-        [](auto& w) { w.close(1); }, *wi));
+        w / 2 - butw / 2,
+        h - 64,
+        butw,
+        fh + 4 * fw,
+        text_ok,
+        nullptr,
+        [](auto& w) { w.close(1); },
+        *wi));
     return wi;
 }
 
 std::unique_ptr<widget> widget::create_dialogue_ok_cancel(
-    widget* parent_, const string& title, const string& text, int w, int h)
+    widget* parent_,
+    const string& title,
+    const string& text,
+    int w,
+    int h)
 {
     unsigned res_x = SYS().get_res_x_2d();
     unsigned res_y = SYS().get_res_y_2d();
@@ -727,16 +783,31 @@ std::unique_ptr<widget> widget::create_dialogue_ok_cancel(
     int fh   = int(globaltheme->myfont->get_height());
     int butw = 4 * fh + 2 * fw;
     wi->add_child(std::make_unique<widget_caller_button<widget&>>(
-        w / 4 - butw / 2, h - 64, butw, fh + 4 * fw, text_ok, nullptr,
-        [](auto& w) { w.close(1); }, *wi));
+        w / 4 - butw / 2,
+        h - 64,
+        butw,
+        fh + 4 * fw,
+        text_ok,
+        nullptr,
+        [](auto& w) { w.close(1); },
+        *wi));
     wi->add_child(std::make_unique<widget_caller_button<widget&>>(
-        3 * w / 4 - butw / 2, h - 64, butw, fh + 4 * fw, text_cancel, nullptr,
-        [](auto& w) { w.close(0); }, *wi));
+        3 * w / 4 - butw / 2,
+        h - 64,
+        butw,
+        fh + 4 * fw,
+        text_cancel,
+        nullptr,
+        [](auto& w) { w.close(0); },
+        *wi));
     return wi;
 }
 
 int widget::run(
-    widget& w, unsigned timeout, bool do_stacking, widget* focussed_at_begin)
+    widget& w,
+    unsigned timeout,
+    bool do_stacking,
+    widget* focussed_at_begin)
 {
     glClearColor(0, 0, 0, 0);
     widget* myparent =
@@ -819,7 +890,8 @@ bool widget::handle_key_event(widget& w, const input_event_handler::key_data& k)
 }
 
 bool widget::handle_mouse_button_event(
-    widget& w, const input_event_handler::mouse_click_data& m)
+    widget& w,
+    const input_event_handler::mouse_click_data& m)
 {
     // any click or release could potentially change the scene, so redraw
     w.redraw();
@@ -844,7 +916,8 @@ bool widget::handle_mouse_button_event(
 }
 
 bool widget::handle_mouse_motion_event(
-    widget& w, const input_event_handler::mouse_motion_data& m)
+    widget& w,
+    const input_event_handler::mouse_motion_data& m)
 {
     // any mouse motion with pressed keys could potentially change the scene, so
     // redraw, without keys pressed a redraw is needed when mouseover changes
@@ -868,7 +941,8 @@ bool widget::handle_mouse_motion_event(
 }
 
 bool widget::handle_mouse_wheel_event(
-    widget& w, const input_event_handler::mouse_wheel_data& m)
+    widget& w,
+    const input_event_handler::mouse_wheel_data& m)
 {
     // any mouse wheel event could potentially change the scene, so redraw
     w.redraw();
@@ -905,7 +979,12 @@ void widget::open()
 }
 
 widget_menu::widget_menu(
-    int x, int y, int w, int h, const string& text_, bool horizontal_,
+    int x,
+    int y,
+    int w,
+    int h,
+    const string& text_,
+    bool horizontal_,
     widget* parent_) :
     widget(x, y, 0, 0, text_, parent_),
     horizontal(horizontal_), entryw(w), entryh(h), entryspacing(16)
@@ -983,7 +1062,10 @@ void widget_menu::draw() const
         draw_area(p.x, p.y, entryw, entryh, true);
         draw_area(p.x, p.y, entryw, entryh, false);
         globaltheme->myfont->print_c(
-            p.x + entryw / 2, p.y + entryh / 2, text, globaltheme->textcol,
+            p.x + entryw / 2,
+            p.y + entryh / 2,
+            text,
+            globaltheme->textcol,
             true);
     }
     for (auto& child : children)
@@ -1060,8 +1142,13 @@ void widget_text::draw() const
         draw_area(p.x, p.y, size.x, size.y, false);
         int fw = globaltheme->frame_size();
         globaltheme->myfont->print_wrapped(
-            p.x + 2 * fw, p.y + 2 * fw, size.x - 4 * fw, 0, text,
-            globaltheme->textcol, true);
+            p.x + 2 * fw,
+            p.y + 2 * fw,
+            size.x - 4 * fw,
+            0,
+            text,
+            globaltheme->textcol,
+            true);
     }
     else
     {
@@ -1092,7 +1179,8 @@ void widget_checkbox::draw() const
     globaltheme->icons[icni]->draw(
         p.x, p.y + (get_size().y - globaltheme->icons[icni]->get_height()) / 2);
     globaltheme->myfont->print_vc(
-        p.x + globaltheme->icons[icni]->get_width() + fw, p.y + size.y / 2,
+        p.x + globaltheme->icons[icni]->get_width() + fw,
+        p.y + size.y / 2,
         text,
         is_enabled() ? globaltheme->textcol : globaltheme->textdisabledcol,
         true);
@@ -1131,7 +1219,11 @@ void widget_button::on_release()
 }
 
 widget_scrollbar::widget_scrollbar(
-    int x, int y, int w, int h, widget* parent_) :
+    int x,
+    int y,
+    int w,
+    int h,
+    widget* parent_) :
     widget(x, y, w, h, "", parent_),
     scrollbarpos(0), scrollbarmaxpos(0)
 {
@@ -1147,7 +1239,10 @@ void widget_scrollbar::set_nr_of_positions(unsigned s)
     compute_scrollbarpixelpos();
 }
 
-unsigned widget_scrollbar::get_current_position() const { return scrollbarpos; }
+unsigned widget_scrollbar::get_current_position() const
+{
+    return scrollbarpos;
+}
 
 void widget_scrollbar::set_current_position(unsigned p)
 {
@@ -1209,23 +1304,32 @@ void widget_scrollbar::draw() const
     vector2i p = get_pos();
     int fw     = globaltheme->frame_size();
     draw_frame(
-        p.x, p.y, globaltheme->icons[0]->get_width() + 2 * fw,
-        globaltheme->icons[0]->get_height() + 2 * fw, true);
+        p.x,
+        p.y,
+        globaltheme->icons[0]->get_width() + 2 * fw,
+        globaltheme->icons[0]->get_height() + 2 * fw,
+        true);
     draw_frame(
-        p.x, p.y + size.y - globaltheme->icons[1]->get_height() - 2 * fw,
+        p.x,
+        p.y + size.y - globaltheme->icons[1]->get_height() - 2 * fw,
         globaltheme->icons[1]->get_width() + 2 * fw,
-        globaltheme->icons[1]->get_height() + 2 * fw, true);
+        globaltheme->icons[1]->get_height() + 2 * fw,
+        true);
     globaltheme->icons[0]->draw(p.x + fw, p.y + fw);
     globaltheme->icons[1]->draw(
         p.x + fw, p.y + size.y - globaltheme->icons[1]->get_height() - fw);
     draw_area(
-        p.x, p.y + globaltheme->icons[0]->get_height() + 2 * fw,
-        globaltheme->icons[0]->get_width() + 2 * fw, get_max_scrollbarsize(),
+        p.x,
+        p.y + globaltheme->icons[0]->get_height() + 2 * fw,
+        globaltheme->icons[0]->get_width() + 2 * fw,
+        get_max_scrollbarsize(),
         false);
     draw_area(
         p.x,
         p.y + globaltheme->icons[0]->get_height() + 2 * fw + scrollbarpixelpos,
-        globaltheme->icons[0]->get_width() + 2 * fw, get_scrollbarsize(), true);
+        globaltheme->icons[0]->get_width() + 2 * fw,
+        get_scrollbarsize(),
+        true);
 }
 
 void widget_scrollbar::on_click(vector2i position, mouse_button btn)
@@ -1255,7 +1359,9 @@ void widget_scrollbar::on_click(vector2i position, mouse_button btn)
 }
 
 void widget_scrollbar::on_drag(
-    vector2i position, vector2i motion, mouse_button_state btnstate)
+    vector2i position,
+    vector2i motion,
+    mouse_button_state btnstate)
 {
     unsigned oldpos = scrollbarpos;
     vector2i p      = get_pos();
@@ -1322,8 +1428,12 @@ widget_list::widget_list(int x, int y, int w, int h, widget* parent_) :
     };
     int fw      = globaltheme->frame_size();
     myscrollbar = &add_child(std::make_unique<wls>(
-        listpos, size.x - 3 * fw - globaltheme->icons[0]->get_width(), fw,
-        globaltheme->icons[0]->get_width() + 2 * fw, size.y - 2 * fw, this));
+        listpos,
+        size.x - 3 * fw - globaltheme->icons[0]->get_width(),
+        fw,
+        globaltheme->icons[0]->get_width() + 2 * fw,
+        size.y - 2 * fw,
+        this));
 }
 
 void widget_list::delete_entry(unsigned n)
@@ -1415,9 +1525,15 @@ string widget_list::get_entry(unsigned n) const
     return "";
 }
 
-unsigned widget_list::get_listsize() const { return entries.size(); }
+unsigned widget_list::get_listsize() const
+{
+    return entries.size();
+}
 
-int widget_list::get_selected() const { return selected; }
+int widget_list::get_selected() const
+{
+    return selected;
+}
 
 void widget_list::set_selected(unsigned n)
 {
@@ -1444,8 +1560,9 @@ string widget_list::get_selected_entry() const
 unsigned widget_list::get_nr_of_visible_entries() const
 {
     return std::min(
-        unsigned(entries.size()), (size.y - 2 * globaltheme->frame_size())
-                                      / globaltheme->myfont->get_height());
+        unsigned(entries.size()),
+        (size.y - 2 * globaltheme->frame_size())
+            / globaltheme->myfont->get_height());
 }
 
 void widget_list::clear()
@@ -1475,15 +1592,20 @@ void widget_list::draw() const
             if (scrollbarvisible)
                 width -= 3 * fw + globaltheme->icons[0]->get_width();
             globaltheme->backg.get()->draw(
-                p.x + fw, p.y + fw + lp * globaltheme->myfont->get_height(),
-                width, globaltheme->myfont->get_height());
+                p.x + fw,
+                p.y + fw + lp * globaltheme->myfont->get_height(),
+                width,
+                globaltheme->myfont->get_height());
         }
         // optionally split string into columns
         if (columnwidth < 0)
         {
             globaltheme->myfont->print(
-                p.x + fw, p.y + fw + lp * globaltheme->myfont->get_height(),
-                entries[listpos + lp], tcol, true);
+                p.x + fw,
+                p.y + fw + lp * globaltheme->myfont->get_height(),
+                entries[listpos + lp],
+                tcol,
+                true);
         }
         else
         {
@@ -1495,7 +1617,9 @@ void widget_list::draw() const
                 string ct            = tmp.substr(0, tp);
                 globaltheme->myfont->print(
                     p.x + fw + col * unsigned(columnwidth),
-                    p.y + fw + lp * globaltheme->myfont->get_height(), ct, tcol,
+                    p.y + fw + lp * globaltheme->myfont->get_height(),
+                    ct,
+                    tcol,
                     true);
                 if (tp == string::npos)
                     break;
@@ -1522,8 +1646,9 @@ void widget_list::on_click(vector2i position, mouse_button btn)
             int oldselected = selected;
             int fw          = globaltheme->frame_size();
             int sp          = std::max(
-                0, (position.y - p.y - fw)
-                       / int(globaltheme->myfont->get_height()));
+                0,
+                (position.y - p.y - fw)
+                    / int(globaltheme->myfont->get_height()));
             selected = std::min(int(entries.size()) - 1, int(listpos) + sp);
             if (oldselected != selected)
             {
@@ -1534,7 +1659,9 @@ void widget_list::on_click(vector2i position, mouse_button btn)
 }
 
 void widget_list::on_drag(
-    vector2i position, vector2i motion, mouse_button_state btnstate)
+    vector2i position,
+    vector2i motion,
+    mouse_button_state btnstate)
 {
     auto btn = mouse_button::left;
     if (!btnstate.left())
@@ -1551,9 +1678,15 @@ void widget_list::on_drag(
     on_click(position, btn);
 }
 
-void widget_list::on_wheel(input_action wd) { myscrollbar->on_wheel(wd); }
+void widget_list::on_wheel(input_action wd)
+{
+    myscrollbar->on_wheel(wd);
+}
 
-void widget_list::set_column_width(int cw) { columnwidth = cw; }
+void widget_list::set_column_width(int cw)
+{
+    columnwidth = cw;
+}
 
 void widget_edit::draw() const
 {
@@ -1659,7 +1792,12 @@ void widget_edit::on_text(const std::string& new_text)
 }
 
 widget_fileselector::widget_fileselector(
-    int x, int y, int w, int h, const string& text_, widget* parent_) :
+    int x,
+    int y,
+    int w,
+    int h,
+    const string& text_,
+    widget* parent_) :
     widget(x, y, w, h, text_, parent_)
 {
     current_path = &add_child(std::make_unique<widget_text>(
@@ -1672,7 +1810,13 @@ widget_fileselector::widget_fileselector(
     add_child(std::make_unique<widget_caller_button<widget&>>(
         20, 80, 80, 32, text_ok, nullptr, [](auto& w) { w.close(1); }, *this));
     add_child(std::make_unique<widget_caller_button<widget&>>(
-        20, 120, 80, 32, text_cancel, nullptr, [](auto& w) { w.close(0); },
+        20,
+        120,
+        80,
+        32,
+        text_cancel,
+        nullptr,
+        [](auto& w) { w.close(0); },
         *this));
 
     read_current_dir();
@@ -1741,7 +1885,12 @@ void widget_fileselector::listclick()
 }
 
 widget_3dview::widget_3dview(
-    int x, int y, int w, int h, unique_ptr<model> mdl_, color bgcol,
+    int x,
+    int y,
+    int w,
+    int h,
+    unique_ptr<model> mdl_,
+    color bgcol,
     widget* parent_) :
     widget(x, y, w, h, "", parent_),
     mdl(std::move(mdl_)), backgrcol(bgcol), z_angle(90), x_angle(0),
@@ -1780,7 +1929,9 @@ void widget_3dview::on_wheel(input_action wd)
 }
 
 void widget_3dview::on_drag(
-    vector2i position, vector2i motion, mouse_button_state btnstate)
+    vector2i position,
+    vector2i motion,
+    mouse_button_state btnstate)
 {
     if (btnstate.left())
     {
@@ -1839,11 +1990,13 @@ void widget_3dview::draw() const
     glRotatef(x_angle, 1, 0, 0);
     primitives::line(
         vector3f(-bb.x * 0.5, 0.0, -bb.z * 0.5),
-        vector3f(bb.x * 0.5, 0.0, -bb.z * 0.5), color::black())
+        vector3f(bb.x * 0.5, 0.0, -bb.z * 0.5),
+        color::black())
         .render();
     primitives::line(
         vector3f(0.0, -bb.y * 0.5, -bb.z * 0.5),
-        vector3f(0.0, bb.y * 0.5, -bb.z * 0.5), color::black())
+        vector3f(0.0, bb.y * 0.5, -bb.z * 0.5),
+        color::black())
         .render();
     mdl->display();
 
@@ -1851,8 +2004,16 @@ void widget_3dview::draw() const
 }
 
 widget_slider::widget_slider(
-    int x, int y, int w, int h, const string& text_, int minv, int maxv,
-    int currv, int descrstep_, widget* parent_) :
+    int x,
+    int y,
+    int w,
+    int h,
+    const string& text_,
+    int minv,
+    int maxv,
+    int currv,
+    int descrstep_,
+    widget* parent_) :
     widget(x, y, w, h, text_, parent_),
     minvalue(minv), maxvalue(maxv), currvalue(currv), descrstep(descrstep_)
 {
@@ -1898,11 +2059,16 @@ void widget_slider::draw() const
             (size.x - sliderw) * (i - minvalue) / (maxvalue - minvalue);
         int valw = globaltheme->myfont->get_size(vals).x;
         globaltheme->myfont->print(
-            pos.x + sliderw / 2 + offset - valw / 2, pos.y + h0 + h1, vals,
-            tcol, true);
+            pos.x + sliderw / 2 + offset - valw / 2,
+            pos.y + h0 + h1,
+            vals,
+            tcol,
+            true);
         draw_line(
-            pos.x + sliderw / 2 + offset, pos.y + h0 + baroff + barh,
-            pos.x + sliderw / 2 + offset, pos.y + h0 + h1);
+            pos.x + sliderw / 2 + offset,
+            pos.y + h0 + baroff + barh,
+            pos.x + sliderw / 2 + offset,
+            pos.y + h0 + h1);
         // last descriptions should be aligned right and printed, so maybe skip
         // second last one.
         if (i < maxvalue && i + descrstep > maxvalue)
@@ -1915,11 +2081,17 @@ void widget_slider::draw() const
     unsigned offset =
         (size.x - sliderw) * (currvalue - minvalue) / (maxvalue - minvalue);
     draw_area_col(
-        pos.x + offset, pos.y + h0, sliderw, h1 - barh, true,
+        pos.x + offset,
+        pos.y + h0,
+        sliderw,
+        h1 - barh,
+        true,
         globaltheme->textdisabledcol);
     draw_line(
-        pos.x + sliderw / 2 + offset, pos.y + h0 + barh / 2,
-        pos.x + sliderw / 2 + offset, pos.y + h0 + h1 - barh * 3 / 2);
+        pos.x + sliderw / 2 + offset,
+        pos.y + h0 + barh / 2,
+        pos.x + sliderw / 2 + offset,
+        pos.y + h0 + h1 - barh * 3 / 2);
 }
 
 void widget_slider::on_key(key_code kc, key_mod km)
@@ -1952,7 +2124,9 @@ void widget_slider::on_click(vector2i position, mouse_button btn)
 }
 
 void widget_slider::on_drag(
-    vector2i position, vector2i motion, mouse_button_state btnstate)
+    vector2i position,
+    vector2i motion,
+    mouse_button_state btnstate)
 {
     // move slider...
     if (btnstate.left())

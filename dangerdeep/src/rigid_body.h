@@ -58,7 +58,8 @@ class rigid_body
     force3d compute_default_gravity_force() const;
 
     void set_mass_and_inertia_tensor(
-        mass1d mass_, const matrix3& inertia_tensor = matrix3::one());
+        mass1d mass_,
+        const matrix3& inertia_tensor = matrix3::one());
 
     /// recomputes *_velocity, heading etc.
     void compute_helper_values();
@@ -76,7 +77,8 @@ class rigid_body
 
     velocity3d compute_linear_velocity(const vector3& position_global) const;
     double compute_collision_response_value(
-        const vector3& collision_pos, const vector3& N) const;
+        const vector3& collision_pos,
+        const vector3& N) const;
     void
     apply_collision_impulse(const vector3& collision_pos, const momentum3d& J);
 
@@ -88,4 +90,3 @@ class rigid_body
     void
     simulate(duration delta_time, const force3d& force, const torque3d& torque);
 };
-

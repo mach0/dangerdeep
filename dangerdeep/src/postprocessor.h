@@ -20,9 +20,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-#include "shader.h"
-
 #include "framebufferobject.h"
+#include "shader.h"
 #include "singleton.h"
 //#include "texture.h"
 //#include "shader.h"
@@ -60,4 +59,3 @@ class postprocessor : public singleton<class postprocessor>
     void do_2d();
     void undo_2d();
 };
-

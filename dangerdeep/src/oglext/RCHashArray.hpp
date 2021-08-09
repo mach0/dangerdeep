@@ -30,7 +30,7 @@
 #include <windows.h>
 #endif
 
-#if !defined(_WIN32) && (!defined(__APPLE__) || !defined(__GNUC__)) \
+#if !defined(_WIN32) && (!defined(__APPLE__) || !defined(__GNUC__))            \
     && !defined(__MACOSX__)
 #include <GL/glx.h>
 #endif
@@ -266,4 +266,3 @@ inline CRenderingContext* CRCHashArray::PrepareRenderingContext(HRCKEY hRCKey)
 
     return pNewNode->pRenderingContext;
 }
-

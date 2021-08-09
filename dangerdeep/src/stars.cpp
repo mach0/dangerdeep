@@ -149,8 +149,12 @@ void stars::display(const float max_view_dist) const
     star_colors_VBO.bind();
     glsl_shader_setup::default_col->use();
     glVertexAttribPointer(
-        glsl_shader_setup::idx_c_color, 4, GL_FLOAT, GL_FALSE,
-        sizeof(float) * 4, nullptr);
+        glsl_shader_setup::idx_c_color,
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        sizeof(float) * 4,
+        nullptr);
     glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
     glDrawArrays(GL_POINTS, 0, star_count);
 

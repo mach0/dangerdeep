@@ -29,7 +29,8 @@
 #include <fstream>
 #include <string>
 
-template <class T> class tile
+template<class T>
+class tile
 {
   public:
     tile(const char* filename, vector2i& _bottom_left, unsigned size);
@@ -50,7 +51,7 @@ template <class T> class tile
     unsigned long last_access;
 };
 
-template <class T>
+template<class T>
 tile<T>::tile(const char* filename, vector2i& _bottom_left, unsigned size) :
     data(size, -200), bottom_left(_bottom_left), last_access(SYS().millisec())
 {
@@ -73,7 +74,7 @@ tile<T>::tile(const char* filename, vector2i& _bottom_left, unsigned size) :
     }
 }
 
-template <class T>
+template<class T>
 void tile<T>::load(const char* filename, vector2i& _bottom_left, unsigned size)
 {
     data.resize(size, -200);
@@ -99,14 +100,15 @@ void tile<T>::load(const char* filename, vector2i& _bottom_left, unsigned size)
     }
 }
 
-template <class T>
+template<class T>
 tile<T>::tile(const tile<T>& other) :
     data(other.get_data()), bottom_left(other.get_bottom_left()),
     last_access(other.get_last_access())
 {
 }
 
-template <class T> T tile<T>::get_value(vector2i coord)
+template<class T>
+T tile<T>::get_value(vector2i coord)
 {
     last_access = SYS().millisec();
     coord.y     = data.size() - coord.y - 1;

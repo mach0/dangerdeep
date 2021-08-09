@@ -131,8 +131,10 @@ class music : public singleton<class music>, public ::thread
     ///@param noise_pos - position of noise source
     ///@returns true if command was successful
     bool play_sfx(
-        const std::string& category, const vector3& listener,
-        angle listener_dir, const vector3& noise_pos);
+        const std::string& category,
+        const vector3& listener,
+        angle listener_dir,
+        const vector3& noise_pos);
 
     /// play machine (environmental) sfx
     ///@param name - name of machine
@@ -199,8 +201,10 @@ class music : public singleton<class music>, public ::thread
     void exec_get_current_track(unsigned& track);
     void exec_is_playing(bool& isply);
     void exec_play_sfx(
-        const std::string& category, const vector3& listener,
-        angle listener_dir, const vector3& noise_pos);
+        const std::string& category,
+        const vector3& listener,
+        angle listener_dir,
+        const vector3& noise_pos);
     void exec_play_sfx_machine(const std::string& name, unsigned throttle);
     void exec_pause_sfx(bool on);
 
@@ -300,7 +304,9 @@ class music : public singleton<class music>, public ::thread
 
       public:
         command_play_track(
-            music& my_music_, unsigned nr_, unsigned fadeouttime_,
+            music& my_music_,
+            unsigned nr_,
+            unsigned fadeouttime_,
             unsigned fadeintime_) :
             my_music(my_music_),
             nr(nr_), fadeouttime(fadeouttime_), fadeintime(fadeintime_)
@@ -325,7 +331,8 @@ class music : public singleton<class music>, public ::thread
 
       public:
         command_get_playlist(
-            music& my_music_, std::vector<std::string>& playlist_) :
+            music& my_music_,
+            std::vector<std::string>& playlist_) :
             my_music(my_music_),
             playlist(playlist_)
         {
@@ -372,8 +379,11 @@ class music : public singleton<class music>, public ::thread
 
       public:
         command_play_sfx(
-            music& my_music_, std::string category_, vector3 listener_,
-            angle listener_dir_, vector3 noise_pos_) :
+            music& my_music_,
+            std::string category_,
+            vector3 listener_,
+            angle listener_dir_,
+            vector3 noise_pos_) :
             my_music(my_music_),
             category(std::move(category_)), listener(std::move(listener_)),
             listener_dir(std::move(listener_dir_)),
@@ -394,7 +404,9 @@ class music : public singleton<class music>, public ::thread
 
       public:
         command_play_sfx_machine(
-            music& my_music_, std::string name_, unsigned throttle_) :
+            music& my_music_,
+            std::string name_,
+            unsigned throttle_) :
             my_music(my_music_),
             name(std::move(name_)), throttle(throttle_)
         {
@@ -415,9 +427,16 @@ class music : public singleton<class music>, public ::thread
     };
 };
 
-template <> inline void free_ressource(Mix_Chunk* p) { Mix_FreeChunk(p); }
-template <> inline void free_ressource(Mix_Music* p) { Mix_FreeMusic(p); }
-
+template<>
+inline void free_ressource(Mix_Chunk* p)
+{
+    Mix_FreeChunk(p);
+}
+template<>
+inline void free_ressource(Mix_Music* p)
+{
+    Mix_FreeMusic(p);
+}
 
 /* data for command generator, save to file --- snip ---
 music
