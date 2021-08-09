@@ -35,6 +35,7 @@ class bsplinet
     unsigned n, m;
     std::vector<T> cp;        ///< control points
     std::vector<double> tvec; ///< t's for control points
+
     mutable std::vector<T> deBoor_pts;
 
     T& deBoor_at(unsigned row, unsigned column) const
@@ -53,8 +54,10 @@ class bsplinet
             // any x. it shouldn't cause trouble though, because the bspline
             // value is the same then.
             unsigned l = n + unsigned(floor(t * (m + 1 - n)));
+
             if (l > m)
                 l = m;
+
             return l;
         }
         else
@@ -85,12 +88,16 @@ class bsplinet
         m(unsigned(d.size()) - 1), cp(d), tvec(tvec_)
     {
         static_assert(!is_uniform, "bspline type and constructor use mismatch");
+
         if (n >= d.size())
             THROW(error, "bspline: n too large");
+
         if (d.size() < 2)
             THROW(error, "bspline: d has too few elements");
+
         if (tvec_.size() != m + n + 2)
             THROW(error, "bspline: tvec has illegal size");
+
         deBoor_pts.resize((n + 1) * (n + 2) / 2);
     }
     /// construct uniform bspline
@@ -99,13 +106,17 @@ class bsplinet
         tvec(d.size() + n_ + 1 /* = m+n+2 */)
     {
         static_assert(is_uniform, "bspline type and constructor use mismatch");
+
         unsigned k = 0;
         for (; k <= n; ++k)
             tvec[k] = 0.0;
+
         for (; k <= m; ++k)
             tvec[k] = double(k - n) / double(m - n + 1);
+
         for (; k <= m + n + 1; ++k)
             tvec[k] = 1.0;
+
         deBoor_pts.resize((n + 1) * (n + 2) / 2);
     }
 
@@ -122,8 +133,10 @@ class bsplinet
         // better to limit t than to fail loudly.
         if (t < 0.0)
             t = 0.0;
+
         if (t > 1.0)
             t = 1.0;
+
         // if (t < 0.0 || t > 1.0) THROW(error, "bspline: invalid t");
 
         unsigned l = find_l(t);
@@ -138,8 +151,10 @@ class bsplinet
             for (unsigned i = l - n; i <= l - r; ++i)
             {
                 double tv = (t - tvec[i + r]) / (tvec[i + n + 1] - tvec[i + r]);
+
                 if (!isfinite(tv))
                     THROW(error, "bspline: invalid number generated");
+
                 deBoor_at(r, i + n - l) =
                     T(deBoor_at(r - 1, i + n - l) * (1 - tv)
                       + deBoor_at(r - 1, i + 1 + n - l) * tv);
@@ -180,8 +195,10 @@ class bspline2dt
 
 #if 1
         unsigned l = n + unsigned(floor(t * (m + 1 - n)));
+
         if (l > m)
             l = m;
+
         return l;
 
         // algorithm for non-uniform bsplines:
@@ -202,12 +219,16 @@ class bspline2dt
     bspline2dt(unsigned n_, const std::vector<T>& d) : n(n_), cp(d)
     {
         auto ds = unsigned(sqrt(double(d.size())));
+
         if (ds * ds != d.size())
             THROW(error, "bspline2d: d not quadratic");
+
         if (n >= ds)
             THROW(error, "bspline2d: n too large");
+
         if (ds < 2)
             THROW(error, "bspline2d: d has too few elements");
+
         m = ds - 1;
 
         deBoor_pts.resize((n + 1) * (n + 1) * (n + 2) / 2);
@@ -217,10 +238,13 @@ class bspline2dt
         // (let the user give a t vector)
         tvec.resize(m + n + 2);
         unsigned k = 0;
+
         for (; k <= n; ++k)
             tvec[k] = 0;
+
         for (; k <= m; ++k)
             tvec[k] = double(k - n) / double(m - n + 1);
+
         for (; k <= m + n + 1; ++k)
             tvec[k] = 1;
     }
@@ -231,6 +255,7 @@ class bspline2dt
     {
         if (s < 0.0 || s > 1.0)
             THROW(error, "bspline2d: invalid s");
+
         if (t < 0.0 || t > 1.0)
             THROW(error, "bspline2d: invalid t");
 
@@ -239,8 +264,12 @@ class bspline2dt
 
         // fill in base deBoor points
         for (unsigned j2 = 0; j2 <= n; ++j2)
+        {
             for (unsigned j = 0; j <= n; ++j)
+            {
                 deBoor_at(j2, 0, j) = cp[(l2 - n + j2) * (m + 1) + l - n + j];
+            }
+        }
 
         // compute new values
         for (unsigned r = 1; r <= n; ++r)
@@ -260,14 +289,19 @@ class bspline2dt
         }
 
         for (unsigned j2 = 0; j2 <= n; ++j2)
+        {
             deBoor_at(0, 0, j2) = deBoor_at(j2, n, 0);
+        }
+
         for (unsigned r = 1; r <= n; ++r)
         {
             for (unsigned i = l2 - n; i <= l2 - r; ++i)
             {
                 double tv = (t - tvec[i + r]) / (tvec[i + n + 1] - tvec[i + r]);
+
                 if (!isfinite(tv))
                     THROW(error, "bspline2d: invalid number generated");
+
                 deBoor_at(0, r, i + n - l2) =
                     deBoor_at(0, r - 1, i + n - l2) * (1 - tv)
                     + deBoor_at(0, r - 1, i + 1 + n - l2) * tv;

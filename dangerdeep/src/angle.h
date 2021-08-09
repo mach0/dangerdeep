@@ -44,6 +44,7 @@ class angle
   public:
     angle() { }
     angle(double d) : val(d) { }
+
     /// Compute angle from direction in horizontal 2d plane
     angle(const vector2& v)
     {
@@ -51,16 +52,19 @@ class angle
                   ? 0.0
                   : 90.0 - atan2(v.y, v.x) * 180.0 / constant::PI;
     }
+
     /// Compute azimuth (angle in horizontal plane) from 3d direction
     static angle azimuth(const vector3& direction)
     {
         return angle(direction.xy());
     }
+
     /// Compute elevation angle from direction
     static angle elevation(const vector3& direction)
     {
         return {::asin(direction.z) * 180 / constant::PI};
     }
+
     /// Compute direction from azimuth and elevation
     static vector3
     direction_from_azimuth_and_elevation(angle azimuth, angle elevation)
@@ -68,43 +72,52 @@ class angle
         return vector3(azimuth.direction() * elevation.cos(), elevation.sin())
             .normal();
     }
+
     double value() const { return clamped(val); }
     unsigned ui_value() const { return unsigned(clamped(helper::round(val))); }
+
     unsigned ui_abs_value180() const
     {
         return unsigned(fabs(helper::round(value_pm180())));
     }
+
     double rad() const { return value() * constant::PI / 180.0; }
     double value_pm180() const
     {
         double d = clamped(val);
         return d <= 180.0 ? d : d - 360.0;
     }
+
     angle operator+(const angle& other) const { return {val + other.val}; }
     angle operator-(const angle& other) const { return {val - other.val}; }
     angle operator-() const { return {-val}; }
     angle operator*(double t) const { return {val * t}; }
+
     /// returns true if the turn from "this" to "a" is shorter when done
     /// clockwise
     bool is_clockwise_nearer(const angle& a) const
     {
         return clamped(a.val - val) <= 180.0;
     }
+
     static angle from_rad(double d) { return {d * 180.0 / constant::PI}; }
     static angle from_math(double d)
     {
         return {(constant::PI / 2 - d) * 180.0 / constant::PI};
     }
+
     angle& operator+=(const angle& other)
     {
         val += other.val;
         return *this;
     }
+
     angle& operator-=(const angle& other)
     {
         val -= other.val;
         return *this;
     }
+
     double diff(const angle& other) const
     {
         double d = clamped(other.val - val);
@@ -112,18 +125,22 @@ class angle
             d = 360.0 - d;
         return d;
     }
+
     double diff_in_direction(bool ccw, const angle& other) const
     {
         return ccw ? clamped(val - other.val) : clamped(other.val - val);
     }
+
     double sin() const { return ::sin(rad()); }
     double cos() const { return ::cos(rad()); }
     double tan() const { return ::tan(rad()); }
+
     vector2 direction() const
     {
         double r = rad();
         return {::sin(r), ::cos(r)};
     }
+
     bool operator==(const angle& b) const { return value() == b.value(); }
     bool operator!=(const angle& b) const { return value() != b.value(); }
 

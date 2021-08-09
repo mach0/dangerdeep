@@ -60,8 +60,10 @@ class box_t
     }
     /// Return size of box
     vector3t<D> size() const { return maxpos - minpos; }
+
     /// Return center of box
     vector3t<D> center() const { return (maxpos + minpos) / D(2); }
+
     /// Check if coordinate is inside box
     bool is_inside(const vector3t<D>& p) const
     {
@@ -69,6 +71,7 @@ class box_t
                && p.z >= minpos.z && p.x <= maxpos.x && p.y <= maxpos.y
                && p.z <= maxpos.z;
     }
+
     /// Compute box from bound of two other boxes
     box_t(const box_t& a, const box_t& b) : is_empty(false)
     {
@@ -82,6 +85,7 @@ class box_t
             maxpos = a.maxpos.max(b.maxpos);
         }
     }
+
     /// Extend box with other box
     void extend(const box_t& other)
     {
@@ -93,6 +97,7 @@ class box_t
             maxpos = maxpos.max(other.maxpos);
         }
     }
+
     /// Create intersection with other box
     void intersect(const box_t& other)
     {
@@ -108,6 +113,7 @@ class box_t
             }
         }
     }
+
     /// Get translated version
     box_t<D> translated(const vector3t<D>& v) const
     {

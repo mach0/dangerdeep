@@ -42,13 +42,16 @@ class bv_tree
             invalid_index,
             invalid_index,
             invalid_index};
+
         spheref volume;
         bool is_leaf() const { return tri_idx[2] != invalid_index; }
+
         const vector3f&
         get_pos(const std::vector<vector3f>& vertices, unsigned corner) const
         {
             return vertices[tri_idx[corner]];
         }
+
         vector3f get_center(const std::vector<vector3f>& vertices) const
         {
             return (get_pos(vertices, 0) + get_pos(vertices, 1)
@@ -62,13 +65,17 @@ class bv_tree
     {
         const bv_tree& tree; ///< The tree to work on
         unsigned node_index; ///< index of tree node
+
         const std::vector<vector3f>&
             vertices;       ///< vertex data to use for collision tests
         matrix4f transform; ///< Transformation to use for tree
+
         /// return the node for the subtree
         const node& get_node() const { return tree.nodes[node_index]; }
+
         /// Is this a leaf node?
         bool is_leaf() const { return get_node().is_leaf(); }
+
         /// Create param from whole bv tree
         param(
             const bv_tree& t,
@@ -79,6 +86,7 @@ class bv_tree
         {
             node_index = unsigned(tree.nodes.size() - 1);
         }
+
         /// Create param with node index
         param(
             const bv_tree& t,
@@ -89,12 +97,14 @@ class bv_tree
             node_index(ni), vertices(v), transform(std::move(m))
         {
         }
+
         /// Get subnode param
         param children(unsigned i) const
         {
             auto& current_node = get_node();
             return param(tree, current_node.tri_idx[i], vertices, transform);
         }
+
         /// Get transformed volume
         spheref get_transformed_volume() const
         {
@@ -103,6 +113,7 @@ class bv_tree
                 transform.mul4vec3xlat(current_node.volume.center),
                 current_node.volume.radius);
         }
+
         /// Determine which child is closer
         unsigned get_index_of_closer_child(const vector3f& pos) const
         {
@@ -111,10 +122,13 @@ class bv_tree
             {
                 return 2; // invalid index
             }
+
             vector3f cp0 = transform.mul4vec3xlat(
                 tree.nodes[current_node.tri_idx[0]].volume.center);
+
             vector3f cp1 = transform.mul4vec3xlat(
                 tree.nodes[current_node.tri_idx[1]].volume.center);
+
             return (cp0.square_distance(pos) < cp1.square_distance(pos)) ? 0
                                                                          : 1;
         }
