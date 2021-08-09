@@ -132,6 +132,7 @@ void rigid_body::compute_helper_values()
     local_velocity = velocity.rotate(orientation.conj());
 
     heading = angle(orientation.rotate(0.0, 1.0, 0.0).xy());
+
     // w is _old_ spin vector, but we need the new one...
     // does it make a large difference?
     // |w| is revolutions per time, thus 2*Pi/second for |w|=1.
@@ -146,9 +147,11 @@ void rigid_body::compute_helper_values()
     velocity3d w =
         (inertia_tensor_inv * angular_momentum.rotate(orientation.conj()))
         / mass;
+
     // turn velocity around z-axis is projection of w to z-axis, that is
     // simply w.z. Transform to angles per second. same for x/y.
     auto av       = w.value * (180.0 / constant::PI);
+
     turn_velocity = angular_velocity(av.z); // could also be named yaw_velocity.
     pitch_velocity = angular_velocity(av.x);
     roll_velocity  = angular_velocity(av.y);
@@ -160,6 +163,7 @@ void rigid_body::load(const xml_elem& parent)
     parent.child("orientation").get_attr(orientation);
     parent.child("linear_momentum").get_attr(linear_momentum.value);
     parent.child("angular_momentum").get_attr(angular_momentum.value);
+
     compute_helper_values();
 }
 
@@ -208,15 +212,20 @@ void rigid_body::simulate(
         (inertia_tensor_inv * angular_momentum.rotate(orientation.conj()))
             .rotate(orientation)
         / mass;
+
     const vector3 w2 = w * delta_time;
+
     // unit of |w| is revolutions per time, that is 2*Pi/second.
     const double w2l = w2.length();
+
     if (w2l > 1e-8)
     {
         // avoid too small numbers
         const quaternion q = quaternion::rot_rad(w2l, w2 * (1.0 / w2l));
+
         // multiply orientation with q: combined rotation.
         orientation = q * orientation;
+
         // we should renormalize orientation regularly, to avoid that
         // orientation isn't a valid rotation after many changes.
         if (std::abs(orientation.square_length() - 1.0) > 1e-8)
@@ -239,6 +248,7 @@ void rigid_body::simulate(
 {
     vector3 local_force;
     vector3 local_torque;
+
     for (const auto& data : local_forces)
     {
         // just sum of all forces for total force
@@ -246,6 +256,7 @@ void rigid_body::simulate(
         // relative position cross force
         local_torque += data.first.cross(data.second);
     }
+
     simulate(
         delta_time,
         orientation.rotate(local_force),
@@ -262,6 +273,7 @@ rigid_body::compute_linear_velocity(const vector3& position_global) const
         (inertia_tensor_inv * angular_momentum.rotate(orientation.conj()))
             .rotate(orientation)
         / mass;
+
     return velocity + w.cross(position_global - position);
 }
 
@@ -273,6 +285,7 @@ double rigid_body::compute_collision_response_value(
     // WTF is N and what is this formula about? some force acting locally gives
     // force/torque. why not apply collision force?!
     const vector3 relative_position = collision_pos - position;
+
     return (N
             * orientation
                   .rotate(

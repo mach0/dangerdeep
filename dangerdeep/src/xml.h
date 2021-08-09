@@ -219,7 +219,7 @@ class xml_doc
     std::unique_ptr<TiXmlDocument> doc;
 
   public:
-    xml_doc(std::string fn);
+    xml_doc(const std::string &fn);
     ~xml_doc();
 
     void load();

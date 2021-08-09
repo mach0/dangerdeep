@@ -56,6 +56,7 @@ bool triangulate::is_inside_triangle(
 {
     double s, t;
     bool solved = (p - a).solve(b - a, c - a, s, t);
+
     if (!solved)
         return true;
     return (s >= 0 && t >= 0 && s <= 1 && t <= 1 && s + t <= 1);
@@ -68,9 +69,12 @@ int failcount = 0;
 vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
 {
     vector<unsigned> indices;
+
     if (vertices.size() < 3)
         return indices; // error!
+
     indices.reserve(3 * vertices.size());
+
     // fixme: use a vector and mark entries as "erased" (-1)
     // next then steps over erased entries.
     // count number of valid entries separately.
@@ -79,16 +83,21 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
     // triangulation then fails some times...
     vector<unsigned> vl;
     vl.reserve(vertices.size());
+
     auto vl_size = vertices.size();
+
     for (unsigned l = 0; l < vertices.size(); ++l)
         vl.push_back(l);
+
     unsigned i0 = 0;
     unsigned i1 = 1;
     unsigned i2 = 2;
+
     // fixme: 2004/02/14, with the new map the lockups reoccour. why?!
     int iscorrecttests   = 0;
     int notriangpossible = 0;
     int polyscreated     = 0;
+
     int haengt =
         0; // fixme: hack to avoid lock ups. why do they occour? reasons maybe:
            // 1) there are double points in the input, that means polygon edges
@@ -100,6 +109,7 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
            // the polygon's AREA is triangulated, but b,c are on line a-d. ->
            // change is_inside test, what about epsilon?! AVOIDED, FIXED check
            // these cases (1,2)
+
     while (vl_size > 3)
     {
         ++haengt;
@@ -107,29 +117,39 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
         {
             cout << "TRIANGULATE: LOCKUP DETECTED! (" << polyscreated << ","
                  << iscorrecttests << "," << notriangpossible << ")\n";
+
             ostringstream oss;
             oss << "failed_triang_" << failcount++ << ".off";
-            ofstream out(oss.str().c_str());
-            auto vs = unsigned(vertices.size());
+
+            ofstream out(oss.str().c_str());          
+            auto vs = unsigned(vertices.size());          
             out << "OFF\n" << vs + 1 << " " << vs << " 0\n";
+
             vector2 median;
             double dist2median = 0;
+
             for (unsigned i = 0; i < vs; ++i)
             {
                 out << vertices[i].x << " " << vertices[i].y << " 0.0\n";
                 median += vertices[i];
             }
+
             median = median * (1.0f / vs);
+
             for (unsigned i = 0; i < vs; ++i)
             {
                 dist2median += median.distance(vertices[i]);
             }
+
             out << median.x << " " << median.y << " " << (2 * dist2median / vs)
                 << "\n";
+
             for (unsigned i = 0; i < vs; ++i)
                 out << "3 " << i << " " << vs << " " << (i + 1) % vs << "\n";
+
             return indices;
         }
+
         if (!is_correct_triangle(vertices[i0], vertices[i1], vertices[i2]))
         {
             ++iscorrecttests;
@@ -138,23 +158,29 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
             i2 = next(vl, i2);
             continue;
         }
+
         unsigned i3 = next(vl, i2);
+
         for (; i3 != i0; i3 = next(vl, i3))
         {
             if (is_inside_triangle(
                     vertices[i0], vertices[i1], vertices[i2], vertices[i3]))
                 break;
         }
+
         if (i3 == i0)
         {
             ++polyscreated;
             indices.push_back(i0);
             indices.push_back(i1);
             indices.push_back(i2);
+
             //			cout << "TRI: adding triangle " << i0 << "/" << i1 << "/"
             //<< i2 << "\n";
             vl[i1] = unsigned(-1);
+
             --vl_size;
+
             i1 = i2;
             i2 = next(vl, i2);
         }
@@ -166,11 +192,13 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
             i2 = next(vl, i2);
         }
     }
+
     // add remaining triangle
     // fixme: wird letztes dreieck eingefuegt, aber es ist nicht ccw????
     indices.push_back(i0);
     indices.push_back(i1);
     indices.push_back(i2);
+
     //	cout << "TRI: adding triangle " << i0 << "/" << i1 << "/" << i2 << "\n";
     return indices;
 }
@@ -196,10 +224,12 @@ void triangulate::debug_test(
     int nfaces = int(idx.size()) / 3;
     ofstream out(outputfile.c_str());
     out << "OFF\n" << nverts << " " << nfaces << " 0\n";
+
     for (int i = 0; i < nverts; ++i)
     {
         out << vertices[i].x << " " << vertices[i].y << " 0.0\n";
     }
+
     for (int i = 0; i < nfaces; ++i)
     {
         out << "3 " << idx[i * 3 + 0] << " " << idx[i * 3 + 1] << " "

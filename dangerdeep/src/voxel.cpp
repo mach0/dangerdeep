@@ -40,15 +40,20 @@ voxel::voxel(const vector3f& rp, float pv, float m, float rv) :
 void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
 {
     voxel_resolution = vector3i(ve.attri("x"), ve.attri("y"), ve.attri("z"));
-    unsigned nrvoxels =
+
+    const auto nrvoxels =
         voxel_resolution.x * voxel_resolution.y * voxel_resolution.z;
+
     voxels.reserve(ve.attru("innr"));
+
     std::vector<float> insidevol(nrvoxels);
     std::istringstream iss3(ve.child_text());
+
     for (unsigned k = 0; k < nrvoxels; ++k)
     {
         iss3 >> insidevol[k];
     }
+
     if (iss3.fail())
         THROW(
             file_context_error,
@@ -56,14 +61,17 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
             ve.doc_name());
 
     std::vector<float> massdistri;
+
     if (ve.has_child("mass-distribution"))
     {
         std::istringstream iss4(ve.child("mass-distribution").child_text());
         massdistri.resize(nrvoxels);
+
         for (unsigned k = 0; k < nrvoxels; ++k)
         {
             iss4 >> massdistri[k];
         }
+
         if (iss4.fail())
             THROW(
                 file_context_error,
@@ -71,38 +79,49 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
                 ve.doc_name());
     }
 
-    auto bsize = bbox.size();
-    auto& bmin = bbox.minpos;
+    const auto& bsize = bbox.size();
+    const auto& bmin  = bbox.minpos;
+
     voxel_size = vector3f(
         bsize.x / voxel_resolution.x,
         bsize.y / voxel_resolution.y,
         bsize.z / voxel_resolution.z);
-    double voxel_volume    = voxel_size.x * voxel_size.y * voxel_size.z;
+
+    const double voxel_volume = voxel_size.x * voxel_size.y * voxel_size.z;
+
     total_volume_by_voxels = ve.attrf("invol") * voxel_volume;
-    voxel_radius           = float(
+
+    voxel_radius = float(
         pow(voxel_volume * 3.0 / (4.0 * constant::PI),
             1.0 / 3)); // sphere of same volume
-    unsigned ptr        = 0;
-    float mass_part_sum = 0;
-    double volume_rcp   = 1.0 / volume;
+
+    auto ptr              = 0;
+    float mass_part_sum   = 0;
+    const auto volume_rcp = 1.0 / volume;
+
     voxel_index_by_pos.resize(
         voxel_resolution.x * voxel_resolution.y * voxel_resolution.z, -1);
+
     for (int izz = 0; izz < voxel_resolution.z; ++izz)
     {
         // quick test hack, linear distribution top->down 0->1
         float mass_part =
             (voxel_resolution.z - izz) / float(voxel_resolution.z);
+
         for (int iyy = 0; iyy < voxel_resolution.y; ++iyy)
         {
             for (int ixx = 0; ixx < voxel_resolution.x; ++ixx)
             {
                 float f = insidevol[ptr];
+
                 if (f >= 1.0f / 255.0f)
                 {
                     voxel_index_by_pos[ptr] = int(voxels.size());
                     float m                 = f * mass_part;
+
                     if (!massdistri.empty())
                         m = massdistri[ptr];
+
                     voxels.emplace_back(
                         vector3f(vector3(
                             ixx + 0.5 + bmin.x / voxel_size.x,
@@ -111,23 +130,27 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
                         f,
                         m,
                         float(f * voxel_volume * volume_rcp));
+
                     mass_part_sum += m;
                 }
                 ++ptr;
             }
         }
     }
+
     // renormalize mass parts
     if (massdistri.empty())
     {
         for (auto& elem : voxels)
             elem.relative_mass /= mass_part_sum;
     }
+
     // compute neighbouring information
     ptr       = 0;
     int dx[6] = {0, -1, 0, 1, 0, 0};
     int dy[6] = {0, 0, 1, 0, -1, 0};
     int dz[6] = {1, 0, 0, 0, 0, -1};
+
     for (int izz = 0; izz < voxel_resolution.z; ++izz)
     {
         for (int iyy = 0; iyy < voxel_resolution.y; ++iyy)
@@ -135,6 +158,7 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
             for (int ixx = 0; ixx < voxel_resolution.x; ++ixx)
             {
                 int revvi = voxel_index_by_pos[ptr];
+
                 if (revvi >= 0)
                 {
                     // there is a voxel at that position
@@ -143,6 +167,7 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
                         int nx = ixx + dx[k];
                         int ny = iyy + dy[k];
                         int nz = izz + dz[k];
+
                         if (nx >= 0 && ny >= 0 && nz >= 0
                             && nx < voxel_resolution.x
                             && ny < voxel_resolution.y

@@ -124,13 +124,16 @@ class ai
     types type;
     states state;
     unsigned zigzagstate;
+
     bool attackrun; // true when running full speed shortly before the attack
     bool evasive_manouver;    // true when set_course tries an alternative route
     double rem_manouver_time; // remaining time that ai should wait for during
                               // an evasive manouver
+
     sea_object_id followme;   // could be a sea_object instead of ship?
     sea_object_id myconvoy;   // convoy to which parent belongs (if any)
     bool has_contact;
+
     vector3 contact;       // position of target to attack
     double remaining_time; // time to next thought/situation analysis
     angle main_course;     // which angle to steer, ship zig-zags around it.

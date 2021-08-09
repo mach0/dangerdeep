@@ -64,6 +64,7 @@ const std::string& xml_elem::doc_name() const
             xml_error,
             std::string("can't get document name for node ") + elem->ValueStr(),
             "???");
+
     return doc->ValueStr();
 }
 
@@ -153,6 +154,7 @@ void xml_elem::set_attr(double f, const std::string& name)
     // we could change ostringstream's format, but for what? this is easier...
     char tmp[64];
     int l = snprintf(tmp, 64, "%f", f);
+
     // strip unneeded zeros at end.
     for (int i = l - 1; i >= 0; --i)
     {
@@ -252,7 +254,7 @@ xml_elem::iterator& xml_elem::iterator::operator++()
     return *this;
 }
 
-xml_doc::xml_doc(std::string fn) : doc(new TiXmlDocument(fn)) { }
+xml_doc::xml_doc(const std::string& fn) : doc(new TiXmlDocument(fn)) { }
 
 xml_doc::~xml_doc()
 {
