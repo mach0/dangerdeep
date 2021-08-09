@@ -133,7 +133,8 @@ class mesh
     auto normal(triangle_index ti) const
     {
         return normal(
-            position(vertex(ti, 0)), position(vertex(ti, 1)),
+            position(vertex(ti, 0)),
+            position(vertex(ti, 1)),
             position(vertex(ti, 2)));
     }
 
@@ -151,7 +152,9 @@ class mesh
     std::pair<mesh, mesh> split(const plane& p) const;
 
     void smooth_positions(
-        unsigned num_iterations, float lambda, bool keep_border = true);
+        unsigned num_iterations,
+        float lambda,
+        bool keep_border = true);
 
     /// check if a given point is inside the mesh
     ///@param p - point in vertex space, transformation not applied
@@ -203,9 +206,11 @@ class mesh
     }
 
     void for_all_adjacent_vertices(
-        vertex_index vtx, const std::function<void(vertex_index)>& func);
+        vertex_index vtx,
+        const std::function<void(vertex_index)>& func);
     void for_all_adjacent_triangles(
-        vertex_index vtx, const std::function<void(triangle_index)>& func);
+        vertex_index vtx,
+        const std::function<void(triangle_index)>& func);
 
     void compute_bv_tree();
     /// return whether the mesh has a bounding volume tree computed
@@ -214,11 +219,14 @@ class mesh
 
     /// slow intersection test on triangle-triangle tests
     bool intersects(
-        const mesh& other, const matrix4f& transformation_this_to_other) const;
+        const mesh& other,
+        const matrix4f& transformation_this_to_other) const;
 
     /// check wether a triangle is degenerated
     static bool is_degenerated(
-        const vector3f& v0, const vector3f& v1, const vector3f& v2,
+        const vector3f& v0,
+        const vector3f& v1,
+        const vector3f& v2,
         const float eps = 1e-3f);
 
     unsigned compute_tri_strip_size() const;
@@ -258,4 +266,3 @@ class mesh
     unsigned material_id; ///< optionally a mesh can have a material assigned,
                           ///< stored as an ID.
 };
-

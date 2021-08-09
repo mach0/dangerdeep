@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <iostream>
 
 // helper functions
-template <class D, unsigned size>
+template<class D, unsigned size>
 void matrix_swap_rows(D* values, unsigned r1, unsigned r2)
 {
     for (unsigned i = 0; i < size; ++i)
@@ -39,7 +39,7 @@ void matrix_swap_rows(D* values, unsigned r1, unsigned r2)
     }
 }
 
-template <class D, unsigned size>
+template<class D, unsigned size>
 void matrix_columnpivot(D* values, unsigned p[], unsigned offset)
 {
     // find largest entry
@@ -66,7 +66,8 @@ void matrix_columnpivot(D* values, unsigned p[], unsigned offset)
     }
 }
 
-template <class D, unsigned size> void matrix_invert(D* values)
+template<class D, unsigned size>
+void matrix_invert(D* values)
 {
     unsigned i, j, k;
 
@@ -153,7 +154,8 @@ template <class D, unsigned size> void matrix_invert(D* values)
 }
 
 ///\brief This class represents a generic NxN matrix.
-template <class D, unsigned size> class matrixt
+template<class D, unsigned size>
+class matrixt
 {
   protected:
     // use array, as it is more efficient here than vector, because
@@ -178,7 +180,8 @@ template <class D, unsigned size> class matrixt
 
     /// construct NxN matrix from one with different template type but same
     /// dimension
-    template <class E> matrixt(const matrixt<E, size>& other)
+    template<class E>
+    matrixt(const matrixt<E, size>& other)
     {
         for (unsigned i = 0; i < size; ++i)
         {
@@ -312,4 +315,3 @@ template <class D, unsigned size> class matrixt
         return vector4t<D>(r[0], r[1], r[2], r[3]);
     }
 };
-

@@ -43,4 +43,3 @@ class logbook_display : public user_display
     void next_page();
     void previous_page();
 };
-

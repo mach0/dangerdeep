@@ -55,7 +55,12 @@ vector3f vec(int vi)
 }
 
 void quadface(
-    model::mesh* m, unsigned bv, float uscal, float vscal, bool out, int ni,
+    model::mesh* m,
+    unsigned bv,
+    float uscal,
+    float vscal,
+    bool out,
+    int ni,
     int ti)
 {
     unsigned bi = (bv / 4) * 6;
@@ -92,7 +97,12 @@ void quadface(
 }
 
 model::mesh* cube(
-    float w, float l, float h, float uscal, float vscal, bool out,
+    float w,
+    float l,
+    float h,
+    float uscal,
+    float vscal,
+    bool out,
     const string& name)
 {
     auto* m = new model::mesh("cube");
@@ -122,8 +132,14 @@ model::mesh* cube(
 }
 
 model::mesh* sphere(
-    float radius, float height, unsigned slices, unsigned stacks, float uscal,
-    float vscal, bool out, const string& name)
+    float radius,
+    float height,
+    unsigned slices,
+    unsigned stacks,
+    float uscal,
+    float vscal,
+    bool out,
+    const string& name)
 {
     if (slices < 3)
         slices = 3;
@@ -208,7 +224,12 @@ model::mesh* sphere(
 }
 
 model::mesh* cylinder(
-    float r, float h, unsigned rsegs, float uscal, float vscal, bool cap,
+    float r,
+    float h,
+    unsigned rsegs,
+    float uscal,
+    float vscal,
+    bool cap,
     bool out, // fixme: out seems to be ignored!
     const string& name)
 {
@@ -216,8 +237,15 @@ model::mesh* cylinder(
 }
 
 model::mesh* cone(
-    float r0, float r1, float h, unsigned rsegs, float uscal, float vscal,
-    bool cap, bool out, const string& name)
+    float r0,
+    float r1,
+    float h,
+    unsigned rsegs,
+    float uscal,
+    float vscal,
+    bool cap,
+    bool out,
+    const string& name)
 {
     // fixme: out?, fixme cap map falsch, rest auch checken
     if (rsegs < 3)
@@ -317,8 +345,14 @@ model::mesh* cone(
 }
 
 model::mesh* torus(
-    float outerr, float innerr, unsigned outerrsegs, unsigned innerrsegs,
-    float uscal, float vscal, bool out, const string& name)
+    float outerr,
+    float innerr,
+    unsigned outerrsegs,
+    unsigned innerrsegs,
+    float uscal,
+    float vscal,
+    bool out,
+    const string& name)
 {
     if (outerrsegs < 3)
         outerrsegs = 3;
@@ -383,8 +417,15 @@ model::mesh part_of_torus(float outerr, float innerr,
 */
 
 model::mesh* heightfield(
-    unsigned resx, unsigned resy, const vector<uint8_t>& heights, float xscal,
-    float yscal, float zscal, float xnoise, float ynoise, float znoise,
+    unsigned resx,
+    unsigned resy,
+    const vector<uint8_t>& heights,
+    float xscal,
+    float yscal,
+    float zscal,
+    float xnoise,
+    float ynoise,
+    float znoise,
     const string& name)
 {
     if (resx < 2 || resy < 2 || heights.size() != resx * resy)

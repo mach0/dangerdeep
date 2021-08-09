@@ -44,7 +44,9 @@ class depth_charge : public sea_object
     depth_charge() = default;
     depth_charge(game& gm_); // for loading
     depth_charge(
-        game& gm_, double expl_depth, const vector3& pos); // for creation
+        game& gm_,
+        double expl_depth,
+        const vector3& pos); // for creation
 
     void load(const xml_elem& parent) override;
     void save(xml_elem& parent) const override;
@@ -53,4 +55,3 @@ class depth_charge : public sea_object
     void
     compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 };
-

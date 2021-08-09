@@ -97,7 +97,9 @@ void sensor::auto_move_bearing(sensor_move_mode mode)
 lookout_sensor::lookout_sensor(lookout_type type) : sensor() { }
 
 bool lookout_sensor::is_detected(
-    const game* gm, const sea_object* d, const sea_object* t) const
+    const game* gm,
+    const sea_object* d,
+    const sea_object* t) const
 {
     bool detected        = false;
     double max_view_dist = gm->get_max_view_distance();
@@ -154,7 +156,9 @@ bool lookout_sensor::is_detected(
 }
 
 bool lookout_sensor::is_detected(
-    const game* gm, const sea_object* d, const particle* p) const
+    const game* gm,
+    const sea_object* d,
+    const particle* p) const
 {
     bool detected        = false;
     double max_view_dist = gm->get_max_view_distance();
@@ -208,7 +212,9 @@ void passive_sonar_sensor::init(passive_sonar_type type)
 }
 
 bool passive_sonar_sensor::is_detected(
-    double& sound_level, const game* gm, const sea_object* d,
+    double& sound_level,
+    const game* gm,
+    const sea_object* d,
     const sea_object* t) const
 {
     bool detected = false;
@@ -247,7 +253,9 @@ bool passive_sonar_sensor::is_detected(
 }
 
 bool passive_sonar_sensor::is_detected(
-    const game* gm, const sea_object* d, const sea_object* t) const
+    const game* gm,
+    const sea_object* d,
+    const sea_object* t) const
 {
     double sound_level;
 
@@ -272,7 +280,10 @@ double active_sensor::get_distance_factor(double d) const
 }
 
 // Class radar_rensor
-radar_sensor::radar_sensor(radar_type type) : active_sensor() { init(type); }
+radar_sensor::radar_sensor(radar_type type) : active_sensor()
+{
+    init(type);
+}
 
 void radar_sensor::init(radar_type type)
 {
@@ -311,7 +322,9 @@ void radar_sensor::init(radar_type type)
 }
 
 bool radar_sensor::is_detected(
-    const game* gm, const sea_object* d, const sea_object* t) const
+    const game* gm,
+    const sea_object* d,
+    const sea_object* t) const
 {
     if (!t)
         return false; // should not happen
@@ -359,7 +372,9 @@ void active_sonar_sensor::init(active_sonar_type type)
 }
 
 bool active_sonar_sensor::is_detected(
-    const game* gm, const sea_object* d, const sea_object* t) const
+    const game* gm,
+    const sea_object* d,
+    const sea_object* t) const
 {
     bool detected = false;
 

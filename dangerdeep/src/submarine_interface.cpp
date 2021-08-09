@@ -138,8 +138,8 @@ submarine_interface::submarine_interface(game& gm) :
     // longest text of the buttons.
     // 	int maxs = 0;
     // 	for (unsigned i = 247; i <= 260; ++i)
-    // 		maxs = std::max(widget::get_theme()->myfont->get_size(texts::get(i)).x,
-    // maxs);
+    // 		maxs =
+    // std::max(widget::get_theme()->myfont->get_size(texts::get(i)).x, maxs);
     auto screen_selector_menu = std::make_unique<widget_menu>(
         0, 0, /*maxs + 16*/ 256, 32, texts::get(247));
     screen_selector_menu->set_entry_spacing(0);
@@ -830,7 +830,10 @@ void submarine_interface::goto_bridge()
     }
 }
 
-void submarine_interface::goto_map() { set_current_display(display_mode_map); }
+void submarine_interface::goto_map()
+{
+    set_current_display(display_mode_map);
+}
 
 void submarine_interface::goto_torpedomanagement()
 {
@@ -872,7 +875,10 @@ void submarine_interface::goto_freeview()
     set_current_display(display_mode_freeview);
 }
 
-void submarine_interface::goto_TDC() { set_current_display(display_mode_tdc); }
+void submarine_interface::goto_TDC()
+{
+    set_current_display(display_mode_tdc);
+}
 
 void submarine_interface::goto_TDC2()
 {

@@ -49,7 +49,10 @@ i,i+1,i+2, remove p_i+1 from point list else i:=i+1 (rotate list) end
 */
 
 bool triangulate::is_inside_triangle(
-    const vector2& a, const vector2& b, const vector2& c, const vector2& p)
+    const vector2& a,
+    const vector2& b,
+    const vector2& c,
+    const vector2& p)
 {
     double s, t;
     bool solved = (p - a).solve(b - a, c - a, s, t);
@@ -148,8 +151,8 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
             indices.push_back(i0);
             indices.push_back(i1);
             indices.push_back(i2);
-            //			cout << "TRI: adding triangle " << i0 << "/" << i1 << "/" <<
-            //i2 << "\n";
+            //			cout << "TRI: adding triangle " << i0 << "/" << i1 << "/"
+            //<< i2 << "\n";
             vl[i1] = unsigned(-1);
             --vl_size;
             i1 = i2;
@@ -174,7 +177,8 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
 
 #include <fstream>
 void triangulate::debug_test(
-    const vector<vector2>& vertices, const string& outputfile)
+    const vector<vector2>& vertices,
+    const string& outputfile)
 {
     cout << "testing in \"" << outputfile << "\"\n";
     int nverts           = int(vertices.size());

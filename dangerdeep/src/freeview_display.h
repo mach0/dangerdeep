@@ -66,9 +66,11 @@ class freeview_display : public user_display
 
     // draw all sea_objects
     virtual void draw_objects(
-        class game& gm, const vector3& viewpos,
+        class game& gm,
+        const vector3& viewpos,
         const std::vector<const sea_object*>& objects,
-        const colorf& light_color, const bool underwater,
+        const colorf& light_color,
+        const bool underwater,
         bool mirrorclip) const;
 
     // draw the whole view
@@ -88,4 +90,3 @@ class freeview_display : public user_display
     bool handle_mouse_motion_event(const mouse_motion_data&) override;
     bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 };
-

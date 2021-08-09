@@ -86,8 +86,11 @@ void ship::generic_rudder::save(xml_elem& parent) const
 }
 
 double ship::generic_rudder::compute_force_and_torque(
-    vector3& F, vector3& T, const vector3& parent_local_velocity,
-    const double& water_density, const double& flow_force) const
+    vector3& F,
+    vector3& T,
+    const vector3& parent_local_velocity,
+    const double& water_density,
+    const double& flow_force) const
 {
     double s = parent_local_velocity.y;
     double force =
@@ -168,7 +171,10 @@ void ship::fill_dist_angle_relation_map(const double initial_velocity)
 ship::ship(game& gm_, const xml_elem& parent) :
     sea_object(gm_, parent), tonnage(0), throttle(0),
     rudder(
-        vector3(0, -30, 0 /*not used yet*/), 0, 40, 4 /*area*/,
+        vector3(0, -30, 0 /*not used yet*/),
+        0,
+        40,
+        4 /*area*/,
         10), // read consts from spec file, fixme
     head_to_fixed(HEAD_TO_UNDEFINED), max_accel_forward(1),
     max_speed_forward(10), max_speed_reverse(0), stern_damage(nodamage),
@@ -338,7 +344,10 @@ void ship::set_rudder(double to)
     head_to_fixed = HEAD_TO_UNDEFINED;
 }
 
-void ship::set_throttle(int thr) { throttle = thr; }
+void ship::set_throttle(int thr)
+{
+    throttle = thr;
+}
 
 void ship::remember_position(double t)
 {
@@ -429,7 +438,8 @@ pair<angle, double> ship::bearing_and_range_to(const sea_object* other) const
 }
 
 angle ship::estimate_angle_on_the_bow(
-    angle target_bearing, angle target_heading) const
+    angle target_bearing,
+    angle target_heading) const
 {
     return (angle(180) + target_bearing - target_heading).value_pm180();
 }
@@ -1027,8 +1037,8 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
             vector3 lift_torque = p.cross(vector3(0, 0, lift_force));
             dr_torque += lift_torque;
             // std::cout << "i=" << i << " subm=" << submerged_part << " vdw="
-            // << voxel_data[i].part_of_volume << " lift_force=" << lift_force <<
-            // " lift_torque=" << lift_torque << "\n";
+            // << voxel_data[i].part_of_volume << " lift_force=" << lift_force
+            // << " lift_torque=" << lift_torque << "\n";
         }
         double relative_gravity_force =
             gravity_force * voxel_data[i].relative_mass;
@@ -1040,7 +1050,7 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
     }
     //	std::cout << "mass=" << mass << " lift_force_sum=" << lift_force_sum <<
     //" grav=" << -constant::GRAVITY*mass << "\n"; 	std::cout << "vol below
-    //water=" << vol_below_water << " of " << voxel_data.size() << "\n";
+    // water=" << vol_below_water << " of " << voxel_data.size() << "\n";
     // DBGOUT3(debug_liftforcesum,debug_gravityforcesum,mass);
 
     // fixme: torpedoes MUST NOT be affected by tide.
@@ -1060,10 +1070,10 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
     // fixme 2004/07/18: the drag is too small. engine stop -> the ship slows
     // down but to slowly, especially on low speeds. it would take a LONG time
     // until it comes to an halt. compute max_accel_forward from mass and engine
-    // power to have a rough guess. in general: Power/(rpm * screw_radius * mass)
-    // = accel Power: engine Power (kWatts), rpm (screw turns per second), mass
-    // (ship's mass) SubVIIc: ~3500kW, rad=0.5m, rpm=2 (?), mass=750000kg ->
-    // acc=4,666. a bit much...
+    // power to have a rough guess. in general: Power/(rpm * screw_radius *
+    // mass) = accel Power: engine Power (kWatts), rpm (screw turns per second),
+    // mass (ship's mass) SubVIIc: ~3500kW, rad=0.5m, rpm=2 (?), mass=750000kg
+    // -> acc=4,666. a bit much...
     vector3 local_velocity2 = local_velocity.coeff_mul(local_velocity.abs());
 
     // fixme: add linear drag caused by hull skin friction here!
@@ -1144,7 +1154,8 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
     const vector3 L(size3d.y * 0.5, size3d.x * 0.5, size3d.y * 0.5);
     // fixme: size3d.xyz is not always symmetric...
     const vector3 area(
-        size3d.x * size3d.y * 0.25, size3d.x * size3d.y * 1.0,
+        size3d.x * size3d.y * 0.25,
+        size3d.x * size3d.y * 1.0,
         get_turn_drag_area());
     // local_torque is drag_torque
     // fixme without that 80 drag is too low, not only turn drag,
@@ -1225,11 +1236,12 @@ ship::gun_status ship::fire_shell_at(const vector2& pos, game& gm)
                                 //	select new angle, fire.
                                 //	use an extra bit of correction for wind etc.
                                 //	to do that, we need to know where the last
-                                //shot impacted!
+                                // shot impacted!
                                 angle elevation;
                                 if (true
                                     == calculate_gun_angle(
-                                        distance, elevation,
+                                        distance,
+                                        elevation,
                                         gun_turret->initial_velocity))
                                 {
                                     if (elevation.value()
@@ -1251,10 +1263,13 @@ ship::gun_status ship::fire_shell_at(const vector2& pos, game& gm)
                                         // surface collisions
                                         // fixme need to add event with caliber!
                                         gm.spawn(gun_shell(
-                                            gm, get_pos() + vector3(0, 0, 4),
-                                            direction, elevation,
+                                            gm,
+                                            get_pos() + vector3(0, 0, 4),
+                                            direction,
+                                            elevation,
                                             gun->initial_velocity,
-                                            gun->shell_damage, gun->calibre));
+                                            gun->shell_damage,
+                                            gun->calibre));
                                         gun->num_shells_remaining--;
                                         gun_barrel->load_time_remaining =
                                             GUN_RELOAD_TIME;
@@ -1335,7 +1350,8 @@ bool ship::unman_guns()
 // the gun cannot aim (i.e. on a sub this would usually be the area directly
 // behind the gun where the conning tower is, you can't shoot through that).
 bool ship::is_target_in_blindspot(
-    const struct gun_turret* gun, angle bearingToTarget)
+    const struct gun_turret* gun,
+    angle bearingToTarget)
 {
     bool isInBlindSpot = false;
 
@@ -1372,10 +1388,15 @@ long ship::num_shells_remaining()
     return numShells;
 }
 
-bool ship::is_gun_manned() { return gun_turrets.begin()->is_gun_manned; }
+bool ship::is_gun_manned()
+{
+    return gun_turrets.begin()->is_gun_manned;
+}
 
 bool ship::calculate_gun_angle(
-    const double distance, angle& elevation, const double initial_velocity)
+    const double distance,
+    angle& elevation,
+    const double initial_velocity)
 {
     bool withinRange = false;
 

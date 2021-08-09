@@ -57,7 +57,7 @@ class message
 
     /// evaluate the message. Do not overload!
     ///@note Method is <b>not</b> virtual by intent. Do <b>not</b> overload. use
-    ///eval() instead.
+    /// eval() instead.
     void evaluate() const;
 
     /// get result of evaluation
@@ -91,7 +91,7 @@ class message_queue
     /// send a message
     ///@param msg - message to send
     ///@param waitforanswer - true to send message synchronously (wait for reply
-    ///with result)
+    /// with result)
     ///@return result of answer or true when message is asynchronous
     bool send(message::ptr msg, bool waitforanswer = true);
 
@@ -100,7 +100,7 @@ class message_queue
 
     /// wait for a messages
     ///@param wait - if true block while queue is empty, if false only test and
-    ///do not block
+    /// do not block
     ///@return list of messages
     std::vector<message::ptr> receive(bool wait = true);
 
@@ -113,4 +113,3 @@ class message_queue
     ///@param wait - true: block if queue is empty
     void process_messages(bool wait = true);
 };
-

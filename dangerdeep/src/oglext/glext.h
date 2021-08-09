@@ -206,9 +206,20 @@ extern "C"
     GLAPI GLvoid glColorTableParameterfv(GLenum, GLenum, GLfloat const*);
     GLAPI GLvoid glColorTableParameteriv(GLenum, GLenum, GLint const*);
     GLAPI GLvoid glConvolutionFilter1D(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glConvolutionFilter2D(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glConvolutionParameterf(GLenum, GLenum, GLfloat);
     GLAPI GLvoid glConvolutionParameterfv(GLenum, GLenum, GLfloat const*);
     GLAPI GLvoid glConvolutionParameteri(GLenum, GLenum, GLint);
@@ -218,9 +229,22 @@ extern "C"
     GLAPI
     GLvoid glCopyConvolutionFilter1D(GLenum, GLenum, GLint, GLint, GLsizei);
     GLAPI GLvoid glCopyConvolutionFilter2D(
-        GLenum, GLenum, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLAPI GLvoid glCopyTexSubImage3D(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLAPI GLvoid
     glDrawRangeElements(GLenum, GLuint, GLuint, GLsizei, GLenum, GLvoid const*);
     GLAPI GLvoid glGetColorTable(GLenum, GLenum, GLenum, GLvoid*);
@@ -242,14 +266,37 @@ extern "C"
     GLAPI GLvoid glResetHistogram(GLenum);
     GLAPI GLvoid glResetMinmax(GLenum);
     GLAPI GLvoid glSeparableFilter2D(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
         GLvoid const*);
     GLAPI GLvoid glTexImage3D(
-        GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
         GLvoid const*);
     GLAPI GLvoid glTexSubImage3D(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -431,20 +478,62 @@ extern "C"
     GLAPI GLvoid glActiveTexture(GLenum);
     GLAPI GLvoid glClientActiveTexture(GLenum);
     GLAPI GLvoid glCompressedTexImage1D(
-        GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexImage2D(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexImage3D(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage1D(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage2D(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
         GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage3D(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glGetCompressedTexImage(GLenum, GLint, GLvoid*);
     GLAPI GLvoid glLoadTransposeMatrixd(GLdouble const*);
     GLAPI GLvoid glLoadTransposeMatrixf(GLfloat const*);
@@ -611,7 +700,11 @@ extern "C"
     GLAPI GLvoid glFogCoordPointer(GLenum, GLsizei, GLvoid const*);
     GLAPI GLvoid glMultiDrawArrays(GLenum, GLint*, GLsizei*, GLsizei);
     GLAPI GLvoid glMultiDrawElements(
-        GLenum, GLsizei const*, GLenum, GLvoid const**, GLsizei);
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
+        GLsizei);
     GLAPI GLvoid glPointParameterf(GLenum, GLfloat);
     GLAPI GLvoid glPointParameterfv(GLenum, GLfloat const*);
     GLAPI GLvoid glPointParameteri(GLenum, GLint);
@@ -1007,9 +1100,21 @@ extern "C"
     GLAPI GLvoid glDrawBuffers(GLsizei, GLenum const*);
     GLAPI GLvoid glEnableVertexAttribArray(GLuint);
     GLAPI GLvoid glGetActiveAttrib(
-        GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLchar*);
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLchar*);
     GLAPI GLvoid glGetActiveUniform(
-        GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLchar*);
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLchar*);
     GLAPI GLvoid glGetAttachedShaders(GLuint, GLsizei, GLsizei*, GLuint*);
     GLAPI GLint glGetAttribLocation(GLuint, GLchar const*);
     GLAPI GLvoid glGetProgramInfoLog(GLuint, GLsizei, GLsizei*, GLchar*);
@@ -1090,7 +1195,12 @@ extern "C"
     GLAPI GLvoid glVertexAttrib4uiv(GLuint, GLuint const*);
     GLAPI GLvoid glVertexAttrib4usv(GLuint, GLushort const*);
     GLAPI GLvoid glVertexAttribPointer(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid const*);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -1220,12 +1330,12 @@ extern "C"
 #ifndef OGLGLEXT_NOALIAS
 
 #define glDrawElementArrayAPPLE OGLEXT_MAKEGLNAME(DrawElementArrayAPPLE)
-#define glDrawRangeElementArrayAPPLE \
+#define glDrawRangeElementArrayAPPLE                                           \
     OGLEXT_MAKEGLNAME(DrawRangeElementArrayAPPLE)
 #define glElementPointerAPPLE OGLEXT_MAKEGLNAME(ElementPointerAPPLE)
-#define glMultiDrawElementArrayAPPLE \
+#define glMultiDrawElementArrayAPPLE                                           \
     OGLEXT_MAKEGLNAME(MultiDrawElementArrayAPPLE)
-#define glMultiDrawRangeElementArrayAPPLE \
+#define glMultiDrawRangeElementArrayAPPLE                                      \
     OGLEXT_MAKEGLNAME(MultiDrawRangeElementArrayAPPLE)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -1242,7 +1352,12 @@ extern "C"
     GLAPI GLvoid
     glMultiDrawElementArrayAPPLE(GLenum, GLint const*, GLsizei const*, GLsizei);
     GLAPI GLvoid glMultiDrawRangeElementArrayAPPLE(
-        GLenum, GLuint, GLuint, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -1413,9 +1528,9 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glFlushVertexArrayRangeAPPLE \
+#define glFlushVertexArrayRangeAPPLE                                           \
     OGLEXT_MAKEGLNAME(FlushVertexArrayRangeAPPLE)
-#define glVertexArrayParameteriAPPLE \
+#define glVertexArrayParameteriAPPLE                                           \
     OGLEXT_MAKEGLNAME(VertexArrayParameteriAPPLE)
 #define glVertexArrayRangeAPPLE OGLEXT_MAKEGLNAME(VertexArrayRangeAPPLE)
 
@@ -2262,7 +2377,13 @@ extern "C"
     GLAPI GLvoid glDeleteObjectARB(GLhandleARB);
     GLAPI GLvoid glDetachObjectARB(GLhandleARB, GLhandleARB);
     GLAPI GLvoid glGetActiveUniformARB(
-        GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*);
+        GLhandleARB,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLcharARB*);
     GLAPI GLvoid
     glGetAttachedObjectsARB(GLhandleARB, GLsizei, GLsizei*, GLhandleARB*);
     GLAPI GLhandleARB glGetHandleARB(GLenum);
@@ -2425,11 +2546,11 @@ extern "C"
 #define glCompressedTexImage1DARB OGLEXT_MAKEGLNAME(CompressedTexImage1DARB)
 #define glCompressedTexImage2DARB OGLEXT_MAKEGLNAME(CompressedTexImage2DARB)
 #define glCompressedTexImage3DARB OGLEXT_MAKEGLNAME(CompressedTexImage3DARB)
-#define glCompressedTexSubImage1DARB \
+#define glCompressedTexSubImage1DARB                                           \
     OGLEXT_MAKEGLNAME(CompressedTexSubImage1DARB)
-#define glCompressedTexSubImage2DARB \
+#define glCompressedTexSubImage2DARB                                           \
     OGLEXT_MAKEGLNAME(CompressedTexSubImage2DARB)
-#define glCompressedTexSubImage3DARB \
+#define glCompressedTexSubImage3DARB                                           \
     OGLEXT_MAKEGLNAME(CompressedTexSubImage3DARB)
 #define glGetCompressedTexImageARB OGLEXT_MAKEGLNAME(GetCompressedTexImageARB)
 
@@ -2441,20 +2562,62 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glCompressedTexImage1DARB(
-        GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexImage2DARB(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexImage3DARB(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage1DARB(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage2DARB(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
         GLvoid const*);
     GLAPI GLvoid glCompressedTexSubImage3DARB(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLAPI GLvoid glGetCompressedTexImageARB(GLenum, GLint, GLvoid*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -3021,38 +3184,38 @@ extern "C"
 
 #define glBindProgramARB    OGLEXT_MAKEGLNAME(BindProgramARB)
 #define glDeleteProgramsARB OGLEXT_MAKEGLNAME(DeleteProgramsARB)
-#define glDisableVertexAttribArrayARB \
+#define glDisableVertexAttribArrayARB                                          \
     OGLEXT_MAKEGLNAME(DisableVertexAttribArrayARB)
-#define glEnableVertexAttribArrayARB \
+#define glEnableVertexAttribArrayARB                                           \
     OGLEXT_MAKEGLNAME(EnableVertexAttribArrayARB)
 #define glGenProgramsARB OGLEXT_MAKEGLNAME(GenProgramsARB)
-#define glGetProgramEnvParameterdvARB \
+#define glGetProgramEnvParameterdvARB                                          \
     OGLEXT_MAKEGLNAME(GetProgramEnvParameterdvARB)
-#define glGetProgramEnvParameterfvARB \
+#define glGetProgramEnvParameterfvARB                                          \
     OGLEXT_MAKEGLNAME(GetProgramEnvParameterfvARB)
 #define glGetProgramivARB OGLEXT_MAKEGLNAME(GetProgramivARB)
-#define glGetProgramLocalParameterdvARB \
+#define glGetProgramLocalParameterdvARB                                        \
     OGLEXT_MAKEGLNAME(GetProgramLocalParameterdvARB)
-#define glGetProgramLocalParameterfvARB \
+#define glGetProgramLocalParameterfvARB                                        \
     OGLEXT_MAKEGLNAME(GetProgramLocalParameterfvARB)
 #define glGetProgramStringARB  OGLEXT_MAKEGLNAME(GetProgramStringARB)
 #define glGetVertexAttribdvARB OGLEXT_MAKEGLNAME(GetVertexAttribdvARB)
 #define glGetVertexAttribfvARB OGLEXT_MAKEGLNAME(GetVertexAttribfvARB)
 #define glGetVertexAttribivARB OGLEXT_MAKEGLNAME(GetVertexAttribivARB)
-#define glGetVertexAttribPointervARB \
+#define glGetVertexAttribPointervARB                                           \
     OGLEXT_MAKEGLNAME(GetVertexAttribPointervARB)
 #define glIsProgramARB              OGLEXT_MAKEGLNAME(IsProgramARB)
 #define glProgramEnvParameter4dARB  OGLEXT_MAKEGLNAME(ProgramEnvParameter4dARB)
 #define glProgramEnvParameter4dvARB OGLEXT_MAKEGLNAME(ProgramEnvParameter4dvARB)
 #define glProgramEnvParameter4fARB  OGLEXT_MAKEGLNAME(ProgramEnvParameter4fARB)
 #define glProgramEnvParameter4fvARB OGLEXT_MAKEGLNAME(ProgramEnvParameter4fvARB)
-#define glProgramLocalParameter4dARB \
+#define glProgramLocalParameter4dARB                                           \
     OGLEXT_MAKEGLNAME(ProgramLocalParameter4dARB)
-#define glProgramLocalParameter4dvARB \
+#define glProgramLocalParameter4dvARB                                          \
     OGLEXT_MAKEGLNAME(ProgramLocalParameter4dvARB)
-#define glProgramLocalParameter4fARB \
+#define glProgramLocalParameter4fARB                                           \
     OGLEXT_MAKEGLNAME(ProgramLocalParameter4fARB)
-#define glProgramLocalParameter4fvARB \
+#define glProgramLocalParameter4fvARB                                          \
     OGLEXT_MAKEGLNAME(ProgramLocalParameter4fvARB)
 #define glProgramStringARB       OGLEXT_MAKEGLNAME(ProgramStringARB)
 #define glVertexAttrib1dARB      OGLEXT_MAKEGLNAME(VertexAttrib1dARB)
@@ -3117,16 +3280,36 @@ extern "C"
     GLAPI GLvoid glGetVertexAttribPointervARB(GLuint, GLenum, GLvoid**);
     GLAPI GLboolean glIsProgramARB(GLuint);
     GLAPI GLvoid glProgramEnvParameter4dARB(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLAPI GLvoid glProgramEnvParameter4dvARB(GLenum, GLuint, GLdouble const*);
     GLAPI GLvoid glProgramEnvParameter4fARB(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glProgramEnvParameter4fvARB(GLenum, GLuint, GLfloat const*);
     GLAPI GLvoid glProgramLocalParameter4dARB(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLAPI GLvoid glProgramLocalParameter4dvARB(GLenum, GLuint, GLdouble const*);
     GLAPI GLvoid glProgramLocalParameter4fARB(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glProgramLocalParameter4fvARB(GLenum, GLuint, GLfloat const*);
     GLAPI GLvoid glProgramStringARB(GLenum, GLenum, GLsizei, GLvoid const*);
     GLAPI GLvoid glVertexAttrib1dARB(GLuint, GLdouble);
@@ -3170,7 +3353,12 @@ extern "C"
     GLAPI GLvoid glVertexAttrib4uivARB(GLuint, GLuint const*);
     GLAPI GLvoid glVertexAttrib4usvARB(GLuint, GLushort const*);
     GLAPI GLvoid glVertexAttribPointerARB(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid const*);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -3218,7 +3406,13 @@ extern "C"
 
     GLAPI GLvoid glBindAttribLocationARB(GLhandleARB, GLuint, GLcharARB const*);
     GLAPI GLvoid glGetActiveAttribARB(
-        GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*);
+        GLhandleARB,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLcharARB*);
     GLAPI GLint glGetAttribLocationARB(GLhandleARB, GLcharARB const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -3572,7 +3766,7 @@ extern "C"
 #define glGenFragmentShadersATI   OGLEXT_MAKEGLNAME(GenFragmentShadersATI)
 #define glPassTexCoordATI         OGLEXT_MAKEGLNAME(PassTexCoordATI)
 #define glSampleMapATI            OGLEXT_MAKEGLNAME(SampleMapATI)
-#define glSetFragmentShaderConstantATI \
+#define glSetFragmentShaderConstantATI                                         \
     OGLEXT_MAKEGLNAME(SetFragmentShaderConstantATI)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -3585,20 +3779,63 @@ extern "C"
     GLAPI GLvoid
         glAlphaFragmentOp1ATI(GLenum, GLuint, GLuint, GLuint, GLuint, GLuint);
     GLAPI GLvoid glAlphaFragmentOp2ATI(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLAPI GLvoid glAlphaFragmentOp3ATI(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLAPI GLvoid glBeginFragmentShaderATI();
     GLAPI GLvoid glBindFragmentShaderATI(GLuint);
     GLAPI GLvoid glColorFragmentOp1ATI(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLAPI GLvoid glColorFragmentOp2ATI(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
         GLuint);
     GLAPI GLvoid glColorFragmentOp3ATI(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLAPI GLvoid glDeleteFragmentShaderATI(GLuint);
     GLAPI GLvoid glEndFragmentShaderATI();
     GLAPI GLuint glGenFragmentShadersATI(GLuint);
@@ -3883,9 +4120,9 @@ extern "C"
 #define glGetArrayObjectivATI  OGLEXT_MAKEGLNAME(GetArrayObjectivATI)
 #define glGetObjectBufferfvATI OGLEXT_MAKEGLNAME(GetObjectBufferfvATI)
 #define glGetObjectBufferivATI OGLEXT_MAKEGLNAME(GetObjectBufferivATI)
-#define glGetVariantArrayObjectfvATI \
+#define glGetVariantArrayObjectfvATI                                           \
     OGLEXT_MAKEGLNAME(GetVariantArrayObjectfvATI)
-#define glGetVariantArrayObjectivATI \
+#define glGetVariantArrayObjectivATI                                           \
     OGLEXT_MAKEGLNAME(GetVariantArrayObjectivATI)
 #define glIsObjectBufferATI     OGLEXT_MAKEGLNAME(IsObjectBufferATI)
 #define glNewObjectBufferATI    OGLEXT_MAKEGLNAME(NewObjectBufferATI)
@@ -3932,11 +4169,11 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glGetVertexAttribArrayObjectfvATI \
+#define glGetVertexAttribArrayObjectfvATI                                      \
     OGLEXT_MAKEGLNAME(GetVertexAttribArrayObjectfvATI)
-#define glGetVertexAttribArrayObjectivATI \
+#define glGetVertexAttribArrayObjectivATI                                      \
     OGLEXT_MAKEGLNAME(GetVertexAttribArrayObjectivATI)
-#define glVertexAttribArrayObjectATI \
+#define glVertexAttribArrayObjectATI                                           \
     OGLEXT_MAKEGLNAME(VertexAttribArrayObjectATI)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -3949,7 +4186,13 @@ extern "C"
     GLAPI GLvoid glGetVertexAttribArrayObjectfvATI(GLuint, GLenum, GLfloat*);
     GLAPI GLvoid glGetVertexAttribArrayObjectivATI(GLuint, GLenum, GLint*);
     GLAPI GLvoid glVertexAttribArrayObjectATI(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint, GLuint);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLuint,
+        GLuint);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -3987,7 +4230,7 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glClientActiveVertexStreamATI \
+#define glClientActiveVertexStreamATI                                          \
     OGLEXT_MAKEGLNAME(ClientActiveVertexStreamATI)
 #define glNormalStream3bATI  OGLEXT_MAKEGLNAME(NormalStream3bATI)
 #define glNormalStream3bvATI OGLEXT_MAKEGLNAME(NormalStream3bvATI)
@@ -4548,14 +4791,14 @@ extern "C"
 #define glConvolutionParameterfvEXT OGLEXT_MAKEGLNAME(ConvolutionParameterfvEXT)
 #define glConvolutionParameteriEXT  OGLEXT_MAKEGLNAME(ConvolutionParameteriEXT)
 #define glConvolutionParameterivEXT OGLEXT_MAKEGLNAME(ConvolutionParameterivEXT)
-#define glCopyConvolutionFilter1DEXT \
+#define glCopyConvolutionFilter1DEXT                                           \
     OGLEXT_MAKEGLNAME(CopyConvolutionFilter1DEXT)
-#define glCopyConvolutionFilter2DEXT \
+#define glCopyConvolutionFilter2DEXT                                           \
     OGLEXT_MAKEGLNAME(CopyConvolutionFilter2DEXT)
 #define glGetConvolutionFilterEXT OGLEXT_MAKEGLNAME(GetConvolutionFilterEXT)
-#define glGetConvolutionParameterfvEXT \
+#define glGetConvolutionParameterfvEXT                                         \
     OGLEXT_MAKEGLNAME(GetConvolutionParameterfvEXT)
-#define glGetConvolutionParameterivEXT \
+#define glGetConvolutionParameterivEXT                                         \
     OGLEXT_MAKEGLNAME(GetConvolutionParameterivEXT)
 #define glGetSeparableFilterEXT OGLEXT_MAKEGLNAME(GetSeparableFilterEXT)
 #define glSeparableFilter2DEXT  OGLEXT_MAKEGLNAME(SeparableFilter2DEXT)
@@ -4568,9 +4811,20 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glConvolutionFilter1DEXT(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glConvolutionFilter2DEXT(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glConvolutionParameterfEXT(GLenum, GLenum, GLfloat);
     GLAPI GLvoid glConvolutionParameterfvEXT(GLenum, GLenum, GLfloat const*);
     GLAPI GLvoid glConvolutionParameteriEXT(GLenum, GLenum, GLint);
@@ -4578,14 +4832,25 @@ extern "C"
     GLAPI GLvoid
         glCopyConvolutionFilter1DEXT(GLenum, GLenum, GLint, GLint, GLsizei);
     GLAPI GLvoid glCopyConvolutionFilter2DEXT(
-        GLenum, GLenum, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLAPI GLvoid glGetConvolutionFilterEXT(GLenum, GLenum, GLenum, GLvoid*);
     GLAPI GLvoid glGetConvolutionParameterfvEXT(GLenum, GLenum, GLfloat*);
     GLAPI GLvoid glGetConvolutionParameterivEXT(GLenum, GLenum, GLint*);
     GLAPI GLvoid
     glGetSeparableFilterEXT(GLenum, GLenum, GLenum, GLvoid*, GLvoid*, GLvoid*);
     GLAPI GLvoid glSeparableFilter2DEXT(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
         GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -4713,15 +4978,43 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glCopyTexImage1DEXT(
-        GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLint);
+        GLenum,
+        GLint,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLint);
     GLAPI GLvoid glCopyTexImage2DEXT(
-        GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint);
+        GLenum,
+        GLint,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLint);
     GLAPI GLvoid
         glCopyTexSubImage1DEXT(GLenum, GLint, GLint, GLint, GLint, GLsizei);
     GLAPI GLvoid glCopyTexSubImage2DEXT(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLAPI GLvoid glCopyTexSubImage3DEXT(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -4842,7 +5135,12 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glDrawRangeElementsEXT(
-        GLenum, GLuint, GLuint, GLsizei, GLenum, GLvoid const*);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLenum,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -4991,7 +5289,7 @@ extern "C"
 #define glCheckFramebufferStatusEXT OGLEXT_MAKEGLNAME(CheckFramebufferStatusEXT)
 #define glDeleteFramebuffersEXT     OGLEXT_MAKEGLNAME(DeleteFramebuffersEXT)
 #define glDeleteRenderbuffersEXT    OGLEXT_MAKEGLNAME(DeleteRenderbuffersEXT)
-#define glFramebufferRenderbufferEXT \
+#define glFramebufferRenderbufferEXT                                           \
     OGLEXT_MAKEGLNAME(FramebufferRenderbufferEXT)
 #define glFramebufferTexture1DEXT OGLEXT_MAKEGLNAME(FramebufferTexture1DEXT)
 #define glFramebufferTexture2DEXT OGLEXT_MAKEGLNAME(FramebufferTexture2DEXT)
@@ -4999,9 +5297,9 @@ extern "C"
 #define glGenerateMipmapEXT       OGLEXT_MAKEGLNAME(GenerateMipmapEXT)
 #define glGenFramebuffersEXT      OGLEXT_MAKEGLNAME(GenFramebuffersEXT)
 #define glGenRenderbuffersEXT     OGLEXT_MAKEGLNAME(GenRenderbuffersEXT)
-#define glGetFramebufferAttachmentParameterivEXT \
+#define glGetFramebufferAttachmentParameterivEXT                               \
     OGLEXT_MAKEGLNAME(GetFramebufferAttachmentParameterivEXT)
-#define glGetRenderbufferParameterivEXT \
+#define glGetRenderbufferParameterivEXT                                        \
     OGLEXT_MAKEGLNAME(GetRenderbufferParameterivEXT)
 #define glIsFramebufferEXT       OGLEXT_MAKEGLNAME(IsFramebufferEXT)
 #define glIsRenderbufferEXT      OGLEXT_MAKEGLNAME(IsRenderbufferEXT)
@@ -5077,9 +5375,9 @@ extern "C"
 #ifndef OGLGLEXT_NOALIAS
 
 #define glGetHistogramEXT OGLEXT_MAKEGLNAME(GetHistogramEXT)
-#define glGetHistogramParameterfvEXT \
+#define glGetHistogramParameterfvEXT                                           \
     OGLEXT_MAKEGLNAME(GetHistogramParameterfvEXT)
-#define glGetHistogramParameterivEXT \
+#define glGetHistogramParameterivEXT                                           \
     OGLEXT_MAKEGLNAME(GetHistogramParameterivEXT)
 #define glGetMinmaxEXT            OGLEXT_MAKEGLNAME(GetMinmaxEXT)
 #define glGetMinmaxParameterfvEXT OGLEXT_MAKEGLNAME(GetMinmaxParameterfvEXT)
@@ -5316,7 +5614,11 @@ extern "C"
 
     GLAPI GLvoid glMultiDrawArraysEXT(GLenum, GLint*, GLsizei*, GLsizei);
     GLAPI GLvoid glMultiDrawElementsEXT(
-        GLenum, GLsizei const*, GLenum, GLvoid const**, GLsizei);
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
+        GLsizei);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -5463,9 +5765,9 @@ extern "C"
 #define glColorSubTableEXT OGLEXT_MAKEGLNAME(ColorSubTableEXT)
 #define glColorTableEXT    OGLEXT_MAKEGLNAME(ColorTableEXT)
 #define glGetColorTableEXT OGLEXT_MAKEGLNAME(GetColorTableEXT)
-#define glGetColorTableParameterfvEXT \
+#define glGetColorTableParameterfvEXT                                          \
     OGLEXT_MAKEGLNAME(GetColorTableParameterfvEXT)
-#define glGetColorTableParameterivEXT \
+#define glGetColorTableParameterivEXT                                          \
     OGLEXT_MAKEGLNAME(GetColorTableParameterivEXT)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -5541,13 +5843,13 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glPixelTransformParameterfEXT \
+#define glPixelTransformParameterfEXT                                          \
     OGLEXT_MAKEGLNAME(PixelTransformParameterfEXT)
-#define glPixelTransformParameterfvEXT \
+#define glPixelTransformParameterfvEXT                                         \
     OGLEXT_MAKEGLNAME(PixelTransformParameterfvEXT)
-#define glPixelTransformParameteriEXT \
+#define glPixelTransformParameteriEXT                                          \
     OGLEXT_MAKEGLNAME(PixelTransformParameteriEXT)
-#define glPixelTransformParameterivEXT \
+#define glPixelTransformParameterivEXT                                         \
     OGLEXT_MAKEGLNAME(PixelTransformParameterivEXT)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -5893,9 +6195,22 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glTexSubImage1DEXT(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glTexSubImage2DEXT(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -6015,11 +6330,28 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glTexImage3DEXT(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
         GLvoid const*);
     GLAPI GLvoid glTexSubImage3DEXT(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -6595,13 +6927,13 @@ extern "C"
 #define glBindMaterialParameterEXT OGLEXT_MAKEGLNAME(BindMaterialParameterEXT)
 #define glBindParameterEXT         OGLEXT_MAKEGLNAME(BindParameterEXT)
 #define glBindTexGenParameterEXT   OGLEXT_MAKEGLNAME(BindTexGenParameterEXT)
-#define glBindTextureUnitParameterEXT \
+#define glBindTextureUnitParameterEXT                                          \
     OGLEXT_MAKEGLNAME(BindTextureUnitParameterEXT)
 #define glBindVertexShaderEXT   OGLEXT_MAKEGLNAME(BindVertexShaderEXT)
 #define glDeleteVertexShaderEXT OGLEXT_MAKEGLNAME(DeleteVertexShaderEXT)
-#define glDisableVariantClientStateEXT \
+#define glDisableVariantClientStateEXT                                         \
     OGLEXT_MAKEGLNAME(DisableVariantClientStateEXT)
-#define glEnableVariantClientStateEXT \
+#define glEnableVariantClientStateEXT                                          \
     OGLEXT_MAKEGLNAME(EnableVariantClientStateEXT)
 #define glEndVertexShaderEXT      OGLEXT_MAKEGLNAME(EndVertexShaderEXT)
 #define glExtractComponentEXT     OGLEXT_MAKEGLNAME(ExtractComponentEXT)
@@ -6610,10 +6942,10 @@ extern "C"
 #define glGetInvariantBooleanvEXT OGLEXT_MAKEGLNAME(GetInvariantBooleanvEXT)
 #define glGetInvariantFloatvEXT   OGLEXT_MAKEGLNAME(GetInvariantFloatvEXT)
 #define glGetInvariantIntegervEXT OGLEXT_MAKEGLNAME(GetInvariantIntegervEXT)
-#define glGetLocalConstantBooleanvEXT \
+#define glGetLocalConstantBooleanvEXT                                          \
     OGLEXT_MAKEGLNAME(GetLocalConstantBooleanvEXT)
 #define glGetLocalConstantFloatvEXT OGLEXT_MAKEGLNAME(GetLocalConstantFloatvEXT)
-#define glGetLocalConstantIntegervEXT \
+#define glGetLocalConstantIntegervEXT                                          \
     OGLEXT_MAKEGLNAME(GetLocalConstantIntegervEXT)
 #define glGetVariantBooleanvEXT OGLEXT_MAKEGLNAME(GetVariantBooleanvEXT)
 #define glGetVariantFloatvEXT   OGLEXT_MAKEGLNAME(GetVariantFloatvEXT)
@@ -6857,17 +7189,17 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glGetImageTransformParameterfvHP \
+#define glGetImageTransformParameterfvHP                                       \
     OGLEXT_MAKEGLNAME(GetImageTransformParameterfvHP)
-#define glGetImageTransformParameterivHP \
+#define glGetImageTransformParameterivHP                                       \
     OGLEXT_MAKEGLNAME(GetImageTransformParameterivHP)
-#define glImageTransformParameterfHP \
+#define glImageTransformParameterfHP                                           \
     OGLEXT_MAKEGLNAME(ImageTransformParameterfHP)
-#define glImageTransformParameterfvHP \
+#define glImageTransformParameterfvHP                                          \
     OGLEXT_MAKEGLNAME(ImageTransformParameterfvHP)
-#define glImageTransformParameteriHP \
+#define glImageTransformParameteriHP                                           \
     OGLEXT_MAKEGLNAME(ImageTransformParameteriHP)
-#define glImageTransformParameterivHP \
+#define glImageTransformParameterivHP                                          \
     OGLEXT_MAKEGLNAME(ImageTransformParameterivHP)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -6976,9 +7308,17 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glMultiModeDrawArraysIBM(
-        GLenum const*, GLint const*, GLsizei const*, GLsizei, GLint);
+        GLenum const*,
+        GLint const*,
+        GLsizei const*,
+        GLsizei,
+        GLint);
     GLAPI GLvoid glMultiModeDrawElementsIBM(
-        GLenum const*, GLsizei const*, GLenum, GLvoid const* const*, GLsizei,
+        GLenum const*,
+        GLsizei const*,
+        GLenum,
+        GLvoid const* const*,
+        GLsizei,
         GLint);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -7078,7 +7418,7 @@ extern "C"
 #define glFogCoordPointerListIBM OGLEXT_MAKEGLNAME(FogCoordPointerListIBM)
 #define glIndexPointerListIBM    OGLEXT_MAKEGLNAME(IndexPointerListIBM)
 #define glNormalPointerListIBM   OGLEXT_MAKEGLNAME(NormalPointerListIBM)
-#define glSecondaryColorPointerListIBM \
+#define glSecondaryColorPointerListIBM                                         \
     OGLEXT_MAKEGLNAME(SecondaryColorPointerListIBM)
 #define glTexCoordPointerListIBM OGLEXT_MAKEGLNAME(TexCoordPointerListIBM)
 #define glVertexPointerListIBM   OGLEXT_MAKEGLNAME(VertexPointerListIBM)
@@ -7479,7 +7819,7 @@ extern "C"
 #define glDrawRangeElementArrayNV OGLEXT_MAKEGLNAME(DrawRangeElementArrayNV)
 #define glElementPointerNV        OGLEXT_MAKEGLNAME(ElementPointerNV)
 #define glMultiDrawElementArrayNV OGLEXT_MAKEGLNAME(MultiDrawElementArrayNV)
-#define glMultiDrawRangeElementArrayNV \
+#define glMultiDrawRangeElementArrayNV                                         \
     OGLEXT_MAKEGLNAME(MultiDrawRangeElementArrayNV)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -7496,7 +7836,12 @@ extern "C"
     GLAPI GLvoid
     glMultiDrawElementArrayNV(GLenum, GLint const*, GLsizei const*, GLsizei);
     GLAPI GLvoid glMultiDrawRangeElementArrayNV(
-        GLenum, GLuint, GLuint, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -7569,11 +7914,24 @@ extern "C"
     GLAPI GLvoid glGetMapAttribParameterfvNV(GLenum, GLuint, GLenum, GLfloat*);
     GLAPI GLvoid glGetMapAttribParameterivNV(GLenum, GLuint, GLenum, GLint*);
     GLAPI GLvoid glGetMapControlPointsNV(
-        GLenum, GLuint, GLenum, GLsizei, GLsizei, GLboolean, GLvoid*);
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLboolean,
+        GLvoid*);
     GLAPI GLvoid glGetMapParameterfvNV(GLenum, GLenum, GLfloat*);
     GLAPI GLvoid glGetMapParameterivNV(GLenum, GLenum, GLint*);
     GLAPI GLvoid glMapControlPointsNV(
-        GLenum, GLuint, GLenum, GLsizei, GLsizei, GLint, GLint, GLboolean,
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLint,
+        GLboolean,
         GLvoid const*);
     GLAPI GLvoid glMapParameterfvNV(GLenum, GLenum, GLfloat const*);
     GLAPI GLvoid glMapParameterivNV(GLenum, GLenum, GLint const*);
@@ -7718,15 +8076,15 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glGetProgramNamedParameterdvNV \
+#define glGetProgramNamedParameterdvNV                                         \
     OGLEXT_MAKEGLNAME(GetProgramNamedParameterdvNV)
-#define glGetProgramNamedParameterfvNV \
+#define glGetProgramNamedParameterfvNV                                         \
     OGLEXT_MAKEGLNAME(GetProgramNamedParameterfvNV)
 #define glProgramNamedParameter4dNV OGLEXT_MAKEGLNAME(ProgramNamedParameter4dNV)
-#define glProgramNamedParameter4dvNV \
+#define glProgramNamedParameter4dvNV                                           \
     OGLEXT_MAKEGLNAME(ProgramNamedParameter4dvNV)
 #define glProgramNamedParameter4fNV OGLEXT_MAKEGLNAME(ProgramNamedParameter4fNV)
-#define glProgramNamedParameter4fvNV \
+#define glProgramNamedParameter4fvNV                                           \
     OGLEXT_MAKEGLNAME(ProgramNamedParameter4fvNV)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -7741,14 +8099,31 @@ extern "C"
     GLAPI GLvoid
     glGetProgramNamedParameterfvNV(GLuint, GLsizei, GLubyte const*, GLfloat*);
     GLAPI GLvoid glProgramNamedParameter4dNV(
-        GLuint, GLsizei, GLubyte const*, GLdouble, GLdouble, GLdouble,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble);
     GLAPI GLvoid glProgramNamedParameter4dvNV(
-        GLuint, GLsizei, GLubyte const*, GLdouble const*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble const*);
     GLAPI GLvoid glProgramNamedParameter4fNV(
-        GLuint, GLsizei, GLubyte const*, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glProgramNamedParameter4fvNV(
-        GLuint, GLsizei, GLubyte const*, GLfloat const*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -8270,17 +8645,17 @@ extern "C"
 #define glCombinerParameteriNV  OGLEXT_MAKEGLNAME(CombinerParameteriNV)
 #define glCombinerParameterivNV OGLEXT_MAKEGLNAME(CombinerParameterivNV)
 #define glFinalCombinerInputNV  OGLEXT_MAKEGLNAME(FinalCombinerInputNV)
-#define glGetCombinerInputParameterfvNV \
+#define glGetCombinerInputParameterfvNV                                        \
     OGLEXT_MAKEGLNAME(GetCombinerInputParameterfvNV)
-#define glGetCombinerInputParameterivNV \
+#define glGetCombinerInputParameterivNV                                        \
     OGLEXT_MAKEGLNAME(GetCombinerInputParameterivNV)
-#define glGetCombinerOutputParameterfvNV \
+#define glGetCombinerOutputParameterfvNV                                       \
     OGLEXT_MAKEGLNAME(GetCombinerOutputParameterfvNV)
-#define glGetCombinerOutputParameterivNV \
+#define glGetCombinerOutputParameterivNV                                       \
     OGLEXT_MAKEGLNAME(GetCombinerOutputParameterivNV)
-#define glGetFinalCombinerInputParameterfvNV \
+#define glGetFinalCombinerInputParameterfvNV                                   \
     OGLEXT_MAKEGLNAME(GetFinalCombinerInputParameterfvNV)
-#define glGetFinalCombinerInputParameterivNV \
+#define glGetFinalCombinerInputParameterivNV                                   \
     OGLEXT_MAKEGLNAME(GetFinalCombinerInputParameterivNV)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -8293,8 +8668,16 @@ extern "C"
     GLAPI GLvoid
         glCombinerInputNV(GLenum, GLenum, GLenum, GLenum, GLenum, GLenum);
     GLAPI GLvoid glCombinerOutputNV(
-        GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLboolean,
-        GLboolean, GLboolean);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLboolean,
+        GLboolean,
+        GLboolean);
     GLAPI GLvoid glCombinerParameterfNV(GLenum, GLfloat);
     GLAPI GLvoid glCombinerParameterfvNV(GLenum, GLfloat const*);
     GLAPI GLvoid glCombinerParameteriNV(GLenum, GLint);
@@ -8338,9 +8721,9 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glCombinerStageParameterfvNV \
+#define glCombinerStageParameterfvNV                                           \
     OGLEXT_MAKEGLNAME(CombinerStageParameterfvNV)
-#define glGetCombinerStageParameterfvNV \
+#define glGetCombinerStageParameterfvNV                                        \
     OGLEXT_MAKEGLNAME(GetCombinerStageParameterfvNV)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -8924,10 +9307,20 @@ extern "C"
     GLAPI GLboolean glIsProgramNV(GLuint);
     GLAPI GLvoid glLoadProgramNV(GLenum, GLuint, GLsizei, GLubyte const*);
     GLAPI GLvoid glProgramParameter4dNV(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLAPI GLvoid glProgramParameter4dvNV(GLenum, GLuint, GLdouble const*);
     GLAPI GLvoid glProgramParameter4fNV(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glProgramParameter4fvNV(GLenum, GLuint, GLfloat const*);
     GLAPI GLvoid
     glProgramParameters4dvNV(GLenum, GLuint, GLuint, GLdouble const*);
@@ -9379,9 +9772,9 @@ extern "C"
 #define glColorTableParameterivSGI OGLEXT_MAKEGLNAME(ColorTableParameterivSGI)
 #define glColorTableSGI            OGLEXT_MAKEGLNAME(ColorTableSGI)
 #define glCopyColorTableSGI        OGLEXT_MAKEGLNAME(CopyColorTableSGI)
-#define glGetColorTableParameterfvSGI \
+#define glGetColorTableParameterfvSGI                                          \
     OGLEXT_MAKEGLNAME(GetColorTableParameterfvSGI)
-#define glGetColorTableParameterivSGI \
+#define glGetColorTableParameterivSGI                                          \
     OGLEXT_MAKEGLNAME(GetColorTableParameterivSGI)
 #define glGetColorTableSGI OGLEXT_MAKEGLNAME(GetColorTableSGI)
 
@@ -9668,15 +10061,15 @@ extern "C"
 
 #ifndef OGLGLEXT_NOALIAS
 
-#define glGetPixelTexGenParameterfvSGIS \
+#define glGetPixelTexGenParameterfvSGIS                                        \
     OGLEXT_MAKEGLNAME(GetPixelTexGenParameterfvSGIS)
-#define glGetPixelTexGenParameterivSGIS \
+#define glGetPixelTexGenParameterivSGIS                                        \
     OGLEXT_MAKEGLNAME(GetPixelTexGenParameterivSGIS)
 #define glPixelTexGenParameterfSGIS OGLEXT_MAKEGLNAME(PixelTexGenParameterfSGIS)
-#define glPixelTexGenParameterfvSGIS \
+#define glPixelTexGenParameterfvSGIS                                           \
     OGLEXT_MAKEGLNAME(PixelTexGenParameterfvSGIS)
 #define glPixelTexGenParameteriSGIS OGLEXT_MAKEGLNAME(PixelTexGenParameteriSGIS)
-#define glPixelTexGenParameterivSGIS \
+#define glPixelTexGenParameterivSGIS                                           \
     OGLEXT_MAKEGLNAME(PixelTexGenParameterivSGIS)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -9853,11 +10246,31 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glTexImage4DSGIS(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLsizei, GLint,
-        GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLAPI GLvoid glTexSubImage4DSGIS(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei,
-        GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
 
@@ -10755,7 +11168,7 @@ extern "C"
 #define glDeformationMap3dSGIX OGLEXT_MAKEGLNAME(DeformationMap3dSGIX)
 #define glDeformationMap3fSGIX OGLEXT_MAKEGLNAME(DeformationMap3fSGIX)
 #define glDeformSGIX           OGLEXT_MAKEGLNAME(DeformSGIX)
-#define glLoadIdentityDeformationMapSGIX \
+#define glLoadIdentityDeformationMapSGIX                                       \
     OGLEXT_MAKEGLNAME(LoadIdentityDeformationMapSGIX)
 
 #endif /* OGLGLEXT_NOALIAS */
@@ -10766,11 +11179,35 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glDeformationMap3dSGIX(
-        GLenum, GLdouble, GLdouble, GLint, GLint, GLdouble, GLdouble, GLint,
-        GLint, GLdouble, GLdouble, GLint, GLint, GLdouble const*);
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble const*);
     GLAPI GLvoid glDeformationMap3fSGIX(
-        GLenum, GLfloat, GLfloat, GLint, GLint, GLfloat, GLfloat, GLint, GLint,
-        GLfloat, GLfloat, GLint, GLint, GLfloat const*);
+        GLenum,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat const*);
     GLAPI GLvoid glDeformSGIX(GLbitfield);
     GLAPI GLvoid glLoadIdentityDeformationMapSGIX(GLbitfield);
 
@@ -11411,9 +11848,9 @@ extern "C"
 
 #define glColor3fVertex3fSUN  OGLEXT_MAKEGLNAME(Color3fVertex3fSUN)
 #define glColor3fVertex3fvSUN OGLEXT_MAKEGLNAME(Color3fVertex3fvSUN)
-#define glColor4fNormal3fVertex3fSUN \
+#define glColor4fNormal3fVertex3fSUN                                           \
     OGLEXT_MAKEGLNAME(Color4fNormal3fVertex3fSUN)
-#define glColor4fNormal3fVertex3fvSUN \
+#define glColor4fNormal3fVertex3fvSUN                                          \
     OGLEXT_MAKEGLNAME(Color4fNormal3fVertex3fvSUN)
 #define glColor4ubVertex2fSUN  OGLEXT_MAKEGLNAME(Color4ubVertex2fSUN)
 #define glColor4ubVertex2fvSUN OGLEXT_MAKEGLNAME(Color4ubVertex2fvSUN)
@@ -11421,59 +11858,59 @@ extern "C"
 #define glColor4ubVertex3fvSUN OGLEXT_MAKEGLNAME(Color4ubVertex3fvSUN)
 #define glNormal3fVertex3fSUN  OGLEXT_MAKEGLNAME(Normal3fVertex3fSUN)
 #define glNormal3fVertex3fvSUN OGLEXT_MAKEGLNAME(Normal3fVertex3fvSUN)
-#define glReplacementCodeuiColor3fVertex3fSUN \
+#define glReplacementCodeuiColor3fVertex3fSUN                                  \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor3fVertex3fSUN)
-#define glReplacementCodeuiColor3fVertex3fvSUN \
+#define glReplacementCodeuiColor3fVertex3fvSUN                                 \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor3fVertex3fvSUN)
-#define glReplacementCodeuiColor4fNormal3fVertex3fSUN \
+#define glReplacementCodeuiColor4fNormal3fVertex3fSUN                          \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor4fNormal3fVertex3fSUN)
-#define glReplacementCodeuiColor4fNormal3fVertex3fvSUN \
+#define glReplacementCodeuiColor4fNormal3fVertex3fvSUN                         \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor4fNormal3fVertex3fvSUN)
-#define glReplacementCodeuiColor4ubVertex3fSUN \
+#define glReplacementCodeuiColor4ubVertex3fSUN                                 \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor4ubVertex3fSUN)
-#define glReplacementCodeuiColor4ubVertex3fvSUN \
+#define glReplacementCodeuiColor4ubVertex3fvSUN                                \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiColor4ubVertex3fvSUN)
-#define glReplacementCodeuiNormal3fVertex3fSUN \
+#define glReplacementCodeuiNormal3fVertex3fSUN                                 \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiNormal3fVertex3fSUN)
-#define glReplacementCodeuiNormal3fVertex3fvSUN \
+#define glReplacementCodeuiNormal3fVertex3fvSUN                                \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiNormal3fVertex3fvSUN)
-#define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN \
+#define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN                \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN)
-#define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN \
+#define glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN               \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN)
-#define glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN \
+#define glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN                       \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fNormal3fVertex3fSUN)
-#define glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN \
+#define glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN                      \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN)
-#define glReplacementCodeuiTexCoord2fVertex3fSUN \
+#define glReplacementCodeuiTexCoord2fVertex3fSUN                               \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fVertex3fSUN)
-#define glReplacementCodeuiTexCoord2fVertex3fvSUN \
+#define glReplacementCodeuiTexCoord2fVertex3fvSUN                              \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiTexCoord2fVertex3fvSUN)
-#define glReplacementCodeuiVertex3fSUN \
+#define glReplacementCodeuiVertex3fSUN                                         \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiVertex3fSUN)
-#define glReplacementCodeuiVertex3fvSUN \
+#define glReplacementCodeuiVertex3fvSUN                                        \
     OGLEXT_MAKEGLNAME(ReplacementCodeuiVertex3fvSUN)
-#define glTexCoord2fColor3fVertex3fSUN \
+#define glTexCoord2fColor3fVertex3fSUN                                         \
     OGLEXT_MAKEGLNAME(TexCoord2fColor3fVertex3fSUN)
-#define glTexCoord2fColor3fVertex3fvSUN \
+#define glTexCoord2fColor3fVertex3fvSUN                                        \
     OGLEXT_MAKEGLNAME(TexCoord2fColor3fVertex3fvSUN)
-#define glTexCoord2fColor4fNormal3fVertex3fSUN \
+#define glTexCoord2fColor4fNormal3fVertex3fSUN                                 \
     OGLEXT_MAKEGLNAME(TexCoord2fColor4fNormal3fVertex3fSUN)
-#define glTexCoord2fColor4fNormal3fVertex3fvSUN \
+#define glTexCoord2fColor4fNormal3fVertex3fvSUN                                \
     OGLEXT_MAKEGLNAME(TexCoord2fColor4fNormal3fVertex3fvSUN)
-#define glTexCoord2fColor4ubVertex3fSUN \
+#define glTexCoord2fColor4ubVertex3fSUN                                        \
     OGLEXT_MAKEGLNAME(TexCoord2fColor4ubVertex3fSUN)
-#define glTexCoord2fColor4ubVertex3fvSUN \
+#define glTexCoord2fColor4ubVertex3fvSUN                                       \
     OGLEXT_MAKEGLNAME(TexCoord2fColor4ubVertex3fvSUN)
-#define glTexCoord2fNormal3fVertex3fSUN \
+#define glTexCoord2fNormal3fVertex3fSUN                                        \
     OGLEXT_MAKEGLNAME(TexCoord2fNormal3fVertex3fSUN)
-#define glTexCoord2fNormal3fVertex3fvSUN \
+#define glTexCoord2fNormal3fVertex3fvSUN                                       \
     OGLEXT_MAKEGLNAME(TexCoord2fNormal3fVertex3fvSUN)
 #define glTexCoord2fVertex3fSUN  OGLEXT_MAKEGLNAME(TexCoord2fVertex3fSUN)
 #define glTexCoord2fVertex3fvSUN OGLEXT_MAKEGLNAME(TexCoord2fVertex3fvSUN)
-#define glTexCoord4fColor4fNormal3fVertex4fSUN \
+#define glTexCoord4fColor4fNormal3fVertex4fSUN                                 \
     OGLEXT_MAKEGLNAME(TexCoord4fColor4fNormal3fVertex4fSUN)
-#define glTexCoord4fColor4fNormal3fVertex4fvSUN \
+#define glTexCoord4fColor4fNormal3fVertex4fvSUN                                \
     OGLEXT_MAKEGLNAME(TexCoord4fColor4fNormal3fVertex4fvSUN)
 #define glTexCoord4fVertex4fSUN  OGLEXT_MAKEGLNAME(TexCoord4fVertex4fSUN)
 #define glTexCoord4fVertex4fvSUN OGLEXT_MAKEGLNAME(TexCoord4fVertex4fvSUN)
@@ -11486,85 +11923,247 @@ extern "C"
 #ifdef GL_GLEXT_PROTOTYPES
 
     GLAPI GLvoid glColor3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glColor3fVertex3fvSUN(GLfloat const*, GLfloat const*);
     GLAPI GLvoid glColor4fNormal3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glColor4fNormal3fVertex3fvSUN(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glColor4ubVertex2fSUN(
-        GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat);
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glColor4ubVertex2fvSUN(GLubyte const*, GLfloat const*);
     GLAPI GLvoid glColor4ubVertex3fSUN(
-        GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat, GLfloat);
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glColor4ubVertex3fvSUN(GLubyte const*, GLfloat const*);
     GLAPI GLvoid glNormal3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glNormal3fVertex3fvSUN(GLfloat const*, GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiColor3fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiColor3fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiColor4fNormal3fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiColor4fNormal3fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiColor4ubVertex3fSUN(
-        GLuint, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiColor4ubVertex3fvSUN(
-        GLuint const*, GLubyte const*, GLfloat const*);
+        GLuint const*,
+        GLubyte const*,
+        GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiNormal3fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiNormal3fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
         GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fNormal3fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fVertex3fSUN(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glReplacementCodeuiTexCoord2fVertex3fvSUN(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid
         glReplacementCodeuiVertex3fSUN(GLuint, GLfloat, GLfloat, GLfloat);
     GLAPI GLvoid glReplacementCodeuiVertex3fvSUN(GLuint const*, GLfloat const*);
     GLAPI GLvoid glTexCoord2fColor3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glTexCoord2fColor3fVertex3fvSUN(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glTexCoord2fColor4fNormal3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glTexCoord2fColor4fNormal3fVertex3fvSUN(
-        GLfloat const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glTexCoord2fColor4ubVertex3fSUN(
-        GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat,
+        GLfloat,
+        GLfloat,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
         GLfloat);
     GLAPI GLvoid glTexCoord2fColor4ubVertex3fvSUN(
-        GLfloat const*, GLubyte const*, GLfloat const*);
+        GLfloat const*,
+        GLubyte const*,
+        GLfloat const*);
     GLAPI GLvoid glTexCoord2fNormal3fVertex3fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glTexCoord2fNormal3fVertex3fvSUN(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid
         glTexCoord2fVertex3fSUN(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
     GLAPI GLvoid glTexCoord2fVertex3fvSUN(GLfloat const*, GLfloat const*);
     GLAPI GLvoid glTexCoord4fColor4fNormal3fVertex4fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glTexCoord4fColor4fNormal3fVertex4fvSUN(
-        GLfloat const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLAPI GLvoid glTexCoord4fVertex4fSUN(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLAPI GLvoid glTexCoord4fVertex4fvSUN(GLfloat const*, GLfloat const*);
 
 #endif /* GL_GLEXT_PROTOTYPES */
@@ -11654,4 +12253,3 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-

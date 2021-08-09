@@ -66,9 +66,23 @@ const int coastmap::dmy[4] = {-1, -1, 0, 0};
 const int coastmap::dx[4] = {0, 1, 0, -1};
 const int coastmap::dy[4] = {-1, 0, 1, 0};
 
-bool coastmap::patternprocessok[16] = {false, true, true, true, true,  false,
-                                       true,  true, true, true, false, true,
-                                       true,  true, true, false};
+bool coastmap::patternprocessok[16] = {
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+    true,
+    false};
 
 /*
 segcls are connected in ccw order.
@@ -88,10 +102,10 @@ the following patterns are possible when searching coastlines (0,15 illegal)
 
 // -1 illegal,0-3 down,right,up,left:    0  1  2  3  4  5  6  7  8  9 10 11 12
 // 13 14 15
-const int coastmap::runlandleft[16]  = {-1, 3, 0,  3, 1, -1, 0, 3,
-                                       2,  2, -1, 2, 1, 1,  0, -1};
-const int coastmap::runlandright[16] = {-1, 0, 1,  1, 2, -1, 2, 2,
-                                        3,  0, -1, 1, 3, 0,  3, -1};
+const int coastmap::runlandleft[16] =
+    {-1, 3, 0, 3, 1, -1, 0, 3, 2, 2, -1, 2, 1, 1, 0, -1};
+const int coastmap::runlandright[16] =
+    {-1, 0, 1, 1, 2, -1, 2, 2, 3, 0, -1, 1, 3, 0, 3, -1};
 
 /*
 fixme: 2005/05/05
@@ -127,14 +141,22 @@ void coastsegment::cacheentry::push_back_point(const vector2& p)
         if (d < 1.0f)
             return; // fixme test hack
         ASSERT(
-            d >= 1.0f, "error: points are too close %f    %f %f  %f %f", d,
-            points.back().x, points.back().y, p.x, p.y);
+            d >= 1.0f,
+            "error: points are too close %f    %f %f  %f %f",
+            d,
+            points.back().x,
+            points.back().y,
+            p.x,
+            p.y);
     }
     points.push_back(p);
 }
 
 void coastsegment::generate_point_cache(
-    const class coastmap& cm, int x, int y, int detail) const
+    const class coastmap& cm,
+    int x,
+    int y,
+    int detail) const
 {
     if (type > 1)
     {
@@ -144,7 +166,7 @@ void coastsegment::generate_point_cache(
 
         //	cout << "creating cache entry for segment " << roff << " empty? " <<
         //(pointcache.size() > 0) << " cached detail " << pointcachedetail << "
-        //new detail " << detail << "\n";
+        // new detail " << detail << "\n";
         // invalidate cache (detail changed or initial generation)
         pointcachedetail = detail;
         pointcache.clear();
@@ -179,10 +201,10 @@ void coastsegment::generate_point_cache(
                     ce.points.push_back(vector2(point.x, point.y) * sc);
                 }
                 int next = cl.next;
-                //				cout << "startpos " << cl.beginpos << " endpos: " <<
-                //cl.endpos << " next " << next << " next startpos: " <<
-                //segcls[next].beginpos << "\n"; 				cout << "current="<<current<<"
-                //next="<<next<<"\n";
+                //				cout << "startpos " << cl.beginpos << " endpos: "
+                //<< cl.endpos << " next " << next << " next startpos: " <<
+                // segcls[next].beginpos << "\n"; 				cout <<
+                // "current="<<current<<" next="<<next<<"\n";
                 cl_handled[current] = true;
                 ASSERT(next != -1, "next unset?");
                 // if(current==next)break;
@@ -190,13 +212,15 @@ void coastsegment::generate_point_cache(
                 if (!cl.cyclic)
                 {
                     int b0 = cl.endpos, b1 = segcls[next].beginpos;
-                    //					cout << "fill: ed " << b0 << " bg " << b1 <<
+                    //					cout << "fill: ed " << b0 << " bg " << b1
+                    //<<
                     //"\n";
                     if (b1 < b0)
                         b1 += 4 * SEGSCALE;
                     b0 = (b0 + SEGSCALE - 1) / SEGSCALE;
                     b1 = b1 / SEGSCALE;
-                    //					cout << "fill2: ed " << b0 << " bg " << b1 <<
+                    //					cout << "fill2: ed " << b0 << " bg " << b1
+                    //<<
                     //"\n";
                     for (int j = b0; j <= b1; ++j)
                     {
@@ -220,7 +244,8 @@ void coastsegment::generate_point_cache(
 
             //			cout << "compute triang for segment " << this << "\n";
 
-            //			cout << "segment no: " << (this - &cm.coastsegments[0]) <<
+            //			cout << "segment no: " << (this - &cm.coastsegments[0])
+            //<<
             //"\n";
             unsigned dbl = 0;
             for (unsigned i = 0; i + 1 < ce.points.size(); ++i)
@@ -250,7 +275,10 @@ void coastsegment::generate_point_cache(
 }
 
 void coastsegment::draw_as_map(
-    const class coastmap& cm, int x, int y, int detail) const
+    const class coastmap& cm,
+    int x,
+    int y,
+    int detail) const
 {
     // cout<<"segment draw " << x << "," << y << " dtl " << detail << " tp " <<
     // type << "\n";
@@ -260,8 +288,11 @@ void coastsegment::draw_as_map(
         vector2f tc0 = cm.segcoord_to_texc(x, y);
         vector2f tc1 = cm.segcoord_to_texc(x + 1, y + 1);
         primitives::textured_quad(
-            vector2f(0, 0), vector2f(cm.segw_real, cm.segw_real), *atlanticmap,
-            tc0, tc1)
+            vector2f(0, 0),
+            vector2f(cm.segw_real, cm.segw_real),
+            *atlanticmap,
+            tc0,
+            tc1)
             .render();
     }
     else if (type > 1)
@@ -361,7 +392,8 @@ void coastsegment::compute_successor_for_cl(unsigned cln)
             // generated for this situation) fixme: but with <= many other
             // segcl's fail... If a cl touches the border from the other side,
             // either < or <= will fail!
-            //			if(beginpos == scl0.endpos) {cout<<"BEGINPOS " << beginpos
+            //			if(beginpos == scl0.endpos) {cout<<"BEGINPOS " <<
+            //beginpos
             //<< " endpos " << scl0.endpos << " nr " << cln << " i " << i <<
             //"\n";}
             if (beginpos < scl0.endpos)
@@ -430,7 +462,9 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
         if (olddir == -1)
             ASSERT(
                 pattern != 5 && pattern != 10,
-                "illegal start pattern! at %i %i", x, y);
+                "illegal start pattern! at %i %i",
+                x,
+                y);
 
         if (patternprocessok[pattern]
             && (x % pixels_per_seg == 0 || y % pixels_per_seg == 0))
@@ -496,7 +530,10 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
 
 // returns true if cl is valid
 bool coastmap::find_coastline(
-    int x, int y, std::vector<vector2i>& points, bool& cyclic)
+    int x,
+    int y,
+    std::vector<vector2i>& points,
+    bool& cyclic)
 {
     // run backward at the coastline until we reach the border or round an
     // island. start there creating the coastline. this avoids coastlines that
@@ -656,7 +693,8 @@ vector2i coastmap::compute_segment(const vector2i& p0, const vector2i& p1) const
 }
 
 void coastmap::divide_and_distribute_cl(
-    const std::vector<vector2i>& cl, bool clcyclic)
+    const std::vector<vector2i>& cl,
+    bool clcyclic)
 {
     ASSERT(cl.size() >= 2, "div and distri with < 2?");
 
@@ -697,7 +735,8 @@ void coastmap::divide_and_distribute_cl(
         // with gcc4.0.1, scons debug=2 it works, maybe a problem of the
         // optimization. compiler bug??? or unstable numerical computation
 
-        //		cout << "i: " << i << "/" << cl.size() << " p0: " << p0 << " p1: "
+        //		cout << "i: " << i << "/" << cl.size() << " p0: " << p0 << " p1:
+        //"
         //<< cl[i] << "\n";
         // handle line from p0 to cl[i] = p1.
         const vector2i& p1 = cl[i];
@@ -804,13 +843,15 @@ void coastmap::divide_and_distribute_cl(
                 }
             }
             //			cout << "mint "<< mint<<" border "<<border <<"\n";
-            //			cout << "p0: " << p0 << " p1 " << p1 << " dekta " << delta
+            //			cout << "p0: " << p0 << " p1 " << p1 << " dekta " <<
+            //delta
             //<< "\n";
             ASSERT(border != -1, "paranoia mint");
             vector2i p2 = vector2i(
                 int(round(p0.x + mint * delta.x)),
                 int(round(p0.y + mint * delta.y)));
-            //			cout << "p2 real " << double(p0.x) + mint * delta.x << ","
+            //			cout << "p2 real " << double(p0.x) + mint * delta.x <<
+            //","
             //<< double(p0.y) + mint * delta.y << "\n";
             vector2i rel = p2 - segoff;
             coastsegment::segpos ps2(
@@ -872,7 +913,7 @@ void coastmap::process_coastline(int x, int y)
     bool valid = find_coastline(x, y, points, cyclic);
 
     //	printf("coastline found from %i %i # pts %u cyclic? %u, bb %i eb %i
-    //valid %u\n", 	       x,y,points.size(),cyclic,beginborder,endborder,valid);
+    // valid %u\n", x,y,points.size(),cyclic,beginborder,endborder,valid);
 
     if (!valid)
         return; // skip
@@ -883,7 +924,8 @@ void coastmap::process_coastline(int x, int y)
     for (auto& point : points)
     {
         tmp.emplace_back(point.x, point.y);
-        //		cout << i << "/" << points.size() << " is " << points[i] << " / "
+        //		cout << i << "/" << points.size() << " is " << points[i] << " /
+        //"
         //<< vector2(points[i].x, points[i].y) << "\n";
     }
 
@@ -920,13 +962,13 @@ void coastmap::process_coastline(int x, int y)
                 vector2 ab = (a2 + b2) * 0.5;
                 tmp.insert(tmp.begin(), ab); // push_front
                 tmp.push_back(ab);
-                //				cout << "a " << a << " b " << b << " c " << c << " ab
-                //" << ab << "\n";
+                //				cout << "a " << a << " b " << b << " c " << c << "
+                //ab " << ab << "\n";
             }
             else
             {
                 //				ASSERT(c.x % pixels_per_seg == 0 || c.y %
-                //pixels_per_seg == 0, "neither a nor c are on a border?");
+                // pixels_per_seg == 0, "neither a nor c are on a border?");
                 // c is on border, or this is an island without any border
                 // contact.
                 vector2 b2, c2;
@@ -937,8 +979,8 @@ void coastmap::process_coastline(int x, int y)
                 tmp[0]     = bc;
                 tmp.push_back(b2);
                 tmp.push_back(bc);
-                //				cout << "a " << a << " b " << b << " c " << c << " bc
-                //" << bc << "\n";
+                //				cout << "a " << a << " b " << b << " c " << c << "
+                //bc " << bc << "\n";
             }
         }
         else
@@ -1040,7 +1082,8 @@ void coastmap::process_segment(int sx, int sy)
                     ASSERT(cl1.next == -1, "strange paranoia2 next != -1");
                     // connect the segcls.
                     cl0.points.insert(
-                        cl0.points.end(), ++cl1.points.begin(),
+                        cl0.points.end(),
+                        ++cl1.points.begin(),
                         cl1.points.end());
                     //					cl0.points += cl1.points;
                     cl0.endpos      = cl1.endpos;
@@ -1136,7 +1179,9 @@ unsigned coastmap::quadrant(const vector2i& d)
 }
 
 vector2 coastmap::segcoord_to_real(
-    int segx, int segy, const coastsegment::segpos& sp) const
+    int segx,
+    int segy,
+    const coastsegment::segpos& sp) const
 {
     vector2 tmp(
         double(segx) + double(sp.x) / SEGSCALE,
@@ -1214,9 +1259,10 @@ coastmap::coastmap(const string& filename)
         segw_real = pixelw_real * pixels_per_seg;
         if (segsx * pixels_per_seg != mapw || segsy * pixels_per_seg != maph)
             THROW(
-                error, string("coastmap: map size must be integer multiple of "
-                              "segment size, in")
-                           + filename);
+                error,
+                string("coastmap: map size must be integer multiple of "
+                       "segment size, in")
+                    + filename);
 
         themap.resize(mapw * maph);
 
@@ -1224,9 +1270,10 @@ coastmap::coastmap(const string& filename)
         if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr
             || surf->format->palette->ncolors != 2)
             THROW(
-                error, string("coastmap: image is no black/white 1bpp paletted "
-                              "image, in ")
-                           + filename);
+                error,
+                string("coastmap: image is no black/white 1bpp paletted "
+                       "image, in ")
+                    + filename);
 
         auto* offset = (uint8_t*) (surf->pixels);
         int mapoffy  = maph * mapw;
@@ -1307,8 +1354,8 @@ void coastmap::finish_construction()
     add_loading_screen("coastmap created");
 }
 
-void coastmap::draw_as_map(
-    const vector2& droff, double mapzoom, int detail) const
+void coastmap::draw_as_map(const vector2& droff, double mapzoom, int detail)
+    const
 {
     int x, y, w, h;
     // cout << "mapzoom pix/m = " << mapzoom << " segwreal " << segw_real <<
@@ -1347,7 +1394,8 @@ void coastmap::draw_as_map(
         {
             glPushMatrix();
             glTranslated(
-                xx * segw_real + realoffset.x, yy * segw_real + realoffset.y,
+                xx * segw_real + realoffset.x,
+                yy * segw_real + realoffset.y,
                 0);
             coastsegments[yy * segsx + xx].draw_as_map(*this, xx, yy, detail);
             glPopMatrix();
@@ -1366,7 +1414,10 @@ void coastmap::draw_as_map(
 // p is real world coordinate of viewer. modelview matrix is centered around
 // viewer
 void coastmap::render(
-    const vector2& p, double vr, bool mirrored, int detail,
+    const vector2& p,
+    double vr,
+    bool mirrored,
+    int detail,
     bool withterraintop) const
 {
     // render props, do some view culling for them.

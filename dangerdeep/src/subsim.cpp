@@ -394,8 +394,14 @@ void show_halloffame(const highscorelist& hsl)
     widget::run(w, 0, false);
 }
 
-void show_halloffame_mission() { show_halloffame(hsl_mission); }
-void show_halloffame_career() { show_halloffame(hsl_career); }
+void show_halloffame_mission()
+{
+    show_halloffame(hsl_mission);
+}
+void show_halloffame_career()
+{
+    show_halloffame(hsl_career);
+}
 
 //
 // check if a game is good enough for the high score list
@@ -766,8 +772,7 @@ class widget_image_select : public widget
         int w,
         int h,
         std::string ext_,
-        std::list<std::string>
-            imagenames_,
+        std::list<std::string> imagenames_,
         widget* parent_ = nullptr) :
         widget(x, y, w, h, "", parent_),
         imagenames(std::move(imagenames_)), extension(std::move(ext_)),
@@ -919,7 +924,9 @@ void show_flotilla_description(const std::string& infopopupdescr)
 }
 
 bool choose_player_info(
-    game::player_info& pi, const std::string& subtype, const date& gamedate)
+    game::player_info& pi,
+    const std::string& subtype,
+    const date& gamedate)
 {
     widget w(0, 0, 1024, 768, "", nullptr, "playerselection_background.jpg");
 

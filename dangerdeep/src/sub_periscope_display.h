@@ -59,4 +59,3 @@ class sub_periscope_display : public freeview_display
 
     vector3 get_viewpos(class game& gm) const override;
 };
-

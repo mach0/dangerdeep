@@ -29,4 +29,3 @@ class sub_control_popup : public user_popup
   public:
     sub_control_popup(class user_interface& ui_);
 };
-

@@ -33,8 +33,14 @@ class sub_recogmanual_popup : public user_popup
 
       public:
         widget_button_next(
-            int x, int y, int w, int h, int dir, int& att_page,
-            const std::string& text_, const std::string& bg_image_,
+            int x,
+            int y,
+            int w,
+            int h,
+            int dir,
+            int& att_page,
+            const std::string& text_,
+            const std::string& bg_image_,
             widget* parent_ = nullptr);
         void draw() const override;
         void on_release() override;
@@ -59,4 +65,3 @@ class sub_recogmanual_popup : public user_popup
     bool handle_mouse_motion_event(const mouse_motion_data&) override;
     bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 };
-

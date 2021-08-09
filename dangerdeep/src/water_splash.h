@@ -39,15 +39,22 @@ class water_splash : public sea_object
     std::unique_ptr<bspline> balpha;
 
     static void render_cylinder(
-        double radius_bottom, double radius_top, double height, double alpha,
-        const texture& tex, double u_scal = 2.0, unsigned nr_segs = 16);
+        double radius_bottom,
+        double radius_top,
+        double height,
+        double alpha,
+        const texture& tex,
+        double u_scal    = 2.0,
+        unsigned nr_segs = 16);
 
     double compute_height(double t) const;
 
   public:
     water_splash() = default;
     water_splash(
-        game& gm, const vector3& pos, double risetime = 0.4,
+        game& gm,
+        const vector3& pos,
+        double risetime   = 0.4,
         double riseheight = 25.0);
     void simulate(double delta_time, game& gm) override;
     void display() const;
@@ -69,4 +76,3 @@ class water_splash : public sea_object
         return water_splash(gm, pos, 0.25, 12.5);
     }
 };
-

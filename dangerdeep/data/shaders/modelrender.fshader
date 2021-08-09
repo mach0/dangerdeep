@@ -85,7 +85,8 @@ void main()
     if (underwater)
     {
         vec3 fog_color =
-            mix(vec3(0.0, 0.0, 0.0), vec3(gl_Fog.color),
+            mix(vec3(0.0, 0.0, 0.0),
+                vec3(gl_Fog.color),
                 clamp(150.0 / gl_FogFragCoord, 0.0, 1.0));
         gl_FragColor = vec4(mix(fog_color, final_color, fog_factor), alpha);
     }

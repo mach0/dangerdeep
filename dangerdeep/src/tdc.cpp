@@ -156,7 +156,10 @@ void tdc::simulate(double delta_t)
     }
 }
 
-void tdc::enable_bearing_tracker(bool enable) { bearing_tracking = enable; }
+void tdc::enable_bearing_tracker(bool enable)
+{
+    bearing_tracking = enable;
+}
 
 void tdc::enable_angleonthebow_tracker(bool enable)
 {
@@ -169,9 +172,15 @@ void tdc::set_torpedo_data(double speed, double runlength)
     torpedo_runlength = runlength;
 }
 
-void tdc::set_target_speed(double ms) { target_speed = ms; }
+void tdc::set_target_speed(double ms)
+{
+    target_speed = ms;
+}
 
-void tdc::set_target_distance(double ms) { target_distance = ms; }
+void tdc::set_target_distance(double ms)
+{
+    target_distance = ms;
+}
 
 void tdc::set_bearing(angle br)
 {
@@ -203,7 +212,10 @@ void tdc::set_target_course(angle tc)
     compute_aob(bearing_dial);
 }
 
-void tdc::set_heading(angle hd) { heading = hd; }
+void tdc::set_heading(angle hd)
+{
+    heading = hd;
+}
 
 void tdc::update_heading(angle hd)
 {

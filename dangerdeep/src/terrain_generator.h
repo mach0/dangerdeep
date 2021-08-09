@@ -47,4 +47,3 @@ class terrain_generator
     /// get absolute min/max height of all levels to be used for clipping
     virtual vector2 get_min_max_height() const = 0;
 };
-

@@ -30,7 +30,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstring>
 
 /// a 4x4 matrix, reimplemented for 4x4 case for speed issues
-template <typename D> class matrix4t
+template<typename D>
+class matrix4t
 {
     D values[4 * 4];
 
@@ -46,8 +47,22 @@ template <typename D> class matrix4t
 
     /// create full matrix
     matrix4t(
-        D e0, D e1, D e2, D e3, D e4, D e5, D e6, D e7, D e8, D e9, D e10,
-        D e11, D e12, D e13, D e14, D e15)
+        D e0,
+        D e1,
+        D e2,
+        D e3,
+        D e4,
+        D e5,
+        D e6,
+        D e7,
+        D e8,
+        D e9,
+        D e10,
+        D e11,
+        D e12,
+        D e13,
+        D e14,
+        D e15)
     {
         values[0]  = e0;
         values[1]  = e1;
@@ -69,7 +84,9 @@ template <typename D> class matrix4t
 
     /// create matrix from column vectors
     matrix4t(
-        const vector3t<D>& v0, const vector3t<D>& v1, const vector3t<D>& v2,
+        const vector3t<D>& v0,
+        const vector3t<D>& v1,
+        const vector3t<D>& v2,
         const vector3t<D>& v3)
     {
         values[0]  = v0.x;
@@ -92,7 +109,9 @@ template <typename D> class matrix4t
 
     /// create matrix from column vectors
     matrix4t(
-        const vector4t<D>& v0, const vector4t<D>& v1, const vector4t<D>& v2,
+        const vector4t<D>& v0,
+        const vector4t<D>& v1,
+        const vector4t<D>& v2,
         const vector4t<D>& v3)
     {
         values[0]  = v0.x;
@@ -121,7 +140,8 @@ template <typename D> class matrix4t
 
     /// construct 4x4 matrix from one with different template type but same
     /// dimension
-    template <typename E> matrix4t(const matrix4t<E>& other)
+    template<typename E>
+    matrix4t(const matrix4t<E>& other)
     {
         const E* ea = other.elemarray();
         for (unsigned i = 0; i < 4 * 4; ++i)
@@ -309,9 +329,22 @@ template <typename D> class matrix4t
     matrix4t<D> transposed() const
     {
         return matrix4t<D>(
-            values[0], values[4], values[8], values[12], values[1], values[5],
-            values[9], values[13], values[2], values[6], values[10], values[14],
-            values[3], values[7], values[11], values[15]);
+            values[0],
+            values[4],
+            values[8],
+            values[12],
+            values[1],
+            values[5],
+            values[9],
+            values[13],
+            values[2],
+            values[6],
+            values[10],
+            values[14],
+            values[3],
+            values[7],
+            values[11],
+            values[15]);
     }
 
     /// get inverse of matrix
@@ -326,8 +359,15 @@ template <typename D> class matrix4t
     matrix3t<D> upper_left_3x3() const
     {
         return matrix3t<D>(
-            values[0], values[1], values[2], values[4], values[5], values[6],
-            values[8], values[9], values[10]);
+            values[0],
+            values[1],
+            values[2],
+            values[4],
+            values[5],
+            values[6],
+            values[8],
+            values[9],
+            values[10]);
     }
 
     /// multiply matrix with vector
@@ -358,7 +398,9 @@ template <typename D> class matrix4t
     vector4t<D> row(unsigned i) const
     {
         return vector4t<D>(
-            values[4 * i], values[4 * i + 1], values[4 * i + 2],
+            values[4 * i],
+            values[4 * i + 1],
+            values[4 * i + 2],
             values[4 * i + 3]);
     }
     vector4t<D> column(unsigned i) const
@@ -476,8 +518,22 @@ template <typename D> class matrix4t
         //    0       0      (f+n)/(n-f) 2f*n/(n-f)
         //    0       0       -1           0
         return matrix4t<D>(
-            znear / r, 0, 0, 0, 0, znear / t, 0, 0, 0, 0,
-            (zfar + znear) / n_m_f, 2 * zfar * znear / n_m_f, 0, 0, -1, 0);
+            znear / r,
+            0,
+            0,
+            0,
+            0,
+            znear / t,
+            0,
+            0,
+            0,
+            0,
+            (zfar + znear) / n_m_f,
+            2 * zfar * znear / n_m_f,
+            0,
+            0,
+            -1,
+            0);
     }
 
     static matrix4t<D> ortho(D left, D right, D bottom, D top, D znear, D zfar)
@@ -492,9 +548,22 @@ template <typename D> class matrix4t
         //    0       0       0           1
         // gluOrtho2D is like calling glOrtho with near=-1, far=1
         return matrix4t<D>(
-            2 / r_m_l, 0, 0, -(right + left) / r_m_l, 0, 2 / t_m_b, 0,
-            -(top + bottom) / t_m_b, 0, 0, 2 / n_m_f, (zfar + znear) / n_m_f, 0,
-            0, 0, 1);
+            2 / r_m_l,
+            0,
+            0,
+            -(right + left) / r_m_l,
+            0,
+            2 / t_m_b,
+            0,
+            -(top + bottom) / t_m_b,
+            0,
+            0,
+            2 / n_m_f,
+            (zfar + znear) / n_m_f,
+            0,
+            0,
+            0,
+            1);
     }
 
     static matrix4t<D> ortho2D(D left, D right, D bottom, D top)
@@ -540,7 +609,8 @@ template <typename D> class matrix4t
     }
 };
 
-template <class D> void matrix4t<D>::set_gl(GLenum pname)
+template<class D>
+void matrix4t<D>::set_gl(GLenum pname)
 {
     GLdouble m[16];
     for (unsigned i = 0; i < 4; ++i)
@@ -550,7 +620,8 @@ template <class D> void matrix4t<D>::set_gl(GLenum pname)
     glLoadMatrixd(m);
     glMatrixMode(GL_MODELVIEW);
 }
-template <class D> void matrix4t<D>::set_glf(GLenum pname)
+template<class D>
+void matrix4t<D>::set_glf(GLenum pname)
 {
     GLfloat m[16];
     for (unsigned i = 0; i < 4; ++i)
@@ -561,7 +632,8 @@ template <class D> void matrix4t<D>::set_glf(GLenum pname)
     glMatrixMode(GL_MODELVIEW);
 }
 
-template <class D> void matrix4t<D>::multiply_gl() const
+template<class D>
+void matrix4t<D>::multiply_gl() const
 {
     GLdouble m[16];
     for (unsigned i = 0; i < 4; ++i)
@@ -569,7 +641,8 @@ template <class D> void matrix4t<D>::multiply_gl() const
             m[i + j * 4] = GLdouble(values[j + i * 4]);
     glMultMatrixd(m);
 }
-template <class D> void matrix4t<D>::multiply_glf() const
+template<class D>
+void matrix4t<D>::multiply_glf() const
 {
     GLfloat m[16];
     for (unsigned i = 0; i < 4; ++i)
@@ -578,7 +651,8 @@ template <class D> void matrix4t<D>::multiply_glf() const
     glMultMatrixf(m);
 }
 
-template <class D> matrix4t<D> matrix4t<D>::get_gl(GLenum pname)
+template<class D>
+matrix4t<D> matrix4t<D>::get_gl(GLenum pname)
 {
     GLdouble m[16];
     glGetDoublev(pname, m);
@@ -588,7 +662,8 @@ template <class D> matrix4t<D> matrix4t<D>::get_gl(GLenum pname)
             r.values[j + i * 4] = D(m[i + j * 4]);
     return r;
 }
-template <class D> matrix4t<D> matrix4t<D>::get_glf(GLenum pname)
+template<class D>
+matrix4t<D> matrix4t<D>::get_glf(GLenum pname)
 {
     GLfloat m[16];
     glGetFloatv(pname, m);
@@ -602,10 +677,9 @@ template <class D> matrix4t<D> matrix4t<D>::get_glf(GLenum pname)
 using matrix4  = matrix4t<double>;
 using matrix4f = matrix4t<float>;
 
-template <typename D>
+template<typename D>
 std::ostream& operator<<(std::ostream& os, const matrix4t<D>& m)
 {
     m.to_stream(os);
     return os;
 }
-

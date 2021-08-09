@@ -62,4 +62,3 @@ inline bool is_inside_circle(const vector3f& pos, const circle& c)
     vector2f d                 = pos.xy() - c.center;
     return d.square_length() <= c.radius_sqr + epsilon;
 }
-

@@ -54,7 +54,10 @@ bool texture::use_compressed_textures   = false;
 bool texture::use_anisotropic_filtering = false;
 float texture::anisotropic_level        = 0.0f;
 
-bool texture::size_non_power_two() { return true; }
+bool texture::size_non_power_two()
+{
+    return true;
+}
 
 // ------------------------------- GL mode tables -------------------
 static GLuint mapmodes[texture::NR_OF_MAPPING_MODES] = {
@@ -65,14 +68,15 @@ static GLuint mapmodes[texture::NR_OF_MAPPING_MODES] = {
     GL_LINEAR_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_LINEAR};
 
-static bool do_mipmapping[texture::NR_OF_MAPPING_MODES] = {false, false, true,
-                                                           true,  true,  true};
+static bool do_mipmapping[texture::NR_OF_MAPPING_MODES] =
+    {false, false, true, true, true, true};
 
-static GLuint magfilter[texture::NR_OF_MAPPING_MODES] = {
-    GL_NEAREST, GL_LINEAR, GL_NEAREST, GL_NEAREST, GL_LINEAR, GL_LINEAR};
+static GLuint magfilter[texture::NR_OF_MAPPING_MODES] =
+    {GL_NEAREST, GL_LINEAR, GL_NEAREST, GL_NEAREST, GL_LINEAR, GL_LINEAR};
 
 static GLuint clampmodes[texture::NR_OF_CLAMPING_MODES] = {
-    GL_REPEAT, GL_CLAMP_TO_EDGE};
+    GL_REPEAT,
+    GL_CLAMP_TO_EDGE};
 // --------------------------------------------------
 
 sdl_image::sdl_image(const std::string& filename) : img(nullptr)
@@ -100,7 +104,8 @@ sdl_image::sdl_image(const std::string& filename) : img(nullptr)
         // combine surfaces to one
         if (teximagergb->w != teximagea->w || teximagergb->h != teximagea->h)
             THROW(
-                texture::texerror, filename,
+                texture::texerror,
+                filename,
                 "jpg/png load: widths/heights don't match");
 
         if (teximagergb->format->BytesPerPixel != 3
@@ -114,7 +119,8 @@ sdl_image::sdl_image(const std::string& filename) : img(nullptr)
             || teximagea->format->palette == nullptr
             || teximagea->format->palette->ncolors != 256 || usealpha)
             THROW(
-                texture::texerror, fna,
+                texture::texerror,
+                fna,
                 ".png: no 8bit greyscale non-alpha-channel image!");
 
         uint32_t rmask, gmask, bmask, amask;
@@ -134,8 +140,14 @@ sdl_image::sdl_image(const std::string& filename) : img(nullptr)
 #endif
 
         SDL_Surface* result = SDL_CreateRGBSurface(
-            SDL_SWSURFACE, teximagergb->w, teximagergb->h, 32, rmask, gmask,
-            bmask, amask);
+            SDL_SWSURFACE,
+            teximagergb->w,
+            teximagergb->h,
+            32,
+            rmask,
+            gmask,
+            bmask,
+            amask);
         if (!result)
             THROW(file_read_error, filename);
 
@@ -182,11 +194,20 @@ sdl_image::sdl_image(const std::string& filename) : img(nullptr)
     }
 }
 
-sdl_image::~sdl_image() { SDL_FreeSurface(img); }
+sdl_image::~sdl_image()
+{
+    SDL_FreeSurface(img);
+}
 
-void sdl_image::lock() { SDL_LockSurface(img); }
+void sdl_image::lock()
+{
+    SDL_LockSurface(img);
+}
 
-void sdl_image::unlock() { SDL_UnlockSurface(img); }
+void sdl_image::unlock()
+{
+    SDL_UnlockSurface(img);
+}
 
 std::vector<uint8_t>
 sdl_image::get_plain_data(unsigned& w, unsigned& h, unsigned& byte_per_pixel)
@@ -200,20 +221,33 @@ sdl_image::get_plain_data(unsigned& w, unsigned& h, unsigned& byte_per_pixel)
     {
         memcpy(
             &tmp[y * w * byte_per_pixel],
-            (uint8_t*) img->pixels + y * img->pitch, w * byte_per_pixel);
+            (uint8_t*) img->pixels + y * img->pitch,
+            w * byte_per_pixel);
     }
     unlock();
     return tmp;
 }
 
-unsigned sdl_image::get_width() const { return img->w; }
-unsigned sdl_image::get_height() const { return img->h; }
+unsigned sdl_image::get_width() const
+{
+    return img->w;
+}
+unsigned sdl_image::get_height() const
+{
+    return img->h;
+}
 
 // --------------------------------------------------
 
 void texture::sdl_init(
-    SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw, unsigned sh,
-    bool makenormalmap, float detailh, bool rgb2grey)
+    SDL_Surface* teximage,
+    unsigned sx,
+    unsigned sy,
+    unsigned sw,
+    unsigned sh,
+    bool makenormalmap,
+    float detailh,
+    bool rgb2grey)
 {
     // compute texture width and height
     unsigned tw = sw, th = sh;
@@ -435,7 +469,9 @@ void texture::sdl_init(
 }
 
 void texture::init(
-    const vector<uint8_t>& data, bool makenormalmap, float detailh)
+    const vector<uint8_t>& data,
+    bool makenormalmap,
+    float detailh)
 {
     // error checks.
     if (mapping < 0 || mapping >= NR_OF_MAPPING_MODES)
@@ -446,7 +482,8 @@ void texture::init(
     unsigned ms = get_max_size();
     if (width > ms || height > ms)
         THROW(
-            texerror, texfilename,
+            texerror,
+            texfilename,
             "texture values too large, not supported by card");
 
     glGenTextures(1, &opengl_name);
@@ -473,8 +510,15 @@ void texture::init(
             format = GL_COMPRESSED_LUMINANCE_ARB;
 
         glTexImage2D(
-            GL_TEXTURE_2D, 0, internalformat, gl_width, gl_height, 0, format,
-            GL_UNSIGNED_BYTE, &nmpix[0]);
+            GL_TEXTURE_2D,
+            0,
+            internalformat,
+            gl_width,
+            gl_height,
+            0,
+            format,
+            GL_UNSIGNED_BYTE,
+            &nmpix[0]);
 
 #ifdef MEMMEASURE
         add_mem_used = gl_width * gl_height * get_bpp();
@@ -484,14 +528,20 @@ void texture::init(
         {
             if (dimension != GL_TEXTURE_2D)
                 THROW(
-                    texerror, get_name(),
+                    texerror,
+                    get_name(),
                     "mip mapping only supported for 2D textures");
 #if 1
             // fixme: doesn't work with textures that don't have power of two
             // size...
             gluBuild2DMipmaps(
-                GL_TEXTURE_2D, format, gl_width, gl_height, format,
-                GL_UNSIGNED_BYTE, &nmpix[0]);
+                GL_TEXTURE_2D,
+                format,
+                gl_width,
+                gl_height,
+                format,
+                GL_UNSIGNED_BYTE,
+                &nmpix[0]);
 
 #else
             // buggy version. gives white textures. maybe some mipmap levels
@@ -509,7 +559,8 @@ void texture::init(
             vector<uint8_t> curlvl;
             const vector<uint8_t>* gdat = &data;
             for (unsigned level = 1, w = gl_width / 2, h = gl_height / 2;
-                 w > 0 && h > 0; w /= 2, h /= 2)
+                 w > 0 && h > 0;
+                 w /= 2, h /= 2)
             {
                 cout << "level " << level << " w " << w << " h " << h << "\n";
                 curlvl = scale_half(*gdat, w, h, 1);
@@ -522,8 +573,15 @@ void texture::init(
                     internalformat = GL_COMPRESSED_RGB_ARB;
 
                 glTexImage2D(
-                    GL_TEXTURE_2D, level, internalformat, w, h, 0, GL_RGB,
-                    GL_UNSIGNED_BYTE, &nmpix[0]);
+                    GL_TEXTURE_2D,
+                    level,
+                    internalformat,
+                    w,
+                    h,
+                    0,
+                    GL_RGB,
+                    GL_UNSIGNED_BYTE,
+                    &nmpix[0]);
                 w /= 2;
                 h /= 2;
             }
@@ -536,8 +594,15 @@ void texture::init(
         vector<uint8_t> nmpix =
             make_normals_with_alpha(data, gl_width, gl_height, detailh);
         glTexImage2D(
-            GL_TEXTURE_2D, 0, format, gl_width, gl_height, 0, format,
-            GL_UNSIGNED_BYTE, &nmpix[0]);
+            GL_TEXTURE_2D,
+            0,
+            format,
+            gl_width,
+            gl_height,
+            0,
+            format,
+            GL_UNSIGNED_BYTE,
+            &nmpix[0]);
 #ifdef MEMMEASURE
         add_mem_used = gl_width * gl_height * get_bpp();
 #endif
@@ -546,8 +611,13 @@ void texture::init(
             // fixme: doesn't work with textures that don't have power of two
             // size...
             gluBuild2DMipmaps(
-                GL_TEXTURE_2D, format, gl_width, gl_height, format,
-                GL_UNSIGNED_BYTE, &nmpix[0]);
+                GL_TEXTURE_2D,
+                format,
+                gl_width,
+                gl_height,
+                format,
+                GL_UNSIGNED_BYTE,
+                &nmpix[0]);
         }
     }
     else
@@ -578,15 +648,28 @@ void texture::init(
             case GL_TEXTURE_2D:
             {
                 glTexImage2D(
-                    GL_TEXTURE_2D, 0, internalformat, gl_width, gl_height, 0,
-                    format, GL_UNSIGNED_BYTE, &data[0]);
+                    GL_TEXTURE_2D,
+                    0,
+                    internalformat,
+                    gl_width,
+                    gl_height,
+                    0,
+                    format,
+                    GL_UNSIGNED_BYTE,
+                    &data[0]);
             }
             break;
             case GL_TEXTURE_1D:
             {
                 glTexImage1D(
-                    GL_TEXTURE_1D, 0, internalformat, max(gl_width, gl_height),
-                    0, format, GL_UNSIGNED_BYTE, &data[0]);
+                    GL_TEXTURE_1D,
+                    0,
+                    internalformat,
+                    max(gl_width, gl_height),
+                    0,
+                    format,
+                    GL_UNSIGNED_BYTE,
+                    &data[0]);
             }
             break;
         }
@@ -601,8 +684,13 @@ void texture::init(
             // fixme: doesn't work with textures that don't have power of two
             // size...
             gluBuild2DMipmaps(
-                GL_TEXTURE_2D, format, gl_width, gl_height, format,
-                GL_UNSIGNED_BYTE, &data[0]);
+                GL_TEXTURE_2D,
+                format,
+                gl_width,
+                gl_height,
+                format,
+                GL_UNSIGNED_BYTE,
+                &data[0]);
         }
     }
 
@@ -629,8 +717,8 @@ void texture::init(
             dimension, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
 }
 
-#define MAKEFOURCC(ch0, ch1, ch2, ch3)                      \
-    ((int32_t)(int8_t)(ch0) | ((int32_t)(int8_t)(ch1) << 8) \
+#define MAKEFOURCC(ch0, ch1, ch2, ch3)                                         \
+    ((int32_t)(int8_t)(ch0) | ((int32_t)(int8_t)(ch1) << 8)                    \
      | ((int32_t)(int8_t)(ch2) << 16) | ((int32_t)(int8_t)(ch3) << 24))
 void texture::load_dds(const std::string& filename, dds_data& target)
 {
@@ -706,7 +794,10 @@ void texture::load_dds(const std::string& filename, dds_data& target)
 #undef MAKEFOURCC
 
 vector<uint8_t> texture::scale_half(
-    const vector<uint8_t>& src, unsigned w, unsigned h, unsigned bpp)
+    const vector<uint8_t>& src,
+    unsigned w,
+    unsigned h,
+    unsigned bpp)
 {
     if (!size_non_power_two())
     {
@@ -739,7 +830,10 @@ vector<uint8_t> texture::scale_half(
 }
 
 vector<uint8_t> texture::make_normals(
-    const vector<uint8_t>& src, unsigned w, unsigned h, float detailh)
+    const vector<uint8_t>& src,
+    unsigned w,
+    unsigned h,
+    float detailh)
 {
     // src size must be w*h
     vector<uint8_t> dst(3 * w * h);
@@ -773,7 +867,10 @@ vector<uint8_t> texture::make_normals(
 }
 
 vector<uint8_t> texture::make_normals_with_alpha(
-    const vector<uint8_t>& src, unsigned w, unsigned h, float detailh)
+    const vector<uint8_t>& src,
+    unsigned w,
+    unsigned h,
+    float detailh)
 {
     // src size must be w*h
     vector<uint8_t> dst(4 * w * h);
@@ -808,8 +905,13 @@ vector<uint8_t> texture::make_normals_with_alpha(
 }
 
 texture::texture(
-    const string& filename, mapping_mode mapping_, clamping_mode clamp,
-    bool makenormalmap, float detailh, bool rgb2grey, GLenum _dimension)
+    const string& filename,
+    mapping_mode mapping_,
+    clamping_mode clamp,
+    bool makenormalmap,
+    float detailh,
+    bool rgb2grey,
+    GLenum _dimension)
 {
     dimension   = _dimension;
     mapping     = mapping_;
@@ -818,14 +920,28 @@ texture::texture(
 
     sdl_image teximage(filename);
     sdl_init(
-        teximage.get_SDL_Surface(), 0, 0, teximage->w, teximage->h,
-        makenormalmap, detailh, rgb2grey);
+        teximage.get_SDL_Surface(),
+        0,
+        0,
+        teximage->w,
+        teximage->h,
+        makenormalmap,
+        detailh,
+        rgb2grey);
 }
 
 texture::texture(
-    SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw, unsigned sh,
-    mapping_mode mapping_, clamping_mode clamp, bool makenormalmap,
-    float detailh, bool rgb2grey, GLenum _dimension)
+    SDL_Surface* teximage,
+    unsigned sx,
+    unsigned sy,
+    unsigned sw,
+    unsigned sh,
+    mapping_mode mapping_,
+    clamping_mode clamp,
+    bool makenormalmap,
+    float detailh,
+    bool rgb2grey,
+    GLenum _dimension)
 {
     dimension = _dimension;
     mapping   = mapping_;
@@ -834,22 +950,42 @@ texture::texture(
 }
 
 texture::texture(
-    const sdl_image& teximage, unsigned sx, unsigned sy, unsigned sw,
-    unsigned sh, mapping_mode mapping_, clamping_mode clamp, bool makenormalmap,
-    float detailh, bool rgb2grey, GLenum _dimension)
+    const sdl_image& teximage,
+    unsigned sx,
+    unsigned sy,
+    unsigned sw,
+    unsigned sh,
+    mapping_mode mapping_,
+    clamping_mode clamp,
+    bool makenormalmap,
+    float detailh,
+    bool rgb2grey,
+    GLenum _dimension)
 {
     dimension = _dimension;
     mapping   = mapping_;
     clamping  = clamp;
     sdl_init(
-        teximage.get_SDL_Surface(), sx, sy, sw, sh, makenormalmap, detailh,
+        teximage.get_SDL_Surface(),
+        sx,
+        sy,
+        sw,
+        sh,
+        makenormalmap,
+        detailh,
         rgb2grey);
 }
 
 texture::texture(
-    const vector<uint8_t>& pixels, unsigned w, unsigned h, int format_,
-    mapping_mode mapping_, clamping_mode clamp, bool makenormalmap,
-    float detailh, GLenum _dimension)
+    const vector<uint8_t>& pixels,
+    unsigned w,
+    unsigned h,
+    int format_,
+    mapping_mode mapping_,
+    clamping_mode clamp,
+    bool makenormalmap,
+    float detailh,
+    GLenum _dimension)
 {
     dimension = _dimension;
     mapping   = mapping_;
@@ -871,8 +1007,12 @@ texture::texture(
 }
 
 texture::texture(
-    unsigned w, unsigned h, int format_, mapping_mode mapping_,
-    clamping_mode clamp, bool force_no_compression)
+    unsigned w,
+    unsigned h,
+    int format_,
+    mapping_mode mapping_,
+    clamping_mode clamp,
+    bool force_no_compression)
 {
     dimension = GL_TEXTURE_2D;
     mapping   = mapping_;
@@ -931,12 +1071,21 @@ texture::texture(
 
     // initialize texel data with empty pixels
     glTexImage2D(
-        GL_TEXTURE_2D, 0, internalformat, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE,
+        GL_TEXTURE_2D,
+        0,
+        internalformat,
+        w,
+        h,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
         (void*) nullptr);
 }
 
 texture::texture(
-    const std::string& filename, bool dummy, mapping_mode mapping_,
+    const std::string& filename,
+    bool dummy,
+    mapping_mode mapping_,
     clamping_mode clamp)
 {
     dimension = GL_TEXTURE_2D;
@@ -988,11 +1137,25 @@ texture::texture(
         m_size = ((m_width + 3) / 4) * ((m_height + 3) / 4) * block_size;
 
         glTexImage2D(
-            GL_TEXTURE_2D, i, image_data.format, m_width, m_height, 0, GL_RGBA,
-            GL_UNSIGNED_BYTE, nullptr);
+            GL_TEXTURE_2D,
+            i,
+            image_data.format,
+            m_width,
+            m_height,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            nullptr);
         glCompressedTexSubImage2DARB(
-            GL_TEXTURE_2D, i, 0, 0, m_width, m_height, image_data.format,
-            m_size, &image_data.pixels[m_offset]);
+            GL_TEXTURE_2D,
+            i,
+            0,
+            0,
+            m_width,
+            m_height,
+            image_data.format,
+            m_size,
+            &image_data.pixels[m_offset]);
 
         m_offset += m_size;
 
@@ -1020,17 +1183,32 @@ texture::~texture()
 }
 
 void texture::sub_image(
-    int xoff, int yoff, unsigned w, unsigned h,
-    const std::vector<uint8_t>& pixels, int format_)
+    int xoff,
+    int yoff,
+    unsigned w,
+    unsigned h,
+    const std::vector<uint8_t>& pixels,
+    int format_)
 {
     glBindTexture(GL_TEXTURE_2D, opengl_name);
     glTexSubImage2D(
-        GL_TEXTURE_2D, 0 /* mipmap level */, xoff, yoff, w, h, format_,
-        GL_UNSIGNED_BYTE, &pixels[0]);
+        GL_TEXTURE_2D,
+        0 /* mipmap level */,
+        xoff,
+        yoff,
+        w,
+        h,
+        format_,
+        GL_UNSIGNED_BYTE,
+        &pixels[0]);
 }
 
 void texture::sub_image(
-    const sdl_image& sdlimage, int xoff, int yoff, unsigned w, unsigned h)
+    const sdl_image& sdlimage,
+    int xoff,
+    int yoff,
+    unsigned w,
+    unsigned h)
 {
     SDL_Surface* teximage = sdlimage.get_SDL_Surface();
 
@@ -1071,8 +1249,15 @@ void texture::sub_image(
 
     glBindTexture(GL_TEXTURE_2D, opengl_name);
     glTexSubImage2D(
-        GL_TEXTURE_2D, 0 /* mipmap level */, xoff, yoff, w, h, format,
-        GL_UNSIGNED_BYTE, &data[0]);
+        GL_TEXTURE_2D,
+        0 /* mipmap level */,
+        xoff,
+        yoff,
+        w,
+        h,
+        format,
+        GL_UNSIGNED_BYTE,
+        &data[0]);
 }
 
 unsigned texture::get_bpp() const
@@ -1121,8 +1306,12 @@ void texture::draw(int x, int y, int w, int h, const colorf& col) const
     float u = float(width) / gl_width;
     float v = float(height) / gl_height;
     primitives::textured_quad(
-        vector2f(x, y), vector2f(x + w, y + h), *this, vector2f(0, 0),
-        vector2f(u, v), col)
+        vector2f(x, y),
+        vector2f(x + w, y + h),
+        *this,
+        vector2f(0, 0),
+        vector2f(u, v),
+        col)
         .render();
 }
 
@@ -1131,8 +1320,12 @@ void texture::draw_hm(int x, int y, int w, int h, const colorf& col) const
     float u = float(width) / gl_width;
     float v = float(height) / gl_height;
     primitives::textured_quad(
-        vector2f(x, y), vector2f(x + w, y + h), *this, vector2f(u, 0),
-        vector2f(0, v), col)
+        vector2f(x, y),
+        vector2f(x + w, y + h),
+        *this,
+        vector2f(u, 0),
+        vector2f(0, v),
+        col)
         .render();
 }
 
@@ -1141,8 +1334,12 @@ void texture::draw_vm(int x, int y, int w, int h, const colorf& col) const
     float u = float(width) / gl_width;
     float v = float(height) / gl_height;
     primitives::textured_quad(
-        vector2f(x, y), vector2f(x + w, y + h), *this, vector2f(0, v),
-        vector2f(u, 0), col)
+        vector2f(x, y),
+        vector2f(x + w, y + h),
+        *this,
+        vector2f(0, v),
+        vector2f(u, 0),
+        col)
         .render();
 }
 
@@ -1152,7 +1349,12 @@ void texture::draw_rot(int x, int y, double angle, const colorf& col) const
 }
 
 void texture::draw_rot(
-    int x, int y, double angle, int tx, int ty, const colorf& col) const
+    int x,
+    int y,
+    double angle,
+    int tx,
+    int ty,
+    const colorf& col) const
 {
     glPushMatrix();
     glTranslatef(x, y, 0);
@@ -1166,13 +1368,22 @@ void texture::draw_tiles(int x, int y, int w, int h, const colorf& col) const
     float tilesx = float(w) / gl_width;
     float tilesy = float(h) / gl_height;
     primitives::textured_quad(
-        vector2f(x, y), vector2f(x + w, y + h), *this, vector2f(0, 0),
-        vector2f(tilesx, tilesy), col)
+        vector2f(x, y),
+        vector2f(x + w, y + h),
+        *this,
+        vector2f(0, 0),
+        vector2f(tilesx, tilesy),
+        col)
         .render();
 }
 
 void texture::draw_tiles_rot(
-    int x, int y, int w, int h, double angle, const colorf& col) const
+    int x,
+    int y,
+    int w,
+    int h,
+    double angle,
+    const colorf& col) const
 {
     glPushMatrix();
     glTranslatef(x, y, 0);
@@ -1182,16 +1393,27 @@ void texture::draw_tiles_rot(
 }
 
 void texture::draw_subimage(
-    int x, int y, int w, int h, unsigned tx, unsigned ty, unsigned tw,
-    unsigned th, const colorf& col) const
+    int x,
+    int y,
+    int w,
+    int h,
+    unsigned tx,
+    unsigned ty,
+    unsigned tw,
+    unsigned th,
+    const colorf& col) const
 {
     float x1 = float(tx) / gl_width;
     float y1 = float(ty) / gl_height;
     float x2 = float(tx + tw) / gl_width;
     float y2 = float(ty + th) / gl_height;
     primitives::textured_quad(
-        vector2f(x, y), vector2f(x + w, y + h), *this, vector2f(x1, y1),
-        vector2f(x2, y2), col)
+        vector2f(x, y),
+        vector2f(x + w, y + h),
+        *this,
+        vector2f(x1, y1),
+        vector2f(x2, y2),
+        col)
         .render();
 }
 
@@ -1209,8 +1431,13 @@ unsigned texture::get_max_size()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 texture3d::texture3d(
-    const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned d,
-    int format_, mapping_mode mapping_, clamping_mode clamp)
+    const std::vector<uint8_t>& pixels,
+    unsigned w,
+    unsigned h,
+    unsigned d,
+    int format_,
+    mapping_mode mapping_,
+    clamping_mode clamp)
 {
     mapping  = mapping_;
     clamping = clamp;
@@ -1238,7 +1465,8 @@ texture3d::texture3d(
     unsigned ms = get_max_size();
     if (width > ms || height > ms || depth > ms)
         THROW(
-            texerror, "3d tex",
+            texerror,
+            "3d tex",
             "texture values too large, not supported by card");
 
     glGenTextures(1, &opengl_name);
@@ -1267,8 +1495,16 @@ texture3d::texture3d(
     }
 
     glTexImage3D(
-        GL_TEXTURE_3D, 0, internalformat, gl_width, gl_height, gl_depth, 0,
-        format, GL_UNSIGNED_BYTE, &pixels[0]);
+        GL_TEXTURE_3D,
+        0,
+        internalformat,
+        gl_width,
+        gl_height,
+        gl_depth,
+        0,
+        format,
+        GL_UNSIGNED_BYTE,
+        &pixels[0]);
 
     if (do_mipmapping[mapping])
     {
@@ -1287,8 +1523,14 @@ texture3d::texture3d(
 #ifndef WIN32 // ugly hack to make it compile with win32, 3d textures not used
               // yet...
         gluBuild3DMipmaps(
-            GL_TEXTURE_3D, format, gl_width, gl_height, gl_depth, format,
-            GL_UNSIGNED_BYTE, &pixels[0]);
+            GL_TEXTURE_3D,
+            format,
+            gl_width,
+            gl_height,
+            gl_depth,
+            format,
+            GL_UNSIGNED_BYTE,
+            &pixels[0]);
 #endif
     }
 
@@ -1306,7 +1548,11 @@ texture3d::texture3d(
 }
 
 texture3d::texture3d(
-    unsigned w, unsigned h, unsigned d, int format_, mapping_mode mapping_,
+    unsigned w,
+    unsigned h,
+    unsigned d,
+    int format_,
+    mapping_mode mapping_,
     clamping_mode clamp)
 {
     mapping  = mapping_;
@@ -1347,24 +1593,52 @@ texture3d::texture3d(
             GL_TEXTURE_3D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropic_level);
 
     glTexImage3D(
-        GL_TEXTURE_3D, 0, format, w, h, d, 0, GL_RGB, GL_UNSIGNED_BYTE,
+        GL_TEXTURE_3D,
+        0,
+        format,
+        w,
+        h,
+        d,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
         (void*) nullptr);
     glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 void texture3d::sub_image(
-    int xoff, int yoff, int zoff, unsigned w, unsigned h, unsigned d,
-    const std::vector<uint8_t>& pixels, int format_)
+    int xoff,
+    int yoff,
+    int zoff,
+    unsigned w,
+    unsigned h,
+    unsigned d,
+    const std::vector<uint8_t>& pixels,
+    int format_)
 {
     glBindTexture(GL_TEXTURE_3D, opengl_name);
     glTexSubImage3D(
-        GL_TEXTURE_3D, 0 /* mipmap level */, xoff, yoff, zoff, w, h, d, format_,
-        GL_UNSIGNED_BYTE, &pixels[0]);
+        GL_TEXTURE_3D,
+        0 /* mipmap level */,
+        xoff,
+        yoff,
+        zoff,
+        w,
+        h,
+        d,
+        format_,
+        GL_UNSIGNED_BYTE,
+        &pixels[0]);
     glBindTexture(GL_TEXTURE_3D, 0);
 }
 
 void texture3d::draw(
-    int x, int y, int w, int h, const vector3f& tc0, const vector3f& tcdx,
+    int x,
+    int y,
+    int w,
+    int h,
+    const vector3f& tc0,
+    const vector3f& tcdx,
     const vector3f& tcdy) const
 {
     // glEnable(GL_TEXTURE_3D); // important! let caller do this...

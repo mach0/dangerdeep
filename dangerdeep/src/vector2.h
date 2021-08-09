@@ -27,22 +27,40 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cmath>     // for sqrt
 #include <iostream>
 
-template <typename D2> class vector3t;
+template<typename D2>
+class vector3t;
 
-template <typename D> inline D epsilon_sqr() { return D(1e-6); }
-template <> inline double epsilon_sqr() { return 1e-8; }
-template <typename D> inline D epsilon() { return D(1e-3); }
-template <> inline double epsilon() { return 1e-4; }
+template<typename D>
+inline D epsilon_sqr()
+{
+    return D(1e-6);
+}
+template<>
+inline double epsilon_sqr()
+{
+    return 1e-8;
+}
+template<typename D>
+inline D epsilon()
+{
+    return D(1e-3);
+}
+template<>
+inline double epsilon()
+{
+    return 1e-4;
+}
 
 ///\brief Template class for a mathematical vector with two coefficients.
-template <typename D> class vector2t
+template<typename D>
+class vector2t
 {
   public:
     D x, y;
 
     vector2t() : x(0), y(0) { }
     vector2t(D x_, D y_) : x(x_), y(y_) { }
-    template <typename E>
+    template<typename E>
     explicit vector2t(const vector2t<E>& other) : x(D(other.x)), y(D(other.y))
     {
     }
@@ -139,9 +157,10 @@ template <typename D> class vector2t
     }
     vector3t<D> xy0() const { return vector3t<D>(x, y, 0); }
     vector3t<D> xyz(D z) const { return vector3t<D>(x, y, z); }
-    template <typename D2>
+    template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector2t<D2>& v);
-    template <typename E> void assign(const vector2t<E>& other)
+    template<typename E>
+    void assign(const vector2t<E>& other)
     {
         x = D(other.x);
         y = D(other.y);
@@ -168,9 +187,12 @@ template <typename D> class vector2t
     static vector2t<D> y_axis() { return vector2t<D>(D(0), D(1)); }
 };
 
-template <typename D>
+template<typename D>
 bool vector2t<D>::solve(
-    const vector2t<D>& o1, const vector2t<D>& o2, D& s1, D& s2) const
+    const vector2t<D>& o1,
+    const vector2t<D>& o2,
+    D& s1,
+    D& s2) const
 {
     D det = o1.x * o2.y - o2.x * o1.y;
     if (!det)
@@ -180,20 +202,20 @@ bool vector2t<D>::solve(
     return true;
 }
 
-template <typename D>
+template<typename D>
 vector2t<D>
 vector2t<D>::matrixmul(const vector2t<D>& c0, const vector2t<D>& c1) const
 {
     return vector2t<D>(c0.x * x + c1.x * y, c0.y * x + c1.y * y);
 }
 
-template <typename D2>
+template<typename D2>
 inline vector2t<D2> operator*(D2 scalar, const vector2t<D2>& v)
 {
     return v * scalar;
 }
 
-template <typename D2>
+template<typename D2>
 std::ostream& operator<<(std::ostream& os, const vector2t<D2>& v)
 {
     os << "x=" << v.x << "; y=" << v.y;
@@ -205,4 +227,3 @@ using vector2f = vector2t<float>;
 using vector2i = vector2t<int>;
 using vector2u = vector2t<unsigned int>;
 using vector2l = vector2t<long>;
-

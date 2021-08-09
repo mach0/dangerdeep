@@ -95,7 +95,8 @@ void sub_ghg_display::display() const
     // test hack: test signal strengths
     // 	angle sonar_ang = angle(turnknobang[TK_DIRECTION]*0.5) +
     // player->get_heading(); 	vector<double> noise_strengths =
-    // gm.sonar_listen_ships(player, sonar_ang); 	printf("noise strengths, global
-    // ang=%f, L=%f M=%f H=%f U=%f\n", 	       sonar_ang.value(), noise_strengths[0],
-    // noise_strengths[1], noise_strengths[2], noise_strengths[3]);
+    // gm.sonar_listen_ships(player, sonar_ang); 	printf("noise strengths,
+    // global ang=%f, L=%f M=%f H=%f U=%f\n", 	       sonar_ang.value(),
+    // noise_strengths[0], noise_strengths[1], noise_strengths[2],
+    // noise_strengths[3]);
 }

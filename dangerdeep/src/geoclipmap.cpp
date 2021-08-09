@@ -47,7 +47,9 @@ for each vertex, when p is the factor.
 #define DYNAMIC_GROW_INDEX_VBO
 
 geoclipmap::geoclipmap(
-    unsigned nr_levels, unsigned resolution_exp, height_generator& hg) :
+    unsigned nr_levels,
+    unsigned resolution_exp,
+    height_generator& hg) :
     resolution((1 << resolution_exp) - 2),
     resolution_vbo(1 << resolution_exp), resolution_vbo_mod(resolution_vbo - 1),
     L(hg.get_sample_spacing()),
@@ -84,7 +86,8 @@ geoclipmap::geoclipmap(
     defines.push_back("MIRROR");
     myshader[1] = std::make_unique<glsl_shader_setup>(
         get_shader_dir() + "geoclipmap.vshader",
-        get_shader_dir() + "geoclipmap.fshader", defines);
+        get_shader_dir() + "geoclipmap.fshader",
+        defines);
 
     // do not use too high w_fac with too small resolutions.
     // Otherwise the decaying transition factor (going from 1.0 at outer border
@@ -193,7 +196,9 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
 }
 
 void geoclipmap::display(
-    const frustum& f, const vector3& view_delta, bool is_mirror,
+    const frustum& f,
+    const vector3& view_delta,
+    bool is_mirror,
     int above_water) const
 {
     if (wireframe)
@@ -265,7 +270,8 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level) :
     vertices.init_data(
         gcm.resolution_vbo * gcm.resolution_vbo * geoclipmap_fperv * 4
             + (outmost ? 8 * geoclipmap_fperv * 4 : 0),
-        nullptr, GL_STATIC_DRAW);
+        nullptr,
+        GL_STATIC_DRAW);
     // size of T-junction triangles: 4 indices per triangle (3 + 2 degen. - 1),
     // 4*N/2 triangles max. size for normal triangles + T-junc.: 2*N^2 - 4*N +
     // 8*N - 16 = 2*N^2 + 4*N - 16 size for multiple columns: 2 per new column,
@@ -285,8 +291,12 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level) :
     std::vector<uint8_t> pxl(
         3 * gcm.resolution_vbo * gcm.resolution_vbo * 2 * 2);
     normals = std::make_unique<texture>(
-        pxl, gcm.resolution_vbo * 2, gcm.resolution_vbo * 2, GL_RGB,
-        texture::LINEAR, texture::REPEAT);
+        pxl,
+        gcm.resolution_vbo * 2,
+        gcm.resolution_vbo * 2,
+        GL_RGB,
+        texture::LINEAR,
+        texture::REPEAT);
 
     // fixme: is this still needed?
     if (color_res_fac == 2)
@@ -305,7 +315,8 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level) :
 }
 
 geoclipmap::area geoclipmap::level::set_viewerpos(
-    const vector3& new_viewpos, const geoclipmap::area& inner)
+    const vector3& new_viewpos,
+    const geoclipmap::area& inner)
 {
     // x_base/y_base tells offset in sample data according to level and
     // viewer position (new_viewpos)
@@ -398,7 +409,8 @@ geoclipmap::area geoclipmap::level::set_viewerpos(
         }
         vertices.init_sub_data(
             gcm.resolution_vbo * gcm.resolution_vbo * geoclipmap_fperv * 4,
-            8 * geoclipmap_fperv * 4, &gcm.vboscratchbuf[0]);
+            8 * geoclipmap_fperv * 4,
+            &gcm.vboscratchbuf[0]);
     }
 
     return outer;
@@ -440,8 +452,12 @@ void geoclipmap::level::update_region(const geoclipmap::area& upar)
     // sometimes, as -1 / 2 gives 0 and not -1 as the shift method does, when we
     // want to round down...
     gcm.height_gen.compute_heights(
-        index, upcrd, sz + vector2i(2, 2), &gcm.vboscratchbuf[2],
-        geoclipmap_fperv, geoclipmap_fperv * (sz.x + 2));
+        index,
+        upcrd,
+        sz + vector2i(2, 2),
+        &gcm.vboscratchbuf[2],
+        geoclipmap_fperv,
+        geoclipmap_fperv * (sz.x + 2));
     unsigned ptr = 0;
     for (int y = 0; y < sz.y + 2; ++y)
     {
@@ -471,8 +487,12 @@ void geoclipmap::level::update_region(const geoclipmap::area& upar)
         ((sz.x + 2) * (1 - (upar.bl.y & 1)) + (1 - (upar.bl.x & 1)))
         * geoclipmap_fperv;
     gcm.height_gen.compute_heights(
-        index + 1, upcrd, szc, &gcm.vboscratchbuf[ptr + 3],
-        2 * geoclipmap_fperv, geoclipmap_fperv * (sz.x + 2) * 2);
+        index + 1,
+        upcrd,
+        szc,
+        &gcm.vboscratchbuf[ptr + 3],
+        2 * geoclipmap_fperv,
+        geoclipmap_fperv * (sz.x + 2) * 2);
 
     // interpolate z_c, first fill in missing columns on even rows
     for (int y = 0; y < szc.y; ++y)
@@ -572,7 +592,9 @@ void geoclipmap::level::update_region(const geoclipmap::area& upar)
         update_VBO_and_tex(
             vector2i(0, 0), sz.x, vector2i(szx, sz.y), vboupdate.bl);
         update_VBO_and_tex(
-            vector2i(szx, 0), sz.x, vector2i(vboupdate.tr.x + 1, sz.y),
+            vector2i(szx, 0),
+            sz.x,
+            vector2i(vboupdate.tr.x + 1, sz.y),
             vector2i(gcm.mod(vboupdate.bl.x + szx), vboupdate.bl.y));
 #if 0
 		}
@@ -617,9 +639,14 @@ void geoclipmap::level::update_VBO_and_tex(
         // ="<<vbooff.x<<"|"<<gcm.mod(vbooff.y+y)<<"
         // idx="<<((scratchoff.y+y)*scratchmod+scratchoff.x)*3);
         glTexSubImage2D(
-            GL_TEXTURE_2D, 0 /* mipmap level */, vbooff.x * 2,
-            (vbooff.y * 2 + y) & (gcm.resolution_vbo_mod * 2 + 1), sz.x * 2, 1,
-            GL_RGB, GL_UNSIGNED_BYTE,
+            GL_TEXTURE_2D,
+            0 /* mipmap level */,
+            vbooff.x * 2,
+            (vbooff.y * 2 + y) & (gcm.resolution_vbo_mod * 2 + 1),
+            sz.x * 2,
+            1,
+            GL_RGB,
+            GL_UNSIGNED_BYTE,
             &gcm.texnormalscratchbuf
                  [((scratchoff.y * 2 + y) * scratchmod * 2 + scratchoff.x * 2)
                   * 3]);
@@ -645,7 +672,9 @@ static const int geoidx[2 * 4 * 6] = {
 
 // give real world offset (per-level coordinates) here as well as frustum-ref
 unsigned geoclipmap::level::generate_indices(
-    const frustum& f, uint32_t* buffer, unsigned idxbase,
+    const frustum& f,
+    uint32_t* buffer,
+    unsigned idxbase,
     const vector2i& offset,       // in per-level coordinates, global
     const vector2i& size,         // size of patch
     const vector2i& vbooff) const // offset in VBO
@@ -753,7 +782,9 @@ unsigned geoclipmap::level::generate_indices(
     {
         unsigned szx = std::min(colw, unsigned(size2.x) - coloff);
         result       = generate_indices2(
-            buffer, result, vector2i(szx, size2.y),
+            buffer,
+            result,
+            vector2i(szx, size2.y),
             vector2i(vbooff2.x + coloff, vbooff2.y));
         coloff += colw - 1;
     }
@@ -766,7 +797,9 @@ unsigned geoclipmap::level::generate_indices(
 // needed indices for this call:
 // (size2.x*2+2)*(size2.y-1)
 unsigned geoclipmap::level::generate_indices2(
-    uint32_t* buffer, unsigned idxbase, const vector2i& size2,
+    uint32_t* buffer,
+    unsigned idxbase,
+    const vector2i& size2,
     const vector2i& vbooff2) const
 {
     // fixme: according to the profiler, this eats 70% of cpu time!!!
@@ -778,9 +811,9 @@ unsigned geoclipmap::level::generate_indices2(
     // 43%. So VBO writing is 1-43/70=39% of the cpu time. It is doubtful that
     // glBufferSubData would be faster... so replace gcm.mod, we can't do much
     // more... done, now cpu load 65%, but still high. it variies with geometric
-    // detail or viewer height, so its hard to tell but current version has least
-    // number of instructions in inner loop that can be generated with gcc, for
-    // lower numbers one needs assembler.
+    // detail or viewer height, so its hard to tell but current version has
+    // least number of instructions in inner loop that can be generated with
+    // gcc, for lower numbers one needs assembler.
 
     // always put the first index of a row twice and also the last
     uint32_t* bufptr                  = buffer + idxbase;
@@ -866,7 +899,8 @@ geoclipmap::level::generate_indices_T(uint32_t* buffer, unsigned idxbase) const
 }
 
 unsigned geoclipmap::level::generate_indices_horizgap(
-    uint32_t* buffer, unsigned idxbase) const
+    uint32_t* buffer,
+    unsigned idxbase) const
 {
     // repeat last index for degenerated triangle conjunction. legal, because
     // there are always indices in buffer from former generate_indices_T.
@@ -947,7 +981,8 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
     uint32_t* indexvbo = &gcm.idxscratchbuf[0];
 #ifdef DEBUG_INDEX_USAGE
     for (unsigned i = gcm.idxscratchbuf.size() - DEBUG_INDEX_EXTRA;
-         i < gcm.idxscratchbuf.size(); ++i)
+         i < gcm.idxscratchbuf.size();
+         ++i)
         gcm.idxscratchbuf[i] = 0xdeadbeef;
 #endif
 
@@ -1038,17 +1073,23 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
     vertices.bind();
     glVertexPointer(3, GL_FLOAT, geoclipmap_fperv * 4, (float*) nullptr + 0);
     glVertexAttribPointer(
-        gcm.myshader_vattr_z_c_index[si], 1, GL_FLOAT, GL_FALSE,
-        geoclipmap_fperv * 4, (float*) nullptr + 3);
+        gcm.myshader_vattr_z_c_index[si],
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        geoclipmap_fperv * 4,
+        (float*) nullptr + 3);
     glEnableVertexAttribArray(gcm.myshader_vattr_z_c_index[si]);
     vertices.unbind();
     indices.bind();
     // we always skip the first index here, because it is identical to the
     // second, that is because of the line/patch transition code (it is easier)
     glDrawRangeElements(
-        GL_TRIANGLE_STRIP, 0 /*min_vertex_index*/,
+        GL_TRIANGLE_STRIP,
+        0 /*min_vertex_index*/,
         gcm.resolution_vbo * gcm.resolution_vbo - 1 /*max_vertex_index*/,
-        nridx - 1, GL_UNSIGNED_INT,
+        nridx - 1,
+        GL_UNSIGNED_INT,
         (unsigned*) nullptr + 1); // skip first index
     indices.unbind();
     glDisableVertexAttribArray(gcm.myshader_vattr_z_c_index[si]);

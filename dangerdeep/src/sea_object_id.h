@@ -36,11 +36,11 @@ struct sea_object_id
 };
 
 /// Declare hash function so we can use sea_object_id as map-key
-template <> struct std::hash<sea_object_id>
+template<>
+struct std::hash<sea_object_id>
 {
     std::size_t operator()(const sea_object_id& id) const noexcept
     {
         return id.id;
     }
 };
-

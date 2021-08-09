@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "vector2.h"
 
-template <typename D2> class vector4t;
+template<typename D2>
+class vector4t;
 
 /// Special type to identify axes
 enum class axis
@@ -40,7 +41,8 @@ enum class axis
 };
 
 ///\brief Template class for a mathematical vector with three coefficients.
-template <typename D> class vector3t
+template<typename D>
+class vector3t
 {
   public:
     D x, y, z;
@@ -48,7 +50,7 @@ template <typename D> class vector3t
     vector3t() : x(0), y(0), z(0) { }
     vector3t(D x_, D y_, D z_) : x(x_), y(y_), z(z_) { }
     vector3t(const vector2t<D>& v, D z_) : x(v.x), y(v.y), z(z_) { }
-    template <typename E>
+    template<typename E>
     vector3t(const vector3t<E>& other) :
         x(D(other.x)), y(D(other.y)), z(D(other.z))
     {
@@ -180,9 +182,10 @@ template <typename D> class vector3t
     vector2t<D> yz() const { return vector2t<D>(y, z); }
     vector4t<D> xyz0() const { return vector4t<D>(x, y, z, 0); }
     vector4t<D> xyzw(D w) const { return vector4t<D>(x, y, z, w); }
-    template <typename D2>
+    template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector3t<D2>& v);
-    template <typename E> void assign(const vector3t<E>& other)
+    template<typename E>
+    void assign(const vector3t<E>& other)
     {
         x = D(other.x);
         y = D(other.y);
@@ -250,13 +253,13 @@ template <typename D> class vector3t
     }
 };
 
-template <typename D2>
+template<typename D2>
 inline vector3t<D2> operator*(D2 scalar, const vector3t<D2>& v)
 {
     return v * scalar;
 }
 
-template <typename D>
+template<typename D>
 bool vector3t<D>::solve(
     const vector3t<D>& o1,
     const vector3t<D>& o2,
@@ -285,9 +288,11 @@ bool vector3t<D>::solve(
     return true;
 }
 
-template <typename D>
+template<typename D>
 vector3t<D> vector3t<D>::matrixmul(
-    const vector3t<D>& c0, const vector3t<D>& c1, const vector3t<D>& c2) const
+    const vector3t<D>& c0,
+    const vector3t<D>& c1,
+    const vector3t<D>& c2) const
 {
     return vector3t<D>(
         c0.x * x + c1.x * y + c2.x * z,
@@ -295,7 +300,7 @@ vector3t<D> vector3t<D>::matrixmul(
         c0.z * x + c1.z * y + c2.z * z);
 }
 
-template <typename D>
+template<typename D>
 std::ostream& operator<<(std::ostream& os, const vector3t<D>& v)
 {
     os << "x=" << v.x << "; y=" << v.y << "; z=" << v.z;
@@ -306,4 +311,3 @@ using vector3  = vector3t<double>;
 using vector3f = vector3t<float>;
 using vector3i = vector3t<int>;
 using vector3u = vector3t<unsigned int>;
-

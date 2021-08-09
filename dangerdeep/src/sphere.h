@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <utility>
 
 /// a 3d sphere with template coordinate types
-template <class D> class sphere_t
+template<class D>
+class sphere_t
 {
   public:
     vector3t<D> center; ///< center of sphere
@@ -77,4 +78,3 @@ template <class D> class sphere_t
 
 using sphere  = sphere_t<double>;
 using spheref = sphere_t<float>;
-

@@ -91,10 +91,14 @@ void sub_soldbuch_display::display() const
         ss.str("");
         ss << "A" << 2 + 1;
         font_jphsl->print(
-            offset.x + 25, offset.y + 140, *pi.career.begin(),
+            offset.x + 25,
+            offset.y + 140,
+            *pi.career.begin(),
             color(20, 20, 30));
         font_jphsl->print(
-            offset.x + 100, offset.y + 140, texts::get(700 + 1),
+            offset.x + 100,
+            offset.y + 140,
+            texts::get(700 + 1),
             color(20, 20, 30));
         font_jphsl->print(
             offset.x + 270, offset.y + 140, ss.str(), color(20, 20, 30));
@@ -107,13 +111,19 @@ void sub_soldbuch_display::display() const
                 ss.str("");
                 ss << "A" << (2 + 1 + i);
                 font_jphsl->print(
-                    offset.x + 25, offset.y + 150 + (i * 20), *it,
+                    offset.x + 25,
+                    offset.y + 150 + (i * 20),
+                    *it,
                     color(20, 20, 30));
                 font_jphsl->print(
-                    offset.x + 100, offset.y + 150 + (i * 20),
-                    texts::get(700 + 1 + i), color(20, 20, 30));
+                    offset.x + 100,
+                    offset.y + 150 + (i * 20),
+                    texts::get(700 + 1 + i),
+                    color(20, 20, 30));
                 font_jphsl->print(
-                    offset.x + 270, offset.y + 150 + (i * 20), ss.str(),
+                    offset.x + 270,
+                    offset.y + 150 + (i * 20),
+                    ss.str(),
                     color(20, 20, 30));
                 i++;
             }
@@ -140,7 +150,9 @@ void sub_soldbuch_display::display() const
         offset.x + 95, offset.y + 438, flotname, color(20, 20, 30));
     // identification
     font_jphsl->print(
-        offset.x + 125, offset.y + 313, pi.name + "/" + pi.soldbuch_nr,
+        offset.x + 125,
+        offset.y + 313,
+        pi.name + "/" + pi.soldbuch_nr,
         color(20, 20, 30));
 
     SYS().unprepare_2d_drawing();

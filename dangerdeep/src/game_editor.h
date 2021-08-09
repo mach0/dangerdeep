@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "game.h"
 
 ///\brief Central object of the game world with physics simulation etc. Editor
-///specialization
+/// specialization
 class game_editor : public game
 {
   protected:
@@ -49,4 +49,3 @@ class game_editor : public game
     virtual void manipulate_time(double tm);
     virtual void manipulate_equipment_date(date equipdate);
 };
-

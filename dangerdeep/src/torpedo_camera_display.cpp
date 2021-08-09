@@ -82,7 +82,10 @@ torpedo_camera_display::torpedo_camera_display(user_interface& ui_) :
     drawbridge            = false;
 }
 
-unsigned torpedo_camera_display::get_popup_allow_mask() const { return 0; }
+unsigned torpedo_camera_display::get_popup_allow_mask() const
+{
+    return 0;
+}
 
 void torpedo_camera_display::enter(bool is_day) { }
 

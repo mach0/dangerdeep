@@ -143,7 +143,9 @@ void glsl_shader_setup::default_deinit()
 }
 
 glsl_shader::glsl_shader(
-    const string& filename, type stype, const glsl_shader::defines_list& dl) :
+    const string& filename,
+    type stype,
+    const glsl_shader::defines_list& dl) :
     id(0)
 {
     switch (stype)
@@ -190,7 +192,7 @@ glsl_shader::glsl_shader(
                        /*"#pragma optionNV(ifcvt all)\n"*/
                        "#pragma optionNV(inline all)\n"
                     //"#pragma optionNV(unroll all)\n"  not faster on 7x00
-                    //hardware
+                    // hardware
                     ;
             }
         }
@@ -252,7 +254,10 @@ glsl_shader::glsl_shader(
     }
 }
 
-glsl_shader::~glsl_shader() { glDeleteShader(id); }
+glsl_shader::~glsl_shader()
+{
+    glDeleteShader(id);
+}
 
 glsl_program::glsl_program()
 
@@ -339,7 +344,9 @@ unsigned glsl_program::get_uniform_location(const std::string& name) const
 }
 
 void glsl_program::set_gl_texture(
-    const texture& tex, unsigned loc, unsigned texunit) const
+    const texture& tex,
+    unsigned loc,
+    unsigned texunit) const
 {
     if (used_program != this)
         THROW(error, "glsl_program::set_gl_texture, program not bound!");
@@ -363,7 +370,8 @@ void glsl_program::set_uniform(unsigned loc, const vector2f& value) const
 }
 
 void glsl_program::set_uniform(
-    unsigned loc, const std::vector<vector2f>& values) const
+    unsigned loc,
+    const std::vector<vector2f>& values) const
 {
     if (used_program != this)
         THROW(error, "glsl_program::set_uniform, program not bound!");
@@ -411,7 +419,8 @@ void glsl_program::set_uniform(unsigned loc, const vector4f& value) const
 }
 
 void glsl_program::set_uniform(
-    unsigned loc, const std::vector<vector4f>& values) const
+    unsigned loc,
+    const std::vector<vector4f>& values) const
 {
     if (used_program != this)
         THROW(error, "glsl_program::set_uniform, program not bound!");
@@ -440,7 +449,10 @@ void glsl_program::use_fixed()
     used_program = nullptr;
 }
 
-bool glsl_program::is_fixed_in_use() { return used_program == nullptr; }
+bool glsl_program::is_fixed_in_use()
+{
+    return used_program == nullptr;
+}
 
 glsl_shader_setup::glsl_shader_setup(
     const std::string& filename_vshader,
@@ -459,6 +471,12 @@ glsl_shader_setup::glsl_shader_setup(
     prog.link();
 }
 
-void glsl_shader_setup::use() const { prog.use(); }
+void glsl_shader_setup::use() const
+{
+    prog.use();
+}
 
-void glsl_shader_setup::use_fixed() { glsl_program::use_fixed(); }
+void glsl_shader_setup::use_fixed()
+{
+    glsl_program::use_fixed();
+}

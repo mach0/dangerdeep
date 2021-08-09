@@ -77,4 +77,3 @@ class random_generator
     std::mt19937 generator;
     std::uniform_real_distribution<double> distribution;
 };
-

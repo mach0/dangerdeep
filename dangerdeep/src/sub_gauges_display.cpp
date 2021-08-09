@@ -136,7 +136,8 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
             {
                 sub->set_bow_depth_rudder(-std::clamp(
                     angle_for_rudder.value() / sub->get_bow_rudder_max_angle(),
-                    -1.0, 1.0));
+                    -1.0,
+                    1.0));
             }
         }
         else if (element_for_id(et_stern_depth_rudder)
@@ -149,7 +150,8 @@ bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
                 sub->set_stern_depth_rudder(-std::clamp(
                     angle_for_rudder.value()
                         / sub->get_stern_rudder_max_angle(),
-                    -1.0, 1.0));
+                    -1.0,
+                    1.0));
             }
         }
         else if (element_for_id(et_machine_telegraph)

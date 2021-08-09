@@ -44,7 +44,7 @@ class directory
   public:
     /// Open directory.
     ///@note throws exception if it is an invalid directory or if filename does
-    ///note exist
+    /// note exist
     directory(const std::string& filename);
 
     /// Close directory
@@ -82,4 +82,3 @@ bool is_directory(const std::string& filename);
 
 ///\brief Test if the given filename is a file (can be read by fopen())
 bool is_file(const std::string& filename);
-

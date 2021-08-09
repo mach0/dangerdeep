@@ -240,4 +240,3 @@ class torpedo : public ship
     /// be added later as parameter.
     bool test_magnetic_fuse(game& gm) const;
 };
-

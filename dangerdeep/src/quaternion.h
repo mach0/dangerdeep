@@ -39,9 +39,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 ///\brief This class represents quaternions. They're used for fast computation
-///of rotations \note Angles given as parameters or returned angles are in
-///degrees!
-template <class D> class quaterniont
+/// of rotations \note Angles given as parameters or returned angles are in
+/// degrees!
+template<class D>
+class quaterniont
 {
   public:          // we use a spatial representation
     D s;           // r
@@ -106,9 +107,10 @@ template <class D> class quaterniont
     {
         return quaterniont(s * o.s - v * o.v, o.v * s + v * o.s + v.cross(o.v));
     }
-    template <class D2>
+    template<class D2>
     friend std::ostream& operator<<(std::ostream& os, const quaterniont<D2>& q);
-    template <class E> void assign(const vector2t<E>& other)
+    template<class E>
+    void assign(const vector2t<E>& other)
     {
         s = D(other.s);
         v.assign(other.v);
@@ -183,8 +185,14 @@ template <class D> class quaterniont
         D xy = v.x * v.y, wz = s * v.z, xz = v.x * v.z, wy = s * v.y,
           yz = v.y * v.z, wx = s * v.x;
         return matrix3t<D>(
-            1 - 2 * (y2 + z2), 2 * (xy - wz), 2 * (xz + wy), 2 * (xy + wz),
-            1 - 2 * (x2 + z2), 2 * (yz - wx), 2 * (xz - wy), 2 * (yz + wx),
+            1 - 2 * (y2 + z2),
+            2 * (xy - wz),
+            2 * (xz + wy),
+            2 * (xy + wz),
+            1 - 2 * (x2 + z2),
+            2 * (yz - wx),
+            2 * (xz - wy),
+            2 * (yz + wx),
             1 - 2 * (x2 + y2));
     }
 
@@ -195,9 +203,22 @@ template <class D> class quaterniont
         D xy = v.x * v.y, wz = s * v.z, xz = v.x * v.z, wy = s * v.y,
           yz = v.y * v.z, wx = s * v.x;
         return matrix4t<D>(
-            1 - 2 * (y2 + z2), 2 * (xy - wz), 2 * (xz + wy), 0, 2 * (xy + wz),
-            1 - 2 * (x2 + z2), 2 * (yz - wx), 0, 2 * (xz - wy), 2 * (yz + wx),
-            1 - 2 * (x2 + y2), 0, 0, 0, 0, 1);
+            1 - 2 * (y2 + z2),
+            2 * (xy - wz),
+            2 * (xz + wy),
+            0,
+            2 * (xy + wz),
+            1 - 2 * (x2 + z2),
+            2 * (yz - wx),
+            0,
+            2 * (xz - wy),
+            2 * (yz + wx),
+            1 - 2 * (x2 + y2),
+            0,
+            0,
+            0,
+            0,
+            1);
     }
 
     /// create rotation quaternion from rotation matrix
@@ -237,13 +258,13 @@ template <class D> class quaterniont
     }
 };
 
-template <class D2>
+template<class D2>
 inline quaterniont<D2> operator*(const D2& scalar, const quaterniont<D2>& q)
 {
     return q * scalar;
 }
 
-template <class D>
+template<class D>
 std::ostream& operator<<(std::ostream& os, const quaterniont<D>& q)
 {
     os << "r=" << q.s << "; i=" << q.v.x << "; j=" << q.v.y << "; k=" << q.v.z;
@@ -252,4 +273,3 @@ std::ostream& operator<<(std::ostream& os, const quaterniont<D>& q)
 
 using quaternion  = quaterniont<double>;
 using quaternionf = quaterniont<float>;
-

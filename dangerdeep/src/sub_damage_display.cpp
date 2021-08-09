@@ -82,14 +82,19 @@ enum element_type
 };
 
 void display_popup(
-    const texture& notepadsheet, int x, int y, const std::string& text,
-    bool atleft, bool atbottom)
+    const texture& notepadsheet,
+    int x,
+    int y,
+    const std::string& text,
+    bool atleft,
+    bool atbottom)
 {
     int posx = atleft ? 100 : 604, posy = atbottom ? 480 : 30, width = 320,
         height = 140;
 
     primitives::line(
-        vector2f(x, y), vector2f(posx + width / 2, posy + height / 2),
+        vector2f(x, y),
+        vector2f(posx + width / 2, posy + height / 2),
         color::red())
         .render();
 
@@ -203,8 +208,12 @@ void sub_damage_display::display() const
 
             // display popup with all information. fixme automatic line breaks
             display_popup(
-                *notepadsheet.get(), r.x() + r.w() / 2, r.y() + r.h() / 2,
-                dmgstr.str(), atleft, atbottom);
+                *notepadsheet.get(),
+                r.x() + r.w() / 2,
+                r.y() + r.h() / 2,
+                dmgstr.str(),
+                atleft,
+                atbottom);
         }
     }
 

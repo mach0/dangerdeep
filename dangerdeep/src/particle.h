@@ -35,7 +35,7 @@ class texture;
 using uint8_t = unsigned char;
 
 ///\brief Simulates and displays particles that are rendered as billboard
-///images.
+/// images.
 class particle
 {
   protected:
@@ -86,7 +86,10 @@ class particle
     static std::vector<float> interpolate_func;
     static std::vector<uint8_t> make_2d_smoothed_noise_map(unsigned wh);
     static unsigned interpolate_2d_map(
-        const std::vector<uint8_t>& mp, unsigned res, unsigned x, unsigned y,
+        const std::vector<uint8_t>& mp,
+        unsigned res,
+        unsigned x,
+        unsigned y,
         unsigned res2);
 
     // 1 <= highest_level <= log2(wh)
@@ -102,7 +105,9 @@ class particle
     /// renders a particle in custom way giving vectors parallel to screen's xy
     /// plane
     virtual void custom_display(
-        const vector3& viewpos, const vector3& dx, const vector3& dy) const
+        const vector3& viewpos,
+        const vector3& dx,
+        const vector3& dy) const
     {
     }
 
@@ -124,8 +129,10 @@ class particle
     virtual void simulate(game& gm, double delta_t);
 
     static void display_all(
-        const std::vector<const particle*>& pts, const vector3& viewpos,
-        game& gm, const colorf& light_color);
+        const std::vector<const particle*>& pts,
+        const vector3& viewpos,
+        game& gm,
+        const colorf& light_color);
 
     // return width/height (in meters) of particle (length of quad edge)
     virtual double get_width() const  = 0;
@@ -152,7 +159,9 @@ class smoke_particle : public particle
     double get_width() const override;
     double get_height() const override;
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
     static double get_produce_time();
 };
@@ -175,7 +184,9 @@ class explosion_particle : public particle
     double get_width() const override;
     double get_height() const override;
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
 };
 
@@ -189,7 +200,9 @@ class fire_particle : public particle
     double get_width() const override;
     double get_height() const override;
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
 };
 
@@ -201,7 +214,9 @@ class spray_particle : public particle
     double get_width() const override;
     double get_height() const override;
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
 };
 
@@ -211,7 +226,8 @@ class fireworks_particle : public particle
 
     bool has_custom_rendering() const override { return true; }
     void custom_display(
-        const vector3& viewpos, const vector3& dx,
+        const vector3& viewpos,
+        const vector3& dx,
         const vector3& dy) const override;
 
     struct flare
@@ -229,7 +245,9 @@ class fireworks_particle : public particle
     double get_width() const override { return 0; }  // not needed
     double get_height() const override { return 0; } // not needed
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
 };
 
@@ -242,7 +260,8 @@ class marker_particle : public particle
     double get_width() const override;
     double get_height() const override;
     const texture& get_tex_and_col(
-        game& gm, const colorf& light_color, colorf& col) const override;
+        game& gm,
+        const colorf& light_color,
+        colorf& col) const override;
     double get_life_time() const override;
 };
-

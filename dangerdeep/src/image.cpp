@@ -80,7 +80,12 @@ image::image(string s) :
             for (unsigned x = 0; x < gltx; ++x)
             {
                 textures[y * gltx + x] = std::make_unique<texture>(
-                    img, cw, ch, widths[x], heights[y], texture::NEAREST,
+                    img,
+                    cw,
+                    ch,
+                    widths[x],
+                    heights[y],
+                    texture::NEAREST,
                     texture::CLAMP);
                 cw += widths[x];
             }

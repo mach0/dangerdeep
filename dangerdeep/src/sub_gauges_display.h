@@ -33,4 +33,3 @@ class sub_gauges_display : public user_display
     void display() const override;
     bool handle_mouse_button_event(const mouse_click_data&) override;
 };
-

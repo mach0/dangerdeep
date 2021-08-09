@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #pragma once
 
 /// Implementation of the singleton pattern
-template <typename D> class singleton
+template<typename D>
+class singleton
 {
   private:
     static D*& instance_ptr()
@@ -75,4 +76,3 @@ template <typename D> class singleton
     singleton& operator=(const singleton&) = delete;
     singleton& operator=(singleton&&) = delete;
 };
-

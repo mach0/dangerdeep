@@ -38,7 +38,8 @@ class file_context_error : public error
 {
   public:
     file_context_error(
-        const std::string& location, const std::string& message,
+        const std::string& location,
+        const std::string& message,
         const std::string& filename);
 };
 
@@ -63,7 +64,6 @@ class sdl_error : public error
 #ifdef THROW
 #undef THROW
 #endif
-#define THROW(exceptionclass, ...) \
-    throw exceptionclass(          \
+#define THROW(exceptionclass, ...)                                             \
+    throw exceptionclass(                                                      \
         error::throw_location(__FILE__, __LINE__), ##__VA_ARGS__)
-

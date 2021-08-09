@@ -69,9 +69,18 @@ inline uint64_t swap_endianess_on_big_endian_machine(uint64_t v)
               << 32);
 }
 #else
-inline uint16_t swap_endianess_on_big_endian_machine(uint16_t v) { return v; }
-inline uint32_t swap_endianess_on_big_endian_machine(uint32_t v) { return v; }
-inline uint64_t swap_endianess_on_big_endian_machine(uint64_t v) { return v; }
+inline uint16_t swap_endianess_on_big_endian_machine(uint16_t v)
+{
+    return v;
+}
+inline uint32_t swap_endianess_on_big_endian_machine(uint32_t v)
+{
+    return v;
+}
+inline uint64_t swap_endianess_on_big_endian_machine(uint64_t v)
+{
+    return v;
+}
 #endif
 
 inline void write_i8(std::ostream& out, int8_t i)
@@ -178,9 +187,15 @@ inline uint64_t read_u64(std::istream& in)
     return uint64_t(swap_endianess_on_big_endian_machine(i));
 }
 
-inline void write_bool(std::ostream& out, bool b) { write_u8(out, b ? 1 : 0); }
+inline void write_bool(std::ostream& out, bool b)
+{
+    write_u8(out, b ? 1 : 0);
+}
 
-inline bool read_bool(std::istream& in) { return (read_u8(in) != 0); }
+inline bool read_bool(std::istream& in)
+{
+    return (read_u8(in) != 0);
+}
 
 inline void write_float(std::ostream& out, float f)
 {
@@ -274,4 +289,3 @@ inline void write_quaternion(std::ostream& out, const quaternion& q)
     write_double(out, q.s);
     write_vector3(out, q.v);
 }
-

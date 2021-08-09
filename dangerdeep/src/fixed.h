@@ -80,4 +80,3 @@ class fixed32
     int round() const { return int((x + HALF) >> SHIFT); }
     int32_t value() const { return x; }
 };
-

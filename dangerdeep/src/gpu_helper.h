@@ -55,8 +55,13 @@ class camera
      * @param farz far z value of camera plane along view direction
      */
     static camera create_look_at(
-        const vector3& pos, const vector3& look_at, const vector3& up,
-        double fovx, double aspectratio, double nearz, double farz);
+        const vector3& pos,
+        const vector3& look_at,
+        const vector3& up,
+        double fovx,
+        double aspectratio,
+        double nearz,
+        double farz);
 
     /** Create a camera that looks in a direction
      * @param pos position of camera
@@ -68,8 +73,13 @@ class camera
      * @param farz far z value of camera plane along view direction
      */
     static camera create_look_dir(
-        const vector3& pos, const vector3& look_dir, const vector3& up,
-        double fovx, double aspectratio, double nearz, double farz);
+        const vector3& pos,
+        const vector3& look_dir,
+        const vector3& up,
+        double fovx,
+        double aspectratio,
+        double nearz,
+        double farz);
 
     /** Create a neutral orthograpic camera that results in identity matrix for
      * transformation.
@@ -89,11 +99,15 @@ class camera
 
     /// Set position and look direction
     void set_position_and_look_direction(
-        const vector3& pos, const vector3& look_dir, const vector3& up);
+        const vector3& pos,
+        const vector3& look_dir,
+        const vector3& up);
 
     /// Set position and look at
     void set_position_and_look_at(
-        const vector3& pos, const vector3& look_at, const vector3& up)
+        const vector3& pos,
+        const vector3& look_at,
+        const vector3& up)
     {
         set_position_and_look_direction(pos, look_at - pos, up);
     }
@@ -160,7 +174,8 @@ class draw : public singleton<draw>
      * @param pos 2d Position on screen to use
      */
     void quad(
-        const texture_array& tex, unsigned layer,
+        const texture_array& tex,
+        unsigned layer,
         const vector2i& pos = vector2i(0, 0));
 
     /** Draw textured quad scaled
@@ -183,7 +198,9 @@ class draw : public singleton<draw>
      * @param pos 2d Position on screen to use
      */
     void quad(
-        const texture_array& tex, unsigned layer, const vector2i& pos,
+        const texture_array& tex,
+        unsigned layer,
+        const vector2i& pos,
         const vector2i& size);
 
     /** Draw textured quad with one level of array texture scaled with nearest
@@ -193,7 +210,9 @@ class draw : public singleton<draw>
      * @param pos 2d Position on screen to use
      */
     void quad_n(
-        const texture_array& tex, unsigned layer, const vector2i& pos,
+        const texture_array& tex,
+        unsigned layer,
+        const vector2i& pos,
         const vector2i& size);
 
     /** Draw textured quad with rotation
@@ -202,7 +221,9 @@ class draw : public singleton<draw>
      * @param angle angle to rotate around in degrees
      */
     void quad_rotated(
-        const texture& tex, const vector2i& rotat_center, double angle);
+        const texture& tex,
+        const vector2i& rotat_center,
+        double angle);
 
     /** Draw lines
      * @param cam camera to use for viewing
@@ -218,7 +239,8 @@ class draw : public singleton<draw>
      * @param colors colors to use (three colors for one triangle)
      */
     void colored_triangles(
-        const camera& cam, const std::vector<vector3f>& positions,
+        const camera& cam,
+        const std::vector<vector3f>& positions,
         const std::vector<color>& colors);
 
     /** Draw line strip of vertices
@@ -227,7 +249,9 @@ class draw : public singleton<draw>
      * @param col color to draw
      */
     void line_strip(
-        const camera& cam, const std::vector<vector3f>& positions, color col);
+        const camera& cam,
+        const std::vector<vector3f>& positions,
+        color col);
 
     /** Draw coordinate system for debugging
      * @param cam camera to use for viewing
@@ -242,16 +266,19 @@ class draw : public singleton<draw>
      * @param col color to use
      */
     void wire_cube(
-        const camera& cam, const matrix4f& cs = matrix4f::one(),
-        float hel = 1.0f, color col = color::white());
+        const camera& cam,
+        const matrix4f& cs = matrix4f::one(),
+        float hel          = 1.0f,
+        color col          = color::white());
 
     /** Draw flat shaded cube for debugging, colors are taken from directions
      * @param cs coordinate system for cube
      * @param hel half edge length
      */
     void debug_cube(
-        const camera& cam, const matrix4f& cs = matrix4f::one(),
-        float hel = 1.0f);
+        const camera& cam,
+        const matrix4f& cs = matrix4f::one(),
+        float hel          = 1.0f);
 
   protected:
     render_context rc_texquad;      ///< Render context for textured quads
@@ -283,7 +310,8 @@ class draw : public singleton<draw>
         uint32_t layer;
         texquad_udata(
             const vector4f& p = vector4f(0.f, 0.f, 1.f, 1.f),
-            const vector4f& t = vector4f(0.f, 0.f, 1.f, 1.f), unsigned l = 0) :
+            const vector4f& t = vector4f(0.f, 0.f, 1.f, 1.f),
+            unsigned l        = 0) :
             position_offset_scaling(p),
             texcoord_offset_scaling(t), layer(l)
         {
@@ -474,7 +502,9 @@ class scene
     void set_current_camera_transformation(const matrix4& transform);
     /// Modify current camera look at
     void set_current_camera_position_and_look_at(
-        const vector3& pos, const vector3& look_at, const vector3& up);
+        const vector3& pos,
+        const vector3& look_at,
+        const vector3& up);
     /// Set light data in scene, light position in world space
     void set_light_data(const light_data& ld);
     /// Set fog data of scene
@@ -533,8 +563,12 @@ program make(const shader_source_helper& ssh);
  * @param amplitude_scale scaling of amplitude when going to next finer level
  */
 shader_source_helper get_noise_shader_data(
-    unsigned resolution, unsigned base_factor, unsigned nr_of_levels,
-    unsigned tex_unit, unsigned offset_slot, float amplitude_scale = 0.5f);
+    unsigned resolution,
+    unsigned base_factor,
+    unsigned nr_of_levels,
+    unsigned tex_unit,
+    unsigned offset_slot,
+    float amplitude_scale = 0.5f);
 
 /** Generate source code for shaders with basic features
  * @param bsc which level of rendering to use
@@ -544,12 +578,16 @@ shader_source_helper generate_basic_shader_source(basic_shader_feature bsf);
 } // namespace gpu
 
 /// get the draw singleton (convenience function)
-inline gpu::draw& GPU_DRAW() { return gpu::draw::instance(); }
+inline gpu::draw& GPU_DRAW()
+{
+    return gpu::draw::instance();
+}
 
 // hack for gcc-5.3, fixme remove
 namespace std
 {
-template <> struct hash<gpu::basic_shader_feature>
+template<>
+struct hash<gpu::basic_shader_feature>
 {
     size_t operator()(const gpu::basic_shader_feature& bsf) const
     {
@@ -557,4 +595,3 @@ template <> struct hash<gpu::basic_shader_feature>
     }
 };
 } // namespace std
-

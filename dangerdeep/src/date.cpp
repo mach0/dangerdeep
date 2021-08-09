@@ -74,8 +74,12 @@ unsigned date::length_of_month(unsigned year, unsigned month)
 }
 
 date::date(
-    unsigned year_, unsigned month_, unsigned day_, unsigned hour_,
-    unsigned minute_, unsigned second_)
+    unsigned year_,
+    unsigned month_,
+    unsigned day_,
+    unsigned hour_,
+    unsigned minute_,
+    unsigned second_)
 {
     date_values[year]   = year_;
     date_values[month]  = month_;
@@ -130,7 +134,10 @@ void date::set_linear()
     linear_time += date_values[second];
 }
 
-date::date(unsigned lt) : linear_time(lt) { set_from_linear(); }
+date::date(unsigned lt) : linear_time(lt)
+{
+    set_from_linear();
+}
 
 date::date(const std::string& datestr)
 {
@@ -187,10 +194,16 @@ void date::load(const xml_elem& parent)
     date_values[minute] = 0;
     date_values[second] = 0;
     sscanf(
-        dy.c_str(), "%u/%u/%u", &date_values[year], &date_values[month],
+        dy.c_str(),
+        "%u/%u/%u",
+        &date_values[year],
+        &date_values[month],
         &date_values[day]);
     sscanf(
-        tm.c_str(), "%u:%u:%u", &date_values[hour], &date_values[minute],
+        tm.c_str(),
+        "%u:%u:%u",
+        &date_values[hour],
+        &date_values[minute],
         &date_values[second]);
     // some plausibility checks
     if (date_values[year] < 1939 || date_values[year] > 1945)
@@ -212,7 +225,10 @@ std::string date::to_str() const
 {
     char tmp[32];
     sprintf(
-        tmp, "%4u/%2u/%2u", date_values[year], date_values[month],
+        tmp,
+        "%4u/%2u/%2u",
+        date_values[year],
+        date_values[month],
         date_values[day]);
     return std::string(tmp);
 }
@@ -222,11 +238,17 @@ void date::save(xml_elem& parent) const
     xml_elem d = parent.add_child("date");
     char tmp[32];
     sprintf(
-        tmp, "%4u/%2u/%2u", date_values[year], date_values[month],
+        tmp,
+        "%4u/%2u/%2u",
+        date_values[year],
+        date_values[month],
         date_values[day]);
     d.set_attr(string(tmp), "day");
     sprintf(
-        tmp, "%2u:%2u:%2u", date_values[hour], date_values[minute],
+        tmp,
+        "%2u:%2u:%2u",
+        date_values[hour],
+        date_values[minute],
         date_values[second]);
     d.set_attr(string(tmp), "time");
 }

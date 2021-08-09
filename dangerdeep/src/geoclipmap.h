@@ -41,7 +41,9 @@ class geoclipmap
     ///@param resolution_exp - power of two of resolution factor "N"
     ///@param hg - instance of height generator object
     geoclipmap(
-        unsigned nr_levels, unsigned resolution_exp, height_generator& hg);
+        unsigned nr_levels,
+        unsigned resolution_exp,
+        height_generator& hg);
 
     /// d'tor
     ~geoclipmap();
@@ -52,8 +54,10 @@ class geoclipmap
     /// render the view (will only fetch the vertex/index data, no texture
     /// setup)
     void display(
-        const frustum& f, const vector3& view_delta = vector3(),
-        bool is_mirror = false, int above_water = 0) const;
+        const frustum& f,
+        const vector3& view_delta = vector3(),
+        bool is_mirror            = false,
+        int above_water           = 0) const;
 
   protected:
     // "N", must be power of two
@@ -128,11 +132,16 @@ class geoclipmap
         bool outmost;
 
         unsigned generate_indices(
-            const frustum& f, uint32_t* buffer, unsigned idxbase,
-            const vector2i& offset, const vector2i& size,
+            const frustum& f,
+            uint32_t* buffer,
+            unsigned idxbase,
+            const vector2i& offset,
+            const vector2i& size,
             const vector2i& vbooff) const;
         unsigned generate_indices2(
-            uint32_t* buffer, unsigned idxbase, const vector2i& size,
+            uint32_t* buffer,
+            unsigned idxbase,
+            const vector2i& size,
             const vector2i& vbooff) const;
         unsigned generate_indices_T(uint32_t* buffer, unsigned idxbase) const;
         unsigned
@@ -150,7 +159,8 @@ class geoclipmap
       public:
         level(geoclipmap& gcm_, unsigned idx, bool outmost_level);
         area set_viewerpos(
-            const vector3& new_viewpos, const geoclipmap::area& inner);
+            const vector3& new_viewpos,
+            const geoclipmap::area& inner);
         void display(const frustum& f, bool is_mirror = false) const;
         texture& normals_tex() const { return *normals; }
         texture& colors_tex() const { return *colors; }
@@ -191,4 +201,3 @@ class geoclipmap
   public:
     bool wireframe; // for testing purposes only
 };
-

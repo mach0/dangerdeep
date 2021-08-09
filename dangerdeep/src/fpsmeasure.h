@@ -39,4 +39,3 @@ class fpsmeasure
     float curfps{0};
     unsigned slowest_frame{0}, fastest_frame{0};
 };
-

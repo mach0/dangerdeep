@@ -38,7 +38,8 @@ class xml_error : public error
 {
   public:
     xml_error(
-        const std::string& location, const std::string& name,
+        const std::string& location,
+        const std::string& name,
         const std::string& fn) :
         error(
             location,
@@ -52,7 +53,8 @@ class xml_elem_error : public xml_error
 {
   public:
     xml_elem_error(
-        const std::string& location, const std::string& name,
+        const std::string& location,
+        const std::string& name,
         const std::string& fn) :
         xml_error(location, std::string("failed to get element ") + name, fn)
     {
@@ -60,7 +62,7 @@ class xml_elem_error : public xml_error
 };
 
 ///\brief A XML element representation with interface for handling of elements
-///like adding or requesting children or data.
+/// like adding or requesting children or data.
 class xml_elem
 {
   private:
@@ -142,8 +144,9 @@ class xml_elem
                        // same name
       public:
         iterator(
-            const xml_elem& parent_, TiXmlElement* elem_ = nullptr,
-            bool samename_ = true) :
+            const xml_elem& parent_,
+            TiXmlElement* elem_ = nullptr,
+            bool samename_      = true) :
             parent(parent_),
             e(elem_), samename(samename_)
         {
@@ -160,7 +163,8 @@ class xml_elem
     {
       public:
         iterator_range_samename(
-            const xml_elem& parent_, const char* childname_) :
+            const xml_elem& parent_,
+            const char* childname_) :
             parent(parent_),
             childname(childname_)
         {
@@ -184,7 +188,7 @@ class xml_elem
 };
 
 ///\brief A XML document representation with interface for handling of
-///documents.
+/// documents.
 class xml_doc
 {
   private:
@@ -205,4 +209,3 @@ class xml_doc
     xml_elem add_child(const std::string& name);
     const std::string& get_filename() const;
 };
-

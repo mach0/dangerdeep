@@ -29,7 +29,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "xml.h"
 
 user_popup::elem2D::elem2D(
-    vector2i pos, const std::string& filename_day,
+    vector2i pos,
+    const std::string& filename_day,
     const std::string& filename_night) :
     position(pos)
 {

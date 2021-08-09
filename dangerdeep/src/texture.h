@@ -134,16 +134,22 @@ class texture
         clamping; // how GL handles the border (GL_REPEAT, GL_CLAMP_TO_EDGE)
 
     void sdl_init(
-        SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw,
-        unsigned sh, bool makenormalmap = false, float detailh = 1.0f,
-        bool rgb2grey = false);
+        SDL_Surface* teximage,
+        unsigned sx,
+        unsigned sy,
+        unsigned sw,
+        unsigned sh,
+        bool makenormalmap = false,
+        float detailh      = 1.0f,
+        bool rgb2grey      = false);
 
     void sdl_rgba_init(SDL_Surface* teximagergb, SDL_Surface* teximagea);
 
     // copy data to OpenGL, set parameters
     void init(
-        const std::vector<uint8_t>& data, bool makenormalmap = false,
-        float detailh = 1.0f);
+        const std::vector<uint8_t>& data,
+        bool makenormalmap = false,
+        float detailh      = 1.0f);
 
     static int size_non_power_2;
 
@@ -208,11 +214,13 @@ class texture
     {
       public:
         texerror(
-            const std::string& location, const std::string& name,
+            const std::string& location,
+            const std::string& name,
             const std::string& s) :
             error(
-                location, std::string("texture \"") + name
-                              + std::string("\" error: ") + s)
+                location,
+                std::string("texture \"") + name + std::string("\" error: ")
+                    + s)
         {
         }
         ~texerror() noexcept override = default;
@@ -223,59 +231,94 @@ class texture
     // give height of detail (scale factor) for normal mapping, mostly much
     // larger than 1.0
     texture(
-        const std::string& filename, mapping_mode mapping_ = NEAREST,
-        clamping_mode clamp = REPEAT, bool makenormalmap = false,
-        float detailh = 1.0f, bool rgb2grey = false,
-        GLenum _dimension = GL_TEXTURE_2D);
+        const std::string& filename,
+        mapping_mode mapping_ = NEAREST,
+        clamping_mode clamp   = REPEAT,
+        bool makenormalmap    = false,
+        float detailh         = 1.0f,
+        bool rgb2grey         = false,
+        GLenum _dimension     = GL_TEXTURE_2D);
 
     // create texture from subimage of SDL surface.
     // sw,sh need not to be powers of two.
     texture(
-        SDL_Surface* teximage, unsigned sx, unsigned sy, unsigned sw,
-        unsigned sh, mapping_mode mapping_ = NEAREST,
-        clamping_mode clamp = REPEAT, bool makenormalmap = false,
-        float detailh = 1.0f, bool rgb2grey = false,
-        GLenum _dimension = GL_TEXTURE_2D);
+        SDL_Surface* teximage,
+        unsigned sx,
+        unsigned sy,
+        unsigned sw,
+        unsigned sh,
+        mapping_mode mapping_ = NEAREST,
+        clamping_mode clamp   = REPEAT,
+        bool makenormalmap    = false,
+        float detailh         = 1.0f,
+        bool rgb2grey         = false,
+        GLenum _dimension     = GL_TEXTURE_2D);
 
     // create texture from subimage of SDL surface, based on sdl_image
     // sw,sh need not to be powers of two.
     texture(
-        const sdl_image& teximage, unsigned sx, unsigned sy, unsigned sw,
-        unsigned sh, mapping_mode mapping_ = NEAREST,
-        clamping_mode clamp = REPEAT, bool makenormalmap = false,
-        float detailh = 1.0f, bool rgb2grey = false,
-        GLenum _dimension = GL_TEXTURE_2D);
+        const sdl_image& teximage,
+        unsigned sx,
+        unsigned sy,
+        unsigned sw,
+        unsigned sh,
+        mapping_mode mapping_ = NEAREST,
+        clamping_mode clamp   = REPEAT,
+        bool makenormalmap    = false,
+        float detailh         = 1.0f,
+        bool rgb2grey         = false,
+        GLenum _dimension     = GL_TEXTURE_2D);
 
     // create texture from memory values (use openGl constants for format,etc.
     // w,h must be powers of two.
     texture(
-        const std::vector<uint8_t>& pixels, unsigned w, unsigned h, int format_,
-        mapping_mode mapping_, clamping_mode clamp, bool makenormalmap = false,
-        float detailh = 1.0f, GLenum _dimension = GL_TEXTURE_2D);
+        const std::vector<uint8_t>& pixels,
+        unsigned w,
+        unsigned h,
+        int format_,
+        mapping_mode mapping_,
+        clamping_mode clamp,
+        bool makenormalmap = false,
+        float detailh      = 1.0f,
+        GLenum _dimension  = GL_TEXTURE_2D);
 
     // allocate a GL texture, set some values, but do not fill texel values
     // w,h are more for information purposes.
     texture(
-        unsigned w, unsigned h, int format_, mapping_mode mapping_,
-        clamping_mode clamp, bool force_no_compression = false);
+        unsigned w,
+        unsigned h,
+        int format_,
+        mapping_mode mapping_,
+        clamping_mode clamp,
+        bool force_no_compression = false);
 
     // load a compressed DDS file (DXT1, DXT3, DXT5)
     texture(
-        const std::string& filename, bool dummy,
-        mapping_mode mapping_ = NEAREST, clamping_mode clamp = REPEAT);
+        const std::string& filename,
+        bool dummy,
+        mapping_mode mapping_ = NEAREST,
+        clamping_mode clamp   = REPEAT);
 
     ~texture();
 
     /// change sub-area of texture from memory values (use openGL constants for
     /// format,etc.
     void sub_image(
-        int xoff, int yoff, unsigned w, unsigned h,
-        const std::vector<uint8_t>& pixels, int format);
+        int xoff,
+        int yoff,
+        unsigned w,
+        unsigned h,
+        const std::vector<uint8_t>& pixels,
+        int format);
 
     /// change sub-area of texture from memory values (use openGL constants for
     /// format,etc.
     void sub_image(
-        const sdl_image& sdlimage, int xoff, int yoff, unsigned w, unsigned h);
+        const sdl_image& sdlimage,
+        int xoff,
+        int yoff,
+        unsigned w,
+        unsigned h);
 
     int get_format() const { return format; }
     unsigned get_bpp() const;
@@ -302,55 +345,82 @@ class texture
     }
     void draw_vm(int x, int y, const colorf& col = colorf(1, 1, 1, 1))
         const; // vertically mirrored
-    void draw(
-        int x, int y, int w, int h,
-        const colorf& col = colorf(1, 1, 1, 1)) const;
-    void draw_hm(
-        int x, int y, int w, int h,
-        const colorf& col = colorf(1, 1, 1, 1)) const; // horizontally mirrored
-    void draw_vm(
-        int x, int y, int w, int h,
-        const colorf& col = colorf(1, 1, 1, 1)) const; // vertically mirrored
+    void
+    draw(int x, int y, int w, int h, const colorf& col = colorf(1, 1, 1, 1))
+        const;
+    void
+    draw_hm(int x, int y, int w, int h, const colorf& col = colorf(1, 1, 1, 1))
+        const; // horizontally mirrored
+    void
+    draw_vm(int x, int y, int w, int h, const colorf& col = colorf(1, 1, 1, 1))
+        const; // vertically mirrored
     // draw rotated image around x,y (global)
-    void draw_rot(
-        int x, int y, double angle,
-        const colorf& col = colorf(1, 1, 1, 1)) const;
+    void
+    draw_rot(int x, int y, double angle, const colorf& col = colorf(1, 1, 1, 1))
+        const;
     // draw rotated image around x,y (global), rotate around local tx,ty
     void draw_rot(
-        int x, int y, double angle, int tx, int ty,
+        int x,
+        int y,
+        double angle,
+        int tx,
+        int ty,
         const colorf& col = colorf(1, 1, 1, 1)) const;
     // repeat texture in tiles in the given screen rectangle
     void draw_tiles(
-        int x, int y, int w, int h,
+        int x,
+        int y,
+        int w,
+        int h,
         const colorf& col = colorf(1, 1, 1, 1)) const;
     // repeat texture in tiles in the given screen rectangle, rotated
     void draw_tiles_rot(
-        int x, int y, int w, int h, double angle,
+        int x,
+        int y,
+        int w,
+        int h,
+        double angle,
         const colorf& col = colorf(1, 1, 1, 1)) const;
     // draw a sub image given by the tx,ty,tw,th values to a screen rectangle
     // x,y,w,h
     void draw_subimage(
-        int x, int y, int w, int h, unsigned tx, unsigned ty, unsigned tw,
-        unsigned th, const colorf& col = colorf(1, 1, 1, 1)) const;
+        int x,
+        int y,
+        int w,
+        int h,
+        unsigned tx,
+        unsigned ty,
+        unsigned tw,
+        unsigned th,
+        const colorf& col = colorf(1, 1, 1, 1)) const;
 
     static unsigned get_max_size();
 
     ///> returns if texture sizes other than powers of two are allowed. call
-    ///after GL init.
+    /// after GL init.
     static bool size_non_power_two();
 
     // will scale down the image data to half size in each direction (at least
     // w/h=1) w,h must be > 1
     static std::vector<uint8_t> scale_half(
-        const std::vector<uint8_t>& src, unsigned w, unsigned h, unsigned bpp);
+        const std::vector<uint8_t>& src,
+        unsigned w,
+        unsigned h,
+        unsigned bpp);
 
     // give powers of two for w,h
     static std::vector<uint8_t> make_normals(
-        const std::vector<uint8_t>& src, unsigned w, unsigned h, float detailh);
+        const std::vector<uint8_t>& src,
+        unsigned w,
+        unsigned h,
+        float detailh);
 
     // give powers of two for w,h
     static std::vector<uint8_t> make_normals_with_alpha(
-        const std::vector<uint8_t>& src, unsigned w, unsigned h, float detailh);
+        const std::vector<uint8_t>& src,
+        unsigned w,
+        unsigned h,
+        float detailh);
 };
 
 ///\brief Handles an OpenGL 3d texture
@@ -363,34 +433,58 @@ class texture3d : public texture
   public:
     // create texture from memory values (use openGl constants for format,etc.
     texture3d(
-        const std::vector<uint8_t>& pixels, unsigned w, unsigned h, unsigned d,
-        int format_, mapping_mode mapping_, clamping_mode clamp);
+        const std::vector<uint8_t>& pixels,
+        unsigned w,
+        unsigned h,
+        unsigned d,
+        int format_,
+        mapping_mode mapping_,
+        clamping_mode clamp);
 
     // allocate a GL texture, set some values, but do not fill texel values
     // w,h are more for information purposes.
     texture3d(
-        unsigned w, unsigned h, unsigned d, int format_, mapping_mode mapping_,
+        unsigned w,
+        unsigned h,
+        unsigned d,
+        int format_,
+        mapping_mode mapping_,
         clamping_mode clamp);
 
     /// change sub-area of texture from memory values (use openGL constants for
     /// format,etc.
     void sub_image(
-        int xoff, int yoff, int zoff, unsigned w, unsigned h, unsigned d,
-        const std::vector<uint8_t>& pixels, int format);
+        int xoff,
+        int yoff,
+        int zoff,
+        unsigned w,
+        unsigned h,
+        unsigned d,
+        const std::vector<uint8_t>& pixels,
+        int format);
 
     unsigned get_depth() const { return depth; }
     unsigned get_gl_depth() const { return gl_depth; }
 
     /// render a quad with the texture applied
     void draw(
-        int x, int y, int w, int h, const vector3f& tc0, const vector3f& tcdx,
+        int x,
+        int y,
+        int w,
+        int h,
+        const vector3f& tc0,
+        const vector3f& tcdx,
         const vector3f& tcdy) const;
 
   private:
     // not available for 3d textures
     void sub_image(
-        int xoff, int yoff, unsigned w, unsigned h,
-        const std::vector<uint8_t>& pixels, int format);
+        int xoff,
+        int yoff,
+        unsigned w,
+        unsigned h,
+        const std::vector<uint8_t>& pixels,
+        int format);
     void draw(int x, int y) const;
     void draw_hm(int x, int y) const;
     void draw_vm(int x, int y) const;
@@ -401,7 +495,12 @@ class texture3d : public texture
     void draw_rot(int x, int y, double angle, int tx, int ty) const;
     void draw_tiles(int x, int y, int w, int h) const;
     void draw_subimage(
-        int x, int y, int w, int h, unsigned tx, unsigned ty, unsigned tw,
+        int x,
+        int y,
+        int w,
+        int h,
+        unsigned tx,
+        unsigned ty,
+        unsigned tw,
         unsigned th) const;
 };
-

@@ -29,7 +29,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <utility>
 
 /// a 3d cylinder with template coordinate types
-template <class D> class cylinder_t
+template<class D>
+class cylinder_t
 {
   public:
     vector3t<D> start; ///< center of bottom segment
@@ -103,4 +104,3 @@ template <class D> class cylinder_t
 
 using cylinder  = cylinder_t<double>;
 using cylinderf = cylinder_t<float>;
-

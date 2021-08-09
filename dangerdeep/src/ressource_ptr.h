@@ -20,9 +20,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // pointer to any ressource with user defined freeing
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-template <typename T> void free_ressource(T*) { }
+template<typename T>
+void free_ressource(T*)
+{
+}
 
-template <typename T> class ressource_ptr
+template<typename T>
+class ressource_ptr
 {
   public:
     ressource_ptr() : ptr(nullptr) { }

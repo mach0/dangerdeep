@@ -38,7 +38,8 @@ enum side_argument_type
 };
 
 /// a polygon in 3D space
-template <typename D> class polygon_t
+template<typename D>
+class polygon_t
 {
   public:
     /// empty polygon
@@ -47,19 +48,23 @@ template <typename D> class polygon_t
     polygon_t(unsigned capacity_) { points.reserve(capacity_); }
     /// make from three points.
     polygon_t(
-        const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>& c) :
+        const vector3t<D>& a,
+        const vector3t<D>& b,
+        const vector3t<D>& c) :
         points{a, b, c}
     {
     }
     /// make from four points
     polygon_t(
-        const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>& c,
+        const vector3t<D>& a,
+        const vector3t<D>& b,
+        const vector3t<D>& c,
         const vector3t<D>& d) :
         points{a, b, c, d}
     {
     }
     /// construct from other type
-    template <typename E>
+    template<typename E>
     polygon_t(const polygon_t<E>& other) :
         points(other.points.begin(), other.points.end())
     {
@@ -140,7 +145,8 @@ template <typename D> class polygon_t
         }
     };
     /// Parameter type for axis aligned planes
-    template <axis A> struct plane_type_axis
+    template<axis A>
+    struct plane_type_axis
     {
         plane_type_axis(D av = D(0)) : axis_value(av) { }
         D axis_value;
@@ -158,8 +164,7 @@ template <typename D> class polygon_t
     /// also back side, to use special plane and to get also cut points. This is
     /// some template overkill, but otherwise we would have the same function in
     /// many variants with much code duplication.
-    template <
-        typename result_type, typename cut_point_type, typename plane_type>
+    template<typename result_type, typename cut_point_type, typename plane_type>
     bool
     clip_generic(result_type& rt, cut_point_type& cpt, plane_type& pt) const
     {
@@ -295,7 +300,8 @@ template <typename D> class polygon_t
         return crfb.result;
     }
     /// Clip with axis aligned plane with frontside/backside result
-    template <axis a> std::pair<polygon_t, polygon_t> clip(D axis_value) const
+    template<axis a>
+    std::pair<polygon_t, polygon_t> clip(D axis_value) const
     {
         clip_result_front_and_back crfb;
         clip_point_no_result cpnr;
@@ -304,7 +310,7 @@ template <typename D> class polygon_t
         return crfb.result;
     }
     /// Clip with axis aligned plane with frontside/backside result
-    template <axis a>
+    template<axis a>
     std::pair<polygon_t, polygon_t> clip(plane_type_axis<a> pta) const
     {
         clip_result_front_and_back crfb;
@@ -366,16 +372,20 @@ template <typename D> class polygon_t
     }
     /// Compute unnormalized normal of a special polygon, a triangle
     static vector3t<D> compute_normal(
-        const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>& c)
+        const vector3t<D>& a,
+        const vector3t<D>& b,
+        const vector3t<D>& c)
     {
         return (b - a).cross(c - a);
     }
     /// Clip a vector of polygons by one plane and fetch results to two other
     /// vectors
-    template <axis a>
+    template<axis a>
     static void clip(
-        const std::vector<polygon_t>& src, std::vector<polygon_t>& front,
-        std::vector<polygon_t>& back, D axis_value)
+        const std::vector<polygon_t>& src,
+        std::vector<polygon_t>& front,
+        std::vector<polygon_t>& back,
+        D axis_value)
     {
         plane_type_axis<a> pta(axis_value);
         for (const auto& source_polygon : src)
@@ -401,8 +411,8 @@ using polygonf = polygon_t<float>;
 #if 0 // Test code for polygon clipping!
 {
 	// check special cases
-#define A(x, y)           \
-    p.add_point(vector3f( \
+#define A(x, y)                                                                \
+    p.add_point(vector3f(                                                      \
         float(x), float(y), 0.0f)); // initializer list ctor is better
 	std::cout << "case 0\n";
 	planef pl(vector3f(0.f,-1.f,0.f), vector3f(0.f,2.f,0.f));
@@ -479,4 +489,3 @@ using polygonf = polygon_t<float>;
 	}
 }
 #endif
-

@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define isfinite(x) finite(x)
 #endif
 #elif defined(WIN32)
-include <float.h>
+include<float.h>
 #ifndef isfinite
 #define isfinite(x) _finite(x)
 #endif
@@ -43,4 +43,3 @@ include <float.h>
 #else
 using std::isfinite;
 #endif
-

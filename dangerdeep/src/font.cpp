@@ -86,8 +86,8 @@ void font::print_cache() const
     }
 }
 
-void font::print_text(
-    int x, int y, const string& text, bool ignore_colors) const
+void font::print_text(int x, int y, const string& text, bool ignore_colors)
+    const
 {
     int xs = x;
     for (unsigned ti = 0; ti < text.length(); ti = character_right(text, ti))
@@ -134,18 +134,20 @@ void font::print_text(
             {
                 print_cache();
                 shader->set_uniform(
-                    loc_color, color(
-                                   nr[0] * 16 + nr[1], nr[2] * 16 + nr[3],
-                                   nr[4] * 16 + nr[5]));
+                    loc_color,
+                    color(
+                        nr[0] * 16 + nr[1],
+                        nr[2] * 16 + nr[3],
+                        nr[4] * 16 + nr[5]));
             }
         }
         else if (unsigned(c) >= first_char && unsigned(c) <= last_char)
         {
             unsigned t = unsigned(c) - first_char;
             // note: real width in contiguous text is width+left, so advance x
-            // by that value and draw at x+left. must be changed everywhere where
-            // we are handling text widths. maybe it is ok as it is now. int x2 =
-            // x + characters[t].left;
+            // by that value and draw at x+left. must be changed everywhere
+            // where we are handling text widths. maybe it is ok as it is now.
+            // int x2 = x + characters[t].left;
             int y2 = y + base_height - characters[t].top;
             add_to_cache(x, y2, t);
             x += characters[t].width + spacing;
@@ -227,8 +229,8 @@ font::~font()
     }
 }
 
-void font::print(
-    int x, int y, const string& text, color col, bool with_shadow) const
+void font::print(int x, int y, const string& text, color col, bool with_shadow)
+    const
 {
     shader->use();
     shader->set_gl_texture(*character_texture, loc_tex, 0);
@@ -237,7 +239,11 @@ void font::print(
 }
 
 void font::print_plain(
-    int x, int y, const string& text, color col, bool with_shadow) const
+    int x,
+    int y,
+    const string& text,
+    color col,
+    bool with_shadow) const
 {
     if (with_shadow)
     {
@@ -251,27 +257,45 @@ void font::print_plain(
 }
 
 void font::print_hc(
-    int x, int y, const string& text, color col, bool with_shadow) const
+    int x,
+    int y,
+    const string& text,
+    color col,
+    bool with_shadow) const
 {
     print(x - get_size(text).x / 2, y, text, col, with_shadow);
 }
 
 void font::print_vc(
-    int x, int y, const string& text, color col, bool with_shadow) const
+    int x,
+    int y,
+    const string& text,
+    color col,
+    bool with_shadow) const
 {
     print(x, y - get_size(text).y / 2, text, col, with_shadow);
 }
 
 void font::print_c(
-    int x, int y, const string& text, color col, bool with_shadow) const
+    int x,
+    int y,
+    const string& text,
+    color col,
+    bool with_shadow) const
 {
     vector2i wh = get_size(text);
     print(x - wh.x / 2, y - wh.y / 2, text, col, with_shadow);
 }
 
 unsigned font::print_wrapped(
-    int x, int y, unsigned w, unsigned lineheight, const string& text,
-    color col, bool with_shadow, unsigned maxheight) const
+    int x,
+    int y,
+    unsigned w,
+    unsigned lineheight,
+    const string& text,
+    color col,
+    bool with_shadow,
+    unsigned maxheight) const
 {
     shader->use();
     shader->set_gl_texture(*character_texture, loc_tex, 0);
@@ -336,7 +360,10 @@ unsigned font::print_wrapped(
         if (breaktext)
         {
             print_plain(
-                x, y, text.substr(oldtextptr, textptr - oldtextptr), col,
+                x,
+                y,
+                text.substr(oldtextptr, textptr - oldtextptr),
+                col,
                 with_shadow);
             y += (lineheight == 0) ? get_height() : lineheight;
             if (y >= ymax)
@@ -360,8 +387,11 @@ unsigned font::print_wrapped(
                 }
             }
             print_plain(
-                x + currwidth, y, text.substr(oldtextptr, textptr - oldtextptr),
-                col, with_shadow);
+                x + currwidth,
+                y,
+                text.substr(oldtextptr, textptr - oldtextptr),
+                col,
+                with_shadow);
             currwidth += tw + blank_width;
         }
         if (textptr == textlen)
@@ -430,7 +460,9 @@ vector2i font::get_size(const string& text) const
 }
 
 std::pair<unsigned, unsigned> font::get_nr_of_lines_wrapped(
-    unsigned w, const string& text, unsigned maxlines) const
+    unsigned w,
+    const string& text,
+    unsigned maxlines) const
 {
     // loop over spaces
     unsigned currwidth = 0;

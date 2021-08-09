@@ -43,4 +43,3 @@ class torpedo_camera_display : public freeview_display
 
     void set_tracker(const class torpedo* t) { trackobj = t; }
 };
-

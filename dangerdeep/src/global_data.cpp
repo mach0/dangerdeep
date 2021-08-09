@@ -42,7 +42,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using namespace std;
 
 // same with version string
-string get_program_version() { return string(VERSION); }
+string get_program_version()
+{
+    return string(VERSION);
+}
 
 global_data::global_data() :
     modelcache(get_data_dir()), imagecache(get_image_dir()),
@@ -210,7 +213,10 @@ vector2f transform_real_to_geo(vector2f& pos)
 }
 
 static double transform_nautic_coord_to_real(
-    const string& s, char minus, char plus, int degmax)
+    const string& s,
+    char minus,
+    char plus,
+    int degmax)
 {
     if (s.length() < 2)
         THROW(error, string("nautic coordinate invalid ") + s);
@@ -271,7 +277,11 @@ std::list<std::string> string_split(const std::string& src, char splitter)
 }
 
 void save_pgm(
-    const char* fn, unsigned w, unsigned h, const uint8_t* d, unsigned stride)
+    const char* fn,
+    unsigned w,
+    unsigned h,
+    const uint8_t* d,
+    unsigned stride)
 {
     std::ofstream osg(fn);
     if (!osg.good())

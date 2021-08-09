@@ -59,7 +59,8 @@ const double CLOUD_ANIMATION_CYCLE_TIME = 3600.0;
 */
 
 sky::sky(
-    const double tm, const unsigned int sectors_h,
+    const double tm,
+    const unsigned int sectors_h,
     const unsigned int sectors_v) :
     mytime(tm),
     clouds_texcoords(false), sky_vertices(false), sky_indices(true)
@@ -212,7 +213,10 @@ vector<vector<uint8_t>> sky::compute_noisemaps()
 }
 
 uint8_t sky::get_value_from_bytemap(
-    unsigned x, unsigned y, unsigned level, const vector<uint8_t>& nmap)
+    unsigned x,
+    unsigned y,
+    unsigned level,
+    const vector<uint8_t>& nmap)
 {
     // x,y are in 0...255, shift them according to level
     unsigned shift    = cloud_levels - 1 - level;
@@ -290,7 +294,9 @@ void sky::set_time(double tm)
 }
 
 void sky::display(
-    const colorf& lightcolor, const vector3& viewpos, double max_view_dist,
+    const colorf& lightcolor,
+    const vector3& viewpos,
+    double max_view_dist,
     bool isreflection) const
 {
     // 25th jan 2007, after switch to VBO: skipping sky render brings 4fps.
@@ -339,7 +345,11 @@ void sky::display(
     glsl_shader_setup::default_col->use();
     sky_colors.bind();
     glVertexAttribPointer(
-        glsl_shader_setup::idx_c_color, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0,
+        glsl_shader_setup::idx_c_color,
+        4,
+        GL_UNSIGNED_BYTE,
+        GL_TRUE,
+        0,
         nullptr);
     glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
     sky_vertices.bind();
@@ -347,7 +357,11 @@ void sky::display(
     sky_vertices.unbind();
     sky_indices.bind();
     glDrawRangeElements(
-        GL_QUAD_STRIP, 0, nr_sky_vertices - 1, nr_sky_indices, GL_UNSIGNED_INT,
+        GL_QUAD_STRIP,
+        0,
+        nr_sky_vertices - 1,
+        nr_sky_indices,
+        GL_UNSIGNED_INT,
         nullptr);
     sky_indices.unbind();
     glDisableVertexAttribArray(glsl_shader_setup::idx_c_color);
@@ -373,8 +387,10 @@ void sky::display(
     {
         vector3 sunpos      = sundir * max_view_dist;
         GLfloat lightpos[4] = {
-            static_cast<GLfloat>(sunpos.x), static_cast<GLfloat>(sunpos.y),
-            static_cast<GLfloat>(sunpos.z), 0.0f};
+            static_cast<GLfloat>(sunpos.x),
+            static_cast<GLfloat>(sunpos.y),
+            static_cast<GLfloat>(sunpos.z),
+            0.0f};
         glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
     }
     else
@@ -382,8 +398,10 @@ void sky::display(
         // fixme: what is when moon is also below horizon?!
         vector3 moonpos     = moondir * max_view_dist;
         GLfloat lightpos[4] = {
-            static_cast<GLfloat>(moonpos.x), static_cast<GLfloat>(moonpos.y),
-            static_cast<GLfloat>(moonpos.z), 0.0f};
+            static_cast<GLfloat>(moonpos.x),
+            static_cast<GLfloat>(moonpos.y),
+            static_cast<GLfloat>(moonpos.z),
+            0.0f};
         glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
     }
 
@@ -432,7 +450,11 @@ void sky::display(
     sky_colors.unbind();
     sky_indices.bind();
     glDrawRangeElements(
-        GL_QUAD_STRIP, 0, nr_sky_vertices - 1, nr_sky_indices, GL_UNSIGNED_INT,
+        GL_QUAD_STRIP,
+        0,
+        nr_sky_vertices - 1,
+        nr_sky_indices,
+        GL_UNSIGNED_INT,
         nullptr);
     sky_indices.unbind();
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -530,7 +552,8 @@ void sky::build_dome(const unsigned int sectors_h, const unsigned int sectors_v)
 #define REBUILD_EPSILON_AZIMUTH   8.73E-3 //	0.5 deg
 #define REBUILD_EPSILON_ELEVATION 8.73E-3 //	0.5 deg
 void sky::rebuild_colors(
-    const vector3& sunpos_, const vector3& moonpos_,
+    const vector3& sunpos_,
+    const vector3& moonpos_,
     const vector3& viewpos) const
 {
     // compute position of sun and moon

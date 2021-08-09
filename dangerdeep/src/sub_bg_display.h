@@ -36,4 +36,3 @@ class sub_bg_display : public user_display
   protected:
     int which_element_is_turned{-1};
 };
-

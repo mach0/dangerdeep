@@ -84,7 +84,9 @@ moon::moon()
 }
 
 void moon::display(
-    const vector3& moon_pos, const vector3& sun_pos, double max_view_dist) const
+    const vector3& moon_pos,
+    const vector3& sun_pos,
+    double max_view_dist) const
 {
     vector3 moon_dir     = moon_pos.normal();
     double moon_size     = max_view_dist / 20;

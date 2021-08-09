@@ -55,7 +55,8 @@ class user_popup : public input_event_handler
       public:
         /// Construct static element
         elem2D(
-            vector2i pos, const std::string& filename_day,
+            vector2i pos,
+            const std::string& filename_day,
             const std::string& filename_night = std::string());
         /// Draw element normally/static
         void draw(bool is_day) const;
@@ -68,4 +69,3 @@ class user_popup : public input_event_handler
 
     std::vector<elem2D> elements; ///< Elements for display
 };
-

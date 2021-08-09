@@ -103,7 +103,8 @@ game_editor::~game_editor()
 */
 
 // copied from class game
-template <class T> void cleanup(std::vector<T>& s)
+template<class T>
+void cleanup(std::vector<T>& s)
 {
     for (unsigned i = 0; i < s.size(); ++i)
     {
@@ -115,7 +116,10 @@ template <class T> void cleanup(std::vector<T>& s)
     s.compact();
 }
 
-void game_editor::manipulate_time(double tm) { time = tm; }
+void game_editor::manipulate_time(double tm)
+{
+    time = tm;
+}
 
 void game_editor::manipulate_equipment_date(date equipdate)
 {

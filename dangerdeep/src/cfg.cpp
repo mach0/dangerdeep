@@ -171,7 +171,10 @@ void cfg::register_option(const string& name, bool value)
     valb[name] = value;
 }
 
-void cfg::register_option(const string& name, int value) { vali[name] = value; }
+void cfg::register_option(const string& name, int value)
+{
+    vali[name] = value;
+}
 
 void cfg::register_option(const string& name, float value)
 {

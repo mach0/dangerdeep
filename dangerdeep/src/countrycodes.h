@@ -62,4 +62,3 @@ extern const char* countrycodes[NR_OF_COUNTRIES];
 extern const char* parties[NR_OF_PARTIES];
 
 partycode party_of_country(countrycode c, date d);
-

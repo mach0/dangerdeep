@@ -37,8 +37,14 @@ class sub_recogmanual_display : public user_display
 
       public:
         widget_button_next(
-            int x, int y, int w, int h, int dir, int& att_page,
-            const std::string& text_, const std::string& bg_image_,
+            int x,
+            int y,
+            int w,
+            int h,
+            int dir,
+            int& att_page,
+            const std::string& text_,
+            const std::string& bg_image_,
             widget* parent_ = nullptr);
         void draw() const override;
         void on_release() override;

@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <unordered_map>
 
 /// Manages storage of named objects
-template <class C, typename Key = std::string> class object_store
+template<class C, typename Key = std::string>
+class object_store
 {
   public:
     /// handle class to use as reference

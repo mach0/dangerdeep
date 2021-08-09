@@ -98,4 +98,3 @@ class tone_reproductor
     float alpha_wa_over_alpha_da;
     float term2;
 };
-

@@ -85,7 +85,8 @@ freeview_display::get_projection_data(game& gm) const
 }
 
 void freeview_display::set_modelview_matrix(
-    game& gm, const vector3& /*viewpos*/) const
+    game& gm,
+    const vector3& /*viewpos*/) const
 {
     glLoadIdentity();
 
@@ -121,7 +122,8 @@ void freeview_display::post_display() const
 }
 
 freeview_display::freeview_display(
-    user_interface& ui_, const char* display_name) :
+    user_interface& ui_,
+    const char* display_name) :
     user_display(ui_, display_name),
     aboard(false), withunderwaterweapons(true), drawbridge(false),
     conning_tower(nullptr)
@@ -136,7 +138,8 @@ freeview_display::freeview_display(
     add_loading_screen("conning tower model loaded");
     // valgrind reports lost memory in the following line, but why?!
     std::unique_ptr<texture> uwbt(new texture(
-        get_texture_dir() + "underwater_background.png", texture::LINEAR,
+        get_texture_dir() + "underwater_background.png",
+        texture::LINEAR,
         texture::CLAMP));
     texturecache().ref("underwater_background.png", uwbt.get());
     underwater_background = uwbt.release();
@@ -254,8 +257,12 @@ bool freeview_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
 }
 
 void freeview_display::draw_objects(
-    game& gm, const vector3& viewpos, const vector<const sea_object*>& objects,
-    const colorf& light_color, const bool under_water, bool mirrorclip) const
+    game& gm,
+    const vector3& viewpos,
+    const vector<const sea_object*>& objects,
+    const colorf& light_color,
+    const bool under_water,
+    bool mirrorclip) const
 {
     // simulate horizon: d is distance to object (on perimeter of earth)
     // z is additional height (negative!), r is earth radius
@@ -376,7 +383,8 @@ void freeview_display::draw_objects(
     auto water_splashes   = gm.visible_water_splashes(player);
     const auto& playerpos = player->get_pos().xy();
     std::sort(
-        water_splashes.begin(), water_splashes.end(),
+        water_splashes.begin(),
+        water_splashes.end(),
         [&playerpos](const auto* a, const auto* b) {
             return a->get_pos().xy().square_distance(playerpos)
                    > b->get_pos().xy().square_distance(playerpos);
@@ -429,7 +437,9 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
     // ***************************************************
 
     GLfloat horizon_color[4] = {
-        0.050980392156862744f, 0.054901960784313725f, 0.27450980392156865f,
+        0.050980392156862744f,
+        0.054901960784313725f,
+        0.27450980392156865f,
         0.0f /*this is bad*/};
     ui.get_sky().rebuild_colors(
         gm.compute_sun_pos(viewpos), gm.compute_moon_pos(viewpos), viewpos);
@@ -442,8 +452,10 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
     // matrix)
     vector3 sundir       = gm.compute_sun_pos(viewpos).normal();
     GLfloat lposition[4] = {
-        static_cast<GLfloat>(sundir.x), static_cast<GLfloat>(sundir.y),
-        static_cast<GLfloat>(sundir.z), 0.0f};
+        static_cast<GLfloat>(sundir.x),
+        static_cast<GLfloat>(sundir.y),
+        static_cast<GLfloat>(sundir.z),
+        0.0f};
 
     // get light color, previously all channels were uniform, so we'll make a
     // function of elevation to have some variation
@@ -457,8 +469,10 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
     // ambient/diffuse/speculars should be dependeng on light color obviously,
     // so we'll take our new color function into account
     GLfloat lambient[4] = {
-        ambient_intensity * lightcol.r, ambient_intensity * lightcol.g,
-        ambient_intensity * lightcol.b, 1.0f};
+        ambient_intensity * lightcol.r,
+        ambient_intensity * lightcol.g,
+        ambient_intensity * lightcol.b,
+        1.0f};
     GLfloat ldiffuse[4] = {lightcol.r, lightcol.g, lightcol.b, 1.0f};
     glLightfv(GL_LIGHT0, GL_AMBIENT, lambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, ldiffuse);
@@ -501,12 +515,12 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
 
     // shear one clip plane to match world space z=0 plane
     // fixme, use shaders for that, Clip planes are often computed in software
-    // and are too slow the question is how they interfere with shaders? yes they
-    // are damn slow. give height of object (pos.z) to shader, it then clips at
-    // -z. no, instead compute plane to clip to and clip in shader. either clip
-    // to arbitrary plane (z=0 water plane in world space is not z=0 in eye
-    // space) or transform object space to world space, then clip at z=0 and then
-    // transform to eye space.
+    // and are too slow the question is how they interfere with shaders? yes
+    // they are damn slow. give height of object (pos.z) to shader, it then
+    // clips at -z. no, instead compute plane to clip to and clip in shader.
+    // either clip to arbitrary plane (z=0 water plane in world space is not z=0
+    // in eye space) or transform object space to world space, then clip at z=0
+    // and then transform to eye space.
 
     {
         glPushMatrix();
@@ -524,15 +538,20 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
         // draw all parts of the scene that are (partly) above the water:
         //   sky
         ui.get_sky().display(
-            gm.compute_light_color(viewpos_mirror), viewpos_mirror,
-            max_view_dist, true);
+            gm.compute_light_color(viewpos_mirror),
+            viewpos_mirror,
+            max_view_dist,
+            true);
 
         glPopMatrix();
 
         //   terrain - it handles z-flipping itself
         ui.draw_terrain(
-            viewpos_mirror, ui.get_absolute_bearing(), max_view_dist,
-            true /*mirrored*/, above_water);
+            viewpos_mirror,
+            ui.get_absolute_bearing(),
+            max_view_dist,
+            true /*mirrored*/,
+            above_water);
 
         glPushMatrix();
         // flip geometry at z=0 plane
@@ -557,8 +576,12 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
             }
         }
         draw_objects(
-            gm, viewpos_mirror, objects_mirror, lightcol,
-            false /* under_water */, true /* mirror */);
+            gm,
+            viewpos_mirror,
+            objects_mirror,
+            lightcol,
+            false /* under_water */,
+            true /* mirror */);
 
         glCullFace(GL_BACK);
 
@@ -769,18 +792,24 @@ void freeview_display::draw_view(game& gm, const vector3& viewpos) const
     // ********************************************************
     //	glDisable(GL_FOG);	//testing with new 2d bspline terrain.
     ui.draw_terrain(
-        viewpos, ui.get_absolute_bearing(), max_view_dist,
-        false /*not mirrored*/, above_water);
+        viewpos,
+        ui.get_absolute_bearing(),
+        max_view_dist,
+        false /*not mirrored*/,
+        above_water);
     //	glEnable(GL_FOG);
 
     // ******************** ships & subs
     // *************************************************
     //	cout << "mv trans pos " <<
-    //matrix4::get_gl(GL_MODELVIEW_MATRIX).column(3) << "\n";
+    // matrix4::get_gl(GL_MODELVIEW_MATRIX).column(3) << "\n";
 
     // substract player pos.
     draw_objects(
-        gm, viewpos, objects, lightcol,
+        gm,
+        viewpos,
+        objects,
+        lightcol,
         (above_water < 0) ? true : false /* under water */,
         false /* mirrorclip */);
 

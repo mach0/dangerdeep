@@ -66,4 +66,3 @@ class airplane : public sea_object
     virtual void pitch_up();
     virtual void pitch_zero();
 };
-

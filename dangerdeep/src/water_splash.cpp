@@ -31,8 +31,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <utility>
 
 void water_splash::render_cylinder(
-    double radius_bottom, double radius_top, double height, double alpha,
-    const texture& tex, double u_scal, unsigned nr_segs)
+    double radius_bottom,
+    double radius_top,
+    double height,
+    double alpha,
+    const texture& tex,
+    double u_scal,
+    unsigned nr_segs)
 {
     // fixme: use different alpha for bottom? like always full alpha?
     // compensate tide! so set z_lower to -1.5
@@ -56,7 +61,10 @@ double water_splash::compute_height(double t) const
 }
 
 water_splash::water_splash(
-    game& gm_, const vector3& pos, double risetime_, double riseheight_) :
+    game& gm_,
+    const vector3& pos,
+    double risetime_,
+    double riseheight_) :
     sea_object(gm_, "gun_shell.ddxml" /* hack */),
     risetime(risetime_), riseheight(riseheight_)
 {
@@ -126,4 +134,7 @@ void water_splash::display() const
     }
 }
 
-void water_splash::display_mirror_clip() const { display(); }
+void water_splash::display_mirror_clip() const
+{
+    display();
+}

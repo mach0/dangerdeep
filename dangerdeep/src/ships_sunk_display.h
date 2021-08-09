@@ -38,4 +38,3 @@ class ships_sunk_display : public user_display
     virtual void next_page(unsigned nrships);
     virtual void previous_page(unsigned nrships);
 };
-

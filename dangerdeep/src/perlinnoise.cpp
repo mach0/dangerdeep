@@ -30,7 +30,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using std::vector;
 
 perlinnoise::noise_func::noise_func(
-    unsigned s, unsigned f, float px, float py) :
+    unsigned s,
+    unsigned f,
+    float px,
+    float py) :
     size(s),
     frequency(f), phasex(fixed32(px)), phasey(fixed32(py))
 {
@@ -51,7 +54,8 @@ perlinnoise::noise_func::noise_func(
 }
 
 void perlinnoise::noise_func::set_line_for_interpolation(
-    const vector<fixed32>& interpolation_func, fixed32 y) const
+    const vector<fixed32>& interpolation_func,
+    fixed32 y) const
 {
     fixed32 by = (phasey + y).frac();
     // remap to value/subvalue coordinates
@@ -67,7 +71,8 @@ void perlinnoise::noise_func::set_line_for_interpolation(
 }
 
 uint8_t perlinnoise::noise_func::interpolate(
-    const vector<fixed32>& interpolation_func, fixed32 x) const
+    const vector<fixed32>& interpolation_func,
+    fixed32 x) const
 {
     fixed32 bx = (phasex + x).frac();
     // remap to value/subvalue coordinates
@@ -106,10 +111,10 @@ uint8_t perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
     // if next value is less than this value, use descending function
     // f(x)=1-(1-x)^2 = 1-(1-2x+x^2) = 2x-x^2
     // fixme: Ken Perlin suggests cosine interpolation, that works no matter if
-    // next value is greater or not. lookup would be much easier, and as benefit,
-    // we can use shaders to speed up rendering, composing perlin noise directly
-    // as texture in video memory the clouds are already interpolated that way!
-    // and not with this code!
+    // next value is greater or not. lookup would be much easier, and as
+    // benefit, we can use shaders to speed up rendering, composing perlin noise
+    // directly as texture in video memory the clouds are already interpolated
+    // that way! and not with this code!
     fixed32 bx2  = bx.frac() * bx.frac();
     fixed32 by2  = by.frac() * by.frac();
     fixed32 f    = (b < a) ? bx.frac() * 2 - bx2 : bx2;
@@ -121,10 +126,15 @@ uint8_t perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
     return uint8_t(res);
 }
 
-bool is_power2(unsigned x) { return (x & (x - 1)) == 0; }
+bool is_power2(unsigned x)
+{
+    return (x & (x - 1)) == 0;
+}
 
 perlinnoise::perlinnoise(
-    unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq) :
+    unsigned size,
+    unsigned sizeminfreq,
+    unsigned sizemaxfreq) :
     resultsize(size)
 {
     if (!is_power2(size))
@@ -184,7 +194,10 @@ void perlinnoise::set_phase(unsigned func, float px, float py)
     }
 }
 
-static inline int32_t clamp_zero(int32_t x) { return x & ~(x >> 31); }
+static inline int32_t clamp_zero(int32_t x)
+{
+    return x & ~(x >> 31);
+}
 static inline int32_t clamp_value(int32_t x, int32_t val)
 {
     return val - clamp_zero(val - x);
@@ -254,7 +267,10 @@ vector<uint8_t> perlinnoise::generate_sqr() const
 }
 
 perlinnoise::perlinnoise(
-    unsigned levelsize, unsigned sizeminfreq, unsigned levels, bool /*dummy*/)
+    unsigned levelsize,
+    unsigned sizeminfreq,
+    unsigned levels,
+    bool /*dummy*/)
 {
     if (!is_power2(levelsize))
         THROW(error, "levelsize is not power of two");
@@ -328,7 +344,11 @@ float perlinnoise::valuef(unsigned x, unsigned y, unsigned depth) const
 }
 
 std::vector<uint8_t> perlinnoise::values(
-    unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth) const
+    unsigned x,
+    unsigned y,
+    unsigned w,
+    unsigned h,
+    unsigned depth) const
 {
     std::vector<uint8_t> result(w * h);
     fixed32 dxy = fixed32::one() / resultsize;
@@ -367,7 +387,11 @@ std::vector<uint8_t> perlinnoise::values(
 }
 
 std::vector<float> perlinnoise::valuesf(
-    unsigned x, unsigned y, unsigned w, unsigned h, unsigned depth) const
+    unsigned x,
+    unsigned y,
+    unsigned w,
+    unsigned h,
+    unsigned depth) const
 {
     std::vector<float> result(w * h);
     fixed32 dxy = fixed32::one() / resultsize;
@@ -412,7 +436,11 @@ std::vector<float> perlinnoise::valuesf(
 ////////////////////////////////////////////////////////////////////////////////
 
 perlinnoise3d::noise_func::noise_func(
-    unsigned s, unsigned f, float px, float py, float pz) :
+    unsigned s,
+    unsigned f,
+    float px,
+    float py,
+    float pz) :
     size(s),
     frequency(f), phasex(px), phasey(py), phasez(pz)
 {
@@ -426,9 +454,13 @@ perlinnoise3d::noise_func::noise_func(
     }
 }
 
-inline float myfrac(float a) { return a - floorf(a); }
+inline float myfrac(float a)
+{
+    return a - floorf(a);
+}
 void perlinnoise3d::noise_func::set_line_for_interpolation(
-    const vector<float>& interpolation_func, float y) const
+    const vector<float>& interpolation_func,
+    float y) const
 {
     float by = myfrac(phasey + y);
     // remap to value/subvalue coordinates
@@ -444,7 +476,8 @@ void perlinnoise3d::noise_func::set_line_for_interpolation(
 }
 
 void perlinnoise3d::noise_func::set_plane_for_interpolation(
-    const vector<float>& interpolation_func, float z) const
+    const vector<float>& interpolation_func,
+    float z) const
 {
     float bz = myfrac(phasez + z);
     // remap to value/subvalue coordinates
@@ -460,7 +493,8 @@ void perlinnoise3d::noise_func::set_plane_for_interpolation(
 }
 
 float perlinnoise3d::noise_func::interpolate(
-    const vector<float>& interpolation_func, float x) const
+    const vector<float>& interpolation_func,
+    float x) const
 {
     float bx = myfrac(phasex + x);
     // remap to value/subvalue coordinates
@@ -485,7 +519,9 @@ float perlinnoise3d::noise_func::interpolate(
 }
 
 perlinnoise3d::perlinnoise3d(
-    unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq) :
+    unsigned size,
+    unsigned sizeminfreq,
+    unsigned sizemaxfreq) :
     resultsize(size)
 {
     if (!is_power2(size))
@@ -578,8 +614,8 @@ vector<float> perlinnoise3d::generate(float& minv, float& maxv) const
     return result;
 }
 
-float perlinnoise3d::valuef(
-    unsigned x, unsigned y, unsigned z, unsigned depth) const
+float perlinnoise3d::valuef(unsigned x, unsigned y, unsigned z, unsigned depth)
+    const
 {
     float dxyz = 1.0f / resultsize;
     x          = x & (resultsize - 1);

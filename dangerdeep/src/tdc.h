@@ -113,4 +113,3 @@ class tdc
     }
     bool auto_mode_enabled() const { return auto_mode; }
 };
-

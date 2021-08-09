@@ -73,8 +73,8 @@ void depth_charge::simulate(double delta_time, game& gm)
     }
 }
 
-void depth_charge::compute_force_and_torque(
-    vector3& F, vector3& T, game& gm) const
+void depth_charge::compute_force_and_torque(vector3& F, vector3& T, game& gm)
+    const
 {
     // force is in world space!
     if (position.z > 0)

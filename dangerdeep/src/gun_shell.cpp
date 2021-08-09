@@ -43,8 +43,13 @@ gun_shell::gun_shell(game& gm_) :
 }
 
 gun_shell::gun_shell(
-    game& gm_, const vector3& pos, angle direction, angle elevation,
-    double initial_velocity, double damage, double caliber_) :
+    game& gm_,
+    const vector3& pos,
+    angle direction,
+    angle elevation,
+    double initial_velocity,
+    double damage,
+    double caliber_) :
     sea_object(gm_, "gun_shell.ddxml"),
     caliber(caliber_)
 {
@@ -166,7 +171,10 @@ void gun_shell::check_collision(game& gm)
 }
 
 void gun_shell::check_collision_precise(
-    game& gm, const ship& s, const vector3& oldrelpos, const vector3& newrelpos)
+    game& gm,
+    const ship& s,
+    const vector3& oldrelpos,
+    const vector3& newrelpos)
 {
     // transform positions to s' local bbox space
     quaternion qco      = s.get_orientation().conj();
@@ -221,7 +229,9 @@ void gun_shell::check_collision_precise(
 }
 
 void gun_shell::check_collision_voxel(
-    game& gm, const ship& s, const vector3f& oldrelpos,
+    game& gm,
+    const ship& s,
+    const vector3f& oldrelpos,
     const vector3f& newrelpos)
 {
     // positions are relative to bbox of s.

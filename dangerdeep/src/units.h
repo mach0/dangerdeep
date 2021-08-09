@@ -46,7 +46,8 @@ enum class physical_unit
 };
 
 /// Base class for physical unit
-template <typename T, physical_unit P> struct physical_value
+template<typename T, physical_unit P>
+struct physical_value
 {
     /// The value itself, can be number or vector
     T value{T(0)};
@@ -78,7 +79,7 @@ template <typename T, physical_unit P> struct physical_value
     }
 };
 /// transform 3d values (also rotation)
-template <physical_unit P>
+template<physical_unit P>
 auto operator*(const matrix3& m, const physical_value<vector3, P>& v)
 {
     return physical_value<vector3, P>(m * v.value);
@@ -91,7 +92,10 @@ duration& operator-=(duration& a, const duration& b)
     a.value -= b.value;
     return a;
 }
-bool operator>(duration& a, const duration& b) { return a.value > b.value; }
+bool operator>(duration& a, const duration& b)
+{
+    return a.value > b.value;
+}
 
 /// Time stamp in seconds
 typedef physical_value<double, physical_unit::time_point> time_point;
@@ -103,7 +107,7 @@ auto duration_between(time_point t0, time_point t1)
 /// Velocity in meters per second
 typedef physical_value<double, physical_unit::velocity> velocity1d;
 typedef physical_value<vector3, physical_unit::velocity> velocity3d;
-template <typename T>
+template<typename T>
 auto operator*(const physical_value<T, physical_unit::velocity>& v, duration d)
 {
     return v.value * d.value;
@@ -120,7 +124,7 @@ angle operator*(angular_velocity av, duration d)
 /// Force in newtons
 typedef physical_value<double, physical_unit::force> force1d;
 typedef physical_value<vector3, physical_unit::force> force3d;
-template <typename T>
+template<typename T>
 auto operator*(const physical_value<T, physical_unit::force>& v, duration d)
 {
     return physical_value<T, physical_unit::momentum>(v.value * d.value);
@@ -129,9 +133,10 @@ auto operator*(const physical_value<T, physical_unit::force>& v, duration d)
 /// Acceleration in meters per second squared
 typedef physical_value<double, physical_unit::acceleration> acceleration1d;
 typedef physical_value<vector3, physical_unit::acceleration> acceleration3d;
-template <typename T>
+template<typename T>
 auto operator*(
-    const physical_value<T, physical_unit::acceleration>& v, duration d)
+    const physical_value<T, physical_unit::acceleration>& v,
+    duration d)
 {
     return physical_value<T, physical_unit::velocity>(v.value * d.value);
 }
@@ -139,7 +144,7 @@ auto operator*(
 /// Torque in newtons times meters
 typedef physical_value<double, physical_unit::torque> torque1d;
 typedef physical_value<vector3, physical_unit::torque> torque3d;
-template <typename T>
+template<typename T>
 auto operator*(const physical_value<T, physical_unit::torque>& t, duration d)
 {
     // returns angular momentum!
@@ -149,20 +154,21 @@ auto operator*(const physical_value<T, physical_unit::torque>& t, duration d)
 /// Mass in kilograms
 typedef physical_value<double, physical_unit::mass> mass1d;
 /// Get force value in newtons
-template <typename T>
+template<typename T>
 auto operator*(
-    const physical_value<T, physical_unit::acceleration>& a, mass1d m)
+    const physical_value<T, physical_unit::acceleration>& a,
+    mass1d m)
 {
     return physical_value<T, physical_unit::force>(a.value * m.value);
 }
 /// Get linear momentum
-template <typename T>
+template<typename T>
 auto operator*(const physical_value<T, physical_unit::velocity>& v, mass1d m)
 {
     return physical_value<T, physical_unit::momentum>(v.value * m.value);
 }
 /// Get velocity from momentum
-template <typename T>
+template<typename T>
 auto operator/(const physical_value<T, physical_unit::momentum>& v, mass1d m)
 {
     return physical_value<T, physical_unit::velocity>(
@@ -196,4 +202,3 @@ typedef physical_value<double, physical_unit::area> area2d;
 /// Later have some class that checks value is between 0 and 1. Maybe add class
 /// for that, no physical unit.
 typedef double factor;
-

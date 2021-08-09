@@ -77,8 +77,9 @@ class coastsegment
     mutable int pointcachedetail{0};
     mutable std::vector<cacheentry> pointcache;
     // check if cache needs to be (re)generated, and do that
-    void generate_point_cache(
-        const class coastmap& cm, int x, int y, int detail) const;
+    void
+    generate_point_cache(const class coastmap& cm, int x, int y, int detail)
+        const;
 
     void compute_successor_for_cl(unsigned cln);
 
@@ -202,7 +203,9 @@ class coastmap
     draw_as_map(const vector2& droff, double mapzoom, int detail = 0) const;
     // p is real word position of viewer, vr is range of view in meters.
     void render(
-        const vector2& p, double vr, bool mirrored, int detail = 0,
+        const vector2& p,
+        double vr,
+        bool mirrored,
+        int detail          = 0,
         bool withterraintop = false) const;
 };
-

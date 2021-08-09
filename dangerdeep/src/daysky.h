@@ -63,4 +63,3 @@ class daysky
 
     mutable tone_reproductor tonerepro;
 };
-

@@ -28,15 +28,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector3.h"
 
 //#define PRINT_TRICOL(x) std::cout << x
-#define PRINT_TRICOL(x) \
-    do                  \
-    {                   \
+#define PRINT_TRICOL(x)                                                        \
+    do                                                                         \
+    {                                                                          \
     } while (0)
 
 /// an function for computing triangle to triangle intersections
 namespace triangle_intersection
 {
-template <typename T>
+template<typename T>
 bool compute(
     const vector3t<T>& va0,
     const vector3t<T>& va1,
@@ -237,4 +237,3 @@ bool compute(
     return false;
 }
 } // namespace triangle_intersection
-

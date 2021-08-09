@@ -26,7 +26,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector3.h"
 
 ///\brief Template class for a mathematical vector with four coefficients.
-template <typename D> class vector4t
+template<typename D>
+class vector4t
 {
   public:
     D x, y, z, w;
@@ -38,7 +39,7 @@ template <typename D> class vector4t
         x(a.x), y(a.y), z(b.x), w(b.y)
     {
     }
-    template <typename E>
+    template<typename E>
     explicit vector4t(const vector4t<E>& other) :
         x(D(other.x)), y(D(other.y)), z(D(other.z)), w(D(other.w))
     {
@@ -128,9 +129,10 @@ template <typename D> class vector4t
     {
         return (w == 0) ? vector3t<D>() : vector3t<D>(x / w, y / w, z / w);
     }
-    template <typename D2>
+    template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector4t<D2>& v);
-    template <typename E> void assign(const vector4t<E>& other)
+    template<typename E>
+    void assign(const vector4t<E>& other)
     {
         x = D(other.x);
         y = D(other.y);
@@ -139,13 +141,13 @@ template <typename D> class vector4t
     }
 };
 
-template <typename D2>
+template<typename D2>
 inline vector4t<D2> operator*(D2 scalar, const vector4t<D2>& v)
 {
     return v * scalar;
 }
 
-template <typename D>
+template<typename D>
 std::ostream& operator<<(std::ostream& os, const vector4t<D>& v)
 {
     os << "x=" << v.x << "; y=" << v.y << "; z=" << v.z << "; w=" << v.w;
@@ -156,4 +158,3 @@ using vector4  = vector4t<double>;
 using vector4f = vector4t<float>;
 using vector4i = vector4t<int>;
 using vector4u = vector4t<unsigned int>;
-

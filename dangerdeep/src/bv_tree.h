@@ -39,7 +39,9 @@ class bv_tree
     {
         static const unsigned invalid_index{unsigned(-1)};
         std::array<uint32_t, 3> tri_idx = {
-            invalid_index, invalid_index, invalid_index};
+            invalid_index,
+            invalid_index,
+            invalid_index};
         spheref volume;
         bool is_leaf() const { return tri_idx[2] != invalid_index; }
         const vector3f&
@@ -69,7 +71,8 @@ class bv_tree
         bool is_leaf() const { return get_node().is_leaf(); }
         /// Create param from whole bv tree
         param(
-            const bv_tree& t, const std::vector<vector3f>& v,
+            const bv_tree& t,
+            const std::vector<vector3f>& v,
             const matrix4f& m) :
             tree(t),
             vertices(v), transform(std::move(m))
@@ -78,7 +81,9 @@ class bv_tree
         }
         /// Create param with node index
         param(
-            const bv_tree& t, uint32_t ni, const std::vector<vector3f>& v,
+            const bv_tree& t,
+            uint32_t ni,
+            const std::vector<vector3f>& v,
             const matrix4f& m) :
             tree(t),
             node_index(ni), vertices(v), transform(std::move(m))
@@ -129,13 +134,16 @@ class bv_tree
     /// determine if two bv_trees intersect each other (are colliding). A list
     /// of contact points is computed. Note this can be very slow!
     static bool collides(
-        const param& p0, const param& p1,
+        const param& p0,
+        const param& p1,
         std::vector<vector3f>& contact_points);
 
     /// determine if two bv_trees intersect each other (are colliding). The
     /// closest contact point is computed.
     static bool closest_collision(
-        const param& p0, const param& p1, vector3f& contact_point);
+        const param& p0,
+        const param& p1,
+        vector3f& contact_point);
 
     /// determine if bv_trees intersects sphere (are colliding).
     static bool
@@ -153,7 +161,8 @@ class bv_tree
 
     /// For tests
     void collect_volumes_of_tree_depth(
-        std::vector<spheref>& volumes, unsigned depth) const;
+        std::vector<spheref>& volumes,
+        unsigned depth) const;
 
     /// Is the tree undefined?
     bool empty() const { return nodes.empty(); }
@@ -162,4 +171,3 @@ class bv_tree
     /// The nodes of the tree. The root node is always the last one.
     std::vector<node> nodes;
 };
-

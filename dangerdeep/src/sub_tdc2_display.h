@@ -35,4 +35,3 @@ class sub_tdc2_display : public user_display
     /// last time of game that a tube was selected, used for display
     double tubeselected_time{0.0};
 };
-

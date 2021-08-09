@@ -56,7 +56,7 @@ class sensor;
 class texture;
 
 ///\brief Base class for all physical objects in the game world. Simulates
-///dynamics with position, velocity, acceleration etc.
+/// dynamics with position, velocity, acceleration etc.
 class sea_object
 {
   public:
@@ -109,11 +109,23 @@ class sea_object
 
     // translate coordinates from degrees to meters and vice versa
     static void degrees2meters(
-        bool west, unsigned degx, unsigned minx, bool south, unsigned degy,
-        unsigned miny, double& x, double& y);
+        bool west,
+        unsigned degx,
+        unsigned minx,
+        bool south,
+        unsigned degy,
+        unsigned miny,
+        double& x,
+        double& y);
     static void meters2degrees(
-        double x, double y, bool& west, unsigned& degx, unsigned& minx,
-        bool& south, unsigned& degy, unsigned& miny);
+        double x,
+        double y,
+        bool& west,
+        unsigned& degx,
+        unsigned& minx,
+        bool& south,
+        unsigned& degy,
+        unsigned& miny);
 
     // we need a struct for each part:
     // VARIABLE:
@@ -146,8 +158,12 @@ class sea_object
         bool surfaced;       // must sub be surfaced to repair this?
         bool repairable;     // is repairable at sea?
         damage_data_scheme(
-            const vector3f& a, const vector3f& b, float w, unsigned t,
-            bool s = false, bool r = true) :
+            const vector3f& a,
+            const vector3f& b,
+            float w,
+            unsigned t,
+            bool s = false,
+            bool r = true) :
             p1(a),
             p2(b), weakness(w), repairtime(t), surfaced(s), repairable(r)
         {
@@ -344,7 +360,8 @@ class sea_object
     // explosion (destruction), shock wave) the strength is proportional to
     // damage_status, 0-none, 1-light, 2-medium...
     virtual bool damage(
-        const vector3& fromwhere, unsigned strength,
+        const vector3& fromwhere,
+        unsigned strength,
         game& gm); // returns true if object was destroyed
 
     virtual void set_target(sea_object_id s, game& gm) { target = s; }
@@ -354,12 +371,12 @@ class sea_object
 
     /// switch object state from alive to inactive.
     ///@note switchting do defunct state is forbidden! do not implement such a
-    ///function!
+    /// function!
     virtual void set_inactive();
 
     /// switch object state from alive or inactive to dead.
     ///@note switchting do defunct state is forbidden! do not implement such a
-    ///function!
+    /// function!
     virtual void kill();
 #ifdef COD_MODE
     virtual void reanimate();
@@ -444,7 +461,8 @@ class sea_object
     /// get minimum and maximum voxel index covering a point (polygon) set
     ///@returns number of voxels covered
     unsigned get_min_max_voxel_index_for_polyset(
-        const std::vector<polygon>& polys, vector3i& vxmin,
+        const std::vector<polygon>& polys,
+        vector3i& vxmin,
         vector3i& vxmax) const;
 
     /// set random skin_name by given date, only to use for convoy creation
@@ -455,10 +473,10 @@ class sea_object
 
     /// compute collision response impulse term
     double compute_collision_response_value(
-        const vector3& collision_pos, const vector3& N) const;
+        const vector3& collision_pos,
+        const vector3& N) const;
 
     /// apply collision response impulse
     void
     apply_collision_impulse(const vector3& collision_pos, const vector3& J);
 };
-

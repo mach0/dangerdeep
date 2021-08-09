@@ -138,8 +138,14 @@ void logbook_display::display() const
             font_jphsl->get_nr_of_lines_wrapped(page_size.x, et, maxlines)
                 .second;
         font_jphsl->print_wrapped(
-            page_left_offset.x, page_left_offset.y, page_size.x, 0,
-            et.substr(textoff), color(10, 10, 10), false, 0);
+            page_left_offset.x,
+            page_left_offset.y,
+            page_size.x,
+            0,
+            et.substr(textoff),
+            color(10, 10, 10),
+            false,
+            0);
     }
 
     for (int i = first_entry_cp_left; i < last_entry_cp_left; ++i)
@@ -151,13 +157,24 @@ void logbook_display::display() const
             page_left_offset.x,
             page_left_offset.y
                 + entry_page_and_line[i].second * font_jphsl->get_height(),
-            page_size.x, 0, et, color(10, 10, 10), false, maxh);
+            page_size.x,
+            0,
+            et,
+            color(10, 10, 10),
+            false,
+            maxh);
         if (textptr < et.length())
         {
             // print rest of it on second page
             font_jphsl->print_wrapped(
-                page_right_offset.x, page_right_offset.y, page_size.x, 0,
-                et.substr(textptr), color(10, 10, 10), false, 0);
+                page_right_offset.x,
+                page_right_offset.y,
+                page_size.x,
+                0,
+                et.substr(textptr),
+                color(10, 10, 10),
+                false,
+                0);
         }
     }
     for (int i = first_entry_cp_right; i < last_entry_cp_right; ++i)
@@ -169,7 +186,12 @@ void logbook_display::display() const
             page_right_offset.x,
             page_right_offset.y
                 + entry_page_and_line[i].second * font_jphsl->get_height(),
-            page_size.x, 0, et, color(10, 10, 10), false, maxh);
+            page_size.x,
+            0,
+            et,
+            color(10, 10, 10),
+            false,
+            maxh);
     }
 
     // Display page number.

@@ -22,7 +22,10 @@
 #include <cstring> //for memmove
 
 bzip_streambuf::bzip_streambuf(
-    std::ostream* os, int blocksize, int _workfactor, int _buffer_size) :
+    std::ostream* os,
+    int blocksize,
+    int _workfactor,
+    int _buffer_size) :
     outstream(os),
     in_buffer(_buffer_size, 0), out_buffer(_buffer_size, 0),
     blocksize_100_k(blocksize), workfactor(_workfactor),
@@ -45,7 +48,10 @@ bzip_streambuf::bzip_streambuf(
 }
 
 bzip_streambuf::bzip_streambuf(
-    std::istream* is, int _buffer_size, int _put_back, int small) :
+    std::istream* is,
+    int _buffer_size,
+    int _put_back,
+    int small) :
     instream(is),
     in_buffer(_buffer_size, 0), out_buffer(_buffer_size + _put_back, 0),
     buffer_size(_buffer_size), put_back(_put_back), mode(DECOMPRESS)

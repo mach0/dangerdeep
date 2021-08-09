@@ -35,7 +35,10 @@ class fractal_noise
 
   public:
     fractal_noise(
-        double _H, double _lacunarity, int _octaves, double _offset,
+        double _H,
+        double _lacunarity,
+        int _octaves,
+        double _offset,
         double _gain) :
         H(_H),
         lacunarity(_lacunarity), offset(_offset), gain(_gain),

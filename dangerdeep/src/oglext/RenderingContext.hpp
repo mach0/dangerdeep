@@ -234,58 +234,129 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pBlendColor)(GLclampf, GLclampf, GLclampf, GLclampf);
     GLvoid(APIENTRY* m_pBlendEquation)(GLenum);
     GLvoid(APIENTRY* m_pColorSubTable)(
-        GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pColorTable)(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pColorTableParameterfv)(GLenum, GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pColorTableParameteriv)(GLenum, GLenum, GLint const*);
     GLvoid(APIENTRY* m_pConvolutionFilter1D)(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pConvolutionFilter2D)(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pConvolutionParameterf)(GLenum, GLenum, GLfloat);
     GLvoid(APIENTRY* m_pConvolutionParameterfv)(GLenum, GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pConvolutionParameteri)(GLenum, GLenum, GLint);
     GLvoid(APIENTRY* m_pConvolutionParameteriv)(GLenum, GLenum, GLint const*);
-    GLvoid(APIENTRY* m_pCopyColorSubTable)(
-        GLenum, GLsizei, GLint, GLint, GLsizei);
+    GLvoid(
+        APIENTRY* m_pCopyColorSubTable)(GLenum, GLsizei, GLint, GLint, GLsizei);
     GLvoid(APIENTRY* m_pCopyColorTable)(GLenum, GLenum, GLint, GLint, GLsizei);
     GLvoid(APIENTRY* m_pCopyConvolutionFilter1D)(
-        GLenum, GLenum, GLint, GLint, GLsizei);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei);
     GLvoid(APIENTRY* m_pCopyConvolutionFilter2D)(
-        GLenum, GLenum, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLvoid(APIENTRY* m_pCopyTexSubImage3D)(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLvoid(APIENTRY* m_pDrawRangeElements)(
-        GLenum, GLuint, GLuint, GLsizei, GLenum, GLvoid const*);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pGetColorTable)(GLenum, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetColorTableParameterfv)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetColorTableParameteriv)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetConvolutionFilter)(GLenum, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetConvolutionParameterfv)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetConvolutionParameteriv)(GLenum, GLenum, GLint*);
-    GLvoid(APIENTRY* m_pGetHistogram)(
-        GLenum, GLboolean, GLenum, GLenum, GLvoid*);
+    GLvoid(
+        APIENTRY* m_pGetHistogram)(GLenum, GLboolean, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetHistogramParameterfv)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetHistogramParameteriv)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetMinmax)(GLenum, GLboolean, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetMinmaxParameterfv)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetMinmaxParameteriv)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetSeparableFilter)(
-        GLenum, GLenum, GLenum, GLvoid*, GLvoid*, GLvoid*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLvoid*,
+        GLvoid*,
+        GLvoid*);
     GLvoid(APIENTRY* m_pHistogram)(GLenum, GLsizei, GLenum, GLboolean);
     GLvoid(APIENTRY* m_pMinmax)(GLenum, GLenum, GLboolean);
     GLvoid(APIENTRY* m_pResetHistogram)(GLenum);
     GLvoid(APIENTRY* m_pResetMinmax)(GLenum);
     GLvoid(APIENTRY* m_pSeparableFilter2D)(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
         GLvoid const*);
     GLvoid(APIENTRY* m_pTexImage3D)(
-        GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
         GLvoid const*);
     GLvoid(APIENTRY* m_pTexSubImage3D)(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif // GL_VERSION_1_2_OGLEXT
 
@@ -297,20 +368,62 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pActiveTexture)(GLenum);
     GLvoid(APIENTRY* m_pClientActiveTexture)(GLenum);
     GLvoid(APIENTRY* m_pCompressedTexImage1D)(
-        GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexImage2D)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexImage3D)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage1D)(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage2D)(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
         GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage3D)(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pGetCompressedTexImage)(GLenum, GLint, GLvoid*);
     GLvoid(APIENTRY* m_pLoadTransposeMatrixd)(GLdouble const*);
     GLvoid(APIENTRY* m_pLoadTransposeMatrixf)(GLfloat const*);
@@ -339,15 +452,19 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pMultiTexCoord3s)(GLenum, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pMultiTexCoord3sv)(GLenum, GLshort const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4d)(
-        GLenum, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pMultiTexCoord4dv)(GLenum, GLdouble const*);
-    GLvoid(APIENTRY* m_pMultiTexCoord4f)(
-        GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
+    GLvoid(APIENTRY*
+               m_pMultiTexCoord4f)(GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pMultiTexCoord4fv)(GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4i)(GLenum, GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pMultiTexCoord4iv)(GLenum, GLint const*);
-    GLvoid(APIENTRY* m_pMultiTexCoord4s)(
-        GLenum, GLshort, GLshort, GLshort, GLshort);
+    GLvoid(APIENTRY*
+               m_pMultiTexCoord4s)(GLenum, GLshort, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pMultiTexCoord4sv)(GLenum, GLshort const*);
     GLvoid(APIENTRY* m_pMultTransposeMatrixd)(GLdouble const*);
     GLvoid(APIENTRY* m_pMultTransposeMatrixf)(GLfloat const*);
@@ -368,7 +485,11 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pFogCoordPointer)(GLenum, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pMultiDrawArrays)(GLenum, GLint*, GLsizei*, GLsizei);
     GLvoid(APIENTRY* m_pMultiDrawElements)(
-        GLenum, GLsizei const*, GLenum, GLvoid const**, GLsizei);
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
+        GLsizei);
     GLvoid(APIENTRY* m_pPointParameterf)(GLenum, GLfloat);
     GLvoid(APIENTRY* m_pPointParameterfv)(GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pPointParameteri)(GLenum, GLint);
@@ -389,8 +510,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pSecondaryColor3uiv)(GLuint const*);
     GLvoid(APIENTRY* m_pSecondaryColor3us)(GLushort, GLushort, GLushort);
     GLvoid(APIENTRY* m_pSecondaryColor3usv)(GLushort const*);
-    GLvoid(APIENTRY* m_pSecondaryColorPointer)(
-        GLint, GLenum, GLsizei, GLvoid const*);
+    GLvoid(APIENTRY*
+               m_pSecondaryColorPointer)(GLint, GLenum, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pWindowPos2d)(GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pWindowPos2dv)(GLdouble const*);
     GLvoid(APIENTRY* m_pWindowPos2f)(GLfloat, GLfloat);
@@ -418,8 +539,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pBeginQuery)(GLenum, GLuint);
     GLvoid(APIENTRY* m_pBindBuffer)(GLenum, GLuint);
     GLvoid(APIENTRY* m_pBufferData)(GLenum, GLsizeiptr, GLvoid const*, GLenum);
-    GLvoid(APIENTRY* m_pBufferSubData)(
-        GLenum, GLintptr, GLsizeiptr, GLvoid const*);
+    GLvoid(APIENTRY*
+               m_pBufferSubData)(GLenum, GLintptr, GLsizeiptr, GLvoid const*);
     GLvoid(APIENTRY* m_pDeleteBuffers)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pDeleteQueries)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pEndQuery)(GLenum);
@@ -427,8 +548,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pGenQueries)(GLsizei, GLuint*);
     GLvoid(APIENTRY* m_pGetBufferParameteriv)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetBufferPointerv)(GLenum, GLenum, GLvoid**);
-    GLvoid(APIENTRY* m_pGetBufferSubData)(
-        GLenum, GLintptr, GLsizeiptr, GLvoid*);
+    GLvoid(
+        APIENTRY* m_pGetBufferSubData)(GLenum, GLintptr, GLsizeiptr, GLvoid*);
     GLvoid(APIENTRY* m_pGetQueryiv)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetQueryObjectiv)(GLuint, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetQueryObjectuiv)(GLuint, GLenum, GLuint*);
@@ -457,9 +578,21 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pDrawBuffers)(GLsizei, GLenum const*);
     GLvoid(APIENTRY* m_pEnableVertexAttribArray)(GLuint);
     GLvoid(APIENTRY* m_pGetActiveAttrib)(
-        GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLchar*);
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLchar*);
     GLvoid(APIENTRY* m_pGetActiveUniform)(
-        GLuint, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLchar*);
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLchar*);
     GLvoid(APIENTRY* m_pGetAttachedShaders)(GLuint, GLsizei, GLsizei*, GLuint*);
     GLint(APIENTRY* m_pGetAttribLocation)(GLuint, GLchar const*);
     GLvoid(APIENTRY* m_pGetProgramInfoLog)(GLuint, GLsizei, GLsizei*, GLchar*);
@@ -477,8 +610,8 @@ class CRenderingContext
     GLboolean(APIENTRY* m_pIsProgram)(GLuint);
     GLboolean(APIENTRY* m_pIsShader)(GLuint);
     GLvoid(APIENTRY* m_pLinkProgram)(GLuint);
-    GLvoid(APIENTRY* m_pShaderSource)(
-        GLuint, GLsizei, GLchar const**, GLint const*);
+    GLvoid(APIENTRY*
+               m_pShaderSource)(GLuint, GLsizei, GLchar const**, GLint const*);
     GLvoid(APIENTRY* m_pStencilFuncSeparate)(GLenum, GLenum, GLint, GLuint);
     GLvoid(APIENTRY* m_pStencilMaskSeparate)(GLenum, GLuint);
     GLvoid(APIENTRY* m_pStencilOpSeparate)(GLenum, GLenum, GLenum, GLenum);
@@ -498,12 +631,12 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pUniform4fv)(GLint, GLsizei, GLfloat const*);
     GLvoid(APIENTRY* m_pUniform4i)(GLint, GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pUniform4iv)(GLint, GLsizei, GLint const*);
-    GLvoid(APIENTRY* m_pUniformMatrix2fv)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
-    GLvoid(APIENTRY* m_pUniformMatrix3fv)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
-    GLvoid(APIENTRY* m_pUniformMatrix4fv)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
+    GLvoid(APIENTRY*
+               m_pUniformMatrix2fv)(GLint, GLsizei, GLboolean, GLfloat const*);
+    GLvoid(APIENTRY*
+               m_pUniformMatrix3fv)(GLint, GLsizei, GLboolean, GLfloat const*);
+    GLvoid(APIENTRY*
+               m_pUniformMatrix4fv)(GLint, GLsizei, GLboolean, GLfloat const*);
     GLvoid(APIENTRY* m_pUseProgram)(GLuint);
     GLvoid(APIENTRY* m_pValidateProgram)(GLuint);
     GLvoid(APIENTRY* m_pVertexAttrib1d)(GLuint, GLdouble);
@@ -526,28 +659,37 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexAttrib3sv)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4bv)(GLuint, GLbyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4d)(
-        GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pVertexAttrib4dv)(GLuint, GLdouble const*);
-    GLvoid(APIENTRY* m_pVertexAttrib4f)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+    GLvoid(APIENTRY*
+               m_pVertexAttrib4f)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pVertexAttrib4fv)(GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pVertexAttrib4iv)(GLuint, GLint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4Nbv)(GLuint, GLbyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4Niv)(GLuint, GLint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4Nsv)(GLuint, GLshort const*);
-    GLvoid(APIENTRY* m_pVertexAttrib4Nub)(
-        GLuint, GLubyte, GLubyte, GLubyte, GLubyte);
+    GLvoid(APIENTRY*
+               m_pVertexAttrib4Nub)(GLuint, GLubyte, GLubyte, GLubyte, GLubyte);
     GLvoid(APIENTRY* m_pVertexAttrib4Nubv)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4Nuiv)(GLuint, GLuint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4Nusv)(GLuint, GLushort const*);
-    GLvoid(APIENTRY* m_pVertexAttrib4s)(
-        GLuint, GLshort, GLshort, GLshort, GLshort);
+    GLvoid(APIENTRY*
+               m_pVertexAttrib4s)(GLuint, GLshort, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexAttrib4sv)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4ubv)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4uiv)(GLuint, GLuint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4usv)(GLuint, GLushort const*);
     GLvoid(APIENTRY* m_pVertexAttribPointer)(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid const*);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLvoid const*);
 
 #endif // GL_VERSION_2_0_OGLEXT
 
@@ -567,12 +709,24 @@ class CRenderingContext
 
     GLvoid(APIENTRY* m_pDrawElementArrayAPPLE)(GLenum, GLint, GLsizei);
     GLvoid(APIENTRY* m_pDrawRangeElementArrayAPPLE)(
-        GLenum, GLuint, GLuint, GLint, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint,
+        GLsizei);
     GLvoid(APIENTRY* m_pElementPointerAPPLE)(GLenum, GLvoid const*);
     GLvoid(APIENTRY* m_pMultiDrawElementArrayAPPLE)(
-        GLenum, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
     GLvoid(APIENTRY* m_pMultiDrawRangeElementArrayAPPLE)(
-        GLenum, GLuint, GLuint, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
 
 #endif // GL_APPLE_element_array_OGLEXT
 
@@ -639,8 +793,8 @@ class CRenderingContext
 #ifdef GL_ARB_matrix_palette_OGLEXT
 
     GLvoid(APIENTRY* m_pCurrentPaletteMatrixARB)(GLint);
-    GLvoid(APIENTRY* m_pMatrixIndexPointerARB)(
-        GLint, GLenum, GLsizei, GLvoid const*);
+    GLvoid(APIENTRY*
+               m_pMatrixIndexPointerARB)(GLint, GLenum, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pMatrixIndexubvARB)(GLint, GLubyte const*);
     GLvoid(APIENTRY* m_pMatrixIndexuivARB)(GLint, GLuint const*);
     GLvoid(APIENTRY* m_pMatrixIndexusvARB)(GLint, GLushort const*);
@@ -679,8 +833,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pMultiTexCoord2ivARB)(GLenum, GLint const*);
     GLvoid(APIENTRY* m_pMultiTexCoord2sARB)(GLenum, GLshort, GLshort);
     GLvoid(APIENTRY* m_pMultiTexCoord2svARB)(GLenum, GLshort const*);
-    GLvoid(APIENTRY* m_pMultiTexCoord3dARB)(
-        GLenum, GLdouble, GLdouble, GLdouble);
+    GLvoid(
+        APIENTRY* m_pMultiTexCoord3dARB)(GLenum, GLdouble, GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pMultiTexCoord3dvARB)(GLenum, GLdouble const*);
     GLvoid(APIENTRY* m_pMultiTexCoord3fARB)(GLenum, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pMultiTexCoord3fvARB)(GLenum, GLfloat const*);
@@ -689,15 +843,27 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pMultiTexCoord3sARB)(GLenum, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pMultiTexCoord3svARB)(GLenum, GLshort const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4dARB)(
-        GLenum, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pMultiTexCoord4dvARB)(GLenum, GLdouble const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4fARB)(
-        GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pMultiTexCoord4fvARB)(GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4iARB)(GLenum, GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pMultiTexCoord4ivARB)(GLenum, GLint const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4sARB)(
-        GLenum, GLshort, GLshort, GLshort, GLshort);
+        GLenum,
+        GLshort,
+        GLshort,
+        GLshort,
+        GLshort);
     GLvoid(APIENTRY* m_pMultiTexCoord4svARB)(GLenum, GLshort const*);
 
 #endif // GL_ARB_multitexture_OGLEXT
@@ -740,22 +906,37 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pDeleteObjectARB)(GLhandleARB);
     GLvoid(APIENTRY* m_pDetachObjectARB)(GLhandleARB, GLhandleARB);
     GLvoid(APIENTRY* m_pGetActiveUniformARB)(
-        GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*);
+        GLhandleARB,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLcharARB*);
     GLvoid(APIENTRY* m_pGetAttachedObjectsARB)(
-        GLhandleARB, GLsizei, GLsizei*, GLhandleARB*);
+        GLhandleARB,
+        GLsizei,
+        GLsizei*,
+        GLhandleARB*);
     GLhandleARB(APIENTRY* m_pGetHandleARB)(GLenum);
-    GLvoid(APIENTRY* m_pGetInfoLogARB)(
-        GLhandleARB, GLsizei, GLsizei*, GLcharARB*);
+    GLvoid(
+        APIENTRY* m_pGetInfoLogARB)(GLhandleARB, GLsizei, GLsizei*, GLcharARB*);
     GLvoid(APIENTRY* m_pGetObjectParameterfvARB)(GLhandleARB, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetObjectParameterivARB)(GLhandleARB, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetShaderSourceARB)(
-        GLhandleARB, GLsizei, GLsizei*, GLcharARB*);
+        GLhandleARB,
+        GLsizei,
+        GLsizei*,
+        GLcharARB*);
     GLvoid(APIENTRY* m_pGetUniformfvARB)(GLhandleARB, GLint, GLfloat*);
     GLvoid(APIENTRY* m_pGetUniformivARB)(GLhandleARB, GLint, GLint*);
     GLint(APIENTRY* m_pGetUniformLocationARB)(GLhandleARB, GLcharARB const*);
     GLvoid(APIENTRY* m_pLinkProgramARB)(GLhandleARB);
     GLvoid(APIENTRY* m_pShaderSourceARB)(
-        GLhandleARB, GLsizei, GLcharARB const**, GLint const*);
+        GLhandleARB,
+        GLsizei,
+        GLcharARB const**,
+        GLint const*);
     GLvoid(APIENTRY* m_pUniform1fARB)(GLint, GLfloat);
     GLvoid(APIENTRY* m_pUniform1fvARB)(GLint, GLsizei, GLfloat const*);
     GLvoid(APIENTRY* m_pUniform1iARB)(GLint, GLint);
@@ -768,17 +949,26 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pUniform3fvARB)(GLint, GLsizei, GLfloat const*);
     GLvoid(APIENTRY* m_pUniform3iARB)(GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pUniform3ivARB)(GLint, GLsizei, GLint const*);
-    GLvoid(APIENTRY* m_pUniform4fARB)(
-        GLint, GLfloat, GLfloat, GLfloat, GLfloat);
+    GLvoid(
+        APIENTRY* m_pUniform4fARB)(GLint, GLfloat, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pUniform4fvARB)(GLint, GLsizei, GLfloat const*);
     GLvoid(APIENTRY* m_pUniform4iARB)(GLint, GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pUniform4ivARB)(GLint, GLsizei, GLint const*);
     GLvoid(APIENTRY* m_pUniformMatrix2fvARB)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
+        GLint,
+        GLsizei,
+        GLboolean,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pUniformMatrix3fvARB)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
+        GLint,
+        GLsizei,
+        GLboolean,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pUniformMatrix4fvARB)(
-        GLint, GLsizei, GLboolean, GLfloat const*);
+        GLint,
+        GLsizei,
+        GLboolean,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pUseProgramObjectARB)(GLhandleARB);
     GLvoid(APIENTRY* m_pValidateProgramARB)(GLhandleARB);
 
@@ -790,20 +980,62 @@ class CRenderingContext
 #ifdef GL_ARB_texture_compression_OGLEXT
 
     GLvoid(APIENTRY* m_pCompressedTexImage1DARB)(
-        GLenum, GLint, GLenum, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexImage2DARB)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLint, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexImage3DARB)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLsizei,
         GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage1DARB)(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage2DARB)(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLsizei,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
         GLvoid const*);
     GLvoid(APIENTRY* m_pCompressedTexSubImage3DARB)(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLsizei, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pGetCompressedTexImageARB)(GLenum, GLint, GLvoid*);
 
 #endif // GL_ARB_texture_compression_OGLEXT
@@ -830,8 +1062,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pWeightdvARB)(GLint, GLdouble const*);
     GLvoid(APIENTRY* m_pWeightfvARB)(GLint, GLfloat const*);
     GLvoid(APIENTRY* m_pWeightivARB)(GLint, GLint const*);
-    GLvoid(APIENTRY* m_pWeightPointerARB)(
-        GLint, GLenum, GLsizei, GLvoid const*);
+    GLvoid(
+        APIENTRY* m_pWeightPointerARB)(GLint, GLenum, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pWeightsvARB)(GLint, GLshort const*);
     GLvoid(APIENTRY* m_pWeightubvARB)(GLint, GLubyte const*);
     GLvoid(APIENTRY* m_pWeightuivARB)(GLint, GLuint const*);
@@ -845,16 +1077,22 @@ class CRenderingContext
 #ifdef GL_ARB_vertex_buffer_object_OGLEXT
 
     GLvoid(APIENTRY* m_pBindBufferARB)(GLenum, GLuint);
-    GLvoid(APIENTRY* m_pBufferDataARB)(
-        GLenum, GLsizeiptrARB, GLvoid const*, GLenum);
+    GLvoid(APIENTRY*
+               m_pBufferDataARB)(GLenum, GLsizeiptrARB, GLvoid const*, GLenum);
     GLvoid(APIENTRY* m_pBufferSubDataARB)(
-        GLenum, GLintptrARB, GLsizeiptrARB, GLvoid const*);
+        GLenum,
+        GLintptrARB,
+        GLsizeiptrARB,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pDeleteBuffersARB)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pGenBuffersARB)(GLsizei, GLuint*);
     GLvoid(APIENTRY* m_pGetBufferParameterivARB)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetBufferPointervARB)(GLenum, GLenum, GLvoid**);
     GLvoid(APIENTRY* m_pGetBufferSubDataARB)(
-        GLenum, GLintptrARB, GLsizeiptrARB, GLvoid*);
+        GLenum,
+        GLintptrARB,
+        GLsizeiptrARB,
+        GLvoid*);
     GLboolean(APIENTRY* m_pIsBufferARB)(GLuint);
     GLvoid*(APIENTRY* m_pMapBufferARB)(GLenum, GLenum);
     GLboolean(APIENTRY* m_pUnmapBufferARB)(GLenum);
@@ -874,10 +1112,10 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pGetProgramEnvParameterdvARB)(GLenum, GLuint, GLdouble*);
     GLvoid(APIENTRY* m_pGetProgramEnvParameterfvARB)(GLenum, GLuint, GLfloat*);
     GLvoid(APIENTRY* m_pGetProgramivARB)(GLenum, GLenum, GLint*);
-    GLvoid(APIENTRY* m_pGetProgramLocalParameterdvARB)(
-        GLenum, GLuint, GLdouble*);
-    GLvoid(APIENTRY* m_pGetProgramLocalParameterfvARB)(
-        GLenum, GLuint, GLfloat*);
+    GLvoid(
+        APIENTRY* m_pGetProgramLocalParameterdvARB)(GLenum, GLuint, GLdouble*);
+    GLvoid(
+        APIENTRY* m_pGetProgramLocalParameterfvARB)(GLenum, GLuint, GLfloat*);
     GLvoid(APIENTRY* m_pGetProgramStringARB)(GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetVertexAttribdvARB)(GLuint, GLenum, GLdouble*);
     GLvoid(APIENTRY* m_pGetVertexAttribfvARB)(GLuint, GLenum, GLfloat*);
@@ -885,23 +1123,49 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pGetVertexAttribPointervARB)(GLuint, GLenum, GLvoid**);
     GLboolean(APIENTRY* m_pIsProgramARB)(GLuint);
     GLvoid(APIENTRY* m_pProgramEnvParameter4dARB)(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pProgramEnvParameter4dvARB)(
-        GLenum, GLuint, GLdouble const*);
+        GLenum,
+        GLuint,
+        GLdouble const*);
     GLvoid(APIENTRY* m_pProgramEnvParameter4fARB)(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
-    GLvoid(APIENTRY* m_pProgramEnvParameter4fvARB)(
-        GLenum, GLuint, GLfloat const*);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
+    GLvoid(
+        APIENTRY* m_pProgramEnvParameter4fvARB)(GLenum, GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pProgramLocalParameter4dARB)(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pProgramLocalParameter4dvARB)(
-        GLenum, GLuint, GLdouble const*);
+        GLenum,
+        GLuint,
+        GLdouble const*);
     GLvoid(APIENTRY* m_pProgramLocalParameter4fARB)(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pProgramLocalParameter4fvARB)(
-        GLenum, GLuint, GLfloat const*);
-    GLvoid(APIENTRY* m_pProgramStringARB)(
-        GLenum, GLenum, GLsizei, GLvoid const*);
+        GLenum,
+        GLuint,
+        GLfloat const*);
+    GLvoid(
+        APIENTRY* m_pProgramStringARB)(GLenum, GLenum, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pVertexAttrib1dARB)(GLuint, GLdouble);
     GLvoid(APIENTRY* m_pVertexAttrib1dvARB)(GLuint, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexAttrib1fARB)(GLuint, GLfloat);
@@ -914,8 +1178,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexAttrib2fvARB)(GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pVertexAttrib2sARB)(GLuint, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexAttrib2svARB)(GLuint, GLshort const*);
-    GLvoid(APIENTRY* m_pVertexAttrib3dARB)(
-        GLuint, GLdouble, GLdouble, GLdouble);
+    GLvoid(
+        APIENTRY* m_pVertexAttrib3dARB)(GLuint, GLdouble, GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pVertexAttrib3dvARB)(GLuint, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexAttrib3fARB)(GLuint, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pVertexAttrib3fvARB)(GLuint, GLfloat const*);
@@ -923,28 +1187,49 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexAttrib3svARB)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4bvARB)(GLuint, GLbyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4dARB)(
-        GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pVertexAttrib4dvARB)(GLuint, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexAttrib4fARB)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pVertexAttrib4fvARB)(GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pVertexAttrib4ivARB)(GLuint, GLint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NbvARB)(GLuint, GLbyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NivARB)(GLuint, GLint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NsvARB)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NubARB)(
-        GLuint, GLubyte, GLubyte, GLubyte, GLubyte);
+        GLuint,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte);
     GLvoid(APIENTRY* m_pVertexAttrib4NubvARB)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NuivARB)(GLuint, GLuint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4NusvARB)(GLuint, GLushort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4sARB)(
-        GLuint, GLshort, GLshort, GLshort, GLshort);
+        GLuint,
+        GLshort,
+        GLshort,
+        GLshort,
+        GLshort);
     GLvoid(APIENTRY* m_pVertexAttrib4svARB)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4ubvARB)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVertexAttrib4uivARB)(GLuint, GLuint const*);
     GLvoid(APIENTRY* m_pVertexAttrib4usvARB)(GLuint, GLushort const*);
     GLvoid(APIENTRY* m_pVertexAttribPointerARB)(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLvoid const*);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLvoid const*);
 
 #endif // GL_ARB_vertex_program_OGLEXT
 
@@ -954,9 +1239,17 @@ class CRenderingContext
 #ifdef GL_ARB_vertex_shader_OGLEXT
 
     GLvoid(APIENTRY* m_pBindAttribLocationARB)(
-        GLhandleARB, GLuint, GLcharARB const*);
+        GLhandleARB,
+        GLuint,
+        GLcharARB const*);
     GLvoid(APIENTRY* m_pGetActiveAttribARB)(
-        GLhandleARB, GLuint, GLsizei, GLsizei*, GLint*, GLenum*, GLcharARB*);
+        GLhandleARB,
+        GLuint,
+        GLsizei,
+        GLsizei*,
+        GLint*,
+        GLenum*,
+        GLcharARB*);
     GLint(APIENTRY* m_pGetAttribLocationARB)(GLhandleARB, GLcharARB const*);
 
 #endif // GL_ARB_vertex_shader_OGLEXT
@@ -1000,8 +1293,8 @@ class CRenderingContext
 #ifdef GL_ATI_element_array_OGLEXT
 
     GLvoid(APIENTRY* m_pDrawElementArrayATI)(GLenum, GLsizei);
-    GLvoid(APIENTRY* m_pDrawRangeElementArrayATI)(
-        GLenum, GLuint, GLuint, GLsizei);
+    GLvoid(
+        APIENTRY* m_pDrawRangeElementArrayATI)(GLenum, GLuint, GLuint, GLsizei);
     GLvoid(APIENTRY* m_pElementPointerATI)(GLenum, GLvoid const*);
 
 #endif // GL_ATI_element_array_OGLEXT
@@ -1024,22 +1317,70 @@ class CRenderingContext
 #ifdef GL_ATI_fragment_shader_OGLEXT
 
     GLvoid(APIENTRY* m_pAlphaFragmentOp1ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pAlphaFragmentOp2ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pAlphaFragmentOp3ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pBeginFragmentShaderATI)();
     GLvoid(APIENTRY* m_pBindFragmentShaderATI)(GLuint);
     GLvoid(APIENTRY* m_pColorFragmentOp1ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pColorFragmentOp2ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
         GLuint);
     GLvoid(APIENTRY* m_pColorFragmentOp3ATI)(
-        GLenum, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint, GLuint,
-        GLuint, GLuint, GLuint, GLuint);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pDeleteFragmentShaderATI)(GLuint);
     GLvoid(APIENTRY* m_pEndFragmentShaderATI)();
     GLuint(APIENTRY* m_pGenFragmentShadersATI)(GLuint);
@@ -1085,7 +1426,12 @@ class CRenderingContext
 #ifdef GL_ATI_vertex_array_object_OGLEXT
 
     GLvoid(APIENTRY* m_pArrayObjectATI)(
-        GLenum, GLint, GLenum, GLsizei, GLuint, GLuint);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLuint,
+        GLuint);
     GLvoid(APIENTRY* m_pFreeObjectBufferATI)(GLuint);
     GLvoid(APIENTRY* m_pGetArrayObjectfvATI)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetArrayObjectivATI)(GLenum, GLenum, GLint*);
@@ -1096,9 +1442,17 @@ class CRenderingContext
     GLboolean(APIENTRY* m_pIsObjectBufferATI)(GLuint);
     GLuint(APIENTRY* m_pNewObjectBufferATI)(GLsizei, GLvoid const*, GLenum);
     GLvoid(APIENTRY* m_pUpdateObjectBufferATI)(
-        GLuint, GLuint, GLsizei, GLvoid const*, GLenum);
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLvoid const*,
+        GLenum);
     GLvoid(APIENTRY* m_pVariantArrayObjectATI)(
-        GLuint, GLenum, GLsizei, GLuint, GLuint);
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLuint,
+        GLuint);
 
 #endif // GL_ATI_vertex_array_object_OGLEXT
 
@@ -1107,12 +1461,18 @@ class CRenderingContext
 
 #ifdef GL_ATI_vertex_attrib_array_object_OGLEXT
 
-    GLvoid(APIENTRY* m_pGetVertexAttribArrayObjectfvATI)(
-        GLuint, GLenum, GLfloat*);
-    GLvoid(APIENTRY* m_pGetVertexAttribArrayObjectivATI)(
-        GLuint, GLenum, GLint*);
+    GLvoid(
+        APIENTRY* m_pGetVertexAttribArrayObjectfvATI)(GLuint, GLenum, GLfloat*);
+    GLvoid(
+        APIENTRY* m_pGetVertexAttribArrayObjectivATI)(GLuint, GLenum, GLint*);
     GLvoid(APIENTRY* m_pVertexAttribArrayObjectATI)(
-        GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint, GLuint);
+        GLuint,
+        GLint,
+        GLenum,
+        GLboolean,
+        GLsizei,
+        GLuint,
+        GLuint);
 
 #endif // GL_ATI_vertex_attrib_array_object_OGLEXT
 
@@ -1124,8 +1484,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pClientActiveVertexStreamATI)(GLenum);
     GLvoid(APIENTRY* m_pNormalStream3bATI)(GLenum, GLbyte, GLbyte, GLbyte);
     GLvoid(APIENTRY* m_pNormalStream3bvATI)(GLenum, GLbyte const*);
-    GLvoid(APIENTRY* m_pNormalStream3dATI)(
-        GLenum, GLdouble, GLdouble, GLdouble);
+    GLvoid(
+        APIENTRY* m_pNormalStream3dATI)(GLenum, GLdouble, GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pNormalStream3dvATI)(GLenum, GLdouble const*);
     GLvoid(APIENTRY* m_pNormalStream3fATI)(GLenum, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pNormalStream3fvATI)(GLenum, GLfloat const*);
@@ -1151,8 +1511,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexStream2ivATI)(GLenum, GLint const*);
     GLvoid(APIENTRY* m_pVertexStream2sATI)(GLenum, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexStream2svATI)(GLenum, GLshort const*);
-    GLvoid(APIENTRY* m_pVertexStream3dATI)(
-        GLenum, GLdouble, GLdouble, GLdouble);
+    GLvoid(
+        APIENTRY* m_pVertexStream3dATI)(GLenum, GLdouble, GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pVertexStream3dvATI)(GLenum, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexStream3fATI)(GLenum, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pVertexStream3fvATI)(GLenum, GLfloat const*);
@@ -1161,15 +1521,27 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexStream3sATI)(GLenum, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexStream3svATI)(GLenum, GLshort const*);
     GLvoid(APIENTRY* m_pVertexStream4dATI)(
-        GLenum, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pVertexStream4dvATI)(GLenum, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexStream4fATI)(
-        GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pVertexStream4fvATI)(GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pVertexStream4iATI)(GLenum, GLint, GLint, GLint, GLint);
     GLvoid(APIENTRY* m_pVertexStream4ivATI)(GLenum, GLint const*);
     GLvoid(APIENTRY* m_pVertexStream4sATI)(
-        GLenum, GLshort, GLshort, GLshort, GLshort);
+        GLenum,
+        GLshort,
+        GLshort,
+        GLshort,
+        GLshort);
     GLvoid(APIENTRY* m_pVertexStream4svATI)(GLenum, GLshort const*);
 
 #endif // GL_ATI_vertex_streams_OGLEXT
@@ -1218,11 +1590,16 @@ class CRenderingContext
     // CT
 #if defined(__APPLE__) && defined(__MACH__)
     GLvoid(APIENTRY* m_pColorSubTableEXT)(
-        GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 #endif // MACOSX
 
-    GLvoid(APIENTRY* m_pCopyColorSubTableEXT)(
-        GLenum, GLsizei, GLint, GLint, GLsizei);
+    GLvoid(APIENTRY*
+               m_pCopyColorSubTableEXT)(GLenum, GLsizei, GLint, GLint, GLsizei);
 
 #endif // GL_EXT_color_subtable_OGLEXT
 
@@ -1242,27 +1619,58 @@ class CRenderingContext
 #ifdef GL_EXT_convolution_OGLEXT
 
     GLvoid(APIENTRY* m_pConvolutionFilter1DEXT)(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pConvolutionFilter2DEXT)(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pConvolutionParameterfEXT)(GLenum, GLenum, GLfloat);
-    GLvoid(APIENTRY* m_pConvolutionParameterfvEXT)(
-        GLenum, GLenum, GLfloat const*);
+    GLvoid(
+        APIENTRY* m_pConvolutionParameterfvEXT)(GLenum, GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pConvolutionParameteriEXT)(GLenum, GLenum, GLint);
-    GLvoid(APIENTRY* m_pConvolutionParameterivEXT)(
-        GLenum, GLenum, GLint const*);
+    GLvoid(
+        APIENTRY* m_pConvolutionParameterivEXT)(GLenum, GLenum, GLint const*);
     GLvoid(APIENTRY* m_pCopyConvolutionFilter1DEXT)(
-        GLenum, GLenum, GLint, GLint, GLsizei);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei);
     GLvoid(APIENTRY* m_pCopyConvolutionFilter2DEXT)(
-        GLenum, GLenum, GLint, GLint, GLsizei, GLsizei);
-    GLvoid(APIENTRY* m_pGetConvolutionFilterEXT)(
-        GLenum, GLenum, GLenum, GLvoid*);
+        GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
+    GLvoid(
+        APIENTRY* m_pGetConvolutionFilterEXT)(GLenum, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetConvolutionParameterfvEXT)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetConvolutionParameterivEXT)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetSeparableFilterEXT)(
-        GLenum, GLenum, GLenum, GLvoid*, GLvoid*, GLvoid*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLvoid*,
+        GLvoid*,
+        GLvoid*);
     GLvoid(APIENTRY* m_pSeparableFilter2DEXT)(
-        GLenum, GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*,
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*,
         GLvoid const*);
 
 #endif // GL_EXT_convolution_OGLEXT
@@ -1303,15 +1711,48 @@ class CRenderingContext
 #ifdef GL_EXT_copy_texture_OGLEXT
 
     GLvoid(APIENTRY* m_pCopyTexImage1DEXT)(
-        GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLint);
+        GLenum,
+        GLint,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLint);
     GLvoid(APIENTRY* m_pCopyTexImage2DEXT)(
-        GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint);
+        GLenum,
+        GLint,
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLint);
     GLvoid(APIENTRY* m_pCopyTexSubImage1DEXT)(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei);
     GLvoid(APIENTRY* m_pCopyTexSubImage2DEXT)(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
     GLvoid(APIENTRY* m_pCopyTexSubImage3DEXT)(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei);
 
 #endif // GL_EXT_copy_texture_OGLEXT
 
@@ -1340,7 +1781,12 @@ class CRenderingContext
 #ifdef GL_EXT_draw_range_elements_OGLEXT
 
     GLvoid(APIENTRY* m_pDrawRangeElementsEXT)(
-        GLenum, GLuint, GLuint, GLsizei, GLenum, GLvoid const*);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLsizei,
+        GLenum,
+        GLvoid const*);
 
 #endif // GL_EXT_draw_range_elements_OGLEXT
 
@@ -1367,24 +1813,40 @@ class CRenderingContext
     GLenum(APIENTRY* m_pCheckFramebufferStatusEXT)(GLenum);
     GLvoid(APIENTRY* m_pDeleteFramebuffersEXT)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pDeleteRenderbuffersEXT)(GLsizei, GLuint const*);
-    GLvoid(APIENTRY* m_pFramebufferRenderbufferEXT)(
-        GLenum, GLenum, GLenum, GLuint);
+    GLvoid(APIENTRY*
+               m_pFramebufferRenderbufferEXT)(GLenum, GLenum, GLenum, GLuint);
     GLvoid(APIENTRY* m_pFramebufferTexture1DEXT)(
-        GLenum, GLenum, GLenum, GLuint, GLint);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLuint,
+        GLint);
     GLvoid(APIENTRY* m_pFramebufferTexture2DEXT)(
-        GLenum, GLenum, GLenum, GLuint, GLint);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLuint,
+        GLint);
     GLvoid(APIENTRY* m_pFramebufferTexture3DEXT)(
-        GLenum, GLenum, GLenum, GLuint, GLint, GLint);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLuint,
+        GLint,
+        GLint);
     GLvoid(APIENTRY* m_pGenerateMipmapEXT)(GLenum);
     GLvoid(APIENTRY* m_pGenFramebuffersEXT)(GLsizei, GLuint*);
     GLvoid(APIENTRY* m_pGenRenderbuffersEXT)(GLsizei, GLuint*);
     GLvoid(APIENTRY* m_pGetFramebufferAttachmentParameterivEXT)(
-        GLenum, GLenum, GLenum, GLint*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLint*);
     GLvoid(APIENTRY* m_pGetRenderbufferParameterivEXT)(GLenum, GLenum, GLint*);
     GLboolean(APIENTRY* m_pIsFramebufferEXT)(GLuint);
     GLboolean(APIENTRY* m_pIsRenderbufferEXT)(GLuint);
-    GLvoid(APIENTRY* m_pRenderbufferStorageEXT)(
-        GLenum, GLenum, GLsizei, GLsizei);
+    GLvoid(
+        APIENTRY* m_pRenderbufferStorageEXT)(GLenum, GLenum, GLsizei, GLsizei);
 
 #endif // GL_EXT_framebuffer_object_OGLEXT
 
@@ -1393,12 +1855,12 @@ class CRenderingContext
 
 #ifdef GL_EXT_histogram_OGLEXT
 
-    GLvoid(APIENTRY* m_pGetHistogramEXT)(
-        GLenum, GLboolean, GLenum, GLenum, GLvoid*);
+    GLvoid(APIENTRY*
+               m_pGetHistogramEXT)(GLenum, GLboolean, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetHistogramParameterfvEXT)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetHistogramParameterivEXT)(GLenum, GLenum, GLint*);
-    GLvoid(APIENTRY* m_pGetMinmaxEXT)(
-        GLenum, GLboolean, GLenum, GLenum, GLvoid*);
+    GLvoid(
+        APIENTRY* m_pGetMinmaxEXT)(GLenum, GLboolean, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetMinmaxParameterfvEXT)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetMinmaxParameterivEXT)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pHistogramEXT)(GLenum, GLsizei, GLenum, GLboolean);
@@ -1444,7 +1906,11 @@ class CRenderingContext
 
     GLvoid(APIENTRY* m_pMultiDrawArraysEXT)(GLenum, GLint*, GLsizei*, GLsizei);
     GLvoid(APIENTRY* m_pMultiDrawElementsEXT)(
-        GLenum, GLsizei const*, GLenum, GLvoid const**, GLsizei);
+        GLenum,
+        GLsizei const*,
+        GLenum,
+        GLvoid const**,
+        GLsizei);
 
 #endif // GL_EXT_multi_draw_arrays_OGLEXT
 
@@ -1464,9 +1930,19 @@ class CRenderingContext
 #ifdef GL_EXT_paletted_texture_OGLEXT
 
     GLvoid(APIENTRY* m_pColorSubTableEXT)(
-        GLenum, GLsizei, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pColorTableEXT)(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pGetColorTableEXT)(GLenum, GLenum, GLenum, GLvoid*);
     GLvoid(APIENTRY* m_pGetColorTableParameterfvEXT)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetColorTableParameterivEXT)(GLenum, GLenum, GLint*);
@@ -1480,10 +1956,14 @@ class CRenderingContext
 
     GLvoid(APIENTRY* m_pPixelTransformParameterfEXT)(GLenum, GLenum, GLfloat);
     GLvoid(APIENTRY* m_pPixelTransformParameterfvEXT)(
-        GLenum, GLenum, GLfloat const*);
+        GLenum,
+        GLenum,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pPixelTransformParameteriEXT)(GLenum, GLenum, GLint);
     GLvoid(APIENTRY* m_pPixelTransformParameterivEXT)(
-        GLenum, GLenum, GLint const*);
+        GLenum,
+        GLenum,
+        GLint const*);
 
 #endif // GL_EXT_pixel_transform_OGLEXT
 
@@ -1528,7 +2008,10 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pSecondaryColor3usEXT)(GLushort, GLushort, GLushort);
     GLvoid(APIENTRY* m_pSecondaryColor3usvEXT)(GLushort const*);
     GLvoid(APIENTRY* m_pSecondaryColorPointerEXT)(
-        GLint, GLenum, GLsizei, GLvoid const*);
+        GLint,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
 
 #endif // GL_EXT_secondary_color_OGLEXT
 
@@ -1547,9 +2030,22 @@ class CRenderingContext
 #ifdef GL_EXT_subtexture_OGLEXT
 
     GLvoid(APIENTRY* m_pTexSubImage1DEXT)(
-        GLenum, GLint, GLint, GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pTexSubImage2DEXT)(
-        GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
         GLvoid const*);
 
 #endif // GL_EXT_subtexture_OGLEXT
@@ -1560,11 +2056,28 @@ class CRenderingContext
 #ifdef GL_EXT_texture3D_OGLEXT
 
     GLvoid(APIENTRY* m_pTexImage3DEXT)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum,
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
         GLvoid const*);
     GLvoid(APIENTRY* m_pTexSubImage3DEXT)(
-        GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum,
-        GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif // GL_EXT_texture3D_OGLEXT
 
@@ -1574,13 +2087,17 @@ class CRenderingContext
 #ifdef GL_EXT_texture_object_OGLEXT
 
     GLboolean(APIENTRY* m_pAreTexturesResidentEXT)(
-        GLsizei, GLuint const*, GLboolean*);
+        GLsizei,
+        GLuint const*,
+        GLboolean*);
     GLvoid(APIENTRY* m_pBindTextureEXT)(GLenum, GLuint);
     GLvoid(APIENTRY* m_pDeleteTexturesEXT)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pGenTexturesEXT)(GLsizei, GLuint*);
     GLboolean(APIENTRY* m_pIsTextureEXT)(GLuint);
     GLvoid(APIENTRY* m_pPrioritizeTexturesEXT)(
-        GLsizei, GLuint const*, GLclampf const*);
+        GLsizei,
+        GLuint const*,
+        GLclampf const*);
 
 #endif // GL_EXT_texture_object_OGLEXT
 
@@ -1600,18 +2117,30 @@ class CRenderingContext
 
     GLvoid(APIENTRY* m_pArrayElementEXT)(GLint);
     GLvoid(APIENTRY* m_pColorPointerEXT)(
-        GLint, GLenum, GLsizei, GLsizei, GLvoid const*);
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pDrawArraysEXT)(GLenum, GLint, GLsizei);
     GLvoid(APIENTRY* m_pEdgeFlagPointerEXT)(GLsizei, GLsizei, GLboolean const*);
     GLvoid(APIENTRY* m_pGetPointervEXT)(GLenum, GLvoid**);
-    GLvoid(APIENTRY* m_pIndexPointerEXT)(
-        GLenum, GLsizei, GLsizei, GLvoid const*);
-    GLvoid(APIENTRY* m_pNormalPointerEXT)(
-        GLenum, GLsizei, GLsizei, GLvoid const*);
+    GLvoid(
+        APIENTRY* m_pIndexPointerEXT)(GLenum, GLsizei, GLsizei, GLvoid const*);
+    GLvoid(
+        APIENTRY* m_pNormalPointerEXT)(GLenum, GLsizei, GLsizei, GLvoid const*);
     GLvoid(APIENTRY* m_pTexCoordPointerEXT)(
-        GLint, GLenum, GLsizei, GLsizei, GLvoid const*);
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pVertexPointerEXT)(
-        GLint, GLenum, GLsizei, GLsizei, GLvoid const*);
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLvoid const*);
 
 #endif // GL_EXT_vertex_array_OGLEXT
 
@@ -1637,8 +2166,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pGetInvariantBooleanvEXT)(GLuint, GLenum, GLboolean*);
     GLvoid(APIENTRY* m_pGetInvariantFloatvEXT)(GLuint, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetInvariantIntegervEXT)(GLuint, GLenum, GLint*);
-    GLvoid(APIENTRY* m_pGetLocalConstantBooleanvEXT)(
-        GLuint, GLenum, GLboolean*);
+    GLvoid(
+        APIENTRY* m_pGetLocalConstantBooleanvEXT)(GLuint, GLenum, GLboolean*);
     GLvoid(APIENTRY* m_pGetLocalConstantFloatvEXT)(GLuint, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetLocalConstantIntegervEXT)(GLuint, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetVariantBooleanvEXT)(GLuint, GLenum, GLboolean*);
@@ -1652,20 +2181,20 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pShaderOp1EXT)(GLenum, GLuint, GLuint);
     GLvoid(APIENTRY* m_pShaderOp2EXT)(GLenum, GLuint, GLuint, GLuint);
     GLvoid(APIENTRY* m_pShaderOp3EXT)(GLenum, GLuint, GLuint, GLuint, GLuint);
-    GLvoid(APIENTRY* m_pSwizzleEXT)(
-        GLuint, GLuint, GLenum, GLenum, GLenum, GLenum);
+    GLvoid(APIENTRY*
+               m_pSwizzleEXT)(GLuint, GLuint, GLenum, GLenum, GLenum, GLenum);
     GLvoid(APIENTRY* m_pVariantbvEXT)(GLuint, GLbyte const*);
     GLvoid(APIENTRY* m_pVariantdvEXT)(GLuint, GLdouble const*);
     GLvoid(APIENTRY* m_pVariantfvEXT)(GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pVariantivEXT)(GLuint, GLint const*);
-    GLvoid(APIENTRY* m_pVariantPointerEXT)(
-        GLuint, GLenum, GLuint, GLvoid const*);
+    GLvoid(
+        APIENTRY* m_pVariantPointerEXT)(GLuint, GLenum, GLuint, GLvoid const*);
     GLvoid(APIENTRY* m_pVariantsvEXT)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVariantubvEXT)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVariantuivEXT)(GLuint, GLuint const*);
     GLvoid(APIENTRY* m_pVariantusvEXT)(GLuint, GLushort const*);
-    GLvoid(APIENTRY* m_pWriteMaskEXT)(
-        GLuint, GLuint, GLenum, GLenum, GLenum, GLenum);
+    GLvoid(APIENTRY*
+               m_pWriteMaskEXT)(GLuint, GLuint, GLenum, GLenum, GLenum, GLenum);
 
 #endif // GL_EXT_vertex_shader_OGLEXT
 
@@ -1677,7 +2206,10 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexWeightfEXT)(GLfloat);
     GLvoid(APIENTRY* m_pVertexWeightfvEXT)(GLfloat const*);
     GLvoid(APIENTRY* m_pVertexWeightPointerEXT)(
-        GLsizei, GLenum, GLsizei, GLvoid const*);
+        GLsizei,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
 
 #endif // GL_EXT_vertex_weighting_OGLEXT
 
@@ -1695,15 +2227,17 @@ class CRenderingContext
 
 #ifdef GL_HP_image_transform_OGLEXT
 
-    GLvoid(APIENTRY* m_pGetImageTransformParameterfvHP)(
-        GLenum, GLenum, GLfloat*);
+    GLvoid(
+        APIENTRY* m_pGetImageTransformParameterfvHP)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetImageTransformParameterivHP)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pImageTransformParameterfHP)(GLenum, GLenum, GLfloat);
     GLvoid(APIENTRY* m_pImageTransformParameterfvHP)(
-        GLenum, GLenum, GLfloat const*);
+        GLenum,
+        GLenum,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pImageTransformParameteriHP)(GLenum, GLenum, GLint);
-    GLvoid(APIENTRY* m_pImageTransformParameterivHP)(
-        GLenum, GLenum, GLint const*);
+    GLvoid(
+        APIENTRY* m_pImageTransformParameterivHP)(GLenum, GLenum, GLint const*);
 
 #endif // GL_HP_image_transform_OGLEXT
 
@@ -1713,9 +2247,17 @@ class CRenderingContext
 #ifdef GL_IBM_multimode_draw_arrays_OGLEXT
 
     GLvoid(APIENTRY* m_pMultiModeDrawArraysIBM)(
-        GLenum const*, GLint const*, GLsizei const*, GLsizei, GLint);
+        GLenum const*,
+        GLint const*,
+        GLsizei const*,
+        GLsizei,
+        GLint);
     GLvoid(APIENTRY* m_pMultiModeDrawElementsIBM)(
-        GLenum const*, GLsizei const*, GLenum, GLvoid const* const*, GLsizei,
+        GLenum const*,
+        GLsizei const*,
+        GLenum,
+        GLvoid const* const*,
+        GLsizei,
         GLint);
 
 #endif // GL_IBM_multimode_draw_arrays_OGLEXT
@@ -1726,21 +2268,37 @@ class CRenderingContext
 #ifdef GL_IBM_vertex_array_lists_OGLEXT
 
     GLvoid(APIENTRY* m_pColorPointerListIBM)(
-        GLint, GLenum, GLint, GLvoid const**, GLint);
-    GLvoid(APIENTRY* m_pEdgeFlagPointerListIBM)(
-        GLint, GLboolean const**, GLint);
-    GLvoid(APIENTRY* m_pFogCoordPointerListIBM)(
-        GLenum, GLint, GLvoid const**, GLint);
-    GLvoid(APIENTRY* m_pIndexPointerListIBM)(
-        GLenum, GLint, GLvoid const**, GLint);
-    GLvoid(APIENTRY* m_pNormalPointerListIBM)(
-        GLenum, GLint, GLvoid const**, GLint);
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
+        GLint);
+    GLvoid(
+        APIENTRY* m_pEdgeFlagPointerListIBM)(GLint, GLboolean const**, GLint);
+    GLvoid(APIENTRY*
+               m_pFogCoordPointerListIBM)(GLenum, GLint, GLvoid const**, GLint);
+    GLvoid(
+        APIENTRY* m_pIndexPointerListIBM)(GLenum, GLint, GLvoid const**, GLint);
+    GLvoid(APIENTRY*
+               m_pNormalPointerListIBM)(GLenum, GLint, GLvoid const**, GLint);
     GLvoid(APIENTRY* m_pSecondaryColorPointerListIBM)(
-        GLint, GLenum, GLint, GLvoid const**, GLint);
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
+        GLint);
     GLvoid(APIENTRY* m_pTexCoordPointerListIBM)(
-        GLint, GLenum, GLint, GLvoid const**, GLint);
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
+        GLint);
     GLvoid(APIENTRY* m_pVertexPointerListIBM)(
-        GLint, GLenum, GLint, GLvoid const**, GLint);
+        GLint,
+        GLenum,
+        GLint,
+        GLvoid const**,
+        GLint);
 
 #endif // GL_IBM_vertex_array_lists_OGLEXT
 
@@ -1795,8 +2353,8 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pWindowPos3ivMESA)(GLint const*);
     GLvoid(APIENTRY* m_pWindowPos3sMESA)(GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pWindowPos3svMESA)(GLshort const*);
-    GLvoid(APIENTRY* m_pWindowPos4dMESA)(
-        GLdouble, GLdouble, GLdouble, GLdouble);
+    GLvoid(
+        APIENTRY* m_pWindowPos4dMESA)(GLdouble, GLdouble, GLdouble, GLdouble);
     GLvoid(APIENTRY* m_pWindowPos4dvMESA)(GLdouble const*);
     GLvoid(APIENTRY* m_pWindowPos4fMESA)(GLfloat, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pWindowPos4fvMESA)(GLfloat const*);
@@ -1814,12 +2372,24 @@ class CRenderingContext
 
     GLvoid(APIENTRY* m_pDrawElementArrayNV)(GLenum, GLint, GLsizei);
     GLvoid(APIENTRY* m_pDrawRangeElementArrayNV)(
-        GLenum, GLuint, GLuint, GLint, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint,
+        GLsizei);
     GLvoid(APIENTRY* m_pElementPointerNV)(GLenum, GLvoid const*);
     GLvoid(APIENTRY* m_pMultiDrawElementArrayNV)(
-        GLenum, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
     GLvoid(APIENTRY* m_pMultiDrawRangeElementArrayNV)(
-        GLenum, GLuint, GLuint, GLint const*, GLsizei const*, GLsizei);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLint const*,
+        GLsizei const*,
+        GLsizei);
 
 #endif // GL_NV_element_array_OGLEXT
 
@@ -1829,16 +2399,29 @@ class CRenderingContext
 #ifdef GL_NV_evaluators_OGLEXT
 
     GLvoid(APIENTRY* m_pEvalMapsNV)(GLenum, GLenum);
-    GLvoid(APIENTRY* m_pGetMapAttribParameterfvNV)(
-        GLenum, GLuint, GLenum, GLfloat*);
-    GLvoid(APIENTRY* m_pGetMapAttribParameterivNV)(
-        GLenum, GLuint, GLenum, GLint*);
+    GLvoid(APIENTRY*
+               m_pGetMapAttribParameterfvNV)(GLenum, GLuint, GLenum, GLfloat*);
+    GLvoid(
+        APIENTRY* m_pGetMapAttribParameterivNV)(GLenum, GLuint, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetMapControlPointsNV)(
-        GLenum, GLuint, GLenum, GLsizei, GLsizei, GLboolean, GLvoid*);
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLboolean,
+        GLvoid*);
     GLvoid(APIENTRY* m_pGetMapParameterfvNV)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetMapParameterivNV)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pMapControlPointsNV)(
-        GLenum, GLuint, GLenum, GLsizei, GLsizei, GLint, GLint, GLboolean,
+        GLenum,
+        GLuint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLint,
+        GLboolean,
         GLvoid const*);
     GLvoid(APIENTRY* m_pMapParameterfvNV)(GLenum, GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pMapParameterivNV)(GLenum, GLenum, GLint const*);
@@ -1866,18 +2449,41 @@ class CRenderingContext
 #ifdef GL_NV_fragment_program_OGLEXT
 
     GLvoid(APIENTRY* m_pGetProgramNamedParameterdvNV)(
-        GLuint, GLsizei, GLubyte const*, GLdouble*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble*);
     GLvoid(APIENTRY* m_pGetProgramNamedParameterfvNV)(
-        GLuint, GLsizei, GLubyte const*, GLfloat*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat*);
     GLvoid(APIENTRY* m_pProgramNamedParameter4dNV)(
-        GLuint, GLsizei, GLubyte const*, GLdouble, GLdouble, GLdouble,
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble,
+        GLdouble,
+        GLdouble,
         GLdouble);
     GLvoid(APIENTRY* m_pProgramNamedParameter4dvNV)(
-        GLuint, GLsizei, GLubyte const*, GLdouble const*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLdouble const*);
     GLvoid(APIENTRY* m_pProgramNamedParameter4fNV)(
-        GLuint, GLsizei, GLubyte const*, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pProgramNamedParameter4fvNV)(
-        GLuint, GLsizei, GLubyte const*, GLfloat const*);
+        GLuint,
+        GLsizei,
+        GLubyte const*,
+        GLfloat const*);
 
 #endif // GL_NV_fragment_program_OGLEXT
 
@@ -1896,11 +2502,15 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pMultiTexCoord1hvNV)(GLenum, GLhalfNV const*);
     GLvoid(APIENTRY* m_pMultiTexCoord2hNV)(GLenum, GLhalfNV, GLhalfNV);
     GLvoid(APIENTRY* m_pMultiTexCoord2hvNV)(GLenum, GLhalfNV const*);
-    GLvoid(APIENTRY* m_pMultiTexCoord3hNV)(
-        GLenum, GLhalfNV, GLhalfNV, GLhalfNV);
+    GLvoid(
+        APIENTRY* m_pMultiTexCoord3hNV)(GLenum, GLhalfNV, GLhalfNV, GLhalfNV);
     GLvoid(APIENTRY* m_pMultiTexCoord3hvNV)(GLenum, GLhalfNV const*);
     GLvoid(APIENTRY* m_pMultiTexCoord4hNV)(
-        GLenum, GLhalfNV, GLhalfNV, GLhalfNV, GLhalfNV);
+        GLenum,
+        GLhalfNV,
+        GLhalfNV,
+        GLhalfNV,
+        GLhalfNV);
     GLvoid(APIENTRY* m_pMultiTexCoord4hvNV)(GLenum, GLhalfNV const*);
     GLvoid(APIENTRY* m_pNormal3hNV)(GLhalfNV, GLhalfNV, GLhalfNV);
     GLvoid(APIENTRY* m_pNormal3hvNV)(GLhalfNV const*);
@@ -1927,7 +2537,11 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexAttrib3hNV)(GLuint, GLhalfNV, GLhalfNV, GLhalfNV);
     GLvoid(APIENTRY* m_pVertexAttrib3hvNV)(GLuint, GLhalfNV const*);
     GLvoid(APIENTRY* m_pVertexAttrib4hNV)(
-        GLuint, GLhalfNV, GLhalfNV, GLhalfNV, GLhalfNV);
+        GLuint,
+        GLhalfNV,
+        GLhalfNV,
+        GLhalfNV,
+        GLhalfNV);
     GLvoid(APIENTRY* m_pVertexAttrib4hvNV)(GLuint, GLhalfNV const*);
     GLvoid(APIENTRY* m_pVertexAttribs1hvNV)(GLuint, GLsizei, GLhalfNV const*);
     GLvoid(APIENTRY* m_pVertexAttribs2hvNV)(GLuint, GLsizei, GLhalfNV const*);
@@ -1989,27 +2603,58 @@ class CRenderingContext
 #ifdef GL_NV_register_combiners_OGLEXT
 
     GLvoid(APIENTRY* m_pCombinerInputNV)(
-        GLenum, GLenum, GLenum, GLenum, GLenum, GLenum);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum);
     GLvoid(APIENTRY* m_pCombinerOutputNV)(
-        GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLenum, GLboolean,
-        GLboolean, GLboolean);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLboolean,
+        GLboolean,
+        GLboolean);
     GLvoid(APIENTRY* m_pCombinerParameterfNV)(GLenum, GLfloat);
     GLvoid(APIENTRY* m_pCombinerParameterfvNV)(GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pCombinerParameteriNV)(GLenum, GLint);
     GLvoid(APIENTRY* m_pCombinerParameterivNV)(GLenum, GLint const*);
     GLvoid(APIENTRY* m_pFinalCombinerInputNV)(GLenum, GLenum, GLenum, GLenum);
     GLvoid(APIENTRY* m_pGetCombinerInputParameterfvNV)(
-        GLenum, GLenum, GLenum, GLenum, GLfloat*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLfloat*);
     GLvoid(APIENTRY* m_pGetCombinerInputParameterivNV)(
-        GLenum, GLenum, GLenum, GLenum, GLint*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLenum,
+        GLint*);
     GLvoid(APIENTRY* m_pGetCombinerOutputParameterfvNV)(
-        GLenum, GLenum, GLenum, GLfloat*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLfloat*);
     GLvoid(APIENTRY* m_pGetCombinerOutputParameterivNV)(
-        GLenum, GLenum, GLenum, GLint*);
+        GLenum,
+        GLenum,
+        GLenum,
+        GLint*);
     GLvoid(APIENTRY* m_pGetFinalCombinerInputParameterfvNV)(
-        GLenum, GLenum, GLfloat*);
+        GLenum,
+        GLenum,
+        GLfloat*);
     GLvoid(APIENTRY* m_pGetFinalCombinerInputParameterivNV)(
-        GLenum, GLenum, GLint*);
+        GLenum,
+        GLenum,
+        GLint*);
 
 #endif // GL_NV_register_combiners_OGLEXT
 
@@ -2019,9 +2664,11 @@ class CRenderingContext
 #ifdef GL_NV_register_combiners2_OGLEXT
 
     GLvoid(APIENTRY* m_pCombinerStageParameterfvNV)(
-        GLenum, GLenum, GLfloat const*);
-    GLvoid(APIENTRY* m_pGetCombinerStageParameterfvNV)(
-        GLenum, GLenum, GLfloat*);
+        GLenum,
+        GLenum,
+        GLfloat const*);
+    GLvoid(
+        APIENTRY* m_pGetCombinerStageParameterfvNV)(GLenum, GLenum, GLfloat*);
 
 #endif // GL_NV_register_combiners2_OGLEXT
 
@@ -2049,17 +2696,17 @@ class CRenderingContext
 
 #ifdef GL_NV_vertex_program_OGLEXT
 
-    GLboolean(APIENTRY* m_pAreProgramsResidentNV)(
-        GLsizei, GLuint const*, GLboolean*);
+    GLboolean(
+        APIENTRY* m_pAreProgramsResidentNV)(GLsizei, GLuint const*, GLboolean*);
     GLvoid(APIENTRY* m_pBindProgramNV)(GLenum, GLuint);
     GLvoid(APIENTRY* m_pDeleteProgramsNV)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pExecuteProgramNV)(GLenum, GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pGenProgramsNV)(GLsizei, GLuint*);
     GLvoid(APIENTRY* m_pGetProgramivNV)(GLuint, GLenum, GLint*);
-    GLvoid(APIENTRY* m_pGetProgramParameterdvNV)(
-        GLenum, GLuint, GLenum, GLdouble*);
-    GLvoid(APIENTRY* m_pGetProgramParameterfvNV)(
-        GLenum, GLuint, GLenum, GLfloat*);
+    GLvoid(APIENTRY*
+               m_pGetProgramParameterdvNV)(GLenum, GLuint, GLenum, GLdouble*);
+    GLvoid(
+        APIENTRY* m_pGetProgramParameterfvNV)(GLenum, GLuint, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetProgramStringNV)(GLuint, GLenum, GLubyte*);
     GLvoid(APIENTRY* m_pGetTrackMatrixivNV)(GLenum, GLuint, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetVertexAttribdvNV)(GLuint, GLenum, GLdouble*);
@@ -2069,15 +2716,31 @@ class CRenderingContext
     GLboolean(APIENTRY* m_pIsProgramNV)(GLuint);
     GLvoid(APIENTRY* m_pLoadProgramNV)(GLenum, GLuint, GLsizei, GLubyte const*);
     GLvoid(APIENTRY* m_pProgramParameter4dNV)(
-        GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLenum,
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pProgramParameter4dvNV)(GLenum, GLuint, GLdouble const*);
     GLvoid(APIENTRY* m_pProgramParameter4fNV)(
-        GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLenum,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pProgramParameter4fvNV)(GLenum, GLuint, GLfloat const*);
     GLvoid(APIENTRY* m_pProgramParameters4dvNV)(
-        GLenum, GLuint, GLuint, GLdouble const*);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLdouble const*);
     GLvoid(APIENTRY* m_pProgramParameters4fvNV)(
-        GLenum, GLuint, GLuint, GLfloat const*);
+        GLenum,
+        GLuint,
+        GLuint,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pRequestResidentProgramsNV)(GLsizei, GLuint const*);
     GLvoid(APIENTRY* m_pTrackMatrixNV)(GLenum, GLuint, GLenum, GLenum);
     GLvoid(APIENTRY* m_pVertexAttrib1dNV)(GLuint, GLdouble);
@@ -2099,19 +2762,31 @@ class CRenderingContext
     GLvoid(APIENTRY* m_pVertexAttrib3sNV)(GLuint, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexAttrib3svNV)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4dNV)(
-        GLuint, GLdouble, GLdouble, GLdouble, GLdouble);
+        GLuint,
+        GLdouble,
+        GLdouble,
+        GLdouble,
+        GLdouble);
     GLvoid(APIENTRY* m_pVertexAttrib4dvNV)(GLuint, GLdouble const*);
-    GLvoid(APIENTRY* m_pVertexAttrib4fNV)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
+    GLvoid(APIENTRY*
+               m_pVertexAttrib4fNV)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
     GLvoid(APIENTRY* m_pVertexAttrib4fvNV)(GLuint, GLfloat const*);
-    GLvoid(APIENTRY* m_pVertexAttrib4sNV)(
-        GLuint, GLshort, GLshort, GLshort, GLshort);
+    GLvoid(APIENTRY*
+               m_pVertexAttrib4sNV)(GLuint, GLshort, GLshort, GLshort, GLshort);
     GLvoid(APIENTRY* m_pVertexAttrib4svNV)(GLuint, GLshort const*);
     GLvoid(APIENTRY* m_pVertexAttrib4ubNV)(
-        GLuint, GLubyte, GLubyte, GLubyte, GLubyte);
+        GLuint,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte);
     GLvoid(APIENTRY* m_pVertexAttrib4ubvNV)(GLuint, GLubyte const*);
     GLvoid(APIENTRY* m_pVertexAttribPointerNV)(
-        GLuint, GLint, GLenum, GLsizei, GLvoid const*);
+        GLuint,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pVertexAttribs1dvNV)(GLuint, GLsizei, GLdouble const*);
     GLvoid(APIENTRY* m_pVertexAttribs1fvNV)(GLuint, GLsizei, GLfloat const*);
     GLvoid(APIENTRY* m_pVertexAttribs1svNV)(GLuint, GLsizei, GLshort const*);
@@ -2152,13 +2827,18 @@ class CRenderingContext
 
 #ifdef GL_SGI_color_table_OGLEXT
 
-    GLvoid(APIENTRY* m_pColorTableParameterfvSGI)(
-        GLenum, GLenum, GLfloat const*);
+    GLvoid(
+        APIENTRY* m_pColorTableParameterfvSGI)(GLenum, GLenum, GLfloat const*);
     GLvoid(APIENTRY* m_pColorTableParameterivSGI)(GLenum, GLenum, GLint const*);
     GLvoid(APIENTRY* m_pColorTableSGI)(
-        GLenum, GLenum, GLsizei, GLenum, GLenum, GLvoid const*);
-    GLvoid(APIENTRY* m_pCopyColorTableSGI)(
-        GLenum, GLenum, GLint, GLint, GLsizei);
+        GLenum,
+        GLenum,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
+    GLvoid(
+        APIENTRY* m_pCopyColorTableSGI)(GLenum, GLenum, GLint, GLint, GLsizei);
     GLvoid(APIENTRY* m_pGetColorTableParameterfvSGI)(GLenum, GLenum, GLfloat*);
     GLvoid(APIENTRY* m_pGetColorTableParameterivSGI)(GLenum, GLenum, GLint*);
     GLvoid(APIENTRY* m_pGetColorTableSGI)(GLenum, GLenum, GLenum, GLvoid*);
@@ -2235,11 +2915,31 @@ class CRenderingContext
 #ifdef GL_SGIS_texture4D_OGLEXT
 
     GLvoid(APIENTRY* m_pTexImage4DSGIS)(
-        GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLsizei, GLint,
-        GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLenum,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLint,
+        GLenum,
+        GLenum,
+        GLvoid const*);
     GLvoid(APIENTRY* m_pTexSubImage4DSGIS)(
-        GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei,
-        GLsizei, GLenum, GLenum, GLvoid const*);
+        GLenum,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLint,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLsizei,
+        GLenum,
+        GLenum,
+        GLvoid const*);
 
 #endif // GL_SGIS_texture4D_OGLEXT
 
@@ -2249,7 +2949,10 @@ class CRenderingContext
 #ifdef GL_SGIS_texture_color_mask_OGLEXT
 
     GLvoid(APIENTRY* m_pTextureColorMaskSGIS)(
-        GLboolean, GLboolean, GLboolean, GLboolean);
+        GLboolean,
+        GLboolean,
+        GLboolean,
+        GLboolean);
 
 #endif // GL_SGIS_texture_color_mask_OGLEXT
 
@@ -2259,8 +2962,8 @@ class CRenderingContext
 #ifdef GL_SGIS_texture_filter4_OGLEXT
 
     GLvoid(APIENTRY* m_pGetTexFilterFuncSGIS)(GLenum, GLenum, GLfloat*);
-    GLvoid(APIENTRY* m_pTexFilterFuncSGIS)(
-        GLenum, GLenum, GLsizei, GLfloat const*);
+    GLvoid(APIENTRY*
+               m_pTexFilterFuncSGIS)(GLenum, GLenum, GLsizei, GLfloat const*);
 
 #endif // GL_SGIS_texture_filter4_OGLEXT
 
@@ -2374,11 +3077,35 @@ class CRenderingContext
 #ifdef GL_SGIX_polynomial_ffd_OGLEXT
 
     GLvoid(APIENTRY* m_pDeformationMap3dSGIX)(
-        GLenum, GLdouble, GLdouble, GLint, GLint, GLdouble, GLdouble, GLint,
-        GLint, GLdouble, GLdouble, GLint, GLint, GLdouble const*);
+        GLenum,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble,
+        GLdouble,
+        GLint,
+        GLint,
+        GLdouble const*);
     GLvoid(APIENTRY* m_pDeformationMap3fSGIX)(
-        GLenum, GLfloat, GLfloat, GLint, GLint, GLfloat, GLfloat, GLint, GLint,
-        GLfloat, GLfloat, GLint, GLint, GLfloat const*);
+        GLenum,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat,
+        GLfloat,
+        GLint,
+        GLint,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pDeformSGIX)(GLbitfield);
     GLvoid(APIENTRY* m_pLoadIdentityDeformationMapSGIX)(GLbitfield);
 
@@ -2445,7 +3172,9 @@ class CRenderingContext
 #ifdef GL_SUN_triangle_list_OGLEXT
 
     GLvoid(APIENTRY* m_pReplacementCodePointerSUN)(
-        GLenum, GLsizei, GLvoid const**);
+        GLenum,
+        GLsizei,
+        GLvoid const**);
     GLvoid(APIENTRY* m_pReplacementCodeubSUN)(GLubyte);
     GLvoid(APIENTRY* m_pReplacementCodeubvSUN)(GLubyte const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiSUN)(GLuint);
@@ -2461,86 +3190,256 @@ class CRenderingContext
 #ifdef GL_SUN_vertex_OGLEXT
 
     GLvoid(APIENTRY* m_pColor3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pColor3fVertex3fvSUN)(GLfloat const*, GLfloat const*);
     GLvoid(APIENTRY* m_pColor4fNormal3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pColor4fNormal3fVertex3fvSUN)(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pColor4ubVertex2fSUN)(
-        GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat);
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pColor4ubVertex2fvSUN)(GLubyte const*, GLfloat const*);
     GLvoid(APIENTRY* m_pColor4ubVertex3fSUN)(
-        GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat, GLfloat);
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pColor4ubVertex3fvSUN)(GLubyte const*, GLfloat const*);
     GLvoid(APIENTRY* m_pNormal3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pNormal3fVertex3fvSUN)(GLfloat const*, GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor3fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor3fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor4fNormal3fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor4fNormal3fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor4ubVertex3fSUN)(
-        GLuint, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiColor4ubVertex3fvSUN)(
-        GLuint const*, GLubyte const*, GLfloat const*);
+        GLuint const*,
+        GLubyte const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiNormal3fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiNormal3fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fColor4fNormal3fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*,
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
         GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fNormal3fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
         GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fNormal3fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiTexCoord2fVertex3fvSUN)(
-        GLuint const*, GLfloat const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pReplacementCodeuiVertex3fSUN)(
-        GLuint, GLfloat, GLfloat, GLfloat);
+        GLuint,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pReplacementCodeuiVertex3fvSUN)(
-        GLuint const*, GLfloat const*);
+        GLuint const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord2fColor3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord2fColor3fVertex3fvSUN)(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord2fColor4fNormal3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord2fColor4fNormal3fVertex3fvSUN)(
-        GLfloat const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord2fColor4ubVertex3fSUN)(
-        GLfloat, GLfloat, GLubyte, GLubyte, GLubyte, GLubyte, GLfloat, GLfloat,
+        GLfloat,
+        GLfloat,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLubyte,
+        GLfloat,
+        GLfloat,
         GLfloat);
     GLvoid(APIENTRY* m_pTexCoord2fColor4ubVertex3fvSUN)(
-        GLfloat const*, GLubyte const*, GLfloat const*);
+        GLfloat const*,
+        GLubyte const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord2fNormal3fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord2fNormal3fVertex3fvSUN)(
-        GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord2fVertex3fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord2fVertex3fvSUN)(GLfloat const*, GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord4fColor4fNormal3fVertex4fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat,
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord4fColor4fNormal3fVertex4fvSUN)(
-        GLfloat const*, GLfloat const*, GLfloat const*, GLfloat const*);
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*,
+        GLfloat const*);
     GLvoid(APIENTRY* m_pTexCoord4fVertex4fSUN)(
-        GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat,
+        GLfloat);
     GLvoid(APIENTRY* m_pTexCoord4fVertex4fvSUN)(GLfloat const*, GLfloat const*);
 
 #endif // GL_SUN_vertex_OGLEXT
@@ -2758,4 +3657,3 @@ inline unsigned long CRenderingContext::GetVersion() const
 {
     return m_uVersion;
 }
-

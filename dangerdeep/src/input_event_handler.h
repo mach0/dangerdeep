@@ -380,4 +380,3 @@ class input_event_handler_custom : public input_event_handler
         return false;
     }
 };
-

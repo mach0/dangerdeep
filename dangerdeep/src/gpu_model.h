@@ -84,4 +84,3 @@ class model
     model() = delete;
 };
 } // namespace gpu
-

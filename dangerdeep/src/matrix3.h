@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cstring>
 
 /// a 3x3 matrix, reimplemented for 3x3 case for speed issues
-template <typename D> class matrix3t
+template<typename D>
+class matrix3t
 {
     D values[3 * 3];
 
@@ -58,7 +59,9 @@ template <typename D> class matrix3t
 
     /// create matrix from column vectors
     matrix3t(
-        const vector3t<D>& v0, const vector3t<D>& v1, const vector3t<D>& v2)
+        const vector3t<D>& v0,
+        const vector3t<D>& v1,
+        const vector3t<D>& v2)
     {
         values[0] = v0.x;
         values[3] = v0.y;
@@ -78,7 +81,8 @@ template <typename D> class matrix3t
 
     /// construct 3x3 matrix from one with different template type but same
     /// dimension
-    template <typename E> matrix3t(const matrix3t<E>& other)
+    template<typename E>
+    matrix3t(const matrix3t<E>& other)
     {
         const E* ea = other.elemarray();
         for (unsigned i = 0; i < 3 * 3; ++i)
@@ -181,8 +185,15 @@ template <typename D> class matrix3t
     matrix3t<D> transposed() const
     {
         return matrix3t<D>(
-            values[0], values[3], values[6], values[1], values[4], values[7],
-            values[2], values[5], values[8]);
+            values[0],
+            values[3],
+            values[6],
+            values[1],
+            values[4],
+            values[7],
+            values[2],
+            values[5],
+            values[8]);
     }
 
     /// get inverse of matrix
@@ -206,8 +217,15 @@ template <typename D> class matrix3t
     static matrix3t<D> vec_sqr(const vector3t<D>& v)
     {
         return matrix3t<D>(
-            v.x * v.x, v.x * v.y, v.x * v.z, v.y * v.x, v.y * v.y, v.y * v.z,
-            v.z * v.x, v.z * v.y, v.z * v.z);
+            v.x * v.x,
+            v.x * v.y,
+            v.x * v.z,
+            v.y * v.x,
+            v.y * v.y,
+            v.y * v.z,
+            v.z * v.x,
+            v.z * v.y,
+            v.z * v.z);
     }
 
     /// determinate
@@ -240,10 +258,9 @@ template <typename D> class matrix3t
 using matrix3  = matrix3t<double>;
 using matrix3f = matrix3t<float>;
 
-template <typename D>
+template<typename D>
 std::ostream& operator<<(std::ostream& os, const matrix3t<D>& m)
 {
     m.to_stream(os);
     return os;
 }
-

@@ -29,12 +29,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <thread>
 
 #ifdef DEBUG
-#define log_template(x, y)                              \
-    do                                                  \
-    {                                                   \
-        std::ostringstream oss;                         \
-        oss << __FILE__ << ":" << __LINE__ << " " << x; \
-        log::instance().append(log::y, oss.str());      \
+#define log_template(x, y)                                                     \
+    do                                                                         \
+    {                                                                          \
+        std::ostringstream oss;                                                \
+        oss << __FILE__ << ":" << __LINE__ << " " << x;                        \
+        log::instance().append(log::y, oss.str());                             \
     } while (0)
 #define log_debug(x) log_template(x, level::DEBUGGING)
 #define log_info(x)  log_template(x, level::INFO)
@@ -42,21 +42,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #define log_sysinfo(x) log_template(x, level::SYSINFO)
 #define log_warning(x) log_template(x, level::WARNING)
 #else
-#define log_debug(x) \
-    do               \
-    {                \
+#define log_debug(x)                                                           \
+    do                                                                         \
+    {                                                                          \
     } while (0)
-#define log_info(x) \
-    do              \
-    {               \
+#define log_info(x)                                                            \
+    do                                                                         \
+    {                                                                          \
     } while (0)
-#define log_sysinfo(x) \
-    do                 \
-    {                  \
+#define log_sysinfo(x)                                                         \
+    do                                                                         \
+    {                                                                          \
     } while (0)
-#define log_warning(x) \
-    do                 \
-    {                  \
+#define log_warning(x)                                                         \
+    do                                                                         \
+    {                                                                          \
     } while (0)
 #endif
 
@@ -106,4 +106,3 @@ class log : public singleton<class log>
     const char* get_thread_name(std::thread::id) const;
     friend struct log_msg;
 };
-

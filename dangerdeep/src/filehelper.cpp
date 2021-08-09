@@ -94,7 +94,10 @@ std::string directory::read()
     }
 }
 
-directory::~directory() { FindClose(dir); }
+directory::~directory()
+{
+    FindClose(dir);
+}
 
 bool make_dir(const std::string& dirname)
 {
@@ -173,7 +176,10 @@ std::string directory::read()
     return std::string();
 }
 
-directory::~directory() { closedir(dir); }
+directory::~directory()
+{
+    closedir(dir);
+}
 
 bool make_dir(const std::string& dirname)
 {
@@ -226,7 +232,8 @@ bool is_file(const std::string& filename)
 }
 
 void directory::walk(
-    const std::string& path, std::function<void(const std::string&)> func)
+    const std::string& path,
+    std::function<void(const std::string&)> func)
 {
     if (path.empty())
     {

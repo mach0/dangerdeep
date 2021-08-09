@@ -35,7 +35,9 @@ using namespace std;
 #define TEXTS_DIR "texts/"
 
 static const char* categoryfiles[texts::nr_of_categories] = {
-    "common", "languages", "formats"};
+    "common",
+    "languages",
+    "formats"};
 
 unique_ptr<texts> texts_singleton_handler;
 
@@ -126,13 +128,17 @@ void texts::set_language(unsigned nr)
         read_available_language_codes();
     if (nr >= available_language_codes.size())
         THROW(
-            error, string("trying to set illegal language nr, valid 0...")
-                       + str(available_language_codes.size()) + ", requested "
-                       + str(nr));
+            error,
+            string("trying to set illegal language nr, valid 0...")
+                + str(available_language_codes.size()) + ", requested "
+                + str(nr));
     texts_singleton_handler.reset(new texts(available_language_codes[nr]));
 }
 
-string texts::get_language_code() { return obj().language_code; }
+string texts::get_language_code()
+{
+    return obj().language_code;
+}
 
 unsigned texts::get_current_language_nr()
 {
@@ -153,9 +159,10 @@ string texts::get(unsigned no, category ct)
     const vector<string>& tx = t.strings[ct];
     if (no >= tx.size())
         THROW(
-            error, string("invalid text nummer for texts::get() ") + str(no)
-                       + string(", valid 0...") + str(tx.size())
-                       + string(" category=") + str(int(ct)));
+            error,
+            string("invalid text nummer for texts::get() ") + str(no)
+                + string(", valid 0...") + str(tx.size()) + string(" category=")
+                + str(int(ct)));
     return tx[no];
 }
 

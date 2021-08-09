@@ -61,4 +61,3 @@ class framebufferobject
 
     const char* init_failure_reason(int status);
 };
-

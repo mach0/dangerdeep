@@ -202,4 +202,3 @@ class event_tube_reloaded : public event
     event_tube_reloaded(unsigned nr) : tube_nr(nr) { }
     void evaluate(user_interface& ui) override;
 };
-

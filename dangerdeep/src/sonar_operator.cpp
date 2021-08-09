@@ -135,16 +135,16 @@ void sonar_operator::simulate(game& gm, double delta_t)
                 // note that we should use the frequency bandpass filter here
                 // to localize the signal even better  (fixme 2x)
                 shipclass sc = signal.second.determine_shipclass();
-                // 			printf("sonar man sim, Peak of signal found at angle %f,
-                // strength %f, class %i\n", 			       current_angle.value(),
+                // 			printf("sonar man sim, Peak of signal found at angle
+                // %f, strength %f, class %i\n", current_angle.value(),
                 // signal.first, sc);
                 add_contact(
                     current_angle + sub_heading, contact(signal.first, sc));
                 // 			printf("all contacts now:\n");
                 // 			for (std::map<double, contact>::iterator it =
-                // contacts.begin(); it != contacts.end(); ++it) 				printf("angle
-                // %f class %i strength %f\n", it->first, it->second.type,
-                // it->second.strength_dB);
+                // contacts.begin(); it != contacts.end(); ++it)
+                // printf("angle %f class %i strength %f\n", it->first,
+                // it->second.type, it->second.strength_dB);
                 state = find_growing_signal;
                 // advance angle after finding. this also done so that the new
                 // contact is not erased directly after reporting it...
@@ -167,14 +167,14 @@ void sonar_operator::simulate(game& gm, double delta_t)
                     // out of valid area for searching peak, try opposite
                     // direction
                     ++find_peak_try;
-                    // 				printf("reached border, try another directio,
-                    // currang=%f, fpt=%u", current_angle.value(),
+                    // 				printf("reached border, try another
+                    // directio, currang=%f, fpt=%u", current_angle.value(),
                     // find_peak_try);
                     if (find_peak_try > 1)
                     {
                         // tried once ccw and once cw, abort
-                        // 					printf("couldn't find fine peak angle, report
-                        // current angle as contact\n");
+                        // 					printf("couldn't find fine peak angle,
+                        // report current angle as contact\n");
                         shipclass sc = signal.second.determine_shipclass();
                         add_contact(
                             current_angle + sub_heading,
@@ -210,7 +210,8 @@ bool sonar_operator::keeps_in_find_peak_limit(angle add)
 }
 
 void sonar_operator::advance_angle_and_erase_old_contacts(
-    double addang, angle sub_heading)
+    double addang,
+    angle sub_heading)
 {
     double curr_angle = (current_angle + sub_heading).value();
     double next_angle = curr_angle + addang;
@@ -222,7 +223,8 @@ void sonar_operator::advance_angle_and_erase_old_contacts(
         auto end = contacts.upper_bound(next_angle);
         //  	printf("check delete %f->%f\n", curr_angle, next_angle);
         //  	for (std::map<double, contact>::iterator it = beg; it != end;
-        //  ++it) 		printf("making contact at angle %f obsolete\n", it->first);
+        //  ++it) 		printf("making contact at angle %f obsolete\n",
+        //  it->first);
         contacts.erase(beg, end);
         if (next_angle >= 360.0)
         {
@@ -231,8 +233,10 @@ void sonar_operator::advance_angle_and_erase_old_contacts(
             beg = contacts.lower_bound(curr_angle);
             end = contacts.upper_bound(next_angle);
             // 		printf("check delete %f->%f\n", curr_angle, next_angle);
-            // 		for (std::map<double, contact>::iterator it = beg; it != end;
-            // ++it) 			printf("making contact at angle %f obsolete\n", it->first);
+            // 		for (std::map<double, contact>::iterator it = beg; it !=
+            // end;
+            // ++it) 			printf("making contact at angle %f obsolete\n",
+            // it->first);
             contacts.erase(beg, end);
         }
     }

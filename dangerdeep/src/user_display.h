@@ -41,8 +41,10 @@ class user_display : public input_event_handler
       public:
         /// Construct from data file
         elem2D(
-            const xml_elem& elem, const std::string& display_dir,
-            const std::string& prefix_day, const std::string& prefix_night);
+            const xml_elem& elem,
+            const std::string& display_dir,
+            const std::string& prefix_day,
+            const std::string& prefix_night);
         /// Get number of phases
         auto nr_of_phases() const { return unsigned(tex.size()); }
         /// Set the phase to use for subimage in [0...numphases[
@@ -91,7 +93,9 @@ class user_display : public input_event_handler
         }
         /// Change filename for the element
         void set_filename(
-            const std::string& fn, bool day = true, unsigned phase = 0);
+            const std::string& fn,
+            bool day       = true,
+            unsigned phase = 0);
         /// Get size - only valid after initialization or when defined in
         /// layout!
         auto get_size() const { return size; }
@@ -128,8 +132,8 @@ class user_display : public input_event_handler
             filenames_night; // obsolete with new gpu interface
         // std::vector<image> data_day;			///< Image data (always set)
         // std::vector<image> data_night;		///< Image data for night
-        // (optional) std::vector<gpu::texture> tex;		///< Texture data (only
-        // used when display is active!)
+        // (optional) std::vector<gpu::texture> tex;		///< Texture data
+        // (only used when display is active!)
         std::vector<std::unique_ptr<texture>>
             tex; ///< Texture data (only used when display is active!) //
                  ///< obsolete with new gpu interface
@@ -174,4 +178,3 @@ class user_display : public input_event_handler
     user_display(user_display&) = delete;
     user_display& operator=(const user_display&) = delete;
 };
-

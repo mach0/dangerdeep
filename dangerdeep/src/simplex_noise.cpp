@@ -1,7 +1,10 @@
 #include "simplex_noise.h"
 
 std::vector<uint8_t> simplex_noise::noise_map2D(
-    vector2i size, unsigned ocatves, float persistence, float coord_factor)
+    vector2i size,
+    unsigned ocatves,
+    float persistence,
+    float coord_factor)
 {
     double min = 1.0, max = 0.0, scale = 0.0;
     std::vector<double> values(size.x * size.y);
@@ -10,7 +13,8 @@ std::vector<uint8_t> simplex_noise::noise_map2D(
         for (int x = 0; x < size.x; x++)
         {
             values[y * size.x + x] = noise(
-                vector2(x * coord_factor, y * coord_factor), ocatves,
+                vector2(x * coord_factor, y * coord_factor),
+                ocatves,
                 persistence);
             if (values[y * size.x + x] > max)
                 max = values[y * size.x + x];
@@ -447,8 +451,18 @@ double simplex_noise::interpolate4D(const vector4& coord)
 }
 
 const int simplex_noise::grad3[12][3] = {
-    {1, 1, 0},  {-1, 1, 0},  {1, -1, 0}, {-1, -1, 0}, {1, 0, 1},  {-1, 0, 1},
-    {1, 0, -1}, {-1, 0, -1}, {0, 1, 1},  {0, -1, 1},  {0, 1, -1}, {0, -1, -1}};
+    {1, 1, 0},
+    {-1, 1, 0},
+    {1, -1, 0},
+    {-1, -1, 0},
+    {1, 0, 1},
+    {-1, 0, 1},
+    {1, 0, -1},
+    {-1, 0, -1},
+    {0, 1, 1},
+    {0, -1, 1},
+    {0, 1, -1},
+    {0, -1, -1}};
 
 const int simplex_noise::grad4[36][4] = {
     {0, 1, 1, 1},  {0, 1, 1, -1},  {0, 1, -1, 1},  {0, 1, -1, -1},

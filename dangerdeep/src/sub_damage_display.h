@@ -38,4 +38,3 @@ class sub_damage_display : public user_display
     vector2i mouse_position; // last mouse position, needed for popup display
     objcachet<texture>::reference notepadsheet;
 };
-

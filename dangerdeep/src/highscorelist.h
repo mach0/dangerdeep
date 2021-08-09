@@ -67,4 +67,3 @@ class highscorelist
         const std::string& name); // record entry if it is good enough
     void show(class widget* parent) const;
 };
-

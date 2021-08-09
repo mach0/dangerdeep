@@ -100,7 +100,10 @@ void thread::run()
 thread::~thread() = default;
 
 /// Request abort of thread
-void thread::request_abort() { abort_request = true; }
+void thread::request_abort()
+{
+    abort_request = true;
+}
 
 /// Start execution of thread
 void thread::start()

@@ -36,4 +36,3 @@ class sub_captainscabin_display : public user_display
   protected:
     vector2i mouse_position; ///< Stored for text overlay in display
 };
-

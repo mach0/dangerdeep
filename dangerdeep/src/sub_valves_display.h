@@ -28,4 +28,3 @@ class sub_valves_display : public user_display
     sub_valves_display(class user_interface& ui_);
     void display() const override;
 };
-

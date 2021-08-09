@@ -34,8 +34,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace
 {
 unsigned create_bv_subtree(
-    const std::vector<vector3f>& vertices, std::vector<bv_tree::node>& nodes,
-    unsigned index_begin, unsigned index_end)
+    const std::vector<vector3f>& vertices,
+    std::vector<bv_tree::node>& nodes,
+    unsigned index_begin,
+    unsigned index_end)
 {
     if (index_begin == index_end)
     {
@@ -143,7 +145,8 @@ unsigned create_bv_subtree(
 }
 
 bool is_inside(
-    const vector3f& v, const std::vector<bv_tree::node>& nodes,
+    const vector3f& v,
+    const std::vector<bv_tree::node>& nodes,
     unsigned node_index)
 {
     auto& node = nodes[node_index];
@@ -169,8 +172,10 @@ bool is_inside(
 }
 
 void collect_volumes_of_tree_depth(
-    std::vector<spheref>& volumes, unsigned depth,
-    const std::vector<bv_tree::node>& nodes, unsigned node_index)
+    std::vector<spheref>& volumes,
+    unsigned depth,
+    const std::vector<bv_tree::node>& nodes,
+    unsigned node_index)
 {
     auto& node = nodes[node_index];
     if (depth == 0)
@@ -211,7 +216,9 @@ bool bv_tree::is_inside(const vector3f& v) const
 }
 
 bool bv_tree::collides(
-    const param& p0, const param& p1, std::vector<vector3f>& contact_points)
+    const param& p0,
+    const param& p1,
+    std::vector<vector3f>& contact_points)
 {
     // Note: code is nearly identical to function below. We need a solution to
     // have that code only once!
@@ -293,7 +300,9 @@ bool bv_tree::collides(
 }
 
 bool bv_tree::closest_collision(
-    const param& p0, const param& p1, vector3f& contact_point)
+    const param& p0,
+    const param& p1,
+    vector3f& contact_point)
 {
     // Transform vertices of p1 and then compare to p0
     const auto inverse_p0_tree_transform = p0.transform.inverse();
@@ -396,7 +405,9 @@ bool bv_tree::closest_collision(
 }
 
 bool bv_tree::collides(
-    const param& p, const spheref& sp, vector3f& contact_point)
+    const param& p,
+    const spheref& sp,
+    vector3f& contact_point)
 {
     const auto inverse_tree_transform = p.transform.inverse();
     const auto transformed_sphere =
@@ -436,11 +447,14 @@ bool bv_tree::collides(
 }
 
 bool bv_tree::collides(
-    const param& p, const cylinderf& cyl, vector3f& contact_point)
+    const param& p,
+    const cylinderf& cyl,
+    vector3f& contact_point)
 {
     const auto inverse_tree_transform = p.transform.inverse();
     const auto transformed_cylinder   = cylinderf(
-        inverse_tree_transform * cyl.start, inverse_tree_transform * cyl.end,
+        inverse_tree_transform * cyl.start,
+        inverse_tree_transform * cyl.end,
         cyl.radius);
     // Iterate over tree of p and check for intersection with transformed
     // cylinder, closest child first
@@ -455,7 +469,8 @@ bool bv_tree::collides(
                 const auto t = std::clamp(
                     (node.volume.center - transformed_cylinder.start) * delta
                         / delta.square_length(),
-                    0.0f, 1.0f);
+                    0.0f,
+                    1.0f);
                 // position: center between projection of volume on cylinder
                 // axis and volume center
                 contact_point = (helper::interpolate(cyl.start, cyl.end, t)
@@ -499,7 +514,8 @@ void bv_tree::compute_min_max(vector3f& minv, vector3f& maxv) const
 }
 
 void bv_tree::collect_volumes_of_tree_depth(
-    std::vector<spheref>& volumes, unsigned depth) const
+    std::vector<spheref>& volumes,
+    unsigned depth) const
 {
     ::collect_volumes_of_tree_depth(
         volumes, depth, nodes, unsigned(nodes.size() - 1));

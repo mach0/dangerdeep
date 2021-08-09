@@ -100,4 +100,3 @@ struct key_name
 };
 
 extern key_name key_names[std::size_t(key_command::number)];
-

@@ -49,10 +49,14 @@ struct ship_probability
 };
 
 ship_probability escortships[] = {
-    {0.1, "destroyer_oclass"},   {0.3, "destroyer_javelin"},
-    {0.4, "destroyer_tribal"},   {0.5, "destroyer_kclass"},
-    {0.5, "flowercorvette_hcn"}, {0.5, "flowercorvette_hrcn"},
-    {0.5, "FlowerCorvette_RN"},  {0.0, nullptr}};
+    {0.1, "destroyer_oclass"},
+    {0.3, "destroyer_javelin"},
+    {0.4, "destroyer_tribal"},
+    {0.5, "destroyer_kclass"},
+    {0.5, "flowercorvette_hcn"},
+    {0.5, "flowercorvette_hrcn"},
+    {0.5, "FlowerCorvette_RN"},
+    {0.0, nullptr}};
 
 ship_probability civilships[] = {
     //	{ 0.1, "troopship_medium" },

@@ -575,7 +575,7 @@ void submarine::simulate(double delta_time, game& gm)
                 {                                          // reloading
                     st.status = stored_torpedo::st_loaded; // loading
                     //					torpedoes[st.associated].status =
-                    //stored_torpedo::st_empty;	// empty
+                    // stored_torpedo::st_empty;	// empty
                     if (i < get_nr_of_bow_tubes() + get_nr_of_stern_tubes())
                         gm.add_event(
                             std::make_unique<event_tube_reloaded>(i + 1));
@@ -585,7 +585,7 @@ void submarine::simulate(double delta_time, game& gm)
                     st.status       = stored_torpedo::st_empty; // empty
                     st.specfilename = "";
                     //					torpedoes[st.associated].status =
-                    //stored_torpedo::st_loaded;	// loaded
+                    // stored_torpedo::st_loaded;	// loaded
                 }
             }
         }
@@ -1161,7 +1161,7 @@ void submarine::ballast_tank_control_logic(double delta_time)
     //	double s2 = linear_momentum.z * mass_inv;
     //	double s3 = (200000 - mass_flooded_tanks) * 0.01;
     //	double err = mysgn(s1)*s1*s1 + mysgn(s2)*s2*s2*20.0 +
-    //mysgn(s3)*s3*s3*0.03;
+    // mysgn(s3)*s3*s3*0.03;
     double err = s1; //(s1 + s2*20.0)*1000.0;
                      //	if (err < 1e-3) {
     // force emptying of ballast tanks when going surface

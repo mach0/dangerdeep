@@ -117,7 +117,9 @@ struct color
     {
         // *1/255
         return {
-            r * 0.003921569f, g * 0.003921569f, b * 0.003921569f,
+            r * 0.003921569f,
+            g * 0.003921569f,
+            b * 0.003921569f,
             a * 0.003921569f};
     }
 
@@ -143,7 +145,7 @@ struct color
 };
 
 ///\brief Color representation with some basic transformations and OpenGL usage.
-///Float values!
+/// Float values!
 struct colorf
 {
     float r, g, b, a;
@@ -178,8 +180,10 @@ struct colorf
     colorf lerp(const colorf& c1, const colorf& c2) const
     {
         return {
-            c1.r * (1 - r) + c2.r * r, c1.g * (1 - g) + c2.g * g,
-            c1.b * (1 - b) + c2.b * b, c1.a * (1 - a) + c2.a * a};
+            c1.r * (1 - r) + c2.r * r,
+            c1.g * (1 - g) + c2.g * g,
+            c1.b * (1 - b) + c2.b * b,
+            c1.a * (1 - a) + c2.a * a};
     }
 
     vector3f vec3() const { return {r, g, b}; }
@@ -241,4 +245,3 @@ inline std::ostream& operator<<(std::ostream& os, const colorf& c)
     os << "R=" << c.r << ", G=" << c.g << ", B=" << c.b << ", A=" << c.a << ".";
     return os;
 }
-

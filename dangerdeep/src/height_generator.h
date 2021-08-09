@@ -63,18 +63,22 @@ class height_generator
     ///                values < 0 mean extra detail, finer than basic
     ///                resolution.
     ///@param coord_bl - xy coordinates for the value to generate, scaled to
-    ///match detail level, bottem left inclusive
+    /// match detail level, bottem left inclusive
     ///@param coord_sz - xy coordinate range for the value to generate, scaled
-    ///to match detail level
+    /// to match detail level
     ///@param dest - destination where to write height values
     ///@param stride - distance between every value in floats, give 0 for packed
-    ///values
+    /// values
     ///@param line_stride - distance between two lines in floats, give 0 for
-    ///packed lines
+    /// packed lines
     virtual void compute_heights(
-        int detail, const vector2i& coord_bl, const vector2i& coord_sz,
-        float* dest, unsigned stride = 0, unsigned line_stride = 0,
-        bool noise = true) = 0;
+        int detail,
+        const vector2i& coord_bl,
+        const vector2i& coord_sz,
+        float* dest,
+        unsigned stride      = 0,
+        unsigned line_stride = 0,
+        bool noise           = true) = 0;
     /* example implementation:
     {
         if (!stride) stride = 1;
@@ -107,15 +111,17 @@ class height_generator
     /// compute normal values of given detail and coordinate area (including
     /// given coordinates)
     ///@note here is some reasonable implementation, normally it should be
-    ///overloaded, normals are always packed
+    /// overloaded, normals are always packed
     ///@param detail - detail level to be generated and also coordinate domain,
     ///@param coord_bl - xy coordinates for the value to generate, scaled to
-    ///match detail level, bottem left inclusive
+    /// match detail level, bottem left inclusive
     ///@param coord_sz - xy coordinate range for the value to generate, scaled
-    ///to match detail level
+    /// to match detail level
     ///@param dest - destination where to write normal values
     virtual void compute_normals(
-        int detail, const vector2i& coord_bl, const vector2i& coord_sz,
+        int detail,
+        const vector2i& coord_bl,
+        const vector2i& coord_sz,
         vector3f* dest)
     {
         const auto zh = float(
@@ -170,4 +176,3 @@ class height_generator
         rock_brdf_texture, base_texture, noise_texture;
     float tex_stretch_factor{0.01};
 };
-

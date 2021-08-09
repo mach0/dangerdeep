@@ -81,4 +81,3 @@ class voxel_data
 
     void load(const xml_elem& parent, const boxf& bbox, double volume);
 };
-

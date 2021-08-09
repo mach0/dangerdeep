@@ -67,7 +67,13 @@ inline float angle_between(float thetav, float phiv, float theta, float phi)
 }
 
 inline float perez_function(
-    float A, float B, float C, float D, float E, float Theta, float Gamma)
+    float A,
+    float B,
+    float C,
+    float D,
+    float E,
+    float Theta,
+    float Gamma)
 {
     float cosGamma = cos(Gamma);
     float d        = (1 + A * exp(B / cos(Theta)))
@@ -203,8 +209,8 @@ colorf daysky::get_color(float theta, float phi) const
         std::min(1.f, colors[2] * scalefac)};
 }
 
-float daysky::distribution(
-    const alphabet& ABCDE, float Theta, float Gamma) const
+float daysky::distribution(const alphabet& ABCDE, float Theta, float Gamma)
+    const
 {
     //                       Perez_f0(Theta,Gamma)
     //    calculates:   d = -----------------------
@@ -216,8 +222,8 @@ float daysky::distribution(
     return (f0 / f1);
 }
 
-float daysky::chromaticity(
-    const float ZC[3][4], float sun_phi2, float sun_phi3) const
+float daysky::chromaticity(const float ZC[3][4], float sun_phi2, float sun_phi3)
+    const
 {
     float c = (ZC[0][0] * sun_phi3 + ZC[0][1] * sun_phi2 + ZC[0][2] * m_sun_phi
                + ZC[0][3])

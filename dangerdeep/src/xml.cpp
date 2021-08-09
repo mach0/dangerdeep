@@ -106,15 +106,30 @@ vector3 xml_elem::attrv3() const
     return {attrf("x"), attrf("y"), attrf("z")};
 }
 
-vector2 xml_elem::attrv2() const { return {attrf("x"), attrf("y")}; }
+vector2 xml_elem::attrv2() const
+{
+    return {attrf("x"), attrf("y")};
+}
 
-vector2i xml_elem::attrv2i() const { return {attri("x"), attri("y")}; }
+vector2i xml_elem::attrv2i() const
+{
+    return {attri("x"), attri("y")};
+}
 
-quaternion xml_elem::attrq() const { return quaternion(attrf("s"), attrv3()); }
+quaternion xml_elem::attrq() const
+{
+    return quaternion(attrf("s"), attrv3());
+}
 
-angle xml_elem::attra() const { return {attrf("angle")}; }
+angle xml_elem::attra() const
+{
+    return {attrf("angle")};
+}
 
-bool xml_elem::attrb(const std::string& name) const { return attru(name) != 0; }
+bool xml_elem::attrb(const std::string& name) const
+{
+    return attru(name) != 0;
+}
 
 void xml_elem::set_attr(const std::string& val, const std::string& name)
 {
@@ -177,14 +192,20 @@ void xml_elem::set_attr(const quaternion& q)
     set_attr(q.v);
 }
 
-void xml_elem::set_attr(angle a) { set_attr(a.value(), "angle"); }
+void xml_elem::set_attr(angle a)
+{
+    set_attr(a.value(), "angle");
+}
 
 void xml_elem::set_attr(bool b, const std::string& name)
 {
     set_attr(unsigned(b), name);
 }
 
-const std::string& xml_elem::get_name() const { return elem->ValueStr(); }
+const std::string& xml_elem::get_name() const
+{
+    return elem->ValueStr();
+}
 
 void xml_elem::add_child_text(const std::string& txt)
 {
@@ -243,7 +264,8 @@ void xml_doc::load()
     if (!doc->LoadFile())
     {
         THROW(
-            xml_error, std::string("can't load: ") + doc->ErrorDesc(),
+            xml_error,
+            std::string("can't load: ") + doc->ErrorDesc(),
             doc->ValueStr());
     }
 }
@@ -253,7 +275,8 @@ void xml_doc::save()
     if (!doc->SaveFile())
     {
         THROW(
-            xml_error, std::string("can't save: ") + doc->ErrorDesc(),
+            xml_error,
+            std::string("can't save: ") + doc->ErrorDesc(),
             doc->ValueStr());
     }
 }
@@ -281,4 +304,7 @@ xml_elem xml_doc::add_child(const std::string& name)
     return {e};
 }
 
-const std::string& xml_doc::get_filename() const { return doc->ValueStr(); }
+const std::string& xml_doc::get_filename() const
+{
+    return doc->ValueStr();
+}

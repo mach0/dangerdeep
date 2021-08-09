@@ -54,4 +54,3 @@ class frustum
     /// generate mirrored frustum (at z=0 plane)
     frustum get_mirrored() const;
 };
-

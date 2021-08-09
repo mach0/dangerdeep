@@ -86,10 +86,18 @@ postprocessor::postprocessor() :
         for (unsigned ix = 0; ix < PP_FILTERS; ix++)
         {
             h_textures[ix] = new texture(
-                w >> ix, h >> ix, GL_RGB, texture::LINEAR, texture::CLAMP,
+                w >> ix,
+                h >> ix,
+                GL_RGB,
+                texture::LINEAR,
+                texture::CLAMP,
                 true);
             v_textures[ix] = new texture(
-                w >> ix, h >> ix, GL_RGB, texture::LINEAR, texture::CLAMP,
+                w >> ix,
+                h >> ix,
+                GL_RGB,
+                texture::LINEAR,
+                texture::CLAMP,
                 true);
 
             h_pass[ix] = new framebufferobject(*h_textures[ix], false);
@@ -98,8 +106,12 @@ postprocessor::postprocessor() :
 
         // only use floats if doing HDR
         scene_t = new texture(
-            w, h, (hdr_enabled) ? GL_RGB16F_ARB : GL_RGB, texture::LINEAR,
-            texture::CLAMP, true);
+            w,
+            h,
+            (hdr_enabled) ? GL_RGB16F_ARB : GL_RGB,
+            texture::LINEAR,
+            texture::CLAMP,
+            true);
         scene_fbo = new framebufferobject(*scene_t, true);
     }
 }

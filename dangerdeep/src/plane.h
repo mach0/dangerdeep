@@ -25,41 +25,48 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "vector3.h"
 
-template <typename D, axis a> struct vector_coord
+template<typename D, axis a>
+struct vector_coord
 {
     static D& get(vector3t<D>& v) { return v.x; }
     static const D& get(const vector3t<D>& v) { return v.x; }
 };
-template <typename D> struct vector_coord<D, axis::y>
+template<typename D>
+struct vector_coord<D, axis::y>
 {
     static D& get(vector3t<D>& v) { return v.y; }
     static const D& get(const vector3t<D>& v) { return v.y; }
 };
-template <typename D> struct vector_coord<D, axis::z>
+template<typename D>
+struct vector_coord<D, axis::z>
 {
     static D& get(vector3t<D>& v) { return v.z; }
     static const D& get(const vector3t<D>& v) { return v.z; }
 };
-template <typename D> struct vector_coord<D, axis::neg_x>
+template<typename D>
+struct vector_coord<D, axis::neg_x>
 {
     static D& get(vector3t<D>& v) { return -v.x; }
     static const D& get(const vector3t<D>& v) { return -v.x; }
 };
-template <typename D> struct vector_coord<D, axis::neg_y>
+template<typename D>
+struct vector_coord<D, axis::neg_y>
 {
     static D& get(vector3t<D>& v) { return -v.y; }
     static const D& get(const vector3t<D>& v) { return -v.y; }
 };
-template <typename D> struct vector_coord<D, axis::neg_z>
+template<typename D>
+struct vector_coord<D, axis::neg_z>
 {
     static D& get(vector3t<D>& v) { return -v.z; }
     static const D& get(const vector3t<D>& v) { return -v.z; }
 };
-template <typename D, axis a> inline D plane_distance(const vector3t<D>& v, D c)
+template<typename D, axis a>
+inline D plane_distance(const vector3t<D>& v, D c)
 {
     return vector_coord<D, a>::get(v) - c;
 }
-template <typename D, axis a>
+template<typename D, axis a>
 inline vector3t<D>
 plane_intersection(const vector3t<D>& p, const vector3t<D>& q, D c)
 {
@@ -69,7 +76,8 @@ plane_intersection(const vector3t<D>& p, const vector3t<D>& q, D c)
 }
 
 /// a plane in 3-space
-template <class D> class plane_t
+template<class D>
+class plane_t
 {
   public:
     vector3t<D> N; ///< normal of plane
@@ -112,7 +120,9 @@ template <class D> class plane_t
     /// compute intersection point of line a->b, returns true if intersection is
     /// valid
     bool test_intersection(
-        const vector3t<D>& a, const vector3t<D>& b, vector3t<D>& result) const
+        const vector3t<D>& a,
+        const vector3t<D>& b,
+        vector3t<D>& result) const
     {
         bool a_left = is_left(a), b_left = is_left(b);
         // both are left or not left? no intersection
@@ -124,7 +134,9 @@ template <class D> class plane_t
     /// compute intersection point of line a->b, returns true if intersection is
     /// valid
     bool test_intersection_no_touch(
-        const vector3t<D>& a, const vector3t<D>& b, vector3t<D>& result) const
+        const vector3t<D>& a,
+        const vector3t<D>& b,
+        vector3t<D>& result) const
     {
         int a_left = test_side(a), b_left = test_side(b);
         // both are left or not left? no intersection
@@ -139,7 +151,8 @@ template <class D> class plane_t
     vector3t<D> get_pivot() const { return N * -d; }
     /// compute intersection point with two other planes
     bool compute_intersection(
-        const plane_t<D>& plane_b, const plane_t<D>& plane_c,
+        const plane_t<D>& plane_b,
+        const plane_t<D>& plane_c,
         vector3t<D>& intersection)
     {
         // we have three equations of form N*(x,y,z)+d=0
@@ -168,4 +181,3 @@ template <class D> class plane_t
 
 using plane  = plane_t<double>;
 using planef = plane_t<float>;
-
