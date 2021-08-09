@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's tdc
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_TDC_DISPLAY_H
-#define SUB_TDC_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 
@@ -35,4 +34,3 @@ class sub_tdc_display : public user_display
     void display() const override;
 };
 
-#endif

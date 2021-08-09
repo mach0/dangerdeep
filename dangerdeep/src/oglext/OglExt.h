@@ -22,8 +22,7 @@
 /* write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA       */
 
-#ifndef _OGLEXT_H_
-#define _OGLEXT_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C"
@@ -55,4 +54,3 @@ extern "C"
 }
 #endif
 
-#endif /* _OGLEXT_H_ */

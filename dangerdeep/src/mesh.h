@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // A 3d mesh
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef MESH_H
-#define MESH_H
+#pragma once
 
 #include "box.h"
 #include "bv_tree.h"
@@ -260,4 +259,3 @@ class mesh
                           ///< stored as an ID.
 };
 
-#endif

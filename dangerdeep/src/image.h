@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL texture drawing based on SDL Surfaces
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#pragma once
 
 #include "texture.h" // needed at least for correct "delete" usage
 
@@ -54,4 +53,3 @@ class image
     unsigned get_height() const { return height; };
 };
 
-#endif

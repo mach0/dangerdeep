@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // user display: submarine's periscope
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_PERISCOPE_DISPLAY_H
-#define SUB_PERISCOPE_DISPLAY_H
+#pragma once
 
 #include "freeview_display.h"
 #include "shader.h"
@@ -61,4 +60,3 @@ class sub_periscope_display : public freeview_display
     vector3 get_viewpos(class game& gm) const override;
 };
 
-#endif

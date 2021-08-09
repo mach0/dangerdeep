@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Object to create and display the number and tonnage of sunk ships.
 // subsim (C)+(W) Markus Petermann and Thorsten Jordan. SEE LICENSE
 
-#ifndef SHIPS_SUNK_DISPLAY_H
-#define SHIPS_SUNK_DISPLAY_H
+#pragma once
 
 #include "user_display.h"
 
@@ -40,4 +39,3 @@ class ships_sunk_display : public user_display
     virtual void previous_page(unsigned nrships);
 };
 
-#endif

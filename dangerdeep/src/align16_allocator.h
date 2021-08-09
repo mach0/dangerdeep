@@ -22,8 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  Jordan
 //
 
-#ifndef ALIGN16_ALLOCATOR_H
-#define ALIGN16_ALLOCATOR_H
+#pragma once
 
 // We can't heir from std::allocator, since its functions are not virtual,
 // and thus overloading doesn't work as needed.
@@ -122,4 +121,3 @@ int main(int, char**)
 	test3.push_back('C');
 	return 0;
 }
-#endif

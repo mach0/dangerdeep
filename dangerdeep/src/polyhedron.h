@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A generic polyhedron (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef POLYHEDRON_H
-#define POLYHEDRON_H
+#pragma once
 
 #include "error.h"
 #include "matrix4.h"
@@ -478,4 +477,3 @@ template <typename D> class polyhedron_t
 typedef polyhedron_t<double> polyhedron;
 typedef polyhedron_t<float> polyhedronf;
 
-#endif

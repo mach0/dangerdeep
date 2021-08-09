@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Submarine control popup.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef SUB_CONTROL_POPUP_H
-#define SUB_CONTROL_POPUP_H
+#pragma once
 
 #include "user_popup.h"
 
@@ -31,4 +30,3 @@ class sub_control_popup : public user_popup
     sub_control_popup(class user_interface& ui_);
 };
 
-#endif /* SUB_CONTROL_POPUP_H */

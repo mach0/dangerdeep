@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Frame Buffer Object
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef FRAMEBUFFEROBJECT_H
-#define FRAMEBUFFEROBJECT_H
+#pragma once
 
 #include "oglext/OglExt.h"
 
@@ -63,4 +62,3 @@ class framebufferobject
     const char* init_failure_reason(int status);
 };
 
-#endif

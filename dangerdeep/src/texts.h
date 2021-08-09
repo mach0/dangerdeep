@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // texts
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef TEXTS_H
-#define TEXTS_H
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -78,4 +77,3 @@ class texts
     static unsigned get_nr_of_available_languages();
 };
 
-#endif

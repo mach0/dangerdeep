@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // constants
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef CONSTANT_H
-#define CONSTANT_H
+#pragma once
 
 #include <cmath>
 
@@ -73,4 +72,3 @@ const double MOON_POS_ADJUST = 300.0; // in degrees. Moon pos in its orbit
                                       // on 1.1.1939 fixme: research the value
 } // namespace constant
 
-#endif

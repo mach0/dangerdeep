@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A generic polygon (C)+(W) 2005 Thorsten Jordan
 //
 
-#ifndef POLYGON_H
-#define POLYGON_H
+#pragma once
 
 #include "error.h"
 #include "matrix4.h"
@@ -481,4 +480,3 @@ using polygonf = polygon_t<float>;
 }
 #endif
 
-#endif

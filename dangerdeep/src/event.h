@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // game event
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
 class user_interface;
 #include "vector3.h"
@@ -204,4 +203,3 @@ class event_tube_reloaded : public event
     void evaluate(user_interface& ui) override;
 };
 
-#endif

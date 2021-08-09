@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL GPU helper functions and classes
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef GPU_HELPER_H
-#define GPU_HELPER_H
+#pragma once
 
 #include "angle.h"
 #include "gpu_interface.h"
@@ -559,4 +558,3 @@ template <> struct hash<gpu::basic_shader_feature>
 };
 } // namespace std
 
-#endif

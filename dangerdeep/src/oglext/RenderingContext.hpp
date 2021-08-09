@@ -26,8 +26,7 @@
 //
 // This file was automatically generated on January 10, 2006, 6:46 pm
 
-#ifndef _OGL_RENDERINGCONTEXT_HPP_
-#define _OGL_RENDERINGCONTEXT_HPP_
+#pragma once
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN 1
@@ -2760,4 +2759,3 @@ inline unsigned long CRenderingContext::GetVersion() const
     return m_uVersion;
 }
 
-#endif // _OGL_RENDERINGCONTEXT_HPP_

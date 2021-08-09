@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef FRACTAL_H
-#define FRACTAL_H
+#pragma once
 #include "simplex_noise.h"
 #include "vector2.h"
 #include "vector3.h"
@@ -218,4 +217,3 @@ class fractal_noise
         return map;
     }
 };
-#endif

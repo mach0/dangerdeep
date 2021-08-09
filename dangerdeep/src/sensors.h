@@ -23,8 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "angle.h"
 #include "vector3.h"
 
-#ifndef _SENSORS_H_
-#define _SENSORS_H_
+#pragma once
 
 #define MIN_VISIBLE_DISTANCE 0.01f
 
@@ -311,4 +310,3 @@ class active_sonar_sensor : public active_sensor
         const override;
 };
 
-#endif /* _SENSORS_H_ */

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // a highscore list
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef HIGHSCORELIST_H
-#define HIGHSCORELIST_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -69,4 +68,3 @@ class highscorelist
     void show(class widget* parent) const;
 };
 
-#endif

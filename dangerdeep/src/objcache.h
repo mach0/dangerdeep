@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // a generic object cache
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef OBJCACHE_H
-#define OBJCACHE_H
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -230,4 +229,3 @@ template <class C, typename Key = std::string> class object_handle
     C* storage{nullptr};
 };
 
-#endif

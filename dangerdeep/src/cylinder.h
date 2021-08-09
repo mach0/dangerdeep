@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3d cylinder (C)+(W) 2020 Thorsten Jordan
 //
 
-#ifndef CYLINDER_H
-#define CYLINDER_H
+#pragma once
 
 #include "sphere.h"
 #include "vector3.h"
@@ -105,4 +104,3 @@ template <class D> class cylinder_t
 using cylinder  = cylinder_t<double>;
 using cylinderf = cylinder_t<float>;
 
-#endif

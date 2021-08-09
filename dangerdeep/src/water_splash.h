@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // water splash (C)+(W) 2020 Thorsten Jordan
 
-#ifndef WATER_SPLASH_H
-#define WATER_SPLASH_H
+#pragma once
 
 #include "bspline.h"
 #include "sea_object.h"
@@ -71,4 +70,3 @@ class water_splash : public sea_object
     }
 };
 
-#endif

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // SDL/OpenGL based system services
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef INPUT_EVENT_HANDLER_H
-#define INPUT_EVENT_HANDLER_H
+#pragma once
 
 #include "vector2.h"
 
@@ -382,4 +381,3 @@ class input_event_handler_custom : public input_event_handler
     }
 };
 
-#endif

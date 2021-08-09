@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 3d plane (C)+(W) 2005 Thorsten Jordan
 //
 
-#ifndef PLANE_H
-#define PLANE_H
+#pragma once
 
 #include "vector3.h"
 
@@ -170,4 +169,3 @@ template <class D> class plane_t
 using plane  = plane_t<double>;
 using planef = plane_t<float>;
 
-#endif

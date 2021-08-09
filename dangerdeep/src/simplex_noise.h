@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef SIMPLEX_NOISE_H
-#define SIMPLEX_NOISE_H
+#pragma once
 
 #include "morton_bivector.h"
 #include "vector2.h"
@@ -69,4 +68,3 @@ class simplex_noise
         vector2i size, unsigned ocatves = 1, float persistence = 1.0,
         float coord_factor = 0.01);
 };
-#endif

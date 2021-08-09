@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 
-#ifndef DATE_H
-#define DATE_H
+#pragma once
 
 ///\brief Date representation, either as linear time or as year, month, day etc.
 class date
@@ -104,4 +103,3 @@ class date
     void save(xml_elem& parent) const;
 };
 
-#endif /* DATE_H */

@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  FPS measuring (C)+(W) 2008 Thorsten Jordan
 //
 
-#ifndef FPSMEASURE_H
-#define FPSMEASURE_H
+#pragma once
 
 class fpsmeasure
 {
@@ -41,4 +40,3 @@ class fpsmeasure
     unsigned slowest_frame{0}, fastest_frame{0};
 };
 
-#endif

@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // A 3d model state
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef MODEL_STATE_H
-#define MODEL_STATE_H
+#pragma once
 
 #include "model.h"
 #include "quaternion.h"
@@ -62,4 +61,3 @@ class model_state
     matrix4 transformation;
 };
 
-#endif

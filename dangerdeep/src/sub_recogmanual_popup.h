@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef SUB_RECOGMANUAL_POPUP_H
-#define SUB_RECOGMANUAL_POPUP_H
+#pragma once
 
 #include "user_popup.h"
 #include "widget.h"
@@ -61,4 +60,3 @@ class sub_recogmanual_popup : public user_popup
     bool handle_mouse_wheel_event(const mouse_wheel_data&) override;
 };
 
-#endif /* SUB_RECOGMANUAL_POPUP_H */

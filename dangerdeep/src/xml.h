@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // xml access interface
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef XML_H
-#define XML_H
+#pragma once
 
 #include "angle.h"
 #include "error.h"
@@ -207,4 +206,3 @@ class xml_doc
     const std::string& get_filename() const;
 };
 
-#endif // XML_H

@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // interface class to compute heights
 
-#ifndef HEIGHT_GENERATOR_H
-#define HEIGHT_GENERATOR_H
+#pragma once
 
 #include "color.h"
 #include "datadirs.h"
@@ -172,4 +171,3 @@ class height_generator
     float tex_stretch_factor{0.01};
 };
 
-#endif

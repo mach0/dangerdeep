@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // game
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 // fixme remove all macros
 #define PINGREMAINTIME 1.0    // seconds
@@ -460,4 +459,3 @@ class game
     bool is_valid(sea_object_id id) const;
 };
 
-#endif

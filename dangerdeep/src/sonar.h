@@ -25,8 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <vector>
 
-#ifndef SONAR_H
-#define SONAR_H
+#pragma once
 
 enum shipclass
 {
@@ -207,4 +206,3 @@ struct noise_signature
 double compute_signal_strength_GHG(
     angle signal_angle, double frequency, angle apparatus_angle);
 
-#endif /* SONAR_H */

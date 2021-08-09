@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL GLSL shaders
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include "color.h"
 #include "matrix4.h"
@@ -281,4 +280,3 @@ class glsl_shader_setup
     glsl_program prog;
 };
 
-#endif

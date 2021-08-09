@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Vertex Buffer Object
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef VERTEXBUFFER_H
-#define VERTEXBUFFER_H
+#pragma once
 
 #include "oglext/OglExt.h"
 
@@ -65,4 +64,3 @@ class vertexbufferobject
     void unmap();
 };
 
-#endif

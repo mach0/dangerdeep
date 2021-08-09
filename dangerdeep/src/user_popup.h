@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Base interface for user screen popups.
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef USER_POPUP_H
-#define USER_POPUP_H
+#pragma once
 
 #include "image.h"
 #include "input_event_handler.h"
@@ -70,4 +69,3 @@ class user_popup : public input_event_handler
     std::vector<elem2D> elements; ///< Elements for display
 };
 
-#endif /* USER_POPUP_H */

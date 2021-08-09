@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A generic frustum (C)+(W) 2005 Thorsten Jordan
 //
 
-#ifndef FRUSTUM_H
-#define FRUSTUM_H
+#pragma once
 
 #include "polygon.h"
 
@@ -56,4 +55,3 @@ class frustum
     frustum get_mirrored() const;
 };
 
-#endif

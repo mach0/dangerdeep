@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // defines to help with c99 math functions in different targets/compilers
 // (C)+(W) by Thorsten Jordan, Matt Lawrence. See LICENSE
 
-#ifndef DMATH_H
-#define DMATH_H
+#pragma once
 
 #include <cfloat>
 #include <cmath>
@@ -45,4 +44,3 @@ include <float.h>
 using std::isfinite;
 #endif
 
-#endif // DMATH_H

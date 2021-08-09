@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // interface class to compute terrain data
 
-#ifndef TERRAIN_GENERATOR_H
-#define TERRAIN_GENERATOR_H
+#pragma once
 
 /// Interface class to generate heights and colors (texture map) for terrain
 class terrain_generator
@@ -49,4 +48,3 @@ class terrain_generator
     virtual vector2 get_min_max_height() const = 0;
 };
 
-#endif

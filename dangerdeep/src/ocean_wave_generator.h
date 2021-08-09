@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // realized algorithms of the paper "Simulating ocean water" by
 // Jerry Tessendorf.
 
-#ifndef OCEAN_WAVE_GENERATOR
-#define OCEAN_WAVE_GENERATOR
+#pragma once
 
 #include "constant.h"
 #include "random_generator.h"
@@ -534,4 +533,3 @@ void ocean_wave_generator<T>::compute_displacements(
     }
 }
 
-#endif

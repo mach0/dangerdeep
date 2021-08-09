@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // A 3d voxel representation
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef VOXEL_H
-#define VOXEL_H
+#pragma once
 
 #include "box.h"
 #include "error.h"
@@ -83,4 +82,3 @@ class voxel_data
     void load(const xml_elem& parent, const boxf& bbox, double volume);
 };
 
-#endif

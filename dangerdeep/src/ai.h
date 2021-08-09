@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // AI for various objects
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef AI_H
-#define AI_H
+#pragma once
 
 /*
 How AI should work.
@@ -179,4 +178,3 @@ class ai
     void cycle_waypoints(bool cycle = true) { cyclewaypoints = cycle; };
 };
 
-#endif

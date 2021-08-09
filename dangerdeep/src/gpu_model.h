@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // A 3d model displayer
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef GPU_MODEL_H
-#define GPU_MODEL_H
+#pragma once
 
 #include "gpu_helper.h"
 #include "gpu_interface.h"
@@ -86,4 +85,3 @@ class model
 };
 } // namespace gpu
 
-#endif

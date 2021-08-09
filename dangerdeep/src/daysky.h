@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef DAYSKY_H
-#define DAYSKY_H
+#pragma once
 
 #include "color.h"
 #include "tone_reproductor.h"
@@ -65,4 +64,3 @@ class daysky
     mutable tone_reproductor tonerepro;
 };
 
-#endif

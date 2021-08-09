@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Binary Stream Tools
 // (C) 2002 Thorsten Jordan
 
-#ifndef BINSTREAM_H
-#define BINSTREAM_H
+#pragma once
 
 #include "quaternion.h"
 
@@ -276,4 +275,3 @@ inline void write_quaternion(std::ostream& out, const quaternion& q)
     write_vector3(out, q.v);
 }
 
-#endif

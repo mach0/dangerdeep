@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // OpenGL based font rendering
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef FONT_H
-#define FONT_H
+#pragma once
 
 #include "color.h"
 #include "texture.h"
@@ -143,4 +142,3 @@ class font
     static const unsigned invalid_utf8_char = 0xffffffff;
 };
 
-#endif

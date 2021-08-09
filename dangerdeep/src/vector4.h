@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A 4d (homogenous) vector (C)+(W) 2005 Thorsten Jordan
 //
 
-#ifndef VECTOR4_H
-#define VECTOR4_H
+#pragma once
 
 #include "vector3.h"
 
@@ -158,4 +157,3 @@ using vector4f = vector4t<float>;
 using vector4i = vector4t<int>;
 using vector4u = vector4t<unsigned int>;
 
-#endif

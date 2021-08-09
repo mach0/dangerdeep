@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // global data
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef GLOBAL_DATA_H
-#define GLOBAL_DATA_H
+#pragma once
 
 #include "objcache.h"
 #include "singleton.h"
@@ -153,4 +152,3 @@ std::string str_wf(const T& x, unsigned width, char filler = '0')
     return oss.str();
 }
 
-#endif

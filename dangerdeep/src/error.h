@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Danger from the Deep, standard error/exception
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef ERROR_H
-#define ERROR_H
+#pragma once
 
 #include <stdexcept>
 #include <string>
@@ -68,4 +67,3 @@ class sdl_error : public error
     throw exceptionclass(          \
         error::throw_location(__FILE__, __LINE__), ##__VA_ARGS__)
 
-#endif

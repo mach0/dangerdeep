@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // depth charges
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef DEPTH_CHARGE_H
-#define DEPTH_CHARGE_H
+#pragma once
 
 #include "sea_object.h"
 
@@ -55,4 +54,3 @@ class depth_charge : public sea_object
     compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
 };
 
-#endif

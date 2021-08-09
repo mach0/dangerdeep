@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // Danger from the Deep, helper functions for stack trace or SIGSEGV handling
 // (C)+(W) by Thorsten Jordan. See LICENSE
 
-#ifndef FAULTHANDLER_H
-#define FAULTHANDLER_H
+#pragma once
 
 /*
 Win32 and MacOsX do not suppport backtracking
@@ -257,4 +256,3 @@ void install_segfault_handler() { signal(SIGSEGV, sigsegv_handler); }
 
 #endif // WIN32 || MacOSX
 
-#endif // FAULTHANDLER_H

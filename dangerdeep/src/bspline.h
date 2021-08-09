@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 //  A bspline curve (C)+(W) Thorsten Jordan
 
-#ifndef BSPLINE_H
-#define BSPLINE_H
+#pragma once
 
 #include "dmath.h"
 #include "error.h"
@@ -280,4 +279,3 @@ template <class T> class bspline2dt
 using bspline = bsplinet<double>;
 typedef bsplinet<double, false> non_uniform_bspline;
 
-#endif

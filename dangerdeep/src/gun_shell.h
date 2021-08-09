@@ -20,8 +20,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // gun shells
 // subsim (C)+(W) Thorsten Jordan. SEE LICENSE
 
-#ifndef GUN_SHELL_H
-#define GUN_SHELL_H
+#pragma once
 
 #include "sea_object.h"
 class ship;
@@ -64,4 +63,3 @@ class gun_shell : public sea_object
         const vector3f& newrelpos);
 };
 
-#endif

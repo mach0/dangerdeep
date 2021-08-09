@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _BZIP_H
-#define _BZIP_H
+#pragma once
 
 #include <bzlib.h>
 #include <iostream>
@@ -146,4 +145,3 @@ class bzip_istream : public std::istream
     ~bzip_istream() override { close(); }
     void close() { ((bzip_streambuf*) rdbuf())->close(); }
 };
-#endif /* _BZIP_H */

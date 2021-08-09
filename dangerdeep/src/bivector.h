@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  A two-dimensional general vector (C)+(W) 2001 Thorsten Jordan
 //
 
-#ifndef BIVECTOR_H
-#define BIVECTOR_H
+#pragma once
 
 #include "bivector.h"
 #include "error.h"
@@ -572,4 +571,3 @@ bivector<T>::insert(const bivector<T>& other, const vector2i& offset)
 #undef bivector_FOREACH_XY
 #undef bivector_FOREACH_XYZ
 #undef bivector_abs
-#endif
