@@ -227,11 +227,13 @@ submarine::submarine(game& gm_, const xml_elem& parent) :
     max_submerged_speed   = kts2ms(sm.attrf("maxspeed"));
     double safedepth      = sm.attrf("safedepth");
     double maxdepth       = sm.attrf("maxdepth");
+
     max_depth             = safedepth + rnd() * (maxdepth - safedepth);
     xml_elem dp           = parent.child("depths");
     periscope_depth       = dp.attrf("scope");
     snorkel_depth         = dp.attrf("snorkel");
     alarm_depth           = dp.attrf("alarm");
+
     xml_elem tp           = parent.child("torpedoes");
     xml_elem tb           = tp.child("tubes");
     number_of_tubes_at[0] = tb.attru("bow");
@@ -240,27 +242,32 @@ submarine::submarine(game& gm_, const xml_elem& parent) :
     number_of_tubes_at[3] = tb.attru("sternreserve");
     number_of_tubes_at[4] = tb.attru("bowdeckreserve");
     number_of_tubes_at[5] = tb.attru("sterndeckreserve");
+
     unsigned nrtrp        = 0;
     for (unsigned int i : number_of_tubes_at)
         nrtrp += i;
     torpedoes.resize(nrtrp);
+
     xml_elem tf              = tp.child("transfertimes");
     torp_transfer_times[0]   = tf.attru("bow");
     torp_transfer_times[1]   = tf.attru("stern");
     torp_transfer_times[2]   = tf.attru("bowdeck");
     torp_transfer_times[3]   = tf.attru("sterndeck");
     torp_transfer_times[4]   = tf.attru("bowsterndeck");
+
     xml_elem bt              = parent.child("battery");
     battery_capacity         = bt.attru("capacity");
     battery_value_a          = bt.attrf("consumption_a");
     battery_value_t          = bt.attrf("consumption_t");
     battery_recharge_value_a = bt.attrf("recharge_a");
     battery_recharge_value_t = bt.attrf("recharge_t");
+
     if (parent.has_child("torpedomanage"))
     { // fixme: later all subs should have it!!
         xml_elem tm              = parent.child("torpedomanage");
         torpedomanage_sidetopimg = tm.attr("image");
     }
+
     if (parent.has_child("gauges"))
     {
         auto spec_gauges_type = parent.child("gauges").child_text();
@@ -322,6 +329,7 @@ void submarine::load(const xml_elem& parent)
     xml_elem tp = parent.child("stored_torpedoes");
     torpedoes.clear();
     torpedoes.reserve(tp.attru("nr"));
+
     for (auto elem : tp.iterate("stored_torpedo"))
     {
         torpedoes.emplace_back();
@@ -345,6 +353,7 @@ void submarine::load(const xml_elem& parent)
 #endif
 
     xml_elem tk = parent.child("tanks");
+
     for (auto e : tk.iterate("tank"))
     {
         unsigned id = e.attru("nr");
@@ -365,13 +374,16 @@ void submarine::save(xml_elem& parent) const
     dv.set_attr(dive_to, "dive_to");
     dv.set_attr(permanent_dive, "permanent_dive");
     dv.set_attr(dive_state, "dive_state");
+
     xml_elem ebdr = dv.add_child("bow_depth_rudder");
     bow_depth_rudder.save(ebdr);
+
     xml_elem esdr = dv.add_child("stern_depth_rudder");
     stern_depth_rudder.save(esdr);
 
     xml_elem tp = parent.add_child("stored_torpedoes");
     tp.set_attr(unsigned(torpedoes.size()), "nr");
+
     for (const auto& torpedoe : torpedoes)
     {
         // save a stored_torpedo node for each entry
@@ -460,6 +472,7 @@ void submarine::simulate(double delta_time, game& gm)
     // diveplane animation
     if (diveplane_1_id >= 0)
         mymodel->set_object_angle(diveplane_1_id, -bow_depth_rudder.angle);
+
     if (diveplane_2_id >= 0)
         mymodel->set_object_angle(diveplane_2_id, -stern_depth_rudder.angle);
 

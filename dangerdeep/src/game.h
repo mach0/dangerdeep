@@ -22,14 +22,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #pragma once
 
-// fixme remove all macros
-#define PINGREMAINTIME 1.0    // seconds
-#define PINGANGLE      15     // angle
-#define PINGLENGTH     1000   // meters. for drawing
-#define ASDICRANGE     1500.0 // meters fixme: historic values?
-#define MAX_ACUSTIC_CONTACTS                                                   \
-    5 // max. nr of simultaneous trackable acustic contacts
-#define TERRAIN_NR_LEVELS    10
+namespace acoustics
+{
+constexpr auto ping_remain_time      = 1.0;    // seconds
+constexpr auto ping_angle            = 15;     // angle
+constexpr auto ping_length           = 1000;   // meters. for drawing
+constexpr auto asdic_range           = 1500.0; // meters fixme: historic values?
+constexpr auto enemy_contact_lost    = 50000.0; // meters
+constexpr auto max_acoustic_contacts = 5;       // max. nr of simultaneous
+                                                // trackable acustic contacts
+} // namespace acoustics
+
+// TODO: move to terrain
+#define TERRAIN_NR_LEVELS 10
 #define TERRAIN_RESOLUTION_N 7
 
 #include "random_generator.h"
@@ -86,6 +91,7 @@ class game
         double time;
         double range;
         angle ping_angle;
+
         ping(
             const vector2& p,
             angle d,
@@ -96,7 +102,9 @@ class game
             dir(d), time(t), range(range), ping_angle(ping_angle_)
         {
         }
+
         ~ping() = default;
+
         ping(const xml_elem& parent);
         void save(xml_elem& parent) const;
     };
@@ -109,7 +117,9 @@ class game
         std::string mdlname;      // model file name string
         std::string specfilename; // spec file name (base model name)
         std::string layoutname;   // model skin
+
         unsigned tons;
+
         sink_record(
             date d,
             std::string s,
@@ -122,6 +132,7 @@ class game
             specfilename(std::move(sn)), layoutname(std::move(ln)), tons(t)
         {
         }
+
         sink_record(const xml_elem& parent);
         void save(xml_elem& parent) const;
     };
@@ -130,6 +141,7 @@ class game
     {
         std::string name;
         unsigned flotilla{1};
+
         std::string submarineid;
         unsigned photo{0};
 
@@ -138,6 +150,7 @@ class game
         std::string bloodgroup;
         std::string marine_roll;
         std::string marine_group;
+
         /* 'cause the career list is linear we do not need to store
          * ranks or paygroups. a list of the dates should be enough
          */
@@ -145,6 +158,7 @@ class game
 
         player_info();
         player_info(const xml_elem& parent);
+
         void save(xml_elem& parent) const;
     };
 
@@ -166,12 +180,15 @@ class game
     std::unordered_map<sea_object_id, ship> ships;
     std::unordered_map<sea_object_id, submarine> submarines;
     std::unordered_map<sea_object_id, airplane> airplanes;
+
     std::vector<torpedo> torpedoes;
     std::vector<depth_charge> depth_charges;
     std::vector<gun_shell> gun_shells;
     std::vector<water_splash> water_splashes;
+
     std::unordered_map<sea_object_id, convoy> convoys;
     std::vector<std::unique_ptr<particle>> particles;
+
     sea_object_id next_id;
     sea_object_id generate_id()
     {
@@ -179,6 +196,7 @@ class game
         return next_id;
     }
     // end [SAVE]
+
     run_state my_run_state;
 
     std::vector<std::unique_ptr<event>> events;
@@ -258,6 +276,7 @@ class game
 
     virtual void
     save(const std::string& savefilename, const std::string& description) const;
+
     static std::string
     read_description_of_savegame(const std::string& filename);
 
@@ -268,18 +287,23 @@ class game
     {
         return sunken_ships;
     };
+
     const logbook& get_players_logbook() const { return players_logbook; }
     void add_logbook_entry(const std::string& s);
+
     double get_time() const { return time; };
     date get_date() const { return {unsigned(time)}; };
+
     date get_equipment_date() const { return equipment_date; }
     double get_max_view_distance() const { return max_view_dist; }
+
     /**
         This method is needed to verify for day and night mode for the
         display methods within the user interfaces.
         @return true when day mode, false when night mode
     */
     bool is_day_mode() const;
+
     /**
         This method calculates a depth depending factor. A deep diving
         submarine is harder to detect with ASDIC than a submarine at
@@ -296,9 +320,9 @@ class game
 
     sea_object& get_object(sea_object_id id); // ship,sub,airplane
     ship& get_ship(sea_object_id id);
+
     convoy& get_convoy(sea_object_id id);
-    sea_object_id
-    get_id(const sea_object&) const; // fixme move to editor later!
+    sea_object_id get_id(const sea_object&) const; // fixme move to editor later
 
     // compute visibility data
     // fixme: remove the single functions, they're always called together
@@ -307,23 +331,32 @@ class game
     // if certain objects should not be reported, unmask them with
     // extra-parameter.
     virtual std::vector<const ship*> visible_ships(const sea_object* o) const;
+
     virtual std::vector<const submarine*>
     visible_submarines(const sea_object* o) const;
+
     virtual std::vector<const airplane*>
     visible_airplanes(const sea_object* o) const;
+
     virtual std::vector<const torpedo*>
     visible_torpedoes(const sea_object* o) const;
+
     virtual std::vector<const depth_charge*>
     visible_depth_charges(const sea_object* o) const;
+
     virtual std::vector<const gun_shell*>
     visible_gun_shells(const sea_object* o) const;
+
     virtual std::vector<const water_splash*>
     visible_water_splashes(const sea_object* o) const;
+
     virtual std::vector<const particle*>
     visible_particles(const sea_object* o) const;
+
     // computes visible ships, submarines (surfaced) and airplanes
     virtual std::vector<const sea_object*>
     visible_surface_objects(const sea_object* o) const;
+
     // computes ships, subs (surfaced), airplanes, torpedoes. But not fast
     // moving objects like shells/DCs, because they need to be detected more
     // often, and this function is called once per second normally.
@@ -334,17 +367,22 @@ class game
     // objects... passivly detected objects should store their noise source as
     // position and not their geometric center position!
     virtual std::vector<sonar_contact> sonar_ships(const sea_object* o) const;
+
     virtual std::vector<sonar_contact>
     sonar_submarines(const sea_object* o) const;
+
     virtual std::vector<sonar_contact>
     sonar_sea_objects(const sea_object* o) const;
+
     // fixme: return sonar_contact here (when the noise_pos fix is done...)
     virtual const ship* sonar_acoustical_torpedo_target(const torpedo* o) const;
 
     // std::list<*> radardetected_ships(...);	// later!
     virtual std::vector<const submarine*>
     radar_submarines(const sea_object* o) const;
+
     virtual std::vector<const ship*> radar_ships(const sea_object* o) const;
+
     // virtual std::vector<airplane*> radar_airplanes(const sea_object* o)
     // const;
     virtual std::vector<const sea_object*>
@@ -375,10 +413,13 @@ class game
     std::pair<const sea_object_id, ship>& spawn_ship(ship&& obj);
     std::pair<const sea_object_id, submarine>& spawn_submarine(submarine&& obj);
     std::pair<const sea_object_id, airplane>& spawn_airplane(airplane&& obj);
+
     torpedo& spawn(torpedo&& obj);
     gun_shell& spawn(gun_shell&& obj);
+
     depth_charge& spawn(depth_charge&& obj);
     water_splash& spawn(water_splash&& obj);
+
     void spawn(std::unique_ptr<particle>&& p);
     std::pair<const sea_object_id, convoy>& spawn(convoy&& cv);
 
@@ -406,9 +447,11 @@ class game
 
     sea_object_id
     contact_in_direction(const sea_object* o, const angle& direction) const;
+
     sea_object_id ship_in_direction_from_pos(
         const sea_object* o,
         const angle& direction) const;
+
     sea_object_id sub_in_direction_from_pos(
         const sea_object* o,
         const angle& direction) const;
@@ -427,6 +470,7 @@ class game
         const; // depends on sun/moon
     colorf
     compute_light_color(const vector3& viewpos) const; // depends on sun/moon
+
     vector3 compute_sun_pos(const vector3& viewpos) const;
     vector3 compute_moon_pos(const vector3& viewpos) const;
 
@@ -440,10 +484,13 @@ class game
     {
         events.push_back(std::move(e));
     }
+
     const auto& get_events() const { return events; }
     run_state get_run_state() const { return my_run_state; }
+
     unsigned get_freezetime() const { return freezetime; }
     unsigned get_freezetime_start() const { return freezetime_start; }
+
     unsigned process_freezetime()
     {
         unsigned f = freezetime;

@@ -106,10 +106,13 @@ const double noise::cavitation_noise = 2;
 
 const double noise::frequency_band_lower_limit[NR_OF_FREQUENCY_BANDS] =
     {20, 1000, 3000, 6000};
+
 const double noise::frequency_band_upper_limit[NR_OF_FREQUENCY_BANDS] =
     {1000, 3000, 6000, 7000};
+
 const double noise::background_noise[NR_OF_FREQUENCY_BANDS] = {8, 10, 5, 2};
 const double noise::seastate_factor[NR_OF_FREQUENCY_BANDS]  = {60, 50, 40, 30};
+
 // noise absorption: dB per m, Harpoon3 uses 1/6, 1, 3 for L/M/H for range of
 // 1sm so divide these by 1852 from another source: the formula is (2.1*10^-10 *
 // (T-38)^2 + 1.3*10^-7) * f^2  (dB/m) whereas T is water temperature in

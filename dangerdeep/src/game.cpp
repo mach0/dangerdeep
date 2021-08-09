@@ -58,8 +58,6 @@ using std::vector;
 const unsigned SAVEVERSION = 1;
 const unsigned GAMETYPE    = 0; // fixme, 0-mission , 1-patrol etc.
 
-#define ENEMYCONTACTLOST 50000.0 // meters
-
 const double game::TRAIL_TIME = 1.0;
 
 /***************************************************************************/
@@ -253,11 +251,14 @@ game::game(
 
     lookout_sensor tmpsensor;
     vector<angle> subangles;
+
     for (unsigned i = 0; i < nr_of_players; ++i)
     {
         xml_doc doc(data_file().get_filename(subtype));
         doc.load();
+
         submarine sub(*this, doc.first_child());
+
         sub.set_skin_layout(model::default_layout);
         sub.init_fill_torpedo_tubes(currentdate);
 
@@ -278,6 +279,7 @@ game::game(
                     break;
                 }
             }
+
             if (!angleok)
             {
                 ++angletries;
@@ -291,6 +293,7 @@ game::game(
 
         // now tmpa holds the angle of the sub's position around the convoy.
         double maxt = 0;
+
         for (auto& [id, ship] : ships)
         {
             double maxt1 = 0, maxt2 = get_max_view_distance() / 2,
@@ -319,9 +322,11 @@ game::game(
                              ? 0
                              : -12; // fixme maybe always surfaced, except late in war
         sub.manipulate_position(subpos);
+
         // heading should be facing to the convoy (+-90deg), as it is
         // unrealistic to detect a convoy while moving away from it
         sub.manipulate_heading(angle(rnd() * 180.0 + 90.0) + tmpa);
+
         auto& [id, thesub] = spawn_submarine(std::move(sub));
         if (i == 0)
         {
@@ -338,18 +343,20 @@ game::game(
     freezetime_start = 0;
 }
 
-// --------------------------------------------------------------------------------
-//                        LOAD GAME (SAVEGAME OR MISSION)
-// --------------------------------------------------------------------------------
+//
+// Load game: savegame or mission
+//
 game::game(const string& filename) :
     my_run_state(running), player(nullptr), time(0), last_trail_time(0),
     max_view_dist(0), freezetime(0), freezetime_start(0)
 {
     xml_doc doc(filename);
     doc.load();
+
     // could be savegame or mission, maybe check...
     // has_child("dftd-savegame") or has_child("dftd-mission");
     xml_elem sg = doc.first_child();
+
     // fixme: check for savegames.
     //	unsigned v = sg.attr(version);
     //	if (v != SAVEVERSION)
@@ -357,8 +364,9 @@ game::game(const string& filename) :
 
     // load state first, because time is stored there and we need time/date for
     // checks while loading the rest.
-    xml_elem gst    = sg.child("state");
-    time            = gst.attrf("time");
+    xml_elem gst = sg.child("state");
+    time         = gst.attrf("time");
+
     last_trail_time = gst.attrf("last_trail_time");
     equipment_date.load(gst.child("equipment_date"));
     max_view_dist = gst.attrf("max_view_dist");
@@ -378,6 +386,7 @@ game::game(const string& filename) :
     // create empty objects so references can be filled.
     // there must be ships in a mission...
     xml_elem sh = sg.child("ships");
+
     for (auto elem : sh.iterate("ship"))
     {
         xml_doc spec(data_file().get_filename(elem.attr("type")));
@@ -502,20 +511,22 @@ game::game(const string& filename) :
 
 game::~game() = default;
 
-// --------------------------------------------------------------------------------
-//                        SAVE GAME
-// --------------------------------------------------------------------------------
+//
+// Save game
+//
 
 void game::save(const string& savefilename, const string& description) const
 {
     xml_doc doc(savefilename);
     xml_elem sg = doc.add_child("dftd-savegame");
+
     sg.set_attr(description, "description");
     sg.set_attr(SAVEVERSION, "version");
     sg.set_attr(GAMETYPE, "type");
 
     xml_elem sh = sg.add_child("ships");
     sh.set_attr(unsigned(ships.size()), "nr");
+
     for (auto& [id, ship] : ships)
     {
         xml_elem e = sh.add_child("ship");
@@ -525,6 +536,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem su = sg.add_child("submarines");
     su.set_attr(unsigned(submarines.size()), "nr");
+
     for (auto& [id, submarine] : submarines)
     {
         xml_elem e = su.add_child("submarine");
@@ -534,6 +546,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem ap = sg.add_child("airplanes");
     ap.set_attr(unsigned(airplanes.size()), "nr");
+
     for (auto& [id, airplane] : airplanes)
     {
         xml_elem e = ap.add_child("airplane");
@@ -543,6 +556,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem tp = sg.add_child("torpedoes");
     tp.set_attr(unsigned(torpedoes.size()), "nr");
+
     for (auto& torpedo : torpedoes)
     {
         xml_elem e = tp.add_child("torpedo");
@@ -552,6 +566,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem dc = sg.add_child("depth_charges");
     dc.set_attr(unsigned(depth_charges.size()), "nr");
+
     for (auto& depth_charge : depth_charges)
     {
         xml_elem e = dc.add_child("depth_charge");
@@ -562,6 +577,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem gs = sg.add_child("gun_shells");
     gs.set_attr(unsigned(gun_shells.size()), "nr");
+
     for (auto& gun_shell : gun_shells)
     {
         xml_elem e = gs.add_child("gun_shell");
@@ -572,6 +588,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem cv = sg.add_child("convoys");
     cv.set_attr(unsigned(convoys.size()), "nr");
+
     for (auto& [id, convoy] : convoys)
     {
         xml_elem e = cv.add_child("convoy");
@@ -629,6 +646,7 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem sks = sg.add_child("sunken_ships");
     sks.set_attr(unsigned(sunken_ships.size()), "nr");
+
     for (const auto& sunken_ship : sunken_ships)
     {
         sunken_ship.save(sks);
@@ -638,15 +656,18 @@ void game::save(const string& savefilename, const string& description) const
 
     xml_elem gst = sg.add_child("state");
     gst.set_attr(time, "time");
+
     // save current date as reference for human readers.
     date(unsigned(time)).save(gst);
     gst.set_attr(last_trail_time, "last_trail_time");
+
     xml_elem equ = gst.add_child("equipment_date");
     equipment_date.save(equ);
     gst.set_attr(max_view_dist, "max_view_dist");
 
     xml_elem pgs = sg.add_child("pings");
     pgs.set_attr(unsigned(pings.size()), "nr");
+
     for (const auto& it : pings)
     {
         it.save(pgs);
@@ -668,10 +689,13 @@ string game::read_description_of_savegame(const string& filename)
     xml_doc doc(filename);
     doc.load();
     xml_elem sg = doc.child("dftd-savegame");
-    unsigned v  = sg.attru("version");
+
+    unsigned v = sg.attru("version");
     if (v != SAVEVERSION)
         return "<ERROR> Invalid version";
+
     string d = sg.attr("description");
+
     if (d.length() == 0)
         return "<ERROR> Empty description";
     return d;
@@ -729,12 +753,14 @@ void game::simulate(double delta_t)
     // protect physics simulation from bad values, simulation step must not
     // be less than 20fps.
     const double max_dt_rate = 1.0 / 20.0;
+
     if (delta_t > max_dt_rate)
     {
         // do some intermediate steps. All larger than max_dt_rate, so add a
         // small amount.
         auto steps = unsigned(ceil(delta_t / max_dt_rate + 0.001));
         double ddt = delta_t / steps;
+
         log_debug(
             "Large delta_t (" << delta_t << "), using " << steps
                               << " steps in between.");
@@ -844,13 +870,13 @@ void game::simulate(double delta_t)
     for (auto it = pings.begin(); it != pings.end();)
     {
         auto it2 = it++;
-        if (time - it2->time > PINGREMAINTIME)
+        if (time - it2->time > acoustics::ping_remain_time)
             pings.erase(it2);
     }
 
     if (!is_editor())
     {
-        if (nearest_contact > ENEMYCONTACTLOST)
+        if (nearest_contact > acoustics::enemy_contact_lost)
         {
             log_info("player lost contact to enemy!"); // testing fixme
             my_run_state = contact_lost;
@@ -863,7 +889,7 @@ void game::simulate_objects(
     bool record,
     double& nearest_contact)
 {
-    // ------------------------------ ships ------------------------------
+    // ships
     for (auto& [id, ship] : ships)
     {
         if (&ship != player)
@@ -877,7 +903,7 @@ void game::simulate_objects(
             ship.remember_position(get_time());
     }
 
-    // ------------------------------ submarines ------------------------------
+    // submarines
     for (auto& [id, submarine] : submarines)
     {
         if (&submarine != player)
@@ -891,7 +917,7 @@ void game::simulate_objects(
             submarine.remember_position(get_time());
     }
 
-    // ------------------------------ airplanes ------------------------------
+    // airplanes
     for (auto& [id, airplane] : airplanes)
     {
         if (&airplane != player)
@@ -903,7 +929,7 @@ void game::simulate_objects(
         airplane.simulate(delta_t, *this);
     }
 
-    // ------------------------------ torpedoes ------------------------------
+    // torpedoes
     for (auto& torpedo : torpedoes)
     {
         torpedo.simulate(delta_t, *this);
@@ -911,39 +937,38 @@ void game::simulate_objects(
             torpedo.remember_position(get_time());
     }
 
-    // ------------------------------ depth_charges
-    // ------------------------------
+    // depth_charges
     for (auto& depth_charge : depth_charges)
     {
         depth_charge.simulate(delta_t, *this);
     }
 
-    // ------------------------------ gun_shells ------------------------------
+    // gun_shells
     for (auto& gun_shell : gun_shells)
     {
         gun_shell.simulate(delta_t, *this);
     }
 
-    // ------------------------------ water_splashes
-    // ------------------------------
+    // water_splashes
     for (auto& water_splash : water_splashes)
     {
         water_splash.simulate(delta_t, *this);
     }
 
     // for convoys/particles it doesn't hurt to mix simulate() with compact().
-    // ------------------------------ convoys ------------------------------
+    // convoys
     for (auto& [id, convoy] : convoys)
     {
         convoy.simulate(
             delta_t, *this); // fixme: handle erasing of empty convoys!
     }
 
-    // ------------------------------ particles ------------------------------
+    // particles
     for (unsigned i = 0; i < particles.size(); ++i)
     {
         if (particles[i].get() == nullptr)
             continue;
+
         if (particles[i]->is_dead())
         {
             particles[i] = nullptr;
@@ -966,7 +991,7 @@ void game::add_logbook_entry(const string& s)
         texts::numeric_from_daytime(date(unsigned(get_time()))) + " : " + s);
 }
 
-/******************************************************************************************
+/*
     Visibility computation
     ----------------------
 
@@ -994,7 +1019,7 @@ function, rotated by course, roughly proportional to length and with. So we can
 compute visibiltiy by just multiplying relative coordinates (x, y, 1) with a 3x3
 matrix from left and right and evaluate the result.
 
-******************************************************************************************/
+*/
 
 template<class T>
 inline vector<const T*> visible_obj(
@@ -1004,11 +1029,15 @@ inline vector<const T*> visible_obj(
 {
     vector<const T*> result;
     const sensor* s = o->get_sensor(o->lookout_system);
+
     if (!s)
         return result;
+
     const auto* ls = dynamic_cast<const lookout_sensor*>(s);
+
     if (!ls)
         return result;
+
     result.reserve(v.size());
     for (auto& [id, obj] : v)
     {
@@ -1096,16 +1125,21 @@ vector<const particle*> game::visible_particles(const sea_object* o) const
     // fixme: this is called for every particle. VERY costly!!!
     std::vector<const particle*> result;
     const sensor* s = o->get_sensor(o->lookout_system);
+
     if (!s)
         return result;
+
     const auto* ls = dynamic_cast<const lookout_sensor*>(s);
+
     if (!ls)
         return result;
+
     result.reserve(particles.size());
     for (unsigned i = 0; i < particles.size(); ++i)
     {
         if (particles[i] == nullptr) // obsolete test? should be so...
             THROW(error, "particles[i] is 0!");
+
         if (ls->is_detected(this, o, particles[i].get()))
             result.push_back(particles[i].get());
     }
@@ -1116,9 +1150,12 @@ vector<sonar_contact> game::sonar_ships(const sea_object* o) const
 {
     vector<sonar_contact> result;
     const sensor* s = o->get_sensor(o->passive_sonar_system);
+
     if (!s)
         return result;
+
     const auto* pss = dynamic_cast<const passive_sonar_sensor*>(s);
+
     if (!pss)
         return result;
 
@@ -1126,7 +1163,8 @@ vector<sonar_contact> game::sonar_ships(const sea_object* o) const
 
     // collect the nearest contacts, limited to some value!
     vector<pair<double, const ship*>> contacts(
-        MAX_ACUSTIC_CONTACTS, make_pair(1e30, (ship*) nullptr));
+        acoustics::max_acoustic_contacts, make_pair(1e30, (ship*) nullptr));
+
     for (auto& [id, ship] : ships)
     {
         // do not handle dead/defunct objects
@@ -1139,6 +1177,7 @@ vector<sonar_contact> game::sonar_ships(const sea_object* o) const
 
         double d   = ship.get_pos().xy().square_distance(o->get_pos().xy());
         unsigned i = 0;
+
         for (; i < contacts.size(); ++i)
         {
             if (contacts[i].first > d)
@@ -1171,12 +1210,17 @@ vector<sonar_contact> game::sonar_submarines(const sea_object* o) const
 {
     vector<sonar_contact> result;
     const sensor* s = o->get_sensor(o->passive_sonar_system);
+
     if (!s)
         return result;
+
     const auto* pss = dynamic_cast<const passive_sonar_sensor*>(s);
+
     if (!pss)
         return result;
+
     result.reserve(submarines.size());
+
     for (auto& [id, submarine] : submarines)
     {
         // do not handle dead/defunct objects
@@ -1199,7 +1243,9 @@ vector<sonar_contact> game::sonar_sea_objects(const sea_object* o) const
 {
     vector<sonar_contact> sships      = sonar_ships(o);
     vector<sonar_contact> ssubmarines = sonar_submarines(o);
+
     sships.reserve(sships.size() + ssubmarines.size());
+
     for (const auto& ssubmarine : ssubmarines)
         sships.push_back(ssubmarine);
     return sships;
@@ -1209,12 +1255,17 @@ vector<const submarine*> game::radar_submarines(const sea_object* o) const
 {
     vector<const submarine*> result;
     const sensor* s = o->get_sensor(o->radar_system);
+
     if (!s)
         return result;
+
     const auto* ls = dynamic_cast<const radar_sensor*>(s);
+
     if (!ls)
         return result;
+
     result.reserve(submarines.size());
+
     for (auto& [id, submarine] : submarines)
     {
         if (ls->is_detected(this, o, &submarine))
@@ -1229,10 +1280,14 @@ vector<const ship*> game::radar_ships(const sea_object* o) const
     const sensor* s = o->get_sensor(o->radar_system);
     if (!s)
         return result;
+
     const auto* ls = dynamic_cast<const radar_sensor*>(s);
+
     if (!ls)
         return result;
+
     result.reserve(ships.size());
+
     for (auto& [id, ship] : ships)
     {
         if (ls->is_detected(this, o, &ship))
@@ -1246,9 +1301,11 @@ vector<const sea_object*> game::radar_sea_objects(const sea_object* o) const
     vector<const ship*> rships           = radar_ships(o);
     vector<const submarine*> rsubmarines = radar_submarines(o);
     vector<const sea_object*> result;
+
     result.reserve(rships.size() + rsubmarines.size());
     append_vec(result, rships);
     append_vec(result, rsubmarines);
+
     return result;
 }
 
@@ -1256,6 +1313,7 @@ vector<vector2> game::convoy_positions() const
 {
     vector<vector2> result;
     result.reserve(convoys.size());
+
     for (auto& [id, convoy] : convoys)
     {
         result.push_back(convoy.get_pos());
@@ -1270,6 +1328,7 @@ game::sonar_listen_ships(const ship* listener, angle rel_listening_dir) const
     vector<const ship*> tmpships;
     tmpships.reserve(
         ships.size() + submarines.size() /* + torpedoes.size() */ - 1);
+
     for (auto& [id, ship] : ships)
     {
         if (&ship != listener)
@@ -1277,6 +1336,7 @@ game::sonar_listen_ships(const ship* listener, angle rel_listening_dir) const
             tmpships.push_back(&ship);
         }
     }
+
     for (auto& [id, submarine] : submarines)
     {
         if (dynamic_cast<const ship*>(&submarine) != listener)
@@ -1293,6 +1353,7 @@ game::sonar_listen_ships(const ship* listener, angle rel_listening_dir) const
 
     // fixme: the lower part of this function is sonar dependent and should go
     // to a sonar class...
+    // TODO: add Acoustics class, move constants, sound simulation
 
     // compute noise strengths for all ships for all frequency bands, real
     // strengths, not dB!
@@ -1341,24 +1402,29 @@ game::sonar_listen_ships(const ship* listener, angle rel_listening_dir) const
     // vanish.
 
     // fixme: ghost images appear with higher frequencies!!! seems to be a ghg
-    // "feature"
+    // "feature".
 
     // add noise of vessels
     vector2 lp = listener->get_pos().xy();
+
     for (auto s : tmpships)
     {
         vector2 relpos  = s->get_pos().xy() - lp;
         double distance = relpos.length();
         double speed    = s->get_speed(); // s->get_throttle_speed();
         bool cavit      = s->screw_cavitation();
+
         angle direction_to_noise(relpos);
-        angle rel_dir_to_noise  = direction_to_noise - hdg;
+        angle rel_dir_to_noise = direction_to_noise - hdg;
+
         bool noise_is_starboard = (rel_dir_to_noise.value_pm180() >= 0);
+
         // check if noise is on active side of phones
         if (listen_to_starboard == noise_is_starboard)
         {
             noise nsig = s->get_noise_signature().compute_signal_strength(
                 distance, speed, cavit);
+
             // compute strengths for all bands
             for (unsigned b = 0; b < noise::NR_OF_FREQUENCY_BANDS; ++b)
             {
@@ -1378,6 +1444,7 @@ game::sonar_listen_ships(const ship* listener, angle rel_listening_dir) const
     // signals.
     const double GHG_receiver_sensitivity_dB =
         -3; // weakest signal strength to be detectable
+
     double abs_strength =
         floor(std::max(
             n.compute_total_noise_strength_dB() - GHG_receiver_sensitivity_dB,
@@ -1434,12 +1501,19 @@ gun_shell& game::spawn(gun_shell&& obj)
 {
     // vary the sound effect based on the gun size
     auto calibre = obj.get_caliber();
+
     if (calibre <= 120.0)
+    {
         events.push_back(std::make_unique<event_gunfire_light>(obj.get_pos()));
+    }
     else if (calibre <= 200.0)
+    {
         events.push_back(std::make_unique<event_gunfire_medium>(obj.get_pos()));
+    }
     else
+    {
         events.push_back(std::make_unique<event_gunfire_heavy>(obj.get_pos()));
+    }
     gun_shells.push_back(std::move(obj));
     return gun_shells.back();
 }
@@ -1448,6 +1522,7 @@ depth_charge& game::spawn(depth_charge&& obj)
 {
     events.push_back(
         std::make_unique<event_depth_charge_in_water>(obj.get_pos()));
+
     depth_charges.push_back(std::move(obj));
     return depth_charges.back();
 }
@@ -1566,6 +1641,7 @@ void game::ping_ASDIC(
             // their screws. A submarine can do so when it is submerged
             // and running on electric engines.
             auto* sub = dynamic_cast<submarine*>(d);
+
             if (sub && sub->is_submerged() && sub->is_electric_engine())
                 mode = sensor::rotate;
             ass->auto_move_bearing(mode);
@@ -1578,6 +1654,7 @@ ship* check_units(torpedo* t, std::unordered_map<sea_object_id, C>& units)
 {
     const vector3& t_pos = t->get_pos();
     bv_tree::param p0    = t->compute_bv_tree_params();
+
     for (auto& [id, obj] : units)
     {
         // fixme use bv_trees here with special code for magnetic ignition
@@ -1588,6 +1665,7 @@ ship* check_units(torpedo* t, std::unordered_map<sea_object_id, C>& units)
         bv_tree::param p1          = obj.compute_bv_tree_params();
         p1.transform               = rel_trans * p1.transform;
         vector3f contact_point;
+
         if (bv_tree::closest_collision(p0, p1, contact_point))
             return &obj;
         // old code:
@@ -1899,11 +1977,13 @@ game::visible_surface_objects(const sea_object* o) const
     result.reserve(
         vships.size() + vsubmarines.size() + vairplanes.size() + rships.size()
         + rsubmarines.size());
+
     append_vec(result, vships);
     append_vec(result, vsubmarines);
     append_vec(result, vairplanes);
     append_vec(result, rships);
     append_vec(result, rsubmarines);
+
     return result;
 }
 
@@ -1913,14 +1993,17 @@ vector<const sea_object*> game::visible_sea_objects(const sea_object* o) const
     auto vsubmarines = visible_submarines(o);
     auto vairplanes  = visible_airplanes(o);
     auto vtorpedoes  = visible_torpedoes(o);
+
     vector<const sea_object*> result;
     result.reserve(
         vships.size() + vsubmarines.size() + vairplanes.size()
         + vtorpedoes.size());
+
     append_vec(result, vships);
     append_vec(result, vsubmarines);
     append_vec(result, vairplanes);
     append_vec(result, vtorpedoes);
+
     return result;
 }
 
@@ -2049,19 +2132,23 @@ vector<const ship*> game::get_all_ships() const
     vector<const ship*> allships(
         torpedoes.size() + submarines.size() + ships.size());
     unsigned k = 0;
+
     // fixme awkward, torpedo is no ship!
     for (auto& torpedo : torpedoes)
     {
         allships[k++] = &torpedo;
     }
+
     for (auto& [id, submarine] : submarines)
     {
         allships[k++] = &submarine;
     }
+
     for (auto& [id, ship] : ships)
     {
         allships[k++] = &ship;
     }
+
     return allships;
 }
 
@@ -2077,8 +2164,10 @@ void game::check_collisions()
     for (unsigned i = 0; i < allships.size(); ++i)
     {
         const vector3& actor_pos = allships[i]->get_pos();
+
         // use partner's position relative to actor
         bv_tree::param p0 = allships[i]->compute_bv_tree_params();
+
         for (unsigned j = std::max(i + 1, m); j < allships.size(); ++j)
         {
             const vector3& partner_pos = allships[j]->get_pos();
@@ -2102,6 +2191,7 @@ void game::check_collisions()
 #else
             vector3f contact_point;
             bool intersects = bv_tree::closest_collision(p0, p1, contact_point);
+
             if (intersects)
             {
                 collision_response(
@@ -2144,6 +2234,7 @@ void game::collision_response(
     // compute directions to A, B to compute collision response direction
     const vector3& A = a.get_pos();
     const vector3& B = b.get_pos();
+
     // fixme: relative position is ok, why there arent any visible markers?!
     //	printf("pos %f %f %f   a %f %f %f    b %f %f
     //%f\n",collision_pos.x,collision_pos.y,collision_pos.z,
@@ -2151,6 +2242,7 @@ void game::collision_response(
     vector3 dA = (A - collision_pos).normal();
     vector3 dB = (B - collision_pos).normal();
     vector3 N;
+
     if (dA * dB < 1e-4)
     {
         N = dA;
@@ -2172,19 +2264,26 @@ void game::collision_response(
     // vector cross linear velocity add a function to sea_object to compute
     // linear speed of any relative point.
     // fixme
-    vector3 vA  = a.compute_linear_velocity(collision_pos);
-    vector3 vB  = b.compute_linear_velocity(collision_pos);
+    vector3 vA = a.compute_linear_velocity(collision_pos);
+    vector3 vB = b.compute_linear_velocity(collision_pos);
+
     double vrel = N * (vA - vB);
+
     log_debug("linear velocity A=" << vA << "   B=" << vB << " vrel=" << vrel);
+
     // if the contact points move away each other, do nothing
     if (vrel > 0)
         return;
-    const double epsilon =
+
+    const double eps =
         vrel < -4.0 ? 0.5 : 1.0 + vrel / 8.0; // dampening of response force
-    double j = -(1.0 + epsilon) * vrel
+
+    double j = -(1.0 + eps) * vrel
                / (a.compute_collision_response_value(collision_pos, N)
                   + b.compute_collision_response_value(collision_pos, N));
+
     log_debug("j=" << j << " force=" << (j * N));
+
     a.apply_collision_impulse(collision_pos, j * N);
     b.apply_collision_impulse(collision_pos, -j * N);
 }
@@ -2194,13 +2293,17 @@ game::compute_light_brightness(const vector3& viewpos, vector3& sundir) const
 {
     // fixme: if sun is blocked by clouds, light must be darker...
     sundir = compute_sun_pos(viewpos).normal();
+
     // in reality the brightness is equal to sundir.z, but the sun is so bright
     // that we stretch and clamp this value
     double lightbrightness = sundir.z * 2.0;
+
     if (lightbrightness > 1.0)
         lightbrightness = 1.0;
+
     if (lightbrightness < 0.0)
         lightbrightness = 0.0;
+
     // fixme add moon light at night
     return lightbrightness * 0.8 + 0.2; // some ambient value
 }
@@ -2214,6 +2317,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
     vector3 sundir;
     double lbrit           = compute_light_brightness(viewpos, sundir);
     double color_elevation = sundir.z;
+
     // check for clamping here...
     double lr = lbrit * (1 - pow(cos(color_elevation + .47), 25));
     double lg = lbrit * (1 - pow(cos(color_elevation + .39), 20));
@@ -2223,7 +2327,7 @@ colorf game::compute_light_color(const vector3& viewpos) const
         static_cast<float>(lr), static_cast<float>(lg), static_cast<float>(lb)};
 }
 
-/*	************** sun and moon *********************
+/* Sun and moon
     The model:
     Sun, moon and earth have an local space, moon and earth rotate around their
    y-axis. y-axes are all up, that means earth's y-axis points to the north
@@ -2262,16 +2366,20 @@ vector3 game::compute_sun_pos(const vector3& viewpos) const
 {
     double yearang =
         360.0 * myfrac((time + 10 * 86400) / constant::EARTH_ORBIT_TIME);
+
     double dayang =
         360.0
         * (viewpos.x / constant::EARTH_PERIMETER + myfrac(time / 86400.0));
+
     double longang    = 360.0 * viewpos.y / constant::EARTH_PERIMETER;
+
     matrix4 sun2earth = matrix4::rot_y(-90.0) * matrix4::rot_z(-longang)
                         * matrix4::rot_y(-(yearang + dayang))
                         * matrix4::rot_z(constant::EARTH_ROT_AXIS_ANGLE)
                         * matrix4::rot_y(yearang)
                         * matrix4::trans(-constant::EARTH_SUN_DISTANCE, 0, 0)
                         * matrix4::rot_y(-yearang);
+
     return sun2earth.column3(3);
 }
 
@@ -2279,10 +2387,13 @@ vector3 game::compute_moon_pos(const vector3& viewpos) const
 {
     double yearang =
         360.0 * myfrac((time + 10 * 86400) / constant::EARTH_ORBIT_TIME);
+
     double dayang =
         360.0
         * (viewpos.x / constant::EARTH_PERIMETER + myfrac(time / 86400.0));
+
     double longang  = 360.0 * viewpos.y / constant::EARTH_PERIMETER;
+
     double monthang = 360.0 * myfrac(time / constant::MOON_ORBIT_TIME_SYNODIC)
                       + constant::MOON_POS_ADJUST;
 
@@ -2304,11 +2415,11 @@ double game::compute_water_height(const vector2& pos) const
 
 // function is not used yet.
 // give relative position, length*vis, width*vis and course
-bool is_in_ellipse(const vector2& p, double xl, double yl, angle& head)
+bool is_in_ellipse(const vector2& p, double xl, double yl, const angle& head)
 {
-    vector2 hd = head.direction();
-    double t1  = (p.x * hd.x + p.y * hd.y);
-    double t2  = (p.y * hd.x - p.x * hd.y);
+    const vector2 hd = head.direction();
+    const double t1  = (p.x * hd.x + p.y * hd.y);
+    const double t2  = (p.y * hd.x - p.x * hd.y);
     return ((t1 * t1) / (xl * xl) + (t2 * t2) / (yl * yl)) < 1;
 }
 
@@ -2323,6 +2434,7 @@ void game::freeze_time()
 void game::unfreeze_time()
 {
     unsigned freezetime_end = SYS().millisec();
+
     //	printf("time UNfrozen at: %u (%u)\n", freezetime_end, freezetime_end -
     // freezetime_start);
     freezetime += freezetime_end - freezetime_start;
@@ -2337,6 +2449,7 @@ bool game::is_valid(sea_object_id id) const
     }
     // Only ships or submarines can be targeted (later airplanes)
     auto it = ships.find(id);
+
     if (it == ships.end())
     {
         auto it2 = submarines.find(id);
@@ -2346,5 +2459,6 @@ bool game::is_valid(sea_object_id id) const
         }
         return it2->second.is_reference_ok();
     }
+
     return it->second.is_reference_ok();
 }
