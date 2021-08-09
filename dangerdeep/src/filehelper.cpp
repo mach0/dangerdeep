@@ -155,6 +155,7 @@ bool is_directory(const std::string& filename)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 directory::directory(const std::string& filename) : dir(nullptr)
 {
     if (!is_directory(filename))
@@ -192,6 +193,7 @@ std::string get_current_directory()
     unsigned sz = 256;
     std::vector<char> s(sz);
     char* c = nullptr;
+
     while (c == nullptr)
     {
         c = getcwd(&s[0], sz - 1);
@@ -208,10 +210,13 @@ bool is_directory(const std::string& filename)
 {
     struct stat fileinfo;
     int err = stat(filename.c_str(), &fileinfo);
+
     if (err != 0)
         return false;
+
     if (S_ISDIR(fileinfo.st_mode))
         return true;
+
     return false;
 }
 
@@ -227,6 +232,7 @@ bool is_file(const std::string& filename)
             return false;
         }
     }
+
     // sort out directories
     return !is_directory(filename);
 }
@@ -239,14 +245,18 @@ void directory::walk(
     {
         THROW(error, "can't walk over directory \"\"");
     }
+
     if (!is_directory(path))
     {
         // just call the function for the filename and exit
         func(path);
         return;
     }
+
     std::function<void(const std::string&)> handle_directory;
-    handle_directory = [&](const std::string& current_path) {
+
+    handle_directory = [&](const std::string& current_path)
+    {
         directory d(current_path);
         for (std::string curr_file = d.read(); !curr_file.empty();
              curr_file             = d.read())
@@ -265,6 +275,7 @@ void directory::walk(
             }
         }
     };
+
     handle_directory(
         path.substr(path.length() - 1, 1) == PATHSEPARATOR
             ? path

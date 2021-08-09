@@ -38,8 +38,10 @@ parser::parser(string filename_, char separator_) :
 {
     if (file.fail())
         THROW(file_read_error, filename);
+
     if (!next_line())
         THROW(error, string("Can't read in file ") + filename);
+
     if ((separator <= ' ' && separator != '\t') || separator == '"')
         THROW(error, "invalid separator!");
 }
@@ -52,13 +54,18 @@ bool parser::next_line()
         ++line;
         if (currline.empty())
             continue;
+
         currcol = 0;
+
         // terminate line if it ends with separator
         if (currline[currline.size() - 1] == separator)
             currline += "\"\"";
+
         bool ok = next_column();
+
         if (ok)
             return true;
+
         // else: empty line, try next
     }
     return false;
@@ -68,14 +75,17 @@ bool parser::next_column()
 {
     if (currcol >= currline.size())
         return false;
+
     // try to generate next cell
     cell.clear();
     bool in_string = false;
     int is_string  = 0;
+
     for (; currcol < currline.size(); ++currcol)
     {
         char c  = currline[currcol];
         char c2 = (currcol + 1 < currline.size()) ? currline[currcol + 1] : 0;
+
         if (in_string)
         {
             // just append any character until end of string
@@ -91,6 +101,7 @@ bool parser::next_column()
                 in_string = false;
                 continue;
             }
+
             if (c == '\\')
             {
                 if (c2 == 'n')
@@ -116,8 +127,10 @@ bool parser::next_column()
                 ++currcol;
                 break;
             }
+
             if (c == ' ' || c == '\t')
                 continue;
+
             if (is_string > 0)
             {
                 // encountered any non-separator or non-whitespace,
@@ -125,6 +138,7 @@ bool parser::next_column()
                 report_error("error in read, character between end of string "
                              "and next separator");
             }
+
             if (c == '"')
             {
                 if (is_string < 0)
@@ -134,13 +148,16 @@ bool parser::next_column()
                 is_string = 1;
                 continue;
             }
+
             // else just add character
             is_string = -1;
             cell += c;
         }
     }
+
     if (in_string)
         report_error("unterminated string");
+
     return true;
 }
 

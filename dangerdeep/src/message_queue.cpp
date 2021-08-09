@@ -60,6 +60,7 @@ message_queue::~message_queue()
         ackcondvar.notify_all();
         ackqueueempty = ackqueue.empty();
     }
+
     while (!ackqueueempty)
     {
         // fixme// thread::sleep(10);//fixme use sys! uses SDL_Delay...is there
@@ -75,13 +76,16 @@ bool message_queue::send(message::ptr msg, bool waitforanswer)
     msg->result       = false;
     message* msg_addr = msg.get(); // address only for comparison
     std::unique_lock<std::mutex> oml(mymutex);
+
     bool e = myqueue.empty();
     myqueue.push_back(std::move(msg));
     msginqueue = true;
+
     if (e)
     {
         emptycondvar.notify_all();
     }
+
     if (waitforanswer)
     {
         while (true)
@@ -117,6 +121,7 @@ std::vector<message::ptr> message_queue::receive(bool wait)
 {
     std::vector<message::ptr> result;
     std::unique_lock<std::mutex> oml(mymutex);
+
     if (myqueue.empty())
     {
         if (wait && !abortwait)

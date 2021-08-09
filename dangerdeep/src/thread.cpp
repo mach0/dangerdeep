@@ -110,15 +110,20 @@ void thread::start()
 {
     if (abort_request)
         THROW(error, "thread abort requested, but start() called");
+
     std::unique_lock<std::mutex> ml(state_mutex);
     if (mystate != state::none)
         THROW(error, "thread already started, but start() called again");
+
     thread_id = std::thread(&thread::run, this);
+
     // we could wait with timeout, but how long? init could take any time...
     start_cond.wait(ml);
+
     // now check if thread has started
     if (mystate == state::init_failed)
         THROW(error, ("thread start failed: ") + error_message);
+
     // very rare, but possible
     else if (mystate == state::aborted)
         THROW(error, ("thread run failed: ") + error_message);
@@ -131,6 +136,7 @@ void thread::join()
     auto mystate_copy       = std::move(mystate);
     auto error_message_copy = std::move(error_message);
     delete this;
+
     if (mystate_copy != thread::state::finished)
         THROW(
             error,
@@ -146,9 +152,11 @@ void thread::destruct()
         std::unique_lock<std::mutex> ml(state_mutex);
         ts = mystate;
     }
+
     // request if thread runs, in that case send abort request
     if (ts == state::running)
         request_abort();
+
     // request if thread has ever run, in that case we need to join
     if (mystate != state::none)
         join();
