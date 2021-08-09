@@ -63,6 +63,7 @@ highscorelist::highscorelist(const string& filename)
     ifstream in(filename.c_str(), ios::in | ios::binary);
     unsigned maxentries = read_u8(in);
     entries.resize(maxentries);
+
     for (unsigned i = 0; i < maxentries; ++i)
         entries[i] = entry(in);
 }
@@ -72,6 +73,7 @@ void highscorelist::save(const string& filename) const
     ofstream out(filename.c_str(), ios::out | ios::binary);
     auto n = uint8_t(entries.size());
     write_u8(out, n);
+
     for (unsigned i = 0; i < n; ++i)
         entries[i].save(out);
 }
@@ -79,9 +81,11 @@ void highscorelist::save(const string& filename) const
 unsigned highscorelist::get_listpos_for(unsigned points) const
 {
     unsigned i = 0;
+
     for (; i < entries.size(); ++i)
         if (entries[i].is_worse_than(points))
             break;
+
     return i;
 }
 
@@ -110,19 +114,25 @@ void highscorelist::show(widget* parent) const
     unsigned lh     = fnt->get_height();
     unsigned scw    = fnt->get_size("0000000").x;
     unsigned y      = 2 * lh;
+
     parent->add_child(
         std::make_unique<widget_text>(scw / 2, y, 0, 0, texts::get(202)));
+
     parent->add_child(
         std::make_unique<widget_text>(2 * scw, y, 0, 0, texts::get(203)));
     y += 2 * lh;
+
     for (const auto& elem : entries)
     {
         ostringstream osp;
         osp << elem.points;
+
         parent->add_child(
             std::make_unique<widget_text>(scw / 2, y, 0, 0, osp.str()));
+
         parent->add_child(
             std::make_unique<widget_text>(2 * scw, y, 0, 0, elem.name));
+
         y += lh * 3 / 2;
     }
 }

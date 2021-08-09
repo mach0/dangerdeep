@@ -37,6 +37,7 @@ class highscorelist
     {
         unsigned points{0};
         std::string name;
+
         // missing: maybe start & end date, realism factor, rank/merits,
         // submarine number
         entry() : name("--------") { }
@@ -46,6 +47,7 @@ class highscorelist
         entry(const entry& e) = default;
         entry& operator=(const entry& e) = default;
         void save(std::ostream& out) const;
+
         bool
         is_worse_than(unsigned pts) const; // is entry worse than given value?
     };
@@ -57,13 +59,18 @@ class highscorelist
     highscorelist(unsigned maxentries = 10);
     ~highscorelist() = default;
     highscorelist(const std::string& filename); // read from file
+
     void save(const std::string& filename) const;
+
     unsigned get_listpos_for(unsigned points)
         const; // returns place in list or entries.size() if not in list
+
     bool is_good_enough(
         unsigned points) const; // check if score is good enough for an entry
+
     void record(
         unsigned points,
         const std::string& name); // record entry if it is good enough
+
     void show(class widget* parent) const;
 };

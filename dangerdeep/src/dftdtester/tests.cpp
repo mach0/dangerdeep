@@ -85,6 +85,7 @@ void tests::load_gl_info()
 {
     const char* c_vendor = (const char*) glGetString(GL_VENDOR);
     const char* c_render = (const char*) glGetString(GL_RENDERER);
+
 #if defined(__APPLE__) || defined(__MACOSX__) || defined(MINGW32)
     const char* c_glsl = "Not available";
 #else
