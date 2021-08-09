@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <fstream>
+
 using namespace std;
 
 double rnd()
@@ -32,10 +33,12 @@ int main(int, char**)
 	p.push_back(0.0);	// 2.5s:0
 	bspline bsp(3, p);
 #else
+
     double risetime = 0.08, riseheight = 4.0;
     double falltime = sqrt(riseheight * 2.0 / 9.806);
     double lifetime = risetime + falltime;
     std::vector<double> h, t;
+
     // initially height 0.
     h.push_back(0);
     t.push_back(0);
@@ -43,12 +46,15 @@ int main(int, char**)
     t.push_back(0);
     h.push_back(0);
     t.push_back(0);
+
     // half rise time, half rise height
     h.push_back(riseheight * 0.5);
     t.push_back(risetime * 0.5 / lifetime);
+
     // full rise
     h.push_back(riseheight * 0.5);
     t.push_back(risetime / lifetime);
+
     // compute some points for fall
     for (double tm = risetime; tm <= lifetime - risetime; tm += risetime)
     {
@@ -60,11 +66,12 @@ int main(int, char**)
     t.push_back(1);
     t.push_back(1);
     non_uniform_bspline bsp(3, h, t);
+
 #endif
-    for (double t = 0; t <= 1.0; t += 0.02)
+    for (double i = 0; i <= 1.0; i += 0.02)
     {
-        double v = bsp.value(t);
-        printf("[%f] = %f\n", t, v);
+        double v = bsp.value(i);
+        printf("[%f] = %f\n", i, v);
     }
     return 0;
 }

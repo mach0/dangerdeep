@@ -49,6 +49,7 @@ int mymain(std::vector<string>& args)
         return -1;
 
     cfg& mycfg = cfg::instance();
+
     mycfg.register_option("screen_res_x", 1024);
     mycfg.register_option("screen_res_y", 768);
     mycfg.register_option("fullscreen", true);
@@ -78,24 +79,31 @@ int mymain(std::vector<string>& args)
     mycfg.register_option("terrain_texture_resolution", 0.1f);
 
     system_interface::parameters params;
+
     params.resolution   = {1024, 768};
     params.near_z       = 1.0;
     params.far_z        = 1000.0;
     params.fullscreen   = false;
     params.resolution2d = {1024, 768};
+
     system_interface::create_instance(new class system_interface(params));
 
     std::cout << "Testing intersection of models:\n";
     std::cout << args[0] << "\n";
     std::cout << args[1] << "\n";
+
     std::unique_ptr<model> modelA(new model(args[0]));
     std::unique_ptr<model> modelB(new model(args[1]));
+
     modelA->register_layout(model::default_layout);
     modelB->register_layout(model::default_layout);
+
     modelA->set_layout(model::default_layout);
     modelB->set_layout(model::default_layout);
+
     modelA->get_base_mesh().compute_bv_tree();
     modelB->get_base_mesh().compute_bv_tree();
+
     // modelA->get_base_mesh().bounding_volume_tree->debug_dump();
     // modelB->get_base_mesh().bounding_volume_tree->debug_dump();
 
@@ -119,7 +127,9 @@ int mymain(std::vector<string>& args)
 
     bool doquit = false;
     auto ic     = std::make_shared<input_event_handler_custom>();
-    ic->set_handler([&](const input_event_handler::key_data& k) {
+
+    ic->set_handler([&](const input_event_handler::key_data& k)
+    {
         if (k.down())
         {
             switch (k.keycode)
@@ -175,7 +185,8 @@ int mymain(std::vector<string>& args)
         }
         return false;
     });
-    ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
+    ic->set_handler([&](const input_event_handler::mouse_motion_data& m)
+    {
         if (m.right())
         {
             matrix4f transf;
@@ -203,10 +214,13 @@ int mymain(std::vector<string>& args)
             *curr_transform = transf * *curr_transform;
             matrix4f transA =
                 transformA * modelA->get_base_mesh_transformation();
+
             matrix4f transB =
                 transformB * modelB->get_base_mesh_transformation();
+
             model::mesh& mA = modelA->get_base_mesh();
             model::mesh& mB = modelB->get_base_mesh();
+
             // here we transform in world space
             bv_tree::param p0(mA.get_bv_tree(), mA.vertices, transA);
             bv_tree::param p1(mB.get_bv_tree(), mB.vertices, transB);
@@ -238,7 +252,8 @@ int mymain(std::vector<string>& args)
         }
         return false;
     });
-    ic->set_handler([&](const input_event_handler::mouse_wheel_data& m) {
+    ic->set_handler([&](const input_event_handler::mouse_wheel_data& m)
+    {
         if (m.up())
         {
             pos.z -= 1;
@@ -279,16 +294,20 @@ int mymain(std::vector<string>& args)
             }
         }
         glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
         glLoadIdentity();
+
         glTranslated(-pos.x, -pos.y, -pos.z);
         glRotatef(viewangles.z, 0, 0, 1);
         glRotatef(viewangles.y, 0, 1, 0);
         glRotatef(viewangles.x, 1, 0, 0);
         glMatrixMode(GL_MODELVIEW);
+
         glPushMatrix();
         transformA.multiply_gl();
         modelA->display();
         glPopMatrix();
+
         glPushMatrix();
         transformB.multiply_gl();
         modelB->display();
@@ -299,28 +318,37 @@ int mymain(std::vector<string>& args)
             std::vector<spheref> volumesA, volumesB;
             const bv_tree& b0 = modelA->get_base_mesh().get_bv_tree();
             const bv_tree& b1 = modelA->get_base_mesh().get_bv_tree();
+
             b0.collect_volumes_of_tree_depth(volumesA, splevel);
             b1.collect_volumes_of_tree_depth(volumesB, splevel);
+
             std::unique_ptr<model::material> mat0(new model::material());
             std::unique_ptr<model::material> mat1(new model::material());
+
             mat0->diffuse = color(255, 255, 255, 128);
             mat1->diffuse = color(128, 32, 32, 128);
+
             std::vector<std::unique_ptr<model::mesh>> spheresA, spheresB;
+
             spheresA.resize(volumesA.size());
             spheresB.resize(volumesB.size());
+
             unsigned k = 0;
             for (auto& it : volumesA)
             {
                 spheresA[k] = std::unique_ptr<model::mesh>(
                     make_mesh::sphere(it.radius, 2 * it.radius));
+
                 spheresA[k]->transform(matrix4f::trans(it.center));
                 spheresA[k]->compile();
+
                 glPushMatrix();
                 (transformA * modelA->get_base_mesh_transformation())
                     .multiply_gl();
                 spheresA[k]->mymaterial = mat0.get();
                 spheresA[k]->display();
                 glPopMatrix();
+
                 ++k;
             }
             k = 0;
@@ -328,14 +356,17 @@ int mymain(std::vector<string>& args)
             {
                 spheresB[k] = std::unique_ptr<model::mesh>(
                     make_mesh::sphere(it.radius, 2 * it.radius));
+
                 spheresB[k]->transform(matrix4f::trans(it.center));
                 spheresB[k]->compile();
+
                 glPushMatrix();
                 (transformB * modelB->get_base_mesh_transformation())
                     .multiply_gl();
                 spheresB[k]->mymaterial = mat1.get();
                 spheresB[k]->display();
                 glPopMatrix();
+
                 ++k;
             }
         }
