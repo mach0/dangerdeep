@@ -189,7 +189,7 @@ class heightmap
     /// get height with coordinate clamping and bilinear height interpolation
     float compute_height(const vector2f& coord) const;
 
-    const std::vector<float>& heights() { return data; }
+    const std::vector<float>& heights() const { return data; }
     unsigned get_xres() const { return xres; }
     unsigned get_yres() const { return yres; }
 };
@@ -214,10 +214,10 @@ float heightmap::compute_height(const vector2f& coord) const
     if (y2 + 1 >= yres)
         y2 = yres - 1;
 
-    return (data[y * xres + x] * (1.0f - c.x) + data[y * xres + x2] * c.x)
-               * (1.0f - c.y)
-           + (data[y2 * xres + x] * (1.0f - c.x) + data[y2 * xres + x2] * c.x)
-                 * c.y;
+    return (data[y * xres + x] * (1.0f - c.x) +
+            data[y * xres + x2] * c.x) * (1.0f - c.y) + (
+            data[y2 * xres + x] * (1.0f - c.x) +
+            data[y2 * xres + x2] * c.x) * c.y;
 }
 
 class camera
@@ -262,22 +262,11 @@ matrix4 camera::get_transformation() const
     vector3 p(xdir * position, ydir * position, zdir * position);
 
     return matrix4(
-        xdir.x,
-        xdir.y,
-        xdir.z,
-        -p.x,
-        ydir.x,
-        ydir.y,
-        ydir.z,
-        -p.y,
-        zdir.x,
-        zdir.y,
-        zdir.z,
-        -p.z,
-        0,
-        0,
-        0,
-        1);
+        xdir.x, xdir.y, xdir.z, -p.x,
+        ydir.x, ydir.y, ydir.z, -p.y,
+        zdir.x, zdir.y, zdir.z, -p.z,
+        0, 0, 0, 1
+                );
 }
 
 void camera::set_gl_trans() const
@@ -302,7 +291,7 @@ class canyon
     struct canyon_material : public model::material
     {
         canyon& cyn;
-        canyon_material(canyon& c) : cyn(c) { }
+        explicit canyon_material(canyon& c) : cyn(c) { }
         void set_gl_values(const texture* /* unused */) const override;
     };
 
@@ -489,8 +478,8 @@ class plant_set
     mutable std::vector<plant_alpha_sortidx> sortindices;
 
   public:
-    plant_set(
-        vector<float>& heightdata,
+    explicit plant_set(
+        const vector<float>& heightdata,
         unsigned nr          = 40000,
         unsigned w           = 256,
         unsigned h           = 256,
@@ -500,7 +489,7 @@ class plant_set
 };
 
 plant_set::plant_set(
-    vector<float>& heightdata,
+    const vector<float>& heightdata,
     unsigned nr,
     unsigned w,
     unsigned h,
@@ -547,10 +536,10 @@ plant_set::plant_set(
         }
         float th = treeheight * rnd() * 0.25;
         float tw = treewidth * rnd() * 0.25;
-        float h  = heightdata[idxy * w + idxx] * 0.5;
+        float hd  = heightdata[idxy * w + idxx] * 0.5;
 
         plants.emplace_back(
-            vector3f(x, y, h),
+            vector3f(x, y, hd),
             vector2f(treewidth + tw, treeheight + th),
             rnd(plant::nr_plant_types));
     }
@@ -744,9 +733,10 @@ void add_tree(
     for (unsigned i = 0; i <= 8; ++i)
     {
         angle a(ang - i * 360 / 8);
-        vector3f pos2 = pos
-                        + (a.direction() * (treewidth + tw) * 0.5)
-                              .xyz((postop.z - pos.z) * 0.25);
+        vector3f pos2 = pos +
+                (a.direction() * (treewidth + tw) * 0.5).xyz(
+                    (postop.z - pos.z) * 0.25);
+
         vertices.push_back(pos2);
         normals.emplace_back(a.direction().xyz(2.0f).normal());
         texcoords.emplace_back(float(i) / 8, 0.75);
@@ -770,8 +760,10 @@ void add_tree(
         vertices.push_back(pos2);
         pos2.z = pos.z;
         vertices.push_back(pos2);
+
         normals.emplace_back(a.direction().xyz(2.0f).normal());
         normals.emplace_back(a.direction().xyz(2.0f).normal());
+
         texcoords.emplace_back(float(i) / 3, 0.75);
         texcoords.emplace_back(float(i) / 3, 1.0);
     }
@@ -825,7 +817,7 @@ void add_tree(
 }
 
 unique_ptr<model::mesh> generate_trees(
-    vector<float>& heightdata,
+    const vector<float>& heightdata,
     unsigned nr          = 20000,
     unsigned w           = 256,
     unsigned h           = 256,
@@ -863,9 +855,9 @@ unique_ptr<model::mesh> generate_trees(
         {
             ++t;
         }
-        float h = heightdata[idxy * w + idxx] * 0.5;
+        float hd = heightdata[idxy * w + idxx] * 0.5;
         add_tree(
-            vector3f(x, y, h),
+            vector3f(x, y, hd),
             rnd() * 90,
             m->vertices,
             m->texcoords,
