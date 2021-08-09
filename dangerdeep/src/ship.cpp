@@ -184,6 +184,7 @@ ship::ship(game& gm_, const xml_elem& parent) :
 {
     xml_elem eclassification = parent.child("classification");
     string typestr           = eclassification.attr("type");
+
     if (typestr == "warship")
         myclass = WARSHIP;
     else if (typestr == "escort")
@@ -217,6 +218,7 @@ ship::ship(game& gm_, const xml_elem& parent) :
         }
     }
     xml_elem emotion = parent.child("motion");
+
     if (myclass == TORPEDO)
     {
         // fixme: not stored yet, but it should be...
@@ -228,6 +230,7 @@ ship::ship(game& gm_, const xml_elem& parent) :
         max_speed_forward = kts2ms(emotion.attrf("maxspeed"));
         max_speed_reverse = kts2ms(emotion.attrf("maxrevspeed"));
     }
+
     max_accel_forward = emotion.attrf("acceleration");
     turn_rate         = emotion.attrf("turnrate");
 
@@ -249,6 +252,7 @@ ship::ship(game& gm_, const xml_elem& parent) :
         else
             THROW(error, string("illegal AI type in ") + specfilename);
     }
+
     if (parent.has_child("fuel"))
     {
         xml_elem efuel = parent.child("fuel");
@@ -264,16 +268,20 @@ ship::ship(game& gm_, const xml_elem& parent) :
         {
             unsigned num_barrels = eturret.attru("barrels");
             gun_turret new_turret;
+
             new_turret.shell_capacity       = eturret.attru("shell_capacity");
             new_turret.num_shells_remaining = new_turret.shell_capacity;
+
             new_turret.initial_velocity     = eturret.attrf("initial_velocity");
             new_turret.max_declination      = eturret.attri("max_declination");
             new_turret.max_inclination      = eturret.attri("max_inclination");
             new_turret.time_to_man          = eturret.attrf("time_to_man");
             new_turret.time_to_unman        = eturret.attrf("time_to_unman");
             new_turret.shell_damage         = eturret.attrf("shell_damage");
+
             new_turret.start_of_exclusion_radius =
                 eturret.attri("exclusion_radius_start");
+
             new_turret.end_of_exclusion_radius =
                 eturret.attri("exclusion_radius_end");
             new_turret.calibre = eturret.attrf("calibre");
@@ -288,10 +296,12 @@ ship::ship(game& gm_, const xml_elem& parent) :
     }
 
     // set some sensible values for sonar noise (testing)
+    // TODO: move this to acoustics class
     for (unsigned i = 0; i < noise::NR_OF_FREQUENCY_BANDS; ++i)
     {
         noise_sign.band_data[i].basic_noise_level =
             noise_signature::typical_noise_signature[unsigned(myclass)][i];
+
         // 1 dB per m/s, maybe non-linear (higher speed = more high
         // frequencies?)
         noise_sign.band_data[i].speed_factor = 1.0;
@@ -421,6 +431,7 @@ double ship::get_throttle_accel() const
     // maximum acceleration until we get close to this speed... but we don't set
     // speed here but engine throttle...
     double speed_fac = get_throttle_speed() / max_speed_forward;
+
     // fixme: reverse throttle doesn't work. obvious why... hack below is nasty
     int signal = speed_fac > 0 ? 1 : -1;
     return max_accel_forward * (speed_fac * speed_fac) * signal;
@@ -461,6 +472,7 @@ void ship::load(const xml_elem& parent)
     xml_elem esink = parent.child("sinking");
     flooding_speed = esink.attrf("flooding_speed");
     istringstream fiss(esink.child_text());
+
     for (float& flooded_mas : flooded_mass)
         fiss >> flooded_mas;
 

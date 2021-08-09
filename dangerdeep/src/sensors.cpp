@@ -396,13 +396,16 @@ bool active_sonar_sensor::is_detected(
             if (is_within_detection_cone(r, d->get_heading()))
             {
                 double dist_factor = get_distance_factor(r.length());
+
                 // The throttle speed is the real noise of the ship.
                 // A ship on flank speed is really deaf.
                 double dnoisefac = d->get_noise_factor();
+
                 // The noise modificator for the detecting unit must be
                 // subtracted from 1.
                 dnoisefac        = 1.0f - dnoisefac;
                 double sonar_vis = tsub->sonar_visibility(d->get_pos().xy());
+
                 // The deeper the submarine dives as harder it is detectable.
                 double depth_factor = gm->get_depth_factor(t->get_pos());
                 double prod =

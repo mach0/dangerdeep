@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ///\todo finish a working implementation
 ///\todo add airplanes to the simulation
 ///\todo add steering AI and control AI for airplanes.
+///
 class airplane : public sea_object
 {
   protected:

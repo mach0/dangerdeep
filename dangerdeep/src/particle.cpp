@@ -30,6 +30,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 
 #include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <utility>
 
 #ifdef WIN32
 
@@ -50,10 +53,12 @@ using std::vector;
 unsigned particle::init_count = 0;
 vector<texture*> particle::tex_smoke;
 texture* particle::tex_spray = nullptr;
+
 vector<texture*> particle::tex_fire;
 vector<texture*> particle::explosionbig;
 vector<texture*> particle::explosionsml;
 vector<texture*> particle::watersplashes;
+
 texture* particle::tex_fireworks       = nullptr;
 texture* particle::tex_fireworks_flare = nullptr;
 texture* particle::tex_marker          = nullptr;
@@ -68,31 +73,40 @@ vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
     vector<uint8_t> tmp(wh * wh);
     for (unsigned i = 0; i < wh * wh; ++i)
         tmp[i] = (uint8_t)(rand() % 256);
+
     for (unsigned i = 0; i < wh; ++i)
     {
         tmp[i] = 0;
         if (rand() % 2 == 0)
             tmp[wh + i] = 0;
+
         tmp[wh * i] = 0;
         if (rand() % 2 == 0)
             tmp[wh * i + 1] = 0;
+
         tmp[wh * i + wh - 1] = 0;
+
         if (rand() % 2 == 0)
             tmp[wh * i + wh - 2] = 0;
+
         tmp[(wh - 1) * wh + i] = 0;
+
         if (rand() % 2 == 0)
             tmp[(wh - 2) * wh + i] = 0;
     }
     vector<uint8_t> tmp2(wh * wh);
     unsigned rmin = 255, rmax = 0;
+
     for (unsigned y = 0; y < wh; ++y)
     {
         unsigned y1 = (y + wh - 1) & (wh - 1);
         unsigned y2 = (y + 1) & (wh - 1);
+
         for (unsigned x = 0; x < wh; ++x)
         {
             unsigned x1 = (x + wh - 1) & (wh - 1);
             unsigned x2 = (x + 1) & (wh - 1);
+
             unsigned r =
                 (unsigned(tmp[y1 * wh + x1]) + unsigned(tmp[y1 * wh + x2])
                  + unsigned(tmp[y2 * wh + x1]) + unsigned(tmp[y2 * wh + x2]))
@@ -101,10 +115,14 @@ vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
                    + unsigned(tmp[y1 * wh + x]) + unsigned(tmp[y2 * wh + x]))
                       / 8
                 + unsigned(tmp[y * wh + x]) / 4;
-            auto r2          = (uint8_t)(r);
+
+            auto r2 = (uint8_t)(r);
+
             tmp2[y * wh + x] = r2;
+
             if (r2 > rmax)
                 rmax = r2;
+
             if (r2 < rmin)
                 rmin = r2;
         }
@@ -154,10 +172,12 @@ particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
     unsigned whlevel = 0;
     while (wh > unsigned(1 << whlevel))
         ++whlevel;
+
     // prepare lookup maps
     unsigned levels = whlevel - highestlevel + 1;
     vector<vector<uint8_t>> lookup_maps;
     lookup_maps.reserve(levels);
+
     for (unsigned i = 0; i < levels; ++i)
     {
         unsigned res = 1 << (highestlevel + i);
@@ -228,10 +248,6 @@ particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
     return result;
 }
 
-#include <fstream>
-#include <sstream>
-#include <utility>
-
 void particle::init()
 {
     if (++init_count != 1)
@@ -246,6 +262,7 @@ void particle::init()
     // resolution 64x64, outline 8x8 scaled, smoke structure 8x8 or 16x16
     tex_smoke.resize(NR_OF_SMOKE_TEXTURES);
     vector<uint8_t> smoketmp(64 * 64 * 2);
+
     for (unsigned i = 0; i < NR_OF_SMOKE_TEXTURES; ++i)
     {
         vector<uint8_t> noise = make_2d_perlin_noise(64, 2);
@@ -267,6 +284,7 @@ void particle::init()
                 smoketmp[2 * (y * 64 + x) + 1] = (r < 64) ? 0 : r - 64;
             }
         }
+
         tex_smoke[i] = new texture(
             smoketmp,
             64,
@@ -284,6 +302,7 @@ void particle::init()
             smoketmp[(y * 64 + x) * 2] = 255;
         }
     }
+
     tex_spray = new texture(
         smoketmp,
         64,
@@ -294,8 +313,10 @@ void particle::init()
 
     // compute random fire textures here.
     tex_fire.resize(NR_OF_FIRE_TEXTURES);
+
 #define FIRE_RES 64
     vector<color> firepal(256);
+
     color firepal_p[9] = {
         color(0, 0, 0, 0),
         color(255, 128, 32, 16),
@@ -306,13 +327,16 @@ void particle::init()
         color(255, 255, 0, 192),
         color(255, 255, 64, 192),
         color(255, 255, 255, 255)};
+
     for (unsigned i = 1; i < 256; ++i)
     {
         unsigned j = i / 32;
         firepal[i] = color(firepal_p[j], firepal_p[j + 1], float(i % 32) / 32);
     }
+
     firepal[0] = firepal_p[0];
     vector<uint8_t> firetmp(FIRE_RES * FIRE_RES);
+
     for (unsigned i = 0; i < NR_OF_FIRE_TEXTURES * 2; ++i)
     {
         firetmp = compute_fire_frame(FIRE_RES, firetmp);
@@ -328,6 +352,7 @@ void particle::init()
                 osg.write((const char*)(&tmp2[0]), FIRE_RES*FIRE_RES*3);
         */
     }
+
     for (unsigned i = 0; i < NR_OF_FIRE_TEXTURES; ++i)
     {
         vector<uint8_t> tmp(firetmp.size() * 4);
@@ -365,7 +390,9 @@ void particle::init()
             texture::LINEAR,
             texture::CLAMP);
     }
+
     explosionsml.resize(EXPL_FRAMES);
+
     for (unsigned i = 0; i < EXPL_FRAMES; ++i)
     {
         char tmp[20];
@@ -381,17 +408,21 @@ void particle::init()
     watersplashes.resize(3);
     watersplashes[0] =
         new texture(get_texture_dir() + "splash.png", texture::LINEAR);
+
     watersplashes[1] =
         new texture(get_texture_dir() + "splash.png", texture::LINEAR);
+
     watersplashes[2] =
         new texture(get_texture_dir() + "splash.png", texture::LINEAR);
 
     tex_fireworks = new texture(
         get_texture_dir() + "fireworks.png", texture::LINEAR, texture::CLAMP);
+
     tex_fireworks_flare = new texture(
         get_texture_dir() + "fireworks_flare.png",
         texture::LINEAR,
         texture::CLAMP);
+
     tex_marker = new texture(
         get_texture_dir() + "marker.png", texture::LINEAR, texture::CLAMP);
 }
@@ -400,17 +431,24 @@ void particle::deinit()
 {
     if (--init_count != 0)
         return;
+
     for (auto& i : tex_smoke)
         delete i;
+
     delete tex_spray;
+
     for (auto& i : tex_fire)
         delete i;
+
     for (auto& i : explosionbig)
         delete i;
+
     for (auto& i : explosionsml)
         delete i;
+
     for (auto& watersplashe : watersplashes)
         delete watersplashe;
+
     delete tex_fireworks;
     delete tex_fireworks_flare;
     delete tex_marker;
@@ -422,6 +460,7 @@ void particle::simulate(game& gm, double delta_t)
     position += velocity * delta_t + acc * (delta_t * delta_t * 0.5);
     velocity += acc * delta_t;
     life -= delta_t / get_life_time();
+
     if (life < 0.0)
         life = 0.0;
 }
@@ -438,6 +477,7 @@ void particle::display_all(
 
     vector<particle_dist> pds;
     pds.reserve(pts.size());
+
     // Note! we need to compute pp to sort the particles, so this can't go to
     // vertex shaders. but this computation is not costly.
     for (auto pt : pts)
@@ -445,6 +485,7 @@ void particle::display_all(
         vector3 pp = (mvtrans + pt->get_pos() - viewpos);
         pds.emplace_back(pt, pp.square_length(), pp);
     }
+
     // this could be a huge performance killer.... fixme
     // how to solve this problem: particles are rendered in groups most of the
     // time, e.g. smoke in streams. Sort only this groups, then sort inside the
@@ -470,21 +511,26 @@ void particle::display_all(
     {
         const particle& part = *(pd.pt);
         const vector3& z     = -pd.projpos;
+
         // fixme: these computations should be deferred to the vertex shaders.
         vector3 y = vector3(0, 0, 1);
         vector3 x = y.cross(z).normal();
+
         // check if we have true billboarding vs. z-aligned billboarding.
         if (!part.is_z_up()) // fixme
             y = z.cross(x).normal();
+
         // some particle types are complex systems.
         if (part.has_custom_rendering())
         {
             part.custom_display(viewpos, x, y);
             continue;
         }
+
         double w2 = part.get_width() / 2;
         double h  = part.get_height();
         double hb, ht;
+
         if (part.tex_centered())
         {
             // always true except for splashes, which are obsolete.
@@ -496,14 +542,17 @@ void particle::display_all(
             ht = h;
             hb = 0;
         }
+
         vector3 pp = part.get_pos() - viewpos;
         vector3 coord;
+
         // fixme: grouping particles would be better to avoid unnecessary
         // set_texture and "primitives" calls.
         // writing coordinates to VBOs could also be faster, but only
         // if we have large batches of particles with same texture.
         colorf col;
         const texture& tex = part.get_tex_and_col(gm, light_color, col);
+
         primitives::textured_quad(
             vector3f(pp - x * w2 + y * ht),
             vector3f(pp + x * w2 + y * ht),
@@ -610,8 +659,10 @@ const texture& explosion_particle::get_tex_and_col(
 {
     col    = colorf(1, 1, 1, 1);
     auto f = unsigned(EXPL_FRAMES * (1.0 - life));
+
     if (f < 0 || f >= EXPL_FRAMES)
         f = EXPL_FRAMES - 1;
+
     // switch on type, fixme
     return *explosionbig[f];
 }
@@ -629,6 +680,7 @@ void fire_particle::simulate(game& gm, double delta_t)
 {
     float lf = get_life_time();
     float l  = myfrac(life * lf);
+
     if (l - lf * delta_t <= 0)
     {
         gm.spawn(std::make_unique<smoke_particle>(position));
@@ -745,8 +797,10 @@ void fireworks_particle::custom_display(
         primitive_tex<2> lines(GL_LINES, colorf(1, 1, 1, 1), *tex_fireworks);
         lines.texcoords[0] = vector2f(1.0, 0.75f);
         vector3 p          = position - viewpos;
+
         lines.vertices[0].assign(p);
         double lifefac     = 1.0 - (1.0 - life) * 0.5;
+
         p.z                = get_z(lifefac) - viewpos.z;
         lines.texcoords[1] = vector2f(0.0, 0.75f);
         lines.vertices[1].assign(p);
@@ -756,47 +810,63 @@ void fireworks_particle::custom_display(
     {
         // explosion/decay
         double decayfac = (life > 1.0 / 3) ? 1.0 : life * 3.0;
+
         // fixme: fire from raise does not vanish... but doesnt hurt
         double lifefac2 = life * 3.0 - 1.0;
         lifefac2        = 1.0 - lifefac2 * lifefac2;
+
         if (life <= 1.0 / 3)
             lifefac2 = 1.0;
+
         double lifefac = 1.0 - (life * 3.0 - 1.0);
+
         // draw glowing lines from center to flares
         const unsigned fls = 8;
+
         primitives flarelines(
             GL_LINES,
             2 * flares.size() * fls,
             colorf(1, 1, 1, decayfac),
             *tex_fireworks);
+
         double t0 = 2.0 / 3 - (2.0 / 3 - life) / 2.0;
         for (unsigned i = 0; i < flares.size(); ++i)
         {
             const flare& f = flares[i];
+
             for (unsigned k = 0; k < fls; ++k)
             {
                 flarelines.texcoords[2 * (i * fls + k)] =
                     vector2f(1.5 * k / fls - lifefac, 0.25f);
+
                 flarelines.texcoords[2 * (i * fls + k) + 1] =
                     vector2f(1.5 * (k + 1) / fls - lifefac, 0.25f);
+
                 double lifefac3 = lifefac2 * k / fls;
                 vector3 p       = position - viewpos
                             + dx * (f.velocity.x * lifefac3 * 2.0)
                             + dy * (f.velocity.y * lifefac3 * 2.0);
+
                 float kk = float(k) / fls;
+
                 double t = t0 * (1.0 - kk) + life * kk;
+
                 p.z += get_z(t) - position.z;
                 flarelines.vertices[2 * (i * fls + k)].assign(p);
                 lifefac3 += lifefac2 / fls;
+
                 p = position - viewpos + dx * (f.velocity.x * lifefac3 * 2.0)
                     + dy * (f.velocity.y * lifefac3 * 2.0);
+
                 kk += 1.f / fls;
                 t = t0 * (1.0 - kk) + life * kk;
                 p.z += get_z(t) - position.z;
+
                 flarelines.vertices[2 * (i * fls + k) + 1].assign(p);
             }
         }
         flarelines.render();
+
         // draw flares
         glEnable(GL_POINT_SPRITE); // fixme: move to display_all
         glPointSize(4);
@@ -805,11 +875,13 @@ void fireworks_particle::custom_display(
             GL_COORD_REPLACE,
             GL_TRUE); // could be done once...
         // texcoords are not needed for points, so this is a bit waste...
+
         primitives pts(
             GL_POINTS,
             flares.size(),
             colorf(1, 1, 1, decayfac),
             *tex_fireworks_flare);
+
         for (unsigned i = 0; i < flares.size(); ++i)
         {
             const flare& f = flares[i];
@@ -818,6 +890,7 @@ void fireworks_particle::custom_display(
                         + dy * (f.velocity.y * lifefac2 * 2.0);
             pts.vertices[i].assign(p);
         }
+
         pts.render();
         glPointSize(1);
         glDisable(GL_POINT_SPRITE);

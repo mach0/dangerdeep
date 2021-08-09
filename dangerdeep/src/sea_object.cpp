@@ -113,11 +113,13 @@ void sea_object::compute_helper_values()
     // orientation.rotate(w)
     vector3 w =
         inertia_tensor_inv * orientation.conj().rotate(angular_momentum);
+
     // turn velocity around z-axis is projection of w to z-axis, that is
     // simply w.z. Transform to angles per second. same for x/y.
     turn_velocity  = w.z * (180.0 / M_PI); // could also be named yaw_velocity.
     pitch_velocity = w.x * (180.0 / M_PI);
     roll_velocity  = w.y * (180.0 / M_PI);
+
     // std::cout << "velocities(deg) turn=" << turn_velocity << " pitch=" <<
     // pitch_velocity << " roll=" << roll_velocity << "\n";
 }
@@ -253,6 +255,7 @@ void sea_object::set_random_skin_name(const date& d)
         if (d >= it->from && d <= it->until)
             ++nr_possible;
     }
+
     if (nr_possible == 0)
     {
         log_debug("Could not chose valid skin, using anyone");
@@ -263,6 +266,7 @@ void sea_object::set_random_skin_name(const date& d)
             return; // can't set anything, shouldn't happen
         }
     }
+
     unsigned chosen = rnd(nr_possible);
     for (list<skin_variant>::const_iterator it = skin_variants.begin();
          it != skin_variants.end();
@@ -312,14 +316,17 @@ sea_object::sea_object(game& gm_, string modelname_) :
     // empty string!
     mymodel = object_handle(
         modelcache(), /*data_file().get_rel_path(specfilename) + */ modelname);
+
     if (!mymodel->get_base_mesh().has_bv_tree())
     {
         mymodel->get_base_mesh().compute_bv_tree();
     }
+
     // this constructor is used only for simple models that have no skin
     // support, so register default layout.
     skin_name = model::default_layout;
     mymodel->register_layout(skin_name);
+
     //  	cout << "base c'tor: registered layout " << skin_name << "\n";
     size3d = vector3f(
         mymodel->get_width(), mymodel->get_length(), mymodel->get_height());
@@ -334,7 +341,7 @@ sea_object::sea_object(game& gm_, string modelname_) :
     inertia_tensor_inv = inertia_tensor.inverse();
 }
 
-sea_object::sea_object(game& gm_, const xml_elem& parent) :
+sea_object::sea_object(const game& gm_, const xml_elem& parent) :
     skin_country(UNKNOWNCOUNTRY), mass(1.0), // fixme
     mass_inv(1.0 / mass), turn_velocity(0), pitch_velocity(0), roll_velocity(0),
     alive_stat(alive), sensors(last_sensor_system), invulnerable(false),
@@ -349,16 +356,19 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
     {
         skin_variant sv;
         sv.name = elem.attr("name");
+
         if (elem.has_attr("regions"))
         {
             // empty list means all/any...
             sv.regions = string_split(elem.attr("regions"));
         }
+
         if (elem.has_attr("countries"))
         {
             // empty list means all/any...
             sv.countries = string_split(elem.attr("countries"));
         }
+
         if (elem.has_attr("from"))
         {
             sv.from = date(elem.attr("from"));
@@ -367,6 +377,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
         {
             sv.from = date(1939, 1, 1);
         }
+
         if (elem.has_attr("until"))
         {
             sv.until = date(elem.attr("until"));
@@ -390,6 +401,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
     {
         mymodel->get_base_mesh().compute_bv_tree();
     }
+
     size3d = vector3f(
         mymodel->get_width(), mymodel->get_length(), mymodel->get_height());
 
@@ -404,6 +416,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
         mass = mymodel->get_base_mesh().volume
                * 500; // assume 0,5tons per cubic meter as crude guess.
     }
+
     mass_inv           = 1.0 / mass;
     inertia_tensor     = mymodel->get_base_mesh().inertia_tensor * mass;
     inertia_tensor_inv = inertia_tensor.inverse();
@@ -411,6 +424,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
     string countrystr = cl.attr("country");
     country           = UNKNOWNCOUNTRY;
     party             = UNKNOWNPARTY;
+
     for (unsigned i = 0; i < NR_OF_COUNTRIES; ++i)
     {
         if (countrystr == countrycodes[i])
@@ -422,6 +436,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
                                    // rather give date on construction!
         }
     }
+
     xml_elem ds = parent.child("description");
     for (auto elem : ds.iterate("far"))
     {
@@ -430,6 +445,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
             descr_far = elem.child_text();
         }
     }
+
     for (auto elem : ds.iterate("medium"))
     {
         if (elem.attr("lang") == texts::get_language_code())
@@ -437,6 +453,7 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
             descr_medium = elem.child_text();
         }
     }
+
     for (auto elem : ds.iterate("near"))
     {
         if (elem.attr("lang") == texts::get_language_code())
@@ -444,38 +461,52 @@ sea_object::sea_object(game& gm_, const xml_elem& parent) :
             descr_near = elem.child_text();
         }
     }
+
     xml_elem sn = parent.child("sensors");
+
     for (auto elem : sn.iterate("sensor"))
     {
         string typestr = elem.attr("type");
         if (typestr == "lookout")
             set_sensor(lookout_system, std::make_unique<lookout_sensor>());
+
         else if (typestr == "passivesonar")
             set_sensor(
                 passive_sonar_system, std::make_unique<passive_sonar_sensor>());
+
         else if (typestr == "activesonar")
             set_sensor(
                 active_sonar_system, std::make_unique<active_sonar_sensor>());
+
         else if (typestr == "radar")
         {
             radar_sensor::radar_type type = radar_sensor::radar_type_default;
             string radar_model            = elem.attr("model");
+
             if ("British Type 271" == radar_model)
                 type = radar_sensor::radar_british_type_271;
+
             else if ("British Type 272" == radar_model)
                 type = radar_sensor::radar_british_type_272;
+
             else if ("British Type 273" == radar_model)
                 type = radar_sensor::radar_british_type_273;
+
             else if ("British Type 277" == radar_model)
                 type = radar_sensor::radar_british_type_277;
+
             else if ("German FuMO 29" == radar_model)
                 type = radar_sensor::radar_german_fumo_29;
+
             else if ("German FuMO 30" == radar_model)
                 type = radar_sensor::radar_german_fumo_30;
+
             else if ("German FuMO 61" == radar_model)
                 type = radar_sensor::radar_german_fumo_61;
+
             else if ("German FuMO 64" == radar_model)
                 type = radar_sensor::radar_german_fumo_64;
+
             else if ("German FuMO 391" == radar_model)
                 type = radar_sensor::radar_german_fumo_391;
             else
@@ -508,6 +539,7 @@ void sea_object::load(const xml_elem& parent)
             string("stored specfilename does not match, type=") + specfilename2
                 + string(", but read ") + specfilename
                 + string(" from spec file"));
+
     xml_elem st      = parent.child("state");
     position         = st.child("position").attrv3();
     orientation      = st.child("orientation").attrq();
@@ -523,6 +555,7 @@ void sea_object::load(const xml_elem& parent)
         skin_regioncode = sk.attr("region");
         std::string sc  = sk.attr("country");
         skin_country    = UNKNOWNCOUNTRY;
+
         for (int i = UNKNOWNCOUNTRY; i < NR_OF_COUNTRIES; ++i)
         {
             //			cout << "load cmp ctr '" << sc << "' '" <<
@@ -543,10 +576,12 @@ void sea_object::load(const xml_elem& parent)
         skin_date       = date(1941, 1, 1);
     }
     skin_name = compute_skin_name();
+
     // register new skin name. Note! if skin_name was already set and
     // registered, the old one is not unregistered. But we don't use sea_object
     // in that way. So everything is ok.
     mymodel->register_layout(skin_name);
+
     //  	cout << "load: registered layout " << skin_name << "\n";
     // load ai
     if (myai.get())
@@ -566,11 +601,13 @@ void sea_object::save(xml_elem& parent) const
     st.add_child("linear_momentum").set_attr(linear_momentum);
     st.add_child("angular_momentum").set_attr(angular_momentum);
     parent.add_child("alive_stat").set_attr(unsigned(alive_stat));
+
     // write skin info
     xml_elem sk = parent.add_child("skin");
     sk.set_attr(skin_regioncode, "region");
     sk.set_attr(countrycodes[skin_country], "country");
     sk.set_attr(skin_date.to_str(), "date");
+
     // save ai
     if (myai.get())
     {
@@ -636,6 +673,7 @@ void sea_object::simulate(double delta_time, game& gm)
     // get force and torque for current time.
     vector3 force, torque;
     compute_force_and_torque(force, torque, gm);
+
     // DBGOUT6(position, orientation, linear_momentum, angular_momentum, force,
     // torque);
 
@@ -681,18 +719,22 @@ void sea_object::simulate(double delta_time, game& gm)
     vector3 w = orientation.rotate(
         inertia_tensor_inv * orientation.conj().rotate(angular_momentum));
     vector3 w2 = w * delta_time;
+
     // 	std::cout << "update orientation, dt=" << delta_time << " w=" << w << "
     // w2=" << w2 << "\n"; unit of |w| is revolutions per time, that is
     // 2*Pi/second.
     double w2l = w2.length();
+
     if (w2l > 1e-8)
     {
         // avoid too small numbers
         quaternion q = quaternion::rot_rad(w2l, w2 * (1.0 / w2l));
+
         // multiply orientation with q: combined rotation.
         // 		std::cout << "q=" << q << " orientation old=" << orientation <<
         // " new=" << q * orientation << "\n";
         orientation = q * orientation;
+
         // we should renormalize orientation regularly, to avoid that
         // orientation isn't a valid rotation after many changes.
         if (fabs(orientation.square_length() - 1.0) > 1e-8)
@@ -894,6 +936,7 @@ unsigned sea_object::get_min_max_voxel_index_for_polyset(
     vector3f voxel_size_rcp  = get_model().get_voxel_size().rcp();
     vxmin                    = vres;
     vxmax                    = vector3i(-1, -1, -1);
+
     for (const auto& p : polys)
     {
         if (!p.empty())
@@ -903,11 +946,14 @@ unsigned sea_object::get_min_max_voxel_index_for_polyset(
                 // transform point to voxel space
                 vector3f ptvx =
                     obj2voxel * vector3f(cjq.rotate(point - position));
+
                 // transform to voxel coordinate
                 vector3i v =
                     vector3i(ptvx.coeff_mul(voxel_size_rcp) + voxel_pos_trans);
+
                 // clip v to valid range
                 v = v.max(vector3i(0, 0, 0)).min(vidxmax);
+
                 // adjust min/max accordingly
                 vxmin = vxmin.min(v);
                 vxmax = vxmax.max(v);
@@ -925,6 +971,7 @@ vector3 sea_object::compute_linear_velocity(const vector3& p) const
     // vector)
     vector3 w = orientation.rotate(
         inertia_tensor_inv * orientation.conj().rotate(angular_momentum));
+
     return velocity + w.cross(p - position);
 }
 

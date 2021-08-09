@@ -48,14 +48,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <cfloat>
 #include <sstream>
 #include <utility>
+
 using std::list;
 using std::make_pair;
 using std::pair;
 using std::string;
 using std::vector;
 
-const unsigned SAVEVERSION = 1;
-const unsigned GAMETYPE    = 0; // fixme, 0-mission , 1-patrol etc.
+// TODO: move saved games layout constants elsewhere
+
+constexpr auto SAVEVERSION = 1;
+constexpr auto GAMETYPE    = 0; // fixme, 0-mission , 1-patrol etc.
 
 /***************************************************************************/
 
@@ -71,10 +74,13 @@ game_editor::game_editor(const date& start_date)
     {
         xml_doc doc(data_file().get_filename(subtype));
         doc.load();
+
         submarine sub(*this, doc.first_child());
+
         sub.set_skin_layout(model::default_layout);
         sub.init_fill_torpedo_tubes(start_date);
         sub.manipulate_invulnerability(true);
+
         auto& [id, thesub] = spawn_submarine(std::move(sub));
         if (i == 0)
         {
@@ -88,9 +94,7 @@ game_editor::game_editor(const date& start_date)
     last_trail_time = time - TRAIL_TIME;
 }
 
-// --------------------------------------------------------------------------------
-//                        LOAD GAME (SAVEGAME OR MISSION)
-// --------------------------------------------------------------------------------
+// LOAD GAME (SAVEGAME OR MISSION)
 game_editor::game_editor(const string& filename) : game(filename)
 {
     // nothing special for now

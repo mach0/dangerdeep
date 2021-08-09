@@ -62,6 +62,7 @@ class convoy
         supportgroup,
         carrier
     };
+
     enum esctypes
     {
         etnone,

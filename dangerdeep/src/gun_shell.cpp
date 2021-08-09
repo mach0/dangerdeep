@@ -56,11 +56,13 @@ gun_shell::gun_shell(
     orientation     = quaternion::rot(-direction.value(), 0, 0, 1);
     mass            = 20;
     mass_inv        = 1.0 / mass;
+
     linear_momentum = mass
                       * orientation.rotate(vector3(
                           0,
                           elevation.cos() * initial_velocity,
                           elevation.sin() * initial_velocity));
+
     // set off initial pos. like 0.5 seconds after firing, to avoid
     // collision with parent
     position         = pos + linear_momentum * (mass_inv * 0.5);
@@ -124,23 +126,31 @@ void gun_shell::check_collision(game& gm)
        realistic.
     */
     vector3 dv2 = position - oldpos;
+
     // avoid NaN on first round
     double dvl = dv2.square_length();
+
     if (dvl < 1e-8)
         return;
+
     dvl           = sqrt(dvl);
     vector3 dv    = dv2 * (1.0 / dvl);
+
     auto allships = gm.get_all_ships();
+
     for (auto s : allships)
     {
         vector3 k  = s->get_pos() - oldpos;
         double kd  = k * dv;
         double r   = s->get_bounding_radius();
         double tmp = kd * kd - k * k + r * r;
+
         if (tmp <= 0.0)
             continue;
+
         tmp       = sqrt(tmp);
         double t0 = -kd + tmp, t1 = -kd - tmp;
+
         if (t0 * t1 < 0.0 || (t0 >= 0.0 && t0 <= dvl)
             || (t1 >= 0.0 && t1 <= dvl))
         {
@@ -180,9 +190,11 @@ void gun_shell::check_collision_precise(
     quaternion qco      = s.get_orientation().conj();
     vector3f oldrelbbox = vector3f(qco.rotate(oldrelpos));
     vector3f newrelbbox = vector3f(qco.rotate(newrelpos));
+
     // now the model::get_min/get_max values can be used to compute the axis
     // aligned bbox
     float tmin = 0.0f, tmax = 1.0f;
+
     // clip the line oldrelbbox->newrelbbox with the bbox
     vector3f d        = newrelbbox - oldrelbbox;
     const vector3f& b = oldrelbbox;
@@ -195,6 +207,7 @@ void gun_shell::check_collision_precise(
         float t1 = (bmax.x - b.x) / d.x;
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
+
         tmax     = std::min(tmax, tb);
         tmin     = std::max(tmin, ta);
     }
@@ -204,6 +217,7 @@ void gun_shell::check_collision_precise(
         float t1 = (bmax.y - b.y) / d.y;
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
+
         tmax     = std::min(tmax, tb);
         tmin     = std::max(tmin, ta);
     }
@@ -213,6 +227,7 @@ void gun_shell::check_collision_precise(
         float t1 = (bmax.z - b.z) / d.z;
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
+
         tmax     = std::min(tmax, tb);
         tmin     = std::max(tmin, ta);
     }
@@ -220,9 +235,10 @@ void gun_shell::check_collision_precise(
     if (tmin <= tmax)
     {
         // log_debug("shell hit object?!");
-        vector3f d = newrelbbox - oldrelbbox;
+        vector3f dd = newrelbbox - oldrelbbox;
+
         check_collision_voxel(
-            gm, s, oldrelbbox + d * tmin, oldrelbbox + d * tmax);
+            gm, s, oldrelbbox + dd * tmin, oldrelbbox + dd * tmax);
         if (alive_stat == dead)
             return; // no more checks after hit
     }
@@ -236,9 +252,12 @@ void gun_shell::check_collision_voxel(
 {
     // positions are relative to bbox of s.
     matrix4f obj2voxel = s.get_model().get_base_mesh_transformation().inverse();
+
     vector3f oldvoxpos = obj2voxel * oldrelpos,
              newvoxpos = obj2voxel * newrelpos;
+
     vector3f diffvoxpos = newvoxpos - oldvoxpos;
+
     // now iterate in 8 steps between oldvoxpos to newvoxpos,
     // transform both to voxel coordinates (0...N)
     // and determine voxel number by pos.
@@ -246,10 +265,13 @@ void gun_shell::check_collision_voxel(
     // 0.25 or similar) if the voxel is filled.
     vector3f voxel_size_rcp  = s.get_model().get_voxel_size().rcp();
     const vector3i& vres     = s.get_model().get_voxel_resolution();
+
     vector3i vidxmax         = vres - vector3i(1, 1, 1);
     vector3f voxel_pos_trans = vector3f(vres) * 0.5f;
     int lastvn               = -1;
+
     log_debug("check collision voxel");
+
     for (unsigned k = 0; k <= 10; ++k)
     {
         float kf        = k / 10.0f;
@@ -257,7 +279,9 @@ void gun_shell::check_collision_voxel(
         vector3i v =
             vector3i(voxpos.coeff_mul(voxel_size_rcp) + voxel_pos_trans);
         v      = v.max(vector3i(0, 0, 0)).min(vidxmax);
+
         int vn = (v.z * vres.y + v.y) * vres.x + v.x;
+
         if (vn != lastvn)
         {
             lastvn = vn;
@@ -269,16 +293,19 @@ void gun_shell::check_collision_voxel(
             {
                 // we hit a part of the object!
                 log_debug("..... Object hit! .....");
+
                 // first compute exact real word position of impact
                 vector3 impactpos =
                     s.get_pos()
                     + s.get_orientation().rotate(
                         s.get_model().get_base_mesh_transformation() * voxpos);
+
                 // move gun shell pos to hit position to
                 // let the explosion be at right position
                 position = impactpos;
                 log_debug("Hit object at real world pos " << impactpos);
                 log_debug("that is relative: " << s.get_pos() - impactpos);
+
                 // now damage the ship - fixme should be done in class game!
                 // report collision to game!
                 auto& shp = const_cast<ship&>(s);
@@ -326,6 +353,7 @@ void gun_shell::display() const
     vector3 up   = vector3(0, 0, 1);
     vector3 side = vn.orthogonal(up);
     up           = side.orthogonal(vn);
+
     float m[16]  = {
         static_cast<float>(side.x),
         static_cast<float>(side.y),

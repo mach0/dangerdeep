@@ -333,7 +333,7 @@ class sea_object
     sea_object(game& gm_, std::string modelname_);
 
     // construct a sea_object. called by heirs
-    sea_object(game& gm_, const xml_elem& parent);
+    sea_object(const game &gm_, const xml_elem& parent);
 
     // wether objects of that class should call visible_sea_objects to detect
     // other objects. redefine if needed.
