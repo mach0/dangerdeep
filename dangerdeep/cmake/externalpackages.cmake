@@ -13,12 +13,29 @@ if (NOT DFTD_VERBOSE)
 endif ()
 
 
-# FFTW3
-find_package (FFTW3 REQUIRED single)
-if (FFTW3_FOUND)
+# FFTW3, default is to use single, module provides double, long double,
+# MPI and OpenMP variants.
+
+if (FFTW_USE_FLOAT)
+    set (_FFTW_PRECISION FLOAT_LIB)
+else ()
+    set (_FFTW_PRECISION DOUBLE_LIB)
+endif ()
+
+find_package (FFTW REQUIRED ${_FFTW_PRECISION})
+
+if (FFTW_FOUND)
     message (STATUS "FFTW3 found.")
+
     include_directories (${FFTW3_INCLUDE_DIR})
-    set (LIBS ${LIBS} ${FFTW3_LIBRARY} ${FFTW3F_LIBRARY})
+
+    if (FFTW_USE_FLOAT)
+        set (LIBS ${LIBS} ${FFTW_FLOAT_LIB})
+    else ()
+        set (LIBS ${LIBS} ${FFTW_DOUBLE_LIB})
+    endif ()
+    set (LIBS ${LIBS} ${FFTW_LIBRARIES})
+
 else ()
     message (FATAL_ERROR "FFTW3 not found! This will fail.")
 endif ()
