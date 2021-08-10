@@ -55,8 +55,8 @@ endif ()
 # option details, output control
 set (DFTD_VERBOSE ON CACHE BOOL "Extra compiler messages when building.")
 set (DFTD_BUILD_LIBCPLUSPLUS OFF CACHE BOOL "Compile with clang libc++.")
-set (DFTD_BUILD_TOOLS ON CACHE BOOL "Build dftd extra developer tools.")
-set (DFTD_BUILD_TESTS ON CACHE BOOL "Build dftd code tests.")
+set (DFTD_BUILD_TOOLS OFF CACHE BOOL "Build dftd extra developer tools.")
+set (DFTD_BUILD_TESTS OFF CACHE BOOL "Build dftd code tests.")
 
 set (DFTD_HIDE_SYMBOLS OFF CACHE BOOL
      "Hide internal symbols that aren't oficially external")
@@ -72,16 +72,26 @@ set (DFTD_COLOR_MAKEFILE ON CACHE BOOL
 
 set (DFTD_BUILD_DOCS OFF CACHE BOOL "Build developer documentation")
 
-set (USE_FLOAT_FFTW3 ON CACHE BOOL 
+
+# FFTW options
+set (FFTW_USE_FLOAT ON CACHE BOOL 
      "Use single or double precision FFTW3, pending availability")
 
+set (FFTW_USE_STATIC_LIBS OFF CACHE BOOL
+     "Use FFTW static libraries instead of shared.")  
+
+if (FFTW_USE_FLOAT)
+    add_compile_definitions (WITH_FLOAT_FFTW)
+endif ()
+
+
+# Other build options, clang tools, formatting and tidy checks, developer tools
+
 set (USE_LIB64_SUFFIX ON CACHE BOOL 
-     "Use lib64 instead of lib on x86_64 systems")
+     "Use lib64 instead of lib on x86_64 systems")  
 
 set (USE_EFENCE OFF CACHE BOOL "Use Electric fence, UNIX only.")
 
-
-# Clang tools, formatting and tidy checks
 set (USE_CLANG_FORMAT OFF CACHE BOOL 
      "Use clang-format, ensure strict code formatting.")
 
@@ -110,7 +120,8 @@ if (USE_CLANG_TIDY)
         message (STATUS "Found \"${CLANG_TIDY}\", use \"make tidy\" to run it.")
         set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-        # https://releases.llvm.org/11.0.1/tools/clang/tools/extra/docs/clang-tidy/checks/bugprone-inaccurate-erase.html
+        # https://releases.llvm.org/11.0.1/tools/clang/tools/extra/docs/
+        # clang-tidy/checks/bugprone-inaccurate-erase.html
 	    set (CLANG_TIDY_CHECKS "-*")
 
         set (CLANG_TIDY_CHECKS_LLVM "")
