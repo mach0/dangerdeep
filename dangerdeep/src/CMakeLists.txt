@@ -1,10 +1,5 @@
 # Main dangerdeep
 
-# Definitions for TinyXML and FFTW.
-if (USE_FLOAT_FFTW3)
-    add_compile_definitions (WITH_FLOAT_FFTW)
-endif ()
-
 add_compile_definitions (TIXML_USE_STL)
 
 
