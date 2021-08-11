@@ -5,4 +5,4 @@ build
 build/
 dangerdeep/build
 CMakeLists.txt.user
-
+build*
