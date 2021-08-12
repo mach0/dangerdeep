@@ -76,7 +76,8 @@ sub_tdc_display::sub_tdc_display(user_interface& ui_) :
 {
 }
 
-bool sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     auto& gm  = ui.get_game();
     auto* sub = dynamic_cast<submarine*>(gm.get_player());
@@ -90,7 +91,8 @@ bool sub_tdc_display::handle_mouse_button_event(const mouse_click_data& m)
     return false;
 }
 
-bool sub_tdc_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto sub_tdc_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     auto& gm  = ui.get_game();
     auto* sub = dynamic_cast<submarine*>(gm.get_player());

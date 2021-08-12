@@ -42,25 +42,25 @@ class sphere_t
     // sphere_t(const vector3t<D>& a, const vector3t<D>& b, const vector3t<D>&
     // c) { }
     /// determine if point is inside sphere
-    bool is_inside(const vector3t<D>& a) const
+    [[nodiscard]] bool is_inside(const vector3t<D>& a) const
     {
         return center.square_distance(a) < radius * radius;
     }
 
     /// determine if spheres intersect
-    bool intersects(const sphere_t<D>& other) const
+    [[nodiscard]] bool intersects(const sphere_t<D>& other) const
     {
         D r = radius + other.radius;
         return center.square_distance(other.center) < r * r;
     }
 
     /// build minimum combination sphere
-    sphere_t<D> compute_bound(const sphere_t<D>& other) const
+    [[nodiscard]] sphere_t<D> compute_bound(const sphere_t<D>& other) const
     {
         // new center is on axis between the two spheres
         vector3t<D> delta = other.center - center;
 
-        D distance        = delta.length();
+        D distance = delta.length();
 
         if (distance < epsilon<D>())
             return sphere_t<D>(

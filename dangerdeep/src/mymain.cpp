@@ -26,15 +26,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 // MacOSX: ? fixed with objective C code ?
 //
 
-
-#include "log.h"
 #include "faulthandler.h"
+#include "log.h"
 #include "system_interface.h"
+
+#include <exception>
+#include <fstream>
+#include <iostream>
 #include <list>
 #include <string>
-#include <exception>
-#include <iostream>
-#include <fstream>
 #include <unistd.h>
 using namespace std;
 
@@ -47,70 +47,77 @@ int mymain(std::vector<string>& args);
 
 int call_mymain(std::vector<string>& args)
 {
-	log_info("***** Log file started *****");
-	int result = 0;
+    log_info("***** Log file started *****");
+    int result = 0;
 #ifdef WIN32
-	result = mymain(args);
+    result = mymain(args);
 #else
-	try {
-		result = mymain(args);
-	}
-	catch (std::exception& e) {
-		log_warning("Caught exception: " << e.what());
-		print_stack_trace();
-		result = -1;
-	}
-	catch (system_interface::quit_exception& e) {
-		return e.retval;
-	}
-	catch (...) {
-		log_warning("Caught unknown exception");
-		print_stack_trace();
-		result = -2;
-	}
+    try
+    {
+        result = mymain(args);
+    }
+    catch (std::exception& e)
+    {
+        log_warning("Caught exception: " << e.what());
+        print_stack_trace();
+        result = -1;
+    }
+    catch (system_interface::quit_exception& e)
+    {
+        return e.retval;
+    }
+    catch (...)
+    {
+        log_warning("Caught unknown exception");
+        print_stack_trace();
+        result = -2;
+    }
 #endif
 
-	std::string log_file =
+    std::string log_file =
 #ifdef WIN32
-	"./debug.log";
+        "./debug.log";
 #else
-	// fixme: use global /var/games instead
-	std::string(getenv("HOME"))+"/.dangerdeep/debug.log";
+        // fixme: use global /var/games instead
+        std::string(getenv("HOME")) + "/.dangerdeep/debug.log";
 #endif
-	log::instance().write(std::cerr, log::level::SYSINFO);
-	unlink( log_file.c_str() );
-	std::ofstream f(log_file.c_str());
-	log::instance().write(f, log::level::SYSINFO);
-	log::destroy_instance();
-	return result;
+    log::instance().write(std::cerr, log::level::SYSINFO);
+    unlink(log_file.c_str());
+    std::ofstream f(log_file.c_str());
+    log::instance().write(f, log::level::SYSINFO);
+    log::destroy_instance();
+    return result;
 }
 
 #ifdef WIN32
 
 int WinMain(HINSTANCE, HINSTANCE, LPSTR cmdline, int)
 {
-	std::string mycmdline(cmdline);
-	std::vector<std::string> args;
-	// parse mycmdline
-	while (mycmdline.length() > 0) {
-		std::string::size_type st = mycmdline.find(" ");
-		args.push_back(mycmdline.substr(0, st));
-		if (st == std::string::npos) break;
-		mycmdline = mycmdline.substr(st+1);
-	}
-	return call_mymain(args);
+    std::string mycmdline(cmdline);
+    std::vector<std::string> args;
+    // parse mycmdline
+    while (mycmdline.length() > 0)
+    {
+        std::string::size_type st = mycmdline.find(" ");
+        args.push_back(mycmdline.substr(0, st));
+        if (st == std::string::npos)
+            break;
+        mycmdline = mycmdline.substr(st + 1);
+    }
+    return call_mymain(args);
 }
 
-#else	// UNIX
+#else // UNIX
 
 int main(int argc, char** argv)
 {
-	std::vector<std::string> args;
-	//parse argc, argv, do not store program name
-	for (int i = 1; i < argc; ++i) {
-		args.push_back(std::string(argv[i]));
-	}
-	return call_mymain(args);
+    std::vector<std::string> args;
+    // parse argc, argv, do not store program name
+    for (int i = 1; i < argc; ++i)
+    {
+        args.emplace_back(argv[i]);
+    }
+    return call_mymain(args);
 }
 
 #endif

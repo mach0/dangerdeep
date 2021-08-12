@@ -153,7 +153,7 @@ class user_interface : public input_event_handler
     virtual void show_playlist();
 
   public:
-    virtual ~user_interface();
+    ~user_interface() override;
 
     // display (const) and input handling
     virtual void display() const;
@@ -170,16 +170,16 @@ class user_interface : public input_event_handler
     // create ui matching to player type (requested from game)
     static std::shared_ptr<user_interface> create(game& gm);
 
-    const sky& get_sky() const { return *(mysky.get()); }
-    const caustics& get_caustics() const { return mycaustics; }
-    const water& get_water() const;
-    const coastmap& get_coastmap() const { return mycoastmap; }
+    [[nodiscard]] const sky& get_sky() const { return *(mysky.get()); }
+    [[nodiscard]] const caustics& get_caustics() const { return mycaustics; }
+    [[nodiscard]] const water& get_water() const;
+    [[nodiscard]] const coastmap& get_coastmap() const { return mycoastmap; }
 
     // helper functions
 
-    virtual angle get_relative_bearing() const;
-    virtual angle get_absolute_bearing() const;
-    virtual angle get_elevation() const;
+    [[nodiscard]] virtual angle get_relative_bearing() const;
+    [[nodiscard]] virtual angle get_absolute_bearing() const;
+    [[nodiscard]] virtual angle get_elevation() const;
     // add angles to change bearing/elevation
     virtual void add_bearing(angle a);
     virtual void add_elevation(angle a);
@@ -202,8 +202,8 @@ class user_interface : public input_event_handler
     virtual void draw_weather_effects() const;
 
     virtual void toggle_pause();
-    virtual bool paused() const { return pause; }
-    virtual unsigned time_scaling() const { return time_scale; }
+    [[nodiscard]] virtual bool paused() const { return pause; }
+    [[nodiscard]] virtual unsigned time_scaling() const { return time_scale; }
     virtual void add_message(const std::string& s);
     virtual bool time_scale_up(); // returns true on success
     virtual bool time_scale_down();
@@ -217,9 +217,9 @@ class user_interface : public input_event_handler
 
     // get current game of user_interface
     virtual game& get_game() { return *mygame; }
-    virtual const game& get_game() const { return *mygame; }
+    [[nodiscard]] virtual const game& get_game() const { return *mygame; }
 
-    bool abort_requested() const { return abort_request; }
+    [[nodiscard]] bool abort_requested() const { return abort_request; }
     void request_abort(bool abrt = true) { abort_request = abrt; }
 
     void switch_geo_wire()

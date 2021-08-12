@@ -57,7 +57,9 @@ void sub_recogmanual_display::widget_button_next::draw() const
 
     colorf col = colorf(1.0, 1.0, 1.0, 1.0);
     if (mouseover != this)
+    {
         col = colorf(1.0, 1.0, 1.0, 0.75);
+    }
     background->draw(p.x + size.x / 2 - bw / 2, p.y + size.y / 2 - bh / 2, col);
 }
 
@@ -88,7 +90,7 @@ void sub_recogmanual_display::display() const
     int step_y     = 199;
     int step_x     = 450;
 
-    for (int i = page * 3; (i < page * 3 + 6) && (i < (int) silhouettes.size());
+    for (int i = page * 3; (i < page * 3 + 6) && (i < static_cast<int>(silhouettes.size()));
          i++)
     {
         if (i == page * 3 + 3)
@@ -128,8 +130,8 @@ void sub_recogmanual_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool sub_recogmanual_display::handle_mouse_button_event(
-    const mouse_click_data& m)
+auto sub_recogmanual_display::handle_mouse_button_event(
+    const mouse_click_data& m) -> bool
 {
     if (btn_left.is_mouse_over(m.position_2d))
     {
@@ -140,14 +142,18 @@ bool sub_recogmanual_display::handle_mouse_button_event(
         widget::handle_mouse_button_event(btn_right, m);
     }
     if (page < 0)
+    {
         page = 0;
-    if (page >= (int) silhouettes.size() / 3)
+    }
+    if (page >= static_cast<int>(silhouettes.size()) / 3)
+    {
         page--;
+    }
     return false;
 }
 
-bool sub_recogmanual_display::handle_mouse_motion_event(
-    const mouse_motion_data& m)
+auto sub_recogmanual_display::handle_mouse_motion_event(
+    const mouse_motion_data& m) -> bool
 {
     if (btn_left.is_mouse_over(m.position_2d))
     {
@@ -158,19 +164,27 @@ bool sub_recogmanual_display::handle_mouse_motion_event(
         widget::handle_mouse_motion_event(btn_right, m);
     }
     if (page < 0)
+    {
         page = 0;
-    if (page >= (int) silhouettes.size() / 3)
+    }
+    if (page >= static_cast<int>(silhouettes.size()) / 3)
+    {
         page--;
+    }
     return false;
 }
 
-bool sub_recogmanual_display::handle_mouse_wheel_event(
-    const mouse_wheel_data& m)
+auto sub_recogmanual_display::handle_mouse_wheel_event(
+    const mouse_wheel_data& m) -> bool
 {
     if (page < 0)
+    {
         page = 0;
-    if (page >= (int) silhouettes.size() / 3)
+    }
+    if (page >= static_cast<int>(silhouettes.size()) / 3)
+    {
         page--;
+    }
     return false;
 }
 

@@ -94,7 +94,9 @@ class data_file_handler : public singleton<class data_file_handler>
 
   private:
     data_file_handler();
-    void parse_for_data_files(const std::string &dir, std::list<std::string>& idlist);
+    void parse_for_data_files(
+        const std::string& dir,
+        std::list<std::string>& idlist);
 
     static data_file_handler* my_instance;
     std::map<std::string, std::string> data_files;
@@ -106,36 +108,44 @@ class data_file_handler : public singleton<class data_file_handler>
 
   public:
     /// returns path to specfile for id "objectid", path is relative to data_dir
-    const std::string& get_rel_path(const std::string& objectid) const;
+    [[nodiscard]] const std::string&
+    get_rel_path(const std::string& objectid) const;
 
     /// returns path to specfile for id "objectid", path is absolute
-    std::string get_path(const std::string& objectid) const;
+    [[nodiscard]] std::string get_path(const std::string& objectid) const;
 
     /// returns path + filename to specfile for id "objectid", path is relative
     /// to data_dir
-    std::string get_rel_filename(const std::string& objectid) const;
+    [[nodiscard]] std::string
+    get_rel_filename(const std::string& objectid) const;
 
     /// returns path + filename to specfile for id "objectid", path is absolute
-    std::string get_filename(const std::string& objectid) const;
+    [[nodiscard]] std::string get_filename(const std::string& objectid) const;
 
-    const std::list<std::string>& get_airplane_list() const
+    [[nodiscard]] const std::list<std::string>& get_airplane_list() const
     {
         return airplane_ids;
     }
 
-    const std::list<std::string>& get_ship_list() const { return ship_ids; }
+    [[nodiscard]] const std::list<std::string>& get_ship_list() const
+    {
+        return ship_ids;
+    }
 
-    const std::list<std::string>& get_submarine_list() const
+    [[nodiscard]] const std::list<std::string>& get_submarine_list() const
     {
         return submarine_ids;
     }
 
-    const std::list<std::string>& get_torpedo_list() const
+    [[nodiscard]] const std::list<std::string>& get_torpedo_list() const
     {
         return torpedo_ids;
     }
 
-    const std::list<std::string>& get_prop_list() const { return prop_ids; }
+    [[nodiscard]] const std::list<std::string>& get_prop_list() const
+    {
+        return prop_ids;
+    }
 };
 
 inline const data_file_handler& data_file()

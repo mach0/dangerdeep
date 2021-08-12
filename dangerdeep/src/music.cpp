@@ -41,9 +41,7 @@ using namespace std;
 bool music::use_music = true;
 
 music::music(bool useit, unsigned sample_rate_) :
-    thread("music___"), nr_reserved_channels(1), sample_rate(sample_rate_),
-    current_track(0), usersel_next_track(-1), usersel_fadein(0),
-    pbm(playback_mode::loop_list), stopped(true), current_machine_sfx(nullptr)
+    thread("music___"), sample_rate(sample_rate_)
 {
     use_music = useit;
 }
@@ -70,7 +68,9 @@ void music::start_play_track(unsigned nr, unsigned fadeintime)
             err = Mix_PlayMusic(musiclist[current_track].get(), 1);
         }
         if (err < 0)
+        {
             THROW(error, "music playing failed.");
+        }
         stopped = false;
     }
 }
@@ -86,7 +86,9 @@ void music::callback_track_finished()
 void music::init()
 {
     if (!use_music)
+    {
         return;
+    }
 
     if (SDL_Init(SDL_INIT_AUDIO) != 0)
     {
@@ -116,11 +118,15 @@ void music::init()
 
     // allocate channels
     if (Mix_AllocateChannels(SFX_CHANNELS_TOTAL) < int(SFX_CHANNELS_TOTAL))
+    {
         THROW(error, "could not allocate enough channels");
+    }
 
     // reserve sfx channels for environmental noises (engine, sonar)
     if (Mix_ReserveChannels(nr_reserved_channels) < int(nr_reserved_channels))
+    {
         THROW(error, "could not reserve enough channels");
+    }
 
 #if 0
 	// load sfx files
@@ -172,7 +178,9 @@ void music::loop()
 void music::deinit()
 {
     if (!use_music)
+    {
         return;
+    }
 
     // halt
     if (Mix_PlayingMusic())
@@ -197,61 +205,62 @@ void music::request_abort()
 
 // -------------------- commands --------------------
 
-bool music::append_track(const std::string& filename)
+auto music::append_track(const std::string& filename) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_append_track(*this, filename)));
 }
 
-bool music::set_playback_mode(playback_mode pbm)
+auto music::set_playback_mode(playback_mode pbm) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_set_playback_mode(*this, pbm)));
 }
 
-bool music::play(unsigned fadein)
+auto music::play(unsigned fadein) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_play(*this, fadein)));
 }
 
-bool music::stop(unsigned fadeout)
+auto music::stop(unsigned fadeout) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_stop(*this, fadeout)));
 }
 
-bool music::pause()
+auto music::pause() -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_pause(*this)));
 }
 
-bool music::resume()
+auto music::resume() -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_resume(*this)));
 }
 
-bool music::set_music_position(float pos)
+auto music::set_music_position(float pos) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_set_music_position(*this, pos)));
 }
 
-bool music::play_track(unsigned nr, unsigned fadeouttime, unsigned fadeintime)
+auto music::play_track(unsigned nr, unsigned fadeouttime, unsigned fadeintime)
+    -> bool
 {
     return command_queue.send(std::unique_ptr<message>(
         new command_play_track(*this, nr, fadeouttime, fadeintime)));
 }
 
-bool music::track_finished()
+auto music::track_finished() -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_track_finished(*this)), false);
 }
 
-std::vector<std::string> music::get_playlist()
+auto music::get_playlist() -> std::vector<std::string>
 {
     std::vector<std::string> myplaylist;
     command_queue.send(
@@ -259,7 +268,7 @@ std::vector<std::string> music::get_playlist()
     return myplaylist;
 }
 
-unsigned music::get_current_track()
+auto music::get_current_track() -> unsigned
 {
     unsigned track = 0;
     command_queue.send(
@@ -267,7 +276,7 @@ unsigned music::get_current_track()
     return track;
 }
 
-bool music::is_playing()
+auto music::is_playing() -> bool
 {
     bool isply = false;
     command_queue.send(
@@ -275,23 +284,23 @@ bool music::is_playing()
     return isply;
 }
 
-bool music::play_sfx(
+auto music::play_sfx(
     const std::string& category,
     const vector3& listener,
     angle listener_dir,
-    const vector3& noise_pos)
+    const vector3& noise_pos) -> bool
 {
     return command_queue.send(std::unique_ptr<message>(new command_play_sfx(
         *this, category, listener, listener_dir, noise_pos)));
 }
 
-bool music::play_sfx_machine(const std::string& name, unsigned throttle)
+auto music::play_sfx_machine(const std::string& name, unsigned throttle) -> bool
 {
     return command_queue.send(std::unique_ptr<message>(
         new command_play_sfx_machine(*this, name, throttle)));
 }
 
-bool music::pause_sfx(bool on)
+auto music::pause_sfx(bool on) -> bool
 {
     return command_queue.send(
         std::unique_ptr<message>(new command_pause_sfx(*this, on)));
@@ -302,7 +311,9 @@ bool music::pause_sfx(bool on)
 void music::exec_append_track(const std::string& filename)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
 
     mix_music_ptr mmp(Mix_LoadMUS((sound_dir + filename).c_str()));
 
@@ -320,14 +331,18 @@ void music::exec_append_track(const std::string& filename)
 void music::exec_set_playback_mode(playback_mode pbm_)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     pbm = pbm_;
 }
 
 void music::exec_play(unsigned fadein)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     if (!Mix_PlayingMusic())
     {
         start_play_track(current_track, fadein);
@@ -341,16 +356,24 @@ void music::exec_play(unsigned fadein)
 void music::exec_stop(unsigned fadeout)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     if (Mix_PausedMusic())
+    {
         Mix_ResumeMusic();
+    }
     if (Mix_PlayingMusic())
     {
         stopped = true;
         if (fadeout > 0)
+        {
             Mix_FadeOutMusic(int(fadeout));
+        }
         else
+        {
             Mix_HaltMusic();
+        }
     }
     else
     {
@@ -361,15 +384,21 @@ void music::exec_stop(unsigned fadeout)
 void music::exec_pause()
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     if (Mix_PlayingMusic() && !Mix_PausedMusic())
+    {
         Mix_PauseMusic();
+    }
 }
 
 void music::exec_resume()
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     Mix_ResumeMusic();
 }
 
@@ -388,7 +417,9 @@ void music::exec_play_track(
     unsigned fadeintime)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     try
     {
         exec_stop(fadeouttime);
@@ -421,7 +452,9 @@ void music::exec_track_finished()
             case playback_mode::loop_list:
                 ++current_track;
                 if (current_track >= playlist.size())
+                {
                     current_track = 0;
+                }
                 break;
             case playback_mode::loop_track:
                 break;
@@ -446,7 +479,9 @@ void music::exec_get_current_track(unsigned& track)
 void music::exec_is_playing(bool& isply)
 {
     if (!Mix_PlayingMusic() || Mix_PausedMusic())
+    {
         THROW(error, "music not playing");
+    }
 }
 
 void music::exec_play_sfx(
@@ -456,10 +491,14 @@ void music::exec_play_sfx(
     const vector3& noise_pos)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     auto it = sfx_events.find(category);
     if (it == sfx_events.end())
+    {
         throw invalid_argument(string("unknown category for sfx: ") + category);
+    }
     // chose random sound of category
     auto snr  = rndgen.get(unsigned(it->second.size()));
     auto& chk = it->second[snr];
@@ -512,31 +551,41 @@ void music::exec_play_sfx(
 
         // dist for Mix_SetPosition() is calculated as a value between 0 and 255
         // with 0 being the loudest (closest)
-        int dist = (int) (distanceFromPlayer / hearing_increment);
+        int dist = static_cast<int>(distanceFromPlayer / hearing_increment);
 
         int channel_num = Mix_PlayChannel(-1, chk.get(), 0);
         if (channel_num < 0)
+        {
             THROW(error, "unable to play sfx"); // Mix_GetError() here...
+        }
         if (!Mix_SetPosition(
-                channel_num, (short) bearingFromPlayer.value(), dist))
+                channel_num, static_cast<short>(bearingFromPlayer.value()), dist))
+        {
             THROW(error, "Mix_SetPosition() failed");
+        }
     }
 }
 
 void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
 {
     if (!use_music)
+    {
         throw std::invalid_argument("no music support");
+    }
     auto it = sfx_machines.find(name);
     if (it == sfx_machines.end())
+    {
         throw invalid_argument(string("unknown machine name: ") + name);
-    unsigned nrthr = unsigned(it->second.size());
-    unsigned thr   = throttle * (nrthr + 1) / 100;
+    }
+    auto nrthr   = unsigned(it->second.size());
+    unsigned thr = throttle * (nrthr + 1) / 100;
     if (thr == 0)
     {
         // stop machine
         if (Mix_Playing(SFX_CHANNEL_MACHINE))
+        {
             Mix_HaltChannel(SFX_CHANNEL_MACHINE);
+        }
         current_machine_sfx = nullptr;
         return;
     }
@@ -550,17 +599,25 @@ void music::exec_play_sfx_machine(const std::string& name, unsigned throttle)
     }
     // stop old sfx
     if (Mix_Playing(SFX_CHANNEL_MACHINE))
+    {
         Mix_HaltChannel(SFX_CHANNEL_MACHINE);
+    }
     current_machine_sfx = nullptr;
     if (Mix_PlayChannel(SFX_CHANNEL_MACHINE, chk.get(), -1) < 0)
+    {
         THROW(error, "can't play channel");
+    }
     current_machine_sfx = chk.get();
 }
 
 void music::exec_pause_sfx(bool on)
 {
     if (on)
+    {
         Mix_Pause(-1);
+    }
     else
+    {
         Mix_Resume(-1);
+    }
 }

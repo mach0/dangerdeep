@@ -169,13 +169,13 @@ void install_segfault_handler()
 
 #else // non-WIN32-MacOSX
 
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <cxxabi.h> // Needed for __cxa_demangle
 #include <execinfo.h>
 #include <list>
-#include <signal.h>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <unistd.h>
 

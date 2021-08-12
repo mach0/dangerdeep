@@ -35,16 +35,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <chrono>
 #include <fstream>
 #include <sstream>
+#include <utility>
 
 static auto start_time = std::chrono::high_resolution_clock::now();
 
-system_interface::system_interface(const parameters& params_) : params(params_)
+system_interface::system_interface(parameters params_) :
+    params(std::move(params_))
 {
     // Initialize SDL first
     int err = SDL_Init(
         SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
     if (err < 0)
+    {
         THROW(error, "video init failed");
+    }
 
     // request available screen modes (using display #0)
     const int display_nr = 0;
@@ -58,7 +62,7 @@ system_interface::system_interface(const parameters& params_) : params(params_)
             if (SDL_GetDisplayMode(display_nr, i, &mode) == 0)
             {
                 // we only need w/h
-                available_resolutions.push_back(vector2i(mode.w, mode.h));
+                available_resolutions.emplace_back(mode.w, mode.h);
                 log_info(
                     "Available resolution " << mode.w << "x" << mode.h << "\n");
             }
@@ -115,7 +119,9 @@ system_interface::system_interface(const parameters& params_) : params(params_)
         params.resolution.y,
         (params.fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_OPENGL);
     if (!main_window)
+    {
         THROW(error, "SDL Window creation failed");
+    }
     sdl_main_window          = main_window;
     SDL_GLContext gl_context = SDL_GL_CreateContext(main_window);
     if (!gl_context)
@@ -141,12 +147,12 @@ system_interface::~system_interface()
 {
     // deinit gpu_interface first
     //	gpu::interface::destroy_instance();
-    SDL_GL_DeleteContext((SDL_GLContext) sdl_gl_context);
-    SDL_DestroyWindow((SDL_Window*) sdl_main_window);
+    SDL_GL_DeleteContext(static_cast<SDL_GLContext>(sdl_gl_context));
+    SDL_DestroyWindow(static_cast<SDL_Window*>(sdl_main_window));
     SDL_Quit();
 }
 
-bool system_interface::set_parameters(const parameters& params_)
+auto system_interface::set_parameters(const parameters& params_) -> bool
 {
     // if fullscreen mode is requested, check if it exists
     if (params_.fullscreen)
@@ -170,7 +176,7 @@ bool system_interface::set_parameters(const parameters& params_)
     if (params_.fullscreen != params.fullscreen)
     {
         SDL_SetWindowFullscreen(
-            (SDL_Window*) sdl_main_window,
+            static_cast<SDL_Window*>(sdl_main_window),
             (params_.fullscreen ? SDL_WINDOW_FULLSCREEN : 0));
     }
 
@@ -190,7 +196,7 @@ bool system_interface::set_parameters(const parameters& params_)
     {
         // fixme this maybe doesn't work for fullscreen modes...
         SDL_SetWindowSize(
-            (SDL_Window*) sdl_main_window,
+            static_cast<SDL_Window*>(sdl_main_window),
             params_.resolution.x,
             params_.resolution.y);
     }
@@ -203,7 +209,7 @@ bool system_interface::set_parameters(const parameters& params_)
     return true;
 }
 
-uint32_t system_interface::millisec()
+auto system_interface::millisec() -> uint32_t
 {
     // SDL_GetTicks seems to have very crude timings, same for new C++ chrono
     // stuff...
@@ -217,7 +223,7 @@ uint32_t system_interface::millisec()
     //	return SDL_GetTicks() - time_passed_while_sleeping;
 }
 
-key_code get_key_code(SDL_Keycode sym)
+auto get_key_code(SDL_Keycode sym) -> key_code
 {
     switch (sym)
     {
@@ -394,7 +400,7 @@ key_code get_key_code(SDL_Keycode sym)
     }
 }
 
-key_mod get_key_mod(uint16_t mod)
+auto get_key_mod(uint16_t mod) -> key_mod
 {
     auto km = key_mod::none;
     if (mod & KMOD_LSHIFT)
@@ -428,15 +434,21 @@ key_mod get_key_mod(uint16_t mod)
     return km;
 }
 
-std::string system_interface::get_key_name(key_code key, key_mod mod)
+auto system_interface::get_key_name(key_code key, key_mod mod) -> std::string
 {
     std::string result;
     if (int(mod) & int(key_mod::shift))
+    {
         result = "Shift + ";
+    }
     if (int(mod) & int(key_mod::alt))
+    {
         result = "Alt + ";
+    }
     if (int(mod) & int(key_mod::ctrl))
+    {
         result = "Ctrl + ";
+    }
     switch (key)
     {
         case key_code::BACKSPACE:
@@ -615,7 +627,9 @@ std::string system_interface::get_key_name(key_code key, key_mod mod)
 void system_interface::prepare_2d_drawing()
 {
     if (draw_2d)
+    {
         THROW(error, "2d drawing already turned on");
+    }
     glFlush();
     glViewport(offset_2D.x, offset_2D.y, size_2D.x, size_2D.y);
     glMatrixMode(GL_PROJECTION);
@@ -638,7 +652,9 @@ void system_interface::prepare_2d_drawing()
 void system_interface::unprepare_2d_drawing()
 {
     if (!draw_2d)
+    {
         THROW(error, "2d drawing already turned off");
+    }
     glFlush();
     glPixelZoom(1.0f, 1.0f);
     glMatrixMode(GL_PROJECTION);
@@ -650,10 +666,10 @@ void system_interface::unprepare_2d_drawing()
     draw_2d = false;
 }
 
-bool system_interface::finish_frame()
+auto system_interface::finish_frame() -> bool
 {
     // Switch window frame buffers
-    SDL_GL_SwapWindow((SDL_Window*) sdl_main_window);
+    SDL_GL_SwapWindow(static_cast<SDL_Window*>(sdl_main_window));
 
     // translate 2D motion/position to screen size -1...1, y axis up
     auto translate_p = [&](int x, int y) -> vector2f {
@@ -689,7 +705,8 @@ bool system_interface::finish_frame()
 
     // Clean up empty input event handlers
     helper::erase_remove_if(
-        input_event_handlers, [](std::weak_ptr<input_event_handler> ptr) {
+        input_event_handlers,
+        [](const std::weak_ptr<input_event_handler>& ptr) {
             auto sptr = ptr.lock();
             return sptr == nullptr;
         });
@@ -776,14 +793,20 @@ bool system_interface::finish_frame()
                     mouse_position_2d  = md.position_2d;
                     md.buttons_pressed = mouse_button_state{};
                     if (event.motion.state & SDL_BUTTON_LMASK)
+                    {
                         md.buttons_pressed
                             .pressed[unsigned(mouse_button::left)] = true;
+                    }
                     if (event.motion.state & SDL_BUTTON_MMASK)
+                    {
                         md.buttons_pressed
                             .pressed[unsigned(mouse_button::middle)] = true;
+                    }
                     if (event.motion.state & SDL_BUTTON_RMASK)
+                    {
                         md.buttons_pressed
                             .pressed[unsigned(mouse_button::right)] = true;
+                    }
                     fetch_event([&md](auto& handler) {
                         return handler.handle_mouse_motion_event(md);
                     });
@@ -803,11 +826,17 @@ bool system_interface::finish_frame()
                     // events... we would miss events outside the window then...
                     // but who cares, however this is not needed so far
                     if (event.button.button == SDL_BUTTON_LEFT)
+                    {
                         md.button = mouse_button::left;
+                    }
                     if (event.button.button == SDL_BUTTON_MIDDLE)
+                    {
                         md.button = mouse_button::middle;
+                    }
                     if (event.button.button == SDL_BUTTON_RIGHT)
+                    {
                         md.button = mouse_button::right;
+                    }
                     md.action = (event.type == SDL_MOUSEBUTTONUP)
                                     ? input_action::up
                                     : input_action::down;
@@ -854,7 +883,7 @@ bool system_interface::finish_frame()
 }
 
 void system_interface::add_input_event_handler(
-    std::shared_ptr<input_event_handler> ptr)
+    const std::shared_ptr<input_event_handler>& ptr)
 {
     input_event_handlers.push_back(ptr);
 }
@@ -864,7 +893,7 @@ void system_interface::remove_input_event_handler(
 {
     helper::erase_remove_if(
         input_event_handlers,
-        [&ptr_to_remove](std::weak_ptr<input_event_handler> ptr) {
+        [&ptr_to_remove](const std::weak_ptr<input_event_handler>& ptr) {
             auto sptr = ptr.lock();
             if (sptr != nullptr)
             {
@@ -879,7 +908,7 @@ void system_interface::screenshot(const std::string& filename)
     // We need to use SDL to get window buffer data, OpenGL ReadPixels is
     // obsolete with GL3+
     SDL_Surface* main_window_surface =
-        SDL_GetWindowSurface((SDL_Window*) sdl_main_window);
+        SDL_GetWindowSurface(static_cast<SDL_Window*>(sdl_main_window));
     if (main_window_surface != nullptr)
     {
         std::string fn;
@@ -971,7 +1000,7 @@ void system_interface::prepare_new_resolution()
     glLoadIdentity();
     gl_perspective_fovx(
         90.0,
-        (GLdouble) params.resolution.x / (GLdouble) params.resolution.y,
+        static_cast<GLdouble>(params.resolution.x) / static_cast<GLdouble>(params.resolution.y),
         params.near_z,
         params.far_z);
     float m[16];

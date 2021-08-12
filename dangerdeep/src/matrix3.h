@@ -39,8 +39,8 @@ class matrix3t
     /// empty matrix
     matrix3t()
     {
-        for (int i = 0; i < 3 * 3; ++i)
-            values[i] = (D)(0);
+        for (auto& value : values)
+            value = (D)(0);
     }
 
     /// create full matrix
@@ -75,7 +75,7 @@ class matrix3t
     }
 
     /// return pointer to array of elements
-    const D* elemarray() const { return &values[0]; }
+    [[nodiscard]] const D* elemarray() const { return &values[0]; }
 
     D* elemarray() { return &values[0]; }
 
@@ -191,7 +191,7 @@ class matrix3t
     }
 
     /// get transposed matrix
-    matrix3t<D> transposed() const
+    [[nodiscard]] matrix3t<D> transposed() const
     {
         return matrix3t<D>(
             values[0],
@@ -206,7 +206,7 @@ class matrix3t
     }
 
     /// get inverse of matrix
-    matrix3t<D> inverse() const
+    [[nodiscard]] matrix3t<D> inverse() const
     {
         matrix3t<D> r(*this);
         matrix_invert<D, 3U>(r.elemarray());
@@ -238,7 +238,7 @@ class matrix3t
     }
 
     /// determinate
-    D determinate() const
+    [[nodiscard]] D determinate() const
     {
         return values[0] * values[4] * values[8]
                + values[1] * values[5] * values[6]
@@ -249,16 +249,16 @@ class matrix3t
     }
 
     D& elem(unsigned col, unsigned row) { return values[col + row * 3]; }
-    const D& elem(unsigned col, unsigned row) const
+    [[nodiscard]] const D& elem(unsigned col, unsigned row) const
     {
         return values[col + row * 3];
     }
 
-    vector3t<D> row(unsigned i) const
+    [[nodiscard]] vector3t<D> row(unsigned i) const
     {
         return vector3t<D>(values[3 * i], values[3 * i + 1], values[3 * i + 2]);
     }
-    vector3t<D> column(unsigned i) const
+    [[nodiscard]] vector3t<D> column(unsigned i) const
     {
         return vector3t<D>(values[i], values[i + 3], values[i + 6]);
     }

@@ -72,16 +72,19 @@ class perlinnoise
     perlinnoise(unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq);
 
     // get number of functions/levels
-    unsigned get_number_of_levels() const { return noise_functions.size(); }
+    [[nodiscard]] unsigned get_number_of_levels() const
+    {
+        return noise_functions.size();
+    }
 
     // set phase of a level
     void set_phase(unsigned level, float px, float py);
 
     // generate a composition of the noise functions
-    std::vector<uint8_t> generate() const;
+    [[nodiscard]] std::vector<uint8_t> generate() const;
 
     // generate a composition of the noise functions with x^2 interpolation
-    std::vector<uint8_t> generate_sqr() const;
+    [[nodiscard]] std::vector<uint8_t> generate_sqr() const;
 
     /// generate noise data for potentially very large noise maps
     ///@param levelsize - size of a level (power of two)
@@ -97,15 +100,17 @@ class perlinnoise
         unsigned levels,
         bool dummy);
 
-    uint8_t value(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
-    float valuef(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
-    std::vector<uint8_t> values(
+    [[nodiscard]] uint8_t
+    value(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
+    [[nodiscard]] float
+    valuef(unsigned x, unsigned y, unsigned depth = 0xffffffff) const;
+    [[nodiscard]] std::vector<uint8_t> values(
         unsigned x,
         unsigned y,
         unsigned w,
         unsigned h,
         unsigned depth = 0xffffffff) const;
-    std::vector<float> valuesf(
+    [[nodiscard]] std::vector<float> valuesf(
         unsigned x,
         unsigned y,
         unsigned w,
@@ -163,7 +168,10 @@ class perlinnoise3d
     perlinnoise3d(unsigned size, unsigned sizeminfreq, unsigned sizemaxfreq);
 
     // get number of functions/levels
-    unsigned get_number_of_levels() const { return noise_functions.size(); }
+    [[nodiscard]] unsigned get_number_of_levels() const
+    {
+        return noise_functions.size();
+    }
 
     // set phase of a level
     void set_phase(unsigned level, float px, float py, float pz);
@@ -171,7 +179,7 @@ class perlinnoise3d
     // generate a composition of the noise functions
     std::vector<float> generate(float& minv, float& maxv) const;
 
-    float
+    [[nodiscard]] float
     valuef(unsigned x, unsigned y, unsigned z, unsigned depth = 0xffffffff)
         const;
 };

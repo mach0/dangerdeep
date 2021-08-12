@@ -67,38 +67,68 @@ enum element_type
     et_subtopsideview = 21
 };
 
-element_type element_by_spec(const std::string& torpname)
+auto element_by_spec(const std::string& torpname) -> element_type
 {
     if (torpname == "TI")
+    {
         return et_torp1;
+    }
     if (torpname == "TI_FaTI")
+    {
         return et_torp1fat1;
+    }
     if (torpname == "TI_LuTI")
+    {
         return et_torp1lut1;
+    }
     if (torpname == "TI_LuTII")
+    {
         return et_torp1lut2;
+    }
     if (torpname == "TII")
+    {
         return et_torp2;
+    }
     if (torpname == "TIII")
+    {
         return et_torp3;
+    }
     if (torpname == "TIII_FaTII")
+    {
         return et_torp3fat2;
+    }
     if (torpname == "TIIIa_FaTII")
+    {
         return et_torp3afat2;
+    }
     if (torpname == "TIIIa_LuTI")
+    {
         return et_torp3alut1;
+    }
     if (torpname == "TIIIa_LuTII")
+    {
         return et_torp3alut2;
+    }
     if (torpname == "TIV")
+    {
         return et_torp4;
+    }
     if (torpname == "TV")
+    {
         return et_torp5;
+    }
     if (torpname == "TVb")
+    {
         return et_torp5b;
+    }
     if (torpname == "TVI_LuTI")
+    {
         return et_torp6lut1;
+    }
     if (torpname == "TXI")
+    {
         return et_torp1practice;
+    }
     THROW(error, std::string("illegal torpedo type ") + torpname);
 }
 } // namespace
@@ -107,7 +137,9 @@ sub_torpedo_display::desc_text::desc_text(const std::string& filename)
 {
     std::ifstream ifs(filename.c_str(), std::ios::in);
     if (ifs.fail())
+    {
         THROW(error, std::string("couldn't open ") + filename);
+    }
 
     // read lines.
     while (!ifs.eof())
@@ -118,14 +150,16 @@ sub_torpedo_display::desc_text::desc_text(const std::string& filename)
     }
 }
 
-std::string
-sub_torpedo_display::desc_text::str(unsigned startline, unsigned nrlines) const
+auto sub_torpedo_display::desc_text::str(unsigned startline, unsigned nrlines)
+    const -> std::string
 {
     startline        = std::min(startline, unsigned(txtlines.size()));
     unsigned endline = std::min(startline + nrlines, unsigned(txtlines.size()));
     std::string result;
     for (unsigned i = startline; i < endline; ++i)
+    {
         result += txtlines[i] + "\n";
+    }
     return result;
 }
 
@@ -187,7 +221,8 @@ void sub_torpedo_display::draw_torpedo(
     }
 }
 
-std::vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
+auto sub_torpedo_display::get_tubecoords(submarine* sub) const
+    -> std::vector<vector2i>
 {
     std::vector<vector2i> tubecoords(sub->get_torpedoes().size());
     const auto bow_tube_indices          = sub->get_bow_tube_indices();
@@ -241,8 +276,8 @@ std::vector<vector2i> sub_torpedo_display::get_tubecoords(submarine* sub) const
     return tubecoords;
 }
 
-unsigned sub_torpedo_display::get_tube_below_mouse(
-    const std::vector<vector2i>& tubecoords) const
+auto sub_torpedo_display::get_tube_below_mouse(
+    const std::vector<vector2i>& tubecoords) const -> unsigned
 {
     for (unsigned i = 0; i < tubecoords.size(); ++i)
     {
@@ -302,25 +337,37 @@ void sub_torpedo_display::display() const
 
     // draw tubes
     for (unsigned i = bow_tube_indices.first; i < bow_tube_indices.second; ++i)
+    {
         draw_torpedo(gm, true, tubecoords[i], torpedoes[i]);
+    }
     for (unsigned i = bow_reserve_indices.first; i < bow_reserve_indices.second;
          ++i)
+    {
         draw_torpedo(gm, true, tubecoords[i], torpedoes[i]);
+    }
     for (unsigned i = bow_deckreserve_indices.first;
          i < bow_deckreserve_indices.second;
          ++i)
+    {
         draw_torpedo(gm, true, tubecoords[i], torpedoes[i]);
+    }
     for (unsigned i = stern_tube_indices.first; i < stern_tube_indices.second;
          ++i)
+    {
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
+    }
     for (unsigned i = stern_reserve_indices.first;
          i < stern_reserve_indices.second;
          ++i)
+    {
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
+    }
     for (unsigned i = stern_deckreserve_indices.first;
          i < stern_deckreserve_indices.second;
          ++i)
+    {
         draw_torpedo(gm, false, tubecoords[i], torpedoes[i]);
+    }
 
     // draw transfer graphics if needed
     if (torptranssrc != ILLEGAL_TUBE
@@ -365,7 +412,9 @@ void sub_torpedo_display::display() const
             // fixme: implement scrolling here!
             // torpedo description text, for notepad
             if (torp_desc_line > torpdesctext->nr_of_lines())
+            {
                 torp_desc_line = torpdesctext->nr_of_lines();
+            }
             font_vtremington12->print_wrapped(
                 100,
                 550,
@@ -412,7 +461,8 @@ void sub_torpedo_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool sub_torpedo_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_torpedo_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     // fixme:
     // increase/decrease torp_desc_line when clicking on desc text area or using
@@ -452,19 +502,23 @@ bool sub_torpedo_display::handle_mouse_button_event(const mouse_click_data& m)
     return false;
 }
 
-bool sub_torpedo_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto sub_torpedo_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     mouse_position            = m.position_2d;
     left_mouse_button_pressed = m.left();
     return false;
 }
 
-bool sub_torpedo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto sub_torpedo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+    -> bool
 {
     if (m.up())
     {
         if (torp_desc_line > 0)
+        {
             --torp_desc_line;
+        }
         return true;
     }
     else if (m.down())

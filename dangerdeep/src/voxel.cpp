@@ -27,11 +27,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "vector3.h"
 #include "xml.h"
 
+#include <cmath>
 #include <sstream>
 
 voxel::voxel(const vector3f& rp, float pv, float m, float rv) :
     relative_position(rp), part_of_volume(pv),
-    root3_part_of_volume(pow(pv, (float) (1.0 / 3.0))), relative_mass(m),
+    root3_part_of_volume(std::pow(pv, static_cast<float>(1.0 / 3.0))), relative_mass(m),
     relative_volume(rv)
 {
 }
@@ -55,10 +56,12 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
     }
 
     if (iss3.fail())
+    {
         THROW(
             file_context_error,
             "error reading inside volume data",
             ve.doc_name());
+    }
 
     std::vector<float> massdistri;
 
@@ -73,10 +76,12 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
         }
 
         if (iss4.fail())
+        {
             THROW(
                 file_context_error,
                 "error reading mass distribution data",
                 ve.doc_name());
+        }
     }
 
     const auto& bsize = bbox.size();
@@ -120,7 +125,9 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
                     float m                 = f * mass_part;
 
                     if (!massdistri.empty())
+                    {
                         m = massdistri[ptr];
+                    }
 
                     voxels.emplace_back(
                         vector3f(vector3(
@@ -142,7 +149,9 @@ void voxel_data::load(const xml_elem& ve, const boxf& bbox, double volume)
     if (massdistri.empty())
     {
         for (auto& elem : voxels)
+        {
             elem.relative_mass /= mass_part_sum;
+        }
     }
 
     // compute neighbouring information

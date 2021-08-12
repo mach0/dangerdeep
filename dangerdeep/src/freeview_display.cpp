@@ -68,8 +68,8 @@ using std::vector;
 
 void freeview_display::pre_display() const { }
 
-freeview_display::projection_data
-freeview_display::get_projection_data(game& gm) const
+auto freeview_display::get_projection_data(game& gm) const
+    -> freeview_display::projection_data
 {
     projection_data pd;
     pd.x     = 0;
@@ -152,7 +152,7 @@ freeview_display::~freeview_display()
     texturecache().unref(underwater_background);
 }
 
-vector3 freeview_display::get_viewpos(class game& gm) const
+auto freeview_display::get_viewpos(class game& gm) const -> vector3
 {
     return gm.get_player()->get_pos() + add_pos;
 }
@@ -172,7 +172,7 @@ void freeview_display::display() const
     post_display();
 }
 
-bool freeview_display::handle_key_event(const key_data& k)
+auto freeview_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -221,7 +221,8 @@ bool freeview_display::handle_key_event(const key_data& k)
     return false;
 }
 
-bool freeview_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto freeview_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     if (m.left())
     {
@@ -233,7 +234,8 @@ bool freeview_display::handle_mouse_motion_event(const mouse_motion_data& m)
     return false;
 }
 
-bool freeview_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto freeview_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+    -> bool
 {
     glPushMatrix();
     glLoadIdentity();
@@ -275,10 +277,14 @@ void freeview_display::draw_objects(
     {
         bool istorp = (dynamic_cast<const torpedo*>(object) != nullptr);
         if (istorp && !withunderwaterweapons)
+        {
             continue;
+        }
 
         if (aboard && object == player)
+        {
             continue;
+        }
         glPushMatrix();
 
         if (mirrorclip && !istorp)

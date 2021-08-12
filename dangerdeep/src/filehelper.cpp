@@ -164,10 +164,12 @@ directory::directory(const std::string& filename) : dir(nullptr)
     }
     dir = opendir(filename.c_str());
     if (!dir)
+    {
         THROW(error, std::string("Can't open directory ") + filename);
+    }
 }
 
-std::string directory::read()
+auto directory::read() -> std::string
 {
     struct dirent* dir_entry = readdir(dir);
     if (dir_entry)
@@ -182,13 +184,13 @@ directory::~directory()
     closedir(dir);
 }
 
-bool make_dir(const std::string& dirname)
+auto make_dir(const std::string& dirname) -> bool
 {
     int err = mkdir(dirname.c_str(), 0755);
     return (err != -1);
 }
 
-std::string get_current_directory()
+auto get_current_directory() -> std::string
 {
     unsigned sz = 256;
     std::vector<char> s(sz);
@@ -206,23 +208,27 @@ std::string get_current_directory()
     return std::string(&s[0]) + PATHSEPARATOR;
 }
 
-bool is_directory(const std::string& filename)
+auto is_directory(const std::string& filename) -> bool
 {
     struct stat fileinfo;
     int err = stat(filename.c_str(), &fileinfo);
 
     if (err != 0)
+    {
         return false;
+    }
 
     if (S_ISDIR(fileinfo.st_mode))
+    {
         return true;
+    }
 
     return false;
 }
 
 #endif /* Win32 */
 
-bool is_file(const std::string& filename)
+auto is_file(const std::string& filename) -> bool
 {
     // Check if valid filename (can be file or directory)
     {
@@ -255,8 +261,7 @@ void directory::walk(
 
     std::function<void(const std::string&)> handle_directory;
 
-    handle_directory = [&](const std::string& current_path)
-    {
+    handle_directory = [&](const std::string& current_path) {
         directory d(current_path);
         for (std::string curr_file = d.read(); !curr_file.empty();
              curr_file             = d.read())

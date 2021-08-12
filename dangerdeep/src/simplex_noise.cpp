@@ -1,15 +1,18 @@
 #include "simplex_noise.h"
 
-std::vector<uint8_t> simplex_noise::noise_map2D(
+#include <cmath>
+
+auto simplex_noise::noise_map2D(
     vector2i size,
     unsigned ocatves,
     float persistence,
-    float coord_factor)
+    float coord_factor) -> std::vector<uint8_t>
 {
     double min = 1.0, max = 0.0, scale = 0.0;
     std::vector<double> values(size.x * size.y);
     std::vector<uint8_t> map(size.x * size.y);
     for (int y = 0; y < size.y; y++)
+    {
         for (int x = 0; x < size.x; x++)
         {
             values[y * size.x + x] = noise(
@@ -17,55 +20,65 @@ std::vector<uint8_t> simplex_noise::noise_map2D(
                 ocatves,
                 persistence);
             if (values[y * size.x + x] > max)
+            {
                 max = values[y * size.x + x];
+            }
             if (values[y * size.x + x] < min)
+            {
                 min = values[y * size.x + x];
+            }
         }
+    }
     scale = 255.0 / (max - min);
     for (int y = 0; y < size.y; y++)
+    {
         for (int x = 0; x < size.x; x++)
         {
             map[y * size.x + x] = (values[y * size.x + x] - min) * scale;
         }
+    }
     return map;
 }
-double simplex_noise::noise(vector2 coord, unsigned ocatves, float persistence)
+auto simplex_noise::noise(vector2 coord, unsigned ocatves, float persistence)
+    -> double
 {
     double sum = 0.0, amplitude, frequency;
     for (unsigned int i = 0; i < ocatves; i++)
     {
-        amplitude = pow(persistence, float(i));
+        amplitude = std::pow(persistence, float(i));
         frequency = 1 << i;
         sum += interpolate2D(coord * frequency) * amplitude;
     }
     return sum;
 }
 
-double simplex_noise::noise(vector3 coord, unsigned ocatves, float persistence)
+auto simplex_noise::noise(vector3 coord, unsigned ocatves, float persistence)
+    -> double
 {
     double sum = 0.0, amplitude, frequency;
     for (unsigned int i = 0; i < ocatves; i++)
     {
-        amplitude = pow(persistence, float(i));
+        amplitude = std::pow(persistence, float(i));
         frequency = 1 << i;
         sum += interpolate3D(coord * frequency) * amplitude;
     }
     return sum;
 }
 
-double simplex_noise::noise(vector4 coord, unsigned ocatves, float persistence)
+auto simplex_noise::noise(vector4 coord, unsigned ocatves, float persistence)
+    -> double
 {
     double sum = 0.0, amplitude, frequency;
     for (unsigned int i = 0; i < ocatves; i++)
     {
-        amplitude = pow(persistence, float(i));
+        amplitude = std::pow(persistence, float(i));
         frequency = 1 << i;
         sum += interpolate4D(coord * frequency) * amplitude;
     }
     return sum;
 }
 
-double simplex_noise::interpolate2D(const vector2& coord)
+auto simplex_noise::interpolate2D(const vector2& coord) -> double
 {
 // Skew and unskew factors are a bit hairy for 2D, so define them as constants
 // This is (sqrt(3.0)-1.0)/2.0
@@ -120,7 +133,9 @@ double simplex_noise::interpolate2D(const vector2& coord)
     // Calculate the contribution from the three corners
     double t0 = 0.5 - x0 * x0 - y0 * y0;
     if (t0 < 0)
+    {
         n0 = 0.0;
+    }
     else
     {
         t0 *= t0;
@@ -130,7 +145,9 @@ double simplex_noise::interpolate2D(const vector2& coord)
 
     double t1 = 0.5 - x1 * x1 - y1 * y1;
     if (t1 < 0)
+    {
         n1 = 0.0;
+    }
     else
     {
         t1 *= t1;
@@ -139,7 +156,9 @@ double simplex_noise::interpolate2D(const vector2& coord)
 
     double t2 = 0.5 - x2 * x2 - y2 * y2;
     if (t2 < 0)
+    {
         n2 = 0.0;
+    }
     else
     {
         t2 *= t2;
@@ -151,7 +170,7 @@ double simplex_noise::interpolate2D(const vector2& coord)
     return 70.0 * (n0 + n1 + n2);
 }
 
-double simplex_noise::interpolate3D(const vector3& coord)
+auto simplex_noise::interpolate3D(const vector3& coord) -> double
 {
 #define F3 0.333333333333
 #define G3 0.166666666667
@@ -266,7 +285,9 @@ double simplex_noise::interpolate3D(const vector3& coord)
     // Calculate the contribution from the four corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0;
     if (t0 < 0)
+    {
         n0 = 0.0;
+    }
     else
     {
         t0 *= t0;
@@ -274,7 +295,9 @@ double simplex_noise::interpolate3D(const vector3& coord)
     }
     double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
     if (t1 < 0)
+    {
         n1 = 0.0;
+    }
     else
     {
         t1 *= t1;
@@ -282,7 +305,9 @@ double simplex_noise::interpolate3D(const vector3& coord)
     }
     double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
     if (t2 < 0)
+    {
         n2 = 0.0;
+    }
     else
     {
         t2 *= t2;
@@ -290,7 +315,9 @@ double simplex_noise::interpolate3D(const vector3& coord)
     }
     double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
     if (t3 < 0)
+    {
         n3 = 0.0;
+    }
     else
     {
         t3 *= t3;
@@ -301,7 +328,7 @@ double simplex_noise::interpolate3D(const vector3& coord)
     return 32.0 * (n0 + n1 + n2 + n3);
 }
 
-double simplex_noise::interpolate4D(const vector4& coord)
+auto simplex_noise::interpolate4D(const vector4& coord) -> double
 {
 // The skewing and unskewing factors are hairy again for the 4D case
 // This is (sqrt(5.0)-1.0)/4.0
@@ -408,7 +435,9 @@ double simplex_noise::interpolate4D(const vector4& coord)
     // Calculate the contribution from the five corners
     double t0 = 0.6 - x0 * x0 - y0 * y0 - z0 * z0 - w0 * w0;
     if (t0 < 0)
+    {
         n0 = 0.0;
+    }
     else
     {
         t0 *= t0;
@@ -416,7 +445,9 @@ double simplex_noise::interpolate4D(const vector4& coord)
     }
     double t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1 - w1 * w1;
     if (t1 < 0)
+    {
         n1 = 0.0;
+    }
     else
     {
         t1 *= t1;
@@ -424,7 +455,9 @@ double simplex_noise::interpolate4D(const vector4& coord)
     }
     double t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2 - w2 * w2;
     if (t2 < 0)
+    {
         n2 = 0.0;
+    }
     else
     {
         t2 *= t2;
@@ -432,7 +465,9 @@ double simplex_noise::interpolate4D(const vector4& coord)
     }
     double t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3 - w3 * w3;
     if (t3 < 0)
+    {
         n3 = 0.0;
+    }
     else
     {
         t3 *= t3;
@@ -440,7 +475,9 @@ double simplex_noise::interpolate4D(const vector4& coord)
     }
     double t4 = 0.6 - x4 * x4 - y4 * y4 - z4 * z4 - w4 * w4;
     if (t4 < 0)
+    {
         n4 = 0.0;
+    }
     else
     {
         t4 *= t4;

@@ -44,15 +44,19 @@ class bv_tree
             invalid_index};
 
         spheref volume;
-        bool is_leaf() const { return tri_idx[2] != invalid_index; }
+        [[nodiscard]] bool is_leaf() const
+        {
+            return tri_idx[2] != invalid_index;
+        }
 
-        const vector3f&
+        [[nodiscard]] const vector3f&
         get_pos(const std::vector<vector3f>& vertices, unsigned corner) const
         {
             return vertices[tri_idx[corner]];
         }
 
-        vector3f get_center(const std::vector<vector3f>& vertices) const
+        [[nodiscard]] vector3f
+        get_center(const std::vector<vector3f>& vertices) const
         {
             return (get_pos(vertices, 0) + get_pos(vertices, 1)
                     + get_pos(vertices, 2))
@@ -71,10 +75,13 @@ class bv_tree
         matrix4f transform; ///< Transformation to use for tree
 
         /// return the node for the subtree
-        const node& get_node() const { return tree.nodes[node_index]; }
+        [[nodiscard]] const node& get_node() const
+        {
+            return tree.nodes[node_index];
+        }
 
         /// Is this a leaf node?
-        bool is_leaf() const { return get_node().is_leaf(); }
+        [[nodiscard]] bool is_leaf() const { return get_node().is_leaf(); }
 
         /// Create param from whole bv tree
         param(
@@ -99,14 +106,14 @@ class bv_tree
         }
 
         /// Get subnode param
-        param children(unsigned i) const
+        [[nodiscard]] param children(unsigned i) const
         {
             auto& current_node = get_node();
             return param(tree, current_node.tri_idx[i], vertices, transform);
         }
 
         /// Get transformed volume
-        spheref get_transformed_volume() const
+        [[nodiscard]] spheref get_transformed_volume() const
         {
             auto& current_node = get_node();
             return spheref(
@@ -115,7 +122,8 @@ class bv_tree
         }
 
         /// Determine which child is closer
-        unsigned get_index_of_closer_child(const vector3f& pos) const
+        [[nodiscard]] unsigned
+        get_index_of_closer_child(const vector3f& pos) const
         {
             auto& current_node = get_node();
             if (current_node.is_leaf())
@@ -143,7 +151,7 @@ class bv_tree
         std::vector<bv_tree::node>&& leaf_nodes);
 
     /// Check if position is inside the tree
-    bool is_inside(const vector3f& v) const;
+    [[nodiscard]] bool is_inside(const vector3f& v) const;
 
     /// determine if two bv_trees intersect each other (are colliding). A list
     /// of contact points is computed. Note this can be very slow!
@@ -179,7 +187,7 @@ class bv_tree
         unsigned depth) const;
 
     /// Is the tree undefined?
-    bool empty() const { return nodes.empty(); }
+    [[nodiscard]] bool empty() const { return nodes.empty(); }
 
   protected:
     /// The nodes of the tree. The root node is always the last one.

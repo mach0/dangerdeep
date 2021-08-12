@@ -93,12 +93,15 @@ class geoclipmap
 
         area() : bl(0, 0), tr(-1, -1) { }
         area(const vector2i& a, const vector2i& b) : bl(a), tr(b) { }
-        area intersection(const area& other) const
+        [[nodiscard]] area intersection(const area& other) const
         {
             return area(bl.max(other.bl), tr.min(other.tr));
         }
-        vector2i size() const { return {tr.x - bl.x + 1, tr.y - bl.y + 1}; }
-        bool empty() const
+        [[nodiscard]] vector2i size() const
+        {
+            return {tr.x - bl.x + 1, tr.y - bl.y + 1};
+        }
+        [[nodiscard]] bool empty() const
         {
             vector2i sz = size();
             return sz.x <= 0 || sz.y <= 0;
@@ -170,9 +173,12 @@ class geoclipmap
     std::vector<std::unique_ptr<level>> levels;
     height_generator& height_gen;
 
-    int mod(int n) const { return n & resolution_vbo_mod; }
+    [[nodiscard]] int mod(int n) const { return n & resolution_vbo_mod; }
 
-    vector2i clamp(const vector2i& v) const { return {mod(v.x), mod(v.y)}; }
+    [[nodiscard]] vector2i clamp(const vector2i& v) const
+    {
+        return {mod(v.x), mod(v.y)};
+    }
 
     /*mutable*/ std::unique_ptr<glsl_shader_setup> myshader[2];
     // mutable glsl_shader_setup myshader_mirror;

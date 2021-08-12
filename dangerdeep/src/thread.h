@@ -67,7 +67,7 @@ class thread
     virtual void deinit() {
     } ///< will be called once after main thread loop ends
 
-    bool abort_requested() const { return abort_request; }
+    [[nodiscard]] bool abort_requested() const { return abort_request; }
 
   public:
     /// create a thread
@@ -132,7 +132,7 @@ class thread
         T* operator->() const { return p; }
 
         /// get pointer
-        const T* get() const { return p; }
+        [[nodiscard]] const T* get() const { return p; }
     };
 };
 

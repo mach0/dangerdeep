@@ -46,7 +46,7 @@ void water_splash::render_cylinder(
         .render();
 }
 
-double water_splash::compute_height(double t) const
+auto water_splash::compute_height(double t) const -> double
 {
     if (t <= risetime)
     {
@@ -108,7 +108,9 @@ void water_splash::simulate(double delta_time, game& gm)
 
     resttime -= delta_time;
     if (resttime <= -0.5)
+    {
         kill();
+    }
 }
 
 void water_splash::display() const

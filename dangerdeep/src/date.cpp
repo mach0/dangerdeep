@@ -40,7 +40,7 @@ using std::setfill;
 using std::setw;
 using std::string;
 
-unsigned date::length_of_year(unsigned year)
+auto date::length_of_year(unsigned year) -> unsigned
 {
     if (year % 4 == 0)
     {
@@ -63,13 +63,17 @@ unsigned date::length_of_year(unsigned year)
     return 365;
 }
 
-unsigned date::length_of_month(unsigned year, unsigned month)
+auto date::length_of_month(unsigned year, unsigned month) -> unsigned
 {
     if (month == January || month == March || month == May || month == July
         || month == August || month == October || month == December)
+    {
         return 31;
+    }
     if (month == February)
+    {
         return (length_of_year(year) == 366) ? 29 : 28;
+    }
     return 30;
 }
 
@@ -124,9 +128,13 @@ void date::set_linear()
 {
     linear_time = 0;
     for (unsigned i = 1939; i < date_values[year]; ++i)
+    {
         linear_time += length_of_year(i);
+    }
     for (unsigned i = 1; i < date_values[month]; ++i)
+    {
         linear_time += length_of_month(date_values[year], i);
+    }
     linear_time += date_values[day] - 1;
     linear_time *= 86400;
     linear_time += date_values[hour] * 3600;
@@ -141,14 +149,18 @@ date::date(unsigned lt) : linear_time(lt)
 
 date::date(const std::string& datestr)
 {
-    string::size_type moff = datestr.find("/");
+    string::size_type moff = datestr.find('/');
     if (moff == string::npos)
+    {
         THROW(error, "error in parsing date string, missed / for months");
+    }
     date_values[year]      = atoi(datestr.substr(0, moff).c_str());
     string rest            = datestr.substr(moff + 1);
-    string::size_type doff = rest.find("/");
+    string::size_type doff = rest.find('/');
     if (doff == string::npos)
+    {
         THROW(error, "error in parsing date string, missed / for days");
+    }
     date_values[month]  = atoi(rest.substr(0, doff).c_str());
     date_values[day]    = atoi(rest.substr(doff + 1).c_str());
     date_values[hour]   = 0;
@@ -157,27 +169,27 @@ date::date(const std::string& datestr)
     set_linear();
 }
 
-bool date::operator<(const date& d) const
+auto date::operator<(const date& d) const -> bool
 {
     return unsigned(linear_time / 86400) < unsigned(d.linear_time / 86400);
 }
 
-bool date::operator<=(const date& d) const
+auto date::operator<=(const date& d) const -> bool
 {
     return unsigned(linear_time / 86400) <= unsigned(d.linear_time / 86400);
 }
 
-bool date::operator==(const date& d) const
+auto date::operator==(const date& d) const -> bool
 {
     return unsigned(linear_time / 86400) == unsigned(d.linear_time / 86400);
 }
 
-bool date::operator>=(const date& d) const
+auto date::operator>=(const date& d) const -> bool
 {
     return unsigned(linear_time / 86400) >= unsigned(d.linear_time / 86400);
 }
 
-bool date::operator>(const date& d) const
+auto date::operator>(const date& d) const -> bool
 {
     return unsigned(linear_time / 86400) > unsigned(d.linear_time / 86400);
 }
@@ -207,21 +219,33 @@ void date::load(const xml_elem& parent)
         &date_values[second]);
     // some plausibility checks
     if (date_values[year] < 1939 || date_values[year] > 1945)
+    {
         THROW(error, "date year out of valid range");
+    }
     if (date_values[month] < 1 || date_values[month] > 12)
+    {
         THROW(error, "date month out of valid range");
+    }
     if (date_values[day] < 1 || date_values[day] > 31)
+    {
         THROW(error, "date day out of valid range");
+    }
     if (date_values[hour] > 23)
+    {
         THROW(error, "date hour out of valid range");
+    }
     if (date_values[minute] > 59)
+    {
         THROW(error, "date minute out of valid range");
+    }
     if (date_values[second] > 59)
+    {
         THROW(error, "date second out of valid range");
+    }
     set_linear();
 }
 
-std::string date::to_str() const
+auto date::to_str() const -> std::string
 {
     char tmp[32];
     sprintf(

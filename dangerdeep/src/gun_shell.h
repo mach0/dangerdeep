@@ -45,13 +45,14 @@ class gun_shell : public sea_object
 
     void load(const xml_elem& parent) override;
     void save(xml_elem& parent) const override;
-    auto get_caliber() const { return caliber; }
+    [[nodiscard]] auto get_caliber() const { return caliber; }
 
     void simulate(double delta_time, game& gm) override;
     virtual void display() const;
-    float surface_visibility(const vector2& watcher) const override;
+    [[nodiscard]] float
+    surface_visibility(const vector2& watcher) const override;
     // acceleration is only gravity and already handled by sea_object
-    virtual double damage() const { return damage_amount; }
+    [[nodiscard]] virtual double damage() const { return damage_amount; }
 
   protected:
     vector3 oldpos; // position at last iteration (for collision detection)

@@ -59,13 +59,13 @@ struct physical_value
     physical_value(T v) : value(v) { }
 
     /// Rotate 3d values
-    auto rotate(const quaternion& q) const
+    [[nodiscard]] auto rotate(const quaternion& q) const
     {
         return physical_value<T, P>(q.rotate(value));
     }
 
     /// Cross product for 3d values
-    auto cross(const vector3& v) const
+    [[nodiscard]] auto cross(const vector3& v) const
     {
         return physical_value<T, P>(value.cross(v));
     }
@@ -124,7 +124,8 @@ auto operator*(const physical_value<T, physical_unit::velocity>& v, duration d)
 }
 
 /// Angular velocity
-using angular_velocity = physical_value<double, physical_unit::angular_velocity>;
+using angular_velocity =
+    physical_value<double, physical_unit::angular_velocity>;
 
 angle operator*(angular_velocity av, duration d)
 {

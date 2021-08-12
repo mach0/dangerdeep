@@ -35,7 +35,7 @@ cfg::cfg() = default;
 
 cfg::~cfg() = default;
 
-bool cfg::set_str(const string& name, const string& value)
+auto cfg::set_str(const string& name, const string& value) -> bool
 {
     auto it = valb.find(name);
 
@@ -128,13 +128,19 @@ void cfg::load(const string& filename)
                 key_mod mod{key_mod::none};
 
                 if (ctrl)
+                {
                     mod = mod | key_mod::ctrl;
+                }
 
                 if (alt)
+                {
                     mod = mod | key_mod::alt;
+                }
 
                 if (shift)
+                {
                     mod = mod | key_mod::shift;
+                }
 
                 set_key(nr, keycode, mod);
             }
@@ -144,8 +150,10 @@ void cfg::load(const string& filename)
             bool found = set_str(elem.get_name(), elem.attr());
 
             if (!found)
+            {
                 log_warning(
                     "config option not registered: " << elem.get_name());
+            }
         }
     }
 }
@@ -228,7 +236,9 @@ void cfg::register_key(const std::string& name, key_code kc, key_mod km)
     }
 
     if (nr == key_command::number)
+    {
         THROW(error, std::string("register_key with invalid name ") + name);
+    }
     valk[nr] = key(name, kc, km);
 }
 
@@ -236,94 +246,134 @@ void cfg::set(const string& name, bool value)
 {
     auto it = valb.find(name);
     if (it != valb.end())
+    {
         it->second = value;
+    }
     else
+    {
         THROW(error, string("cfg: set(), name not registered: ") + name);
+    }
 }
 
 void cfg::set(const string& name, int value)
 {
     auto it = vali.find(name);
     if (it != vali.end())
+    {
         it->second = value;
+    }
     else
+    {
         THROW(error, string("cfg: set(), name not registered: ") + name);
+    }
 }
 
 void cfg::set(const string& name, float value)
 {
     auto it = valf.find(name);
     if (it != valf.end())
+    {
         it->second = value;
+    }
     else
+    {
         THROW(error, string("cfg: set(), name not registered: ") + name);
+    }
 }
 
 void cfg::set(const string& name, const string& value)
 {
     auto it = vals.find(name);
     if (it != vals.end())
+    {
         it->second = value;
+    }
     else
+    {
         THROW(error, string("cfg: set(), name not registered: ") + name);
+    }
 }
 
 void cfg::set_key(key_command nr, key_code kc, key_mod km)
 {
     auto it = valk.find(nr);
     if (it != valk.end())
+    {
         it->second = key(it->second.action, kc, km);
+    }
     else
+    {
         THROW(error, string("cfg: set_key(), key number not registered: "));
+    }
 }
 
-bool cfg::getb(const string& name) const
+auto cfg::getb(const string& name) const -> bool
 {
     auto it = valb.find(name);
     if (it != valb.end())
+    {
         return it->second;
+    }
     else
+    {
         THROW(error, string("cfg: get(), name not registered: ") + name);
+    }
     return false;
 }
 
-int cfg::geti(const string& name) const
+auto cfg::geti(const string& name) const -> int
 {
     auto it = vali.find(name);
     if (it != vali.end())
+    {
         return it->second;
+    }
     else
+    {
         THROW(error, string("cfg: get(), name not registered: ") + name);
+    }
     return 0;
 }
 
-float cfg::getf(const string& name) const
+auto cfg::getf(const string& name) const -> float
 {
     auto it = valf.find(name);
     if (it != valf.end())
+    {
         return it->second;
+    }
     else
+    {
         THROW(error, string("cfg: get(), name not registered: ") + name);
+    }
     return 0;
 }
 
-string cfg::gets(const string& name) const
+auto cfg::gets(const string& name) const -> string
 {
     auto it = vals.find(name);
     if (it != vals.end())
+    {
         return it->second;
+    }
     else
+    {
         THROW(error, string("cfg: get(), name not registered: ") + name);
+    }
     return nullptr;
 }
 
-cfg::key cfg::getkey(key_command nr) const
+auto cfg::getkey(key_command nr) const -> cfg::key
 {
     auto it = valk.find(nr);
     if (it != valk.end())
+    {
         return it->second;
+    }
     else
+    {
         THROW(error, string("cfg: getkey(), key number not registered: "));
+    }
     return key();
 }
 
@@ -333,9 +383,11 @@ void cfg::parse_value(const string& s)
     // fixme: ignore values for unregistered names?
 
     if (s.length() < 3 || s[0] != '-' || s[1] != '-')
+    {
         return; // ignore it
+    }
 
-    string::size_type st = s.find("=");
+    string::size_type st = s.find('=');
     string s0, s1;
 
     if (st == string::npos)
@@ -359,7 +411,8 @@ void cfg::parse_value(const string& s)
     set_str(s0, s1); // ignore value if name is unkown
 }
 
-bool is_configured_key(key_command kc, const input_event_handler::key_data& kd)
+auto is_configured_key(key_command kc, const input_event_handler::key_data& kd)
+    -> bool
 {
     const auto& configured_key = cfg::instance().getkey(kc);
     return configured_key.keycode == kd.keycode

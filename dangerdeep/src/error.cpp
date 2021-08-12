@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <sstream>
 
-std::string error::throw_location(const char* file, unsigned line)
+auto error::throw_location(const char* file, unsigned line) -> std::string
 {
     std::ostringstream oss;
     oss << ", in file: " << file << ", in line: " << line;

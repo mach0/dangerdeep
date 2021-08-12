@@ -50,7 +50,7 @@ CRCHashArray g_RCHashArray;
 
 //!	Is list of extensions supported?
 
-GLboolean glexExtensionsSupported(char const* szExtensions)
+auto glexExtensionsSupported(char const* szExtensions) -> GLboolean
 {
     // 1: get the current rendering context...
 
@@ -68,7 +68,7 @@ GLboolean glexExtensionsSupported(char const* szExtensions)
 
 //!	Return the supported OpenGL version.
 
-GLuint glexGetVersion()
+auto glexGetVersion() -> GLuint
 {
     // 1: get the current rendering context...
 
@@ -81,7 +81,7 @@ GLuint glexGetVersion()
 
     // 2: call the context specific method...
 
-    return (GLuint) pContext->GetVersion();
+    return static_cast<GLuint>(pContext->GetVersion());
 }
 
 // =============================================================================================================

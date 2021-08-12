@@ -47,7 +47,7 @@ class vector4t
     }
 
     // not all of the following operations are sensible for homogenous vectors.
-    vector4t<D> normal() const
+    [[nodiscard]] vector4t<D> normal() const
     {
         D len = D(1.0) / length();
         return vector4t(x * len, y * len, z * len, w * len);
@@ -121,16 +121,19 @@ class vector4t
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
-    D square_length() const { return x * x + y * y + z * z + w * w; }
-    D length() const { return D(::sqrt(square_length())); }
+    [[nodiscard]] D square_length() const
+    {
+        return x * x + y * y + z * z + w * w;
+    }
+    [[nodiscard]] D length() const { return D(::sqrt(square_length())); }
 
-    D square_distance(const vector4t<D>& other) const
+    [[nodiscard]] D square_distance(const vector4t<D>& other) const
     {
         vector4t<D> n = *this - other;
         return n.square_length();
     }
 
-    D distance(const vector4t<D>& other) const
+    [[nodiscard]] D distance(const vector4t<D>& other) const
     {
         vector4t<D> n = *this - other;
         return n.length();
@@ -141,10 +144,10 @@ class vector4t
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
-    vector2t<D> xy() const { return vector2t<D>(x, y); }
-    vector3t<D> xyz() const { return vector3t<D>(x, y, z); }
+    [[nodiscard]] vector2t<D> xy() const { return vector2t<D>(x, y); }
+    [[nodiscard]] vector3t<D> xyz() const { return vector3t<D>(x, y, z); }
 
-    vector3t<D> to_real() const
+    [[nodiscard]] vector3t<D> to_real() const
     {
         return (w == 0) ? vector3t<D>() : vector3t<D>(x / w, y / w, z / w);
     }

@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include <stdexcept>
 
 int framebufferobject::fbo_supported = -1;
-bool framebufferobject::supported()
+auto framebufferobject::supported() -> bool
 {
     return true;
 }
@@ -42,7 +42,9 @@ framebufferobject::framebufferobject(
     depthbuf_id(0), mytex(attachedtex), bound(false)
 {
     if (!supported())
+    {
         THROW(error, "frame buffer objects are not supported!");
+    }
 
     // create and bind depth buffer if requested
     if (withdepthbuffer)
@@ -89,7 +91,7 @@ framebufferobject::framebufferobject(
     glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 }
 
-const char* framebufferobject::init_failure_reason(int status)
+auto framebufferobject::init_failure_reason(int status) -> const char*
 {
     switch (status)
     {
@@ -127,15 +129,21 @@ framebufferobject::~framebufferobject()
 void framebufferobject::destroy()
 {
     if (id)
+    {
         glDeleteFramebuffersEXT(1, &id);
+    }
     if (depthbuf_id)
+    {
         glDeleteRenderbuffersEXT(1, &depthbuf_id);
+    }
 }
 
 void framebufferobject::bind() const
 {
     if (bound)
+    {
         THROW(error, "FBO bind(): already bound!");
+    }
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, id);
     glPushAttrib(GL_VIEWPORT_BIT);
     glViewport(0, 0, mytex.get_gl_width(), mytex.get_gl_height());
@@ -145,7 +153,9 @@ void framebufferobject::bind() const
 void framebufferobject::unbind() const
 {
     if (!bound)
+    {
         THROW(error, "FBO unbind(): not bound yet!");
+    }
     glPopAttrib();
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     bound = false;

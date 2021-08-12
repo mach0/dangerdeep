@@ -54,7 +54,9 @@ image::image(string s) :
 
         // avoid wasting too much memory.
         if (maxs > 256)
+        {
             maxs = 256;
+        }
 
         unsigned w = width, h = height;
         while (w > maxs)

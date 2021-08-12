@@ -89,11 +89,11 @@ bool compute(
     vector3t<T> q1       = vb2 - vb0;
     vector3t<T> R        = Q - P;
 
-    T dp0                = p0.y * p1.z - p1.y * p0.z;
-    T dp1                = p0.x * p1.z - p1.x * p0.z;
-    T dp2                = p0.x * p1.y - p1.x * p0.y;
-    T detAq0             = q0.x * dp0 - q0.y * dp1 + q0.z * dp2;
-    T detAq1             = q1.x * dp0 - q1.y * dp1 + q1.z * dp2;
+    T dp0    = p0.y * p1.z - p1.y * p0.z;
+    T dp1    = p0.x * p1.z - p1.x * p0.z;
+    T dp2    = p0.x * p1.y - p1.x * p0.y;
+    T detAq0 = q0.x * dp0 - q0.y * dp1 + q0.z * dp2;
+    T detAq1 = q1.x * dp0 - q1.y * dp1 + q1.z * dp2;
 
     // Note: we use bitwise and/or, because it is faster on modern
     // processors and the result is the same as with logical and/or
@@ -159,14 +159,14 @@ bool compute(
     else
     {
         // b1_legal must be true here
-        aone.x         = R.determinate(p1, q1) / detAq1;
-        aone.y         = p0.determinate(R, q1) / detAq1;
+        aone.x = R.determinate(p1, q1) / detAq1;
+        aone.y = p0.determinate(R, q1) / detAq1;
 
         vector3t<T> q2 = q1 - q0;
         vector3t<T> R2 = R + q0;
 
-        atwo.x         = R2.determinate(p1, q2) / detAq2;
-        atwo.y         = p0.determinate(R2, q2) / detAq2;
+        atwo.x = R2.determinate(p1, q2) / detAq2;
+        atwo.y = p0.determinate(R2, q2) / detAq2;
     }
 
     // now we solve for intersections of line aone, atwo-aone
@@ -179,7 +179,7 @@ bool compute(
     T dx2                = d.x * d.x;
     T dy2                = d.y * d.y;
 
-    bool delta0_legal    = !helper::is_zero_with_tolerance(d.y, eps)
+    bool delta0_legal = !helper::is_zero_with_tolerance(d.y, eps)
                         && (delta0 > nullT) && (delta0 < dy2);
 
     bool delta1_legal = !helper::is_zero_with_tolerance(d.x, eps)

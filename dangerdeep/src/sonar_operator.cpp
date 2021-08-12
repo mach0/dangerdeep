@@ -70,7 +70,9 @@ void sonar_operator::simulate(game& gm, double delta_t)
     // 	printf("delta_t=%f last_simulation_step_time=%f simulation_step=%f\n",
     // 	       delta_t, last_simulation_step_time, simulation_step);
     if (last_simulation_step_time < simulation_step)
+    {
         return;
+    }
 
     // fixme: detection is very crude, because the operator doesn't use
     // frequency band pass filters. When passing several ships closely, only 1-2
@@ -153,7 +155,7 @@ void sonar_operator::simulate(game& gm, double delta_t)
             }
             else
             {
-                angle add = angle(
+                auto add = angle(
                     (((find_peak_try & 1) ? 1 : -1) * turn_speed_slow
                      - sub_turn_velocity)
                     * simulation_step);
@@ -173,8 +175,8 @@ void sonar_operator::simulate(game& gm, double delta_t)
                     if (find_peak_try > 1)
                     {
                         // tried once ccw and once cw, abort
-                        // 					printf("couldn't find fine peak angle,
-                        // report current angle as contact\n");
+                        // 					printf("couldn't find fine peak
+                        // angle, report current angle as contact\n");
                         shipclass sc = signal.second.determine_shipclass();
                         add_contact(
                             current_angle + sub_heading,
@@ -194,7 +196,7 @@ void sonar_operator::simulate(game& gm, double delta_t)
     }
 }
 
-bool sonar_operator::keeps_in_find_peak_limit(angle add)
+auto sonar_operator::keeps_in_find_peak_limit(angle add) -> bool
 {
     // current_angle must be within find_peak_lower_limit, find_peak_upper_limit
     // check if current_angle + add is also within limit, if not return false,

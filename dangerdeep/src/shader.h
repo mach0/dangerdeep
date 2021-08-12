@@ -110,7 +110,7 @@ class glsl_program
     static bool is_fixed_in_use();
 
     /// get location (number) of uniform value
-    unsigned get_uniform_location(const std::string& name) const;
+    [[nodiscard]] unsigned get_uniform_location(const std::string& name) const;
 
     /// set up texture for a particular shader name
     void
@@ -147,7 +147,8 @@ class glsl_program
     void set_uniform(unsigned loc, const colorf& value) const;
 
     /// get vertex attribute index
-    unsigned get_vertex_attrib_index(const std::string& name) const;
+    [[nodiscard]] unsigned
+    get_vertex_attrib_index(const std::string& name) const;
 
   protected:
     unsigned id{0};
@@ -178,7 +179,7 @@ class glsl_shader_setup
     static void use_fixed();
 
     /// get location (number) of uniform value
-    unsigned get_uniform_location(const std::string& name) const
+    [[nodiscard]] unsigned get_uniform_location(const std::string& name) const
     {
         return prog.get_uniform_location(name);
     }
@@ -257,7 +258,8 @@ class glsl_shader_setup
     }
 
     /// get vertex attribute index
-    unsigned get_vertex_attrib_index(const std::string& name) const
+    [[nodiscard]] unsigned
+    get_vertex_attrib_index(const std::string& name) const
     {
         return prog.get_vertex_attrib_index(name);
     }

@@ -40,7 +40,7 @@ class frustum
     /// construct frustum from given data
     frustum(polygon viewwindow, const vector3& viewp, double znear);
     /// clip polygon to frustum and return intersecting polygon
-    polygon clip(polygon p) const;
+    [[nodiscard]] polygon clip(polygon p) const;
     /*
     /// render frustum as test
     void draw() const;
@@ -52,5 +52,5 @@ class frustum
     /// translate all points
     void translate(const vector3& delta);
     /// generate mirrored frustum (at z=0 plane)
-    frustum get_mirrored() const;
+    [[nodiscard]] frustum get_mirrored() const;
 };

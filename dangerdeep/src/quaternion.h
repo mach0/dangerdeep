@@ -57,7 +57,7 @@ class quaterniont
 
     quaterniont(const D& s_, vector3t<D> v_) : s(s_), v(std::move(v_)) { }
 
-    quaterniont<D> normal() const
+    [[nodiscard]] quaterniont<D> normal() const
     {
         D len = D(1.0) / length();
         return quaterniont(s * len, v * len);
@@ -86,7 +86,7 @@ class quaterniont
     }
 
     quaterniont<D> operator-() const { return quaterniont(-s, -v); }
-    quaterniont<D> conj() const { return quaterniont(s, -v); }
+    [[nodiscard]] quaterniont<D> conj() const { return quaterniont(s, -v); }
 
     quaterniont<D>& operator+=(const quaterniont<D>& other)
     {
@@ -113,8 +113,8 @@ class quaterniont
         return s == other.s && v == other.v;
     }
 
-    D square_length() const { return s * s + v * v; }
-    D length() const { return D(sqrt(square_length())); }
+    [[nodiscard]] D square_length() const { return s * s + v * v; }
+    [[nodiscard]] D length() const { return D(sqrt(square_length())); }
 
     quaterniont<D> operator*(const quaterniont<D>& o) const
     {
@@ -181,13 +181,13 @@ class quaterniont
         axis  = v * (D(1.0) / sin(a));
     }
 
-    vector3t<D> rotate(const D& x, const D& y, const D& z) const
+    [[nodiscard]] vector3t<D> rotate(const D& x, const D& y, const D& z) const
     {
         quaterniont<D> p2 = *this * vec(x, y, z) * this->conj();
         return p2.v;
     }
 
-    vector3t<D> rotate(const vector3t<D>& p) const
+    [[nodiscard]] vector3t<D> rotate(const vector3t<D>& p) const
     {
         quaterniont<D> p2 = *this * vec(p) * this->conj();
         return p2.v;
@@ -204,7 +204,7 @@ class quaterniont
     }
 
     /// generate a 3x3 rotation matrix from quaternion
-    matrix3t<D> rotmat() const
+    [[nodiscard]] matrix3t<D> rotmat() const
     {
         D x2 = v.x * v.x, y2 = v.y * v.y, z2 = v.z * v.z;
 
@@ -224,7 +224,7 @@ class quaterniont
     }
 
     /// generate a 4x4 homogenous matrix for rotation from quaternion
-    matrix4t<D> rotmat4() const
+    [[nodiscard]] matrix4t<D> rotmat4() const
     {
         D x2 = v.x * v.x, y2 = v.y * v.y, z2 = v.z * v.z;
 

@@ -45,9 +45,9 @@ get_circle(const std::vector<vector3f>& pos, int v0, int v1, int v2)
     // If we use the test_graph program with many nodes (>=2000) an error is
     // triggered in adjacency computation that may be a result of false checks
     // here!
-    vector2f a   = pos[v0].xy();
-    vector2f b   = pos[v1].xy();
-    vector2f c   = pos[v2].xy();
+    vector2f a = pos[v0].xy();
+    vector2f b = pos[v1].xy();
+    vector2f c = pos[v2].xy();
 
     vector2f bao = (b - a).orthogonal();
     vector2f cbo = (c - b).orthogonal();

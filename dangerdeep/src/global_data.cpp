@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 using namespace std;
 
 // same with version string
-string get_program_version()
+auto get_program_version() -> string
 {
     return string(VERSION);
 }
@@ -94,11 +94,9 @@ void display_loading_screen()
     unsigned fh = font_arial->get_height();
     unsigned y  = 0;
 
-    for (list<string>::const_iterator it = loading_screen_messages.begin();
-         it != loading_screen_messages.end();
-         ++it)
+    for (auto& loading_screen_message : loading_screen_messages)
     {
-        font_arial->print(0, y, *it);
+        font_arial->print(0, y, loading_screen_message);
         y += fh;
     }
     SYS().unprepare_2d_drawing();
@@ -126,7 +124,7 @@ void add_loading_screen(const string& msg)
     display_loading_screen();
 }
 
-string get_time_string(double tm)
+auto get_time_string(double tm) -> string
 {
     auto seconds     = unsigned(floor(helper::mod(tm, 86400.0)));
     unsigned hours   = seconds / 3600;
@@ -168,7 +166,9 @@ void jacobi_amp(double u, double k, double& sn, double& cn)
             en[i] = (emc = sqrt(emc));
             c     = 0.5 * (a + emc);
             if (fabs(a - emc) <= CA * a)
+            {
                 break;
+            }
             emc *= a;
             a = c;
         }
@@ -209,7 +209,7 @@ void jacobi_amp(double u, double k, double& sn, double& cn)
 }
 #undef CA
 
-vector2f transform_real_to_geo(const vector2f& pos)
+auto transform_real_to_geo(const vector2f& pos) -> vector2f
 {
     double sn, cn, r;
     vector2f coord;
@@ -226,56 +226,67 @@ vector2f transform_real_to_geo(const vector2f& pos)
     return coord;
 }
 
-static double transform_nautic_coord_to_real(
+static auto transform_nautic_coord_to_real(
     const string& s,
     char minus,
     char plus,
-    int degmax)
+    int degmax) -> double
 {
     if (s.length() < 2)
+    {
         THROW(error, string("nautic coordinate invalid ") + s);
+    }
 
     char sign = s[s.length() - 1];
     if (sign != minus && sign != plus)
+    {
         THROW(error, string("nautic coordinate (direction sign) invalid ") + s);
+    }
 
     // find separator
-    string::size_type st = s.find("/");
+    string::size_type st = s.find('/');
     if (st == string::npos)
+    {
         THROW(error, string("no separator in position string ") + s);
+    }
 
     string degrees = s.substr(0, st);
     string minutes = s.substr(st + 1, s.length() - st - 2);
     int deg        = atoi(degrees.c_str());
 
     if (deg < 0 || deg > degmax)
+    {
         THROW(
             error,
             string("degrees are not in range [0...180/360] in position string ")
                 + s);
+    }
 
     int mts = atoi(minutes.c_str());
     if (mts < 0 || mts > 59)
+    {
         THROW(
             error,
             string("minutes are not in [0...59] in position string ") + s);
+    }
 
     return (sign == minus ? -1 : 1)
            * ((constant::DEGREE_IN_METERS * deg)
               + (constant::MINUTE_IN_METERS * mts));
 }
 
-double transform_nautic_posx_to_real(const string& s)
+auto transform_nautic_posx_to_real(const string& s) -> double
 {
     return transform_nautic_coord_to_real(s, 'W', 'E', 180);
 }
 
-double transform_nautic_posy_to_real(const string& s)
+auto transform_nautic_posy_to_real(const string& s) -> double
 {
     return transform_nautic_coord_to_real(s, 'S', 'N', 90);
 }
 
-std::list<std::string> string_split(const std::string& src, char splitter)
+auto string_split(const std::string& src, char splitter)
+    -> std::list<std::string>
 {
     std::list<std::string> result;
     std::string::size_type where = 0, st = 0;
@@ -306,17 +317,21 @@ void save_pgm(
     std::ofstream osg(fn);
 
     if (!osg.good())
+    {
         THROW(error, std::string("Can't open output file ") + fn);
+    }
 
     osg << "P5\n";
     osg << w << " " << h << "\n255\n";
 
     if (!stride)
+    {
         stride = w;
+    }
 
     for (unsigned y = 0; y < h; ++y)
     {
-        osg.write((const char*) d, w);
+        osg.write(reinterpret_cast<const char*>(d), w);
         d += stride;
     }
 }

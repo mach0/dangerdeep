@@ -129,7 +129,9 @@ void coastsegment::segcl::push_back_point(const coastsegment::segpos& sp)
 {
     // fixme: avoid double points here, maybe assert that
     if (points.empty() || !(points.back() == sp))
+    {
         points.push_back(sp);
+    }
 }
 
 // the least distance between two points is around 0.014, fixme test again
@@ -139,7 +141,9 @@ void coastsegment::cacheentry::push_back_point(const vector2& p)
     {
         double d = points.back().square_distance(p);
         if (d < 1.0f)
+        {
             return; // fixme test hack
+        }
         ASSERT(
             d >= 1.0f,
             "error: points are too close %f    %f %f  %f %f",
@@ -162,7 +166,9 @@ void coastsegment::generate_point_cache(
     {
         // cache generated and unchanged?
         if (pointcache.size() > 0 && pointcachedetail == detail)
+        {
             return;
+        }
 
         //	cout << "creating cache entry for segment " << roff << " empty? " <<
         //(pointcache.size() > 0) << " cached detail " << pointcachedetail << "
@@ -176,7 +182,9 @@ void coastsegment::generate_point_cache(
         for (unsigned i = 0; i < nrcl; ++i)
         {
             if (cl_handled[i])
+            {
                 continue;
+            }
 
             cacheentry ce;
 
@@ -201,7 +209,8 @@ void coastsegment::generate_point_cache(
                     ce.points.push_back(vector2(point.x, point.y) * sc);
                 }
                 int next = cl.next;
-                //				cout << "startpos " << cl.beginpos << " endpos: "
+                //				cout << "startpos " << cl.beginpos << " endpos:
+                //"
                 //<< cl.endpos << " next " << next << " next startpos: " <<
                 // segcls[next].beginpos << "\n"; 				cout <<
                 // "current="<<current<<" next="<<next<<"\n";
@@ -212,14 +221,18 @@ void coastsegment::generate_point_cache(
                 if (!cl.cyclic)
                 {
                     int b0 = cl.endpos, b1 = segcls[next].beginpos;
-                    //					cout << "fill: ed " << b0 << " bg " << b1
+                    //					cout << "fill: ed " << b0 << " bg " <<
+                    // b1
                     //<<
                     //"\n";
                     if (b1 < b0)
+                    {
                         b1 += 4 * SEGSCALE;
+                    }
                     b0 = (b0 + SEGSCALE - 1) / SEGSCALE;
                     b1 = b1 / SEGSCALE;
-                    //					cout << "fill2: ed " << b0 << " bg " << b1
+                    //					cout << "fill2: ed " << b0 << " bg " <<
+                    // b1
                     //<<
                     //"\n";
                     for (int j = b0; j <= b1; ++j)
@@ -228,14 +241,22 @@ void coastsegment::generate_point_cache(
                         // push back destination point of edge (0-3:
                         // br,tr,tl,bl)
                         if (k == 0)
+                        {
                             ce.push_back_point(vector2());
+                        }
                         else if (k == 1)
+                        {
                             ce.push_back_point(vector2(cm.segw_real, 0));
+                        }
                         else if (k == 2)
+                        {
                             ce.push_back_point(
                                 vector2(cm.segw_real, cm.segw_real));
-                        else /*if (k == 3)*/
+                        }
+                        else
+                        { /*if (k == 3)*/
                             ce.push_back_point(vector2(0, cm.segw_real));
+                        }
                     }
                 }
                 //				printf("cyclic? %u next %i\n",cl.cyclic,next);
@@ -259,8 +280,10 @@ void coastsegment::generate_point_cache(
                 }
             }
             if (dbl > 0)
+            {
                 cout << "erased " << dbl << " double points!, seg " << x << ","
                      << y << "\n";
+            }
             // remove last point that coincides with first point for islands.
             if (ce.points.back().square_distance(ce.points.front()) < 0.1f)
             {
@@ -302,7 +325,9 @@ void coastsegment::draw_as_map(
         generate_point_cache(cm, x, y, detail);
         unsigned nrv = 0;
         for (const auto& cit : pointcache)
+        {
             nrv += cit.indices.size();
+        }
         primitives tris(GL_TRIANGLES, nrv, color::white(), *atlanticmap);
         nrv = 0;
         for (const auto& cit : pointcache)
@@ -327,18 +352,28 @@ void coastsegment::draw_as_map(
 }
 
 // return position on segment border
-int coastmap::borderpos(const coastsegment::segpos& p) const
+auto coastmap::borderpos(const coastsegment::segpos& p) const -> int
 {
     if (p.y == 0)
+    {
         return p.x;
+    }
     else if (p.x == SEGSCALE)
+    {
         return SEGSCALE + p.y;
+    }
     else if (p.y == SEGSCALE)
+    {
         return 2 * SEGSCALE + SEGSCALE - p.x;
+    }
     else if (p.x == 0)
+    {
         return 3 * SEGSCALE + SEGSCALE - p.y;
+    }
     else
+    {
         return -1;
+    }
 }
 
 void coastsegment::segcl::print() const
@@ -384,7 +419,9 @@ void coastsegment::compute_successor_for_cl(unsigned cln)
 
             // avoid islands, they can't be successors.
             if (scl1.cyclic)
+            {
                 continue;
+            }
 
             int beginpos = scl1.beginpos;
             // note! use <= not < here, to avoid connecting two segcl's that
@@ -393,11 +430,13 @@ void coastsegment::compute_successor_for_cl(unsigned cln)
             // segcl's fail... If a cl touches the border from the other side,
             // either < or <= will fail!
             //			if(beginpos == scl0.endpos) {cout<<"BEGINPOS " <<
-            //beginpos
+            // beginpos
             //<< " endpos " << scl0.endpos << " nr " << cln << " i " << i <<
             //"\n";}
             if (beginpos < scl0.endpos)
+            {
                 beginpos += 4 * SEGSCALE;
+            }
             if (beginpos < minbeginpos)
             {
                 scl0.next   = i;
@@ -424,14 +463,16 @@ void coastsegment::push_back_segcl(const segcl& scl)
         ASSERT(scl.beginpos < 0, "end < -1, but not begin");
     }
     if (scl.points.size() >= 2)
+    {
         segcls.push_back(scl);
+    }
 }
 
 //
 // coastmap functions
 //
 
-uint8_t& coastmap::mapf(int cx, int cy)
+auto coastmap::mapf(int cx, int cy) -> uint8_t&
 {
     cx = clamp_zero(cx);
     cy = clamp_zero(cy);
@@ -440,7 +481,7 @@ uint8_t& coastmap::mapf(int cx, int cy)
     return themap[cy * mapw + cx];
 }
 
-bool coastmap::find_begin_of_coastline(int& x, int& y)
+auto coastmap::find_begin_of_coastline(int& x, int& y) -> bool
 {
     int sx = x, sy = y;
     int lastborder_x = -1, lastborder_y = -1;
@@ -460,11 +501,13 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
         }
 
         if (olddir == -1)
+        {
             ASSERT(
                 pattern != 5 && pattern != 10,
                 "illegal start pattern! at %i %i",
                 x,
                 y);
+        }
 
         if (patternprocessok[pattern]
             && (x % pixels_per_seg == 0 || y % pixels_per_seg == 0))
@@ -529,11 +572,11 @@ bool coastmap::find_begin_of_coastline(int& x, int& y)
 }
 
 // returns true if cl is valid
-bool coastmap::find_coastline(
+auto coastmap::find_coastline(
     int x,
     int y,
     std::vector<vector2i>& points,
-    bool& cyclic)
+    bool& cyclic) -> bool
 {
     // run backward at the coastline until we reach the border or round an
     // island. start there creating the coastline. this avoids coastlines that
@@ -565,7 +608,9 @@ bool coastmap::find_coastline(
         }
 
         if (olddir == -1)
+        {
             ASSERT(pattern != 5 && pattern != 10, "illegal start pattern!2");
+        }
 
         if (pattern == 10)
         {
@@ -598,7 +643,9 @@ bool coastmap::find_coastline(
             int t = (dir - olddir + 4) % 4;
             ASSERT(t != 2, "no 180 degree turns allowed!");
             if (t == 3)
+            {
                 t = -1;
+            }
             // positive values are ccw turns.
             turncount += t;
         }
@@ -609,9 +656,10 @@ bool coastmap::find_coastline(
         //		printf("x %i y %i nx %i ny %i\n",x,y,nx,ny);
         //		printf("pattern %02x%02x\npattern
         //%02x%02x\n",mv[3],mv[2],mv[0],mv[1]);
-        if (nx < 0 || ny < 0 || nx > int(mapw)
-            || ny > int(maph)) // border reached
+        if (nx < 0 || ny < 0 || nx > int(mapw) || ny > int(maph))
+        { // border reached
             break;
+        }
         ++length;
         x = nx;
         y = ny;
@@ -625,7 +673,8 @@ bool coastmap::find_coastline(
     return (!cyclic) || (turncount > 0);
 }
 
-vector2i coastmap::compute_segment(const vector2i& p0, const vector2i& p1) const
+auto coastmap::compute_segment(const vector2i& p0, const vector2i& p1) const
+    -> vector2i
 {
     vector2i segnum0(p0.x / SEGSCALE, p0.y / SEGSCALE);
     vector2i segoff0(p0.x % SEGSCALE, p0.y % SEGSCALE);
@@ -711,7 +760,7 @@ void coastmap::divide_and_distribute_cl(
     vector2i segend =
         segoff + vector2i(SEGSCALE, SEGSCALE); // last coordinates IN segment
     vector2i rel = p0 - segoff;
-    coastsegment::segpos ps0((unsigned short) rel.x, (unsigned short) rel.y);
+    coastsegment::segpos ps0(static_cast<unsigned short>(rel.x), static_cast<unsigned short>(rel.y));
     scl.push_back_point(ps0);
     scl.beginpos = borderpos(ps0);
 
@@ -747,8 +796,8 @@ void coastmap::divide_and_distribute_cl(
             && rel.y <= int(SEGSCALE))
         {
             // inside the same segment or on border
-            ps0.x = (unsigned short) rel.x;
-            ps0.y = (unsigned short) rel.y;
+            ps0.x = static_cast<unsigned short>(rel.x);
+            ps0.y = static_cast<unsigned short>(rel.y);
             scl.push_back_point(ps0);
             p0 = p1;
             if (rel.x > 0 && rel.y > 0 && rel.x < int(SEGSCALE)
@@ -775,8 +824,8 @@ void coastmap::divide_and_distribute_cl(
                         segoff  = segc * SEGSCALE;
                         segend  = segoff + vector2i(SEGSCALE, SEGSCALE);
                         rel     = p1 - segoff;
-                        ps0.x   = (unsigned short) rel.x;
-                        ps0.y   = (unsigned short) rel.y;
+                        ps0.x   = static_cast<unsigned short>(rel.x);
+                        ps0.y   = static_cast<unsigned short>(rel.y);
                         scl     = coastsegment::segcl(global_clnr);
                         scl.push_back_point(ps0);
                         scl.beginpos = borderpos(ps0);
@@ -844,7 +893,7 @@ void coastmap::divide_and_distribute_cl(
             }
             //			cout << "mint "<< mint<<" border "<<border <<"\n";
             //			cout << "p0: " << p0 << " p1 " << p1 << " dekta " <<
-            //delta
+            // delta
             //<< "\n";
             ASSERT(border != -1, "paranoia mint");
             vector2i p2 = vector2i(
@@ -855,7 +904,7 @@ void coastmap::divide_and_distribute_cl(
             //<< double(p0.y) + mint * delta.y << "\n";
             vector2i rel = p2 - segoff;
             coastsegment::segpos ps2(
-                (unsigned short) rel.x, (unsigned short) rel.y);
+                static_cast<unsigned short>(rel.x), static_cast<unsigned short>(rel.y));
             ASSERT(
                 ps2.x == 0 || ps2.x == SEGSCALE || ps2.y == 0
                     || ps2.y == SEGSCALE,
@@ -878,8 +927,8 @@ void coastmap::divide_and_distribute_cl(
                 segoff = segc * SEGSCALE;
                 segend = segoff + vector2i(SEGSCALE, SEGSCALE);
                 rel    = p2 - segoff;
-                ps0.x  = (unsigned short) rel.x;
-                ps0.y  = (unsigned short) rel.y;
+                ps0.x  = static_cast<unsigned short>(rel.x);
+                ps0.y  = static_cast<unsigned short>(rel.y);
                 scl    = coastsegment::segcl(global_clnr);
                 scl.push_back_point(ps0);
                 scl.beginpos = borderpos(ps0);
@@ -896,7 +945,9 @@ void coastmap::divide_and_distribute_cl(
         scl.endpos = borderpos(ps0);
         scl.cyclic = clcyclic;
         if (clcyclic)
+        {
             scl.beginpos = scl.endpos = -1;
+        }
         scl.next = coastsegments[segcn].segcls.size();
         coastsegments[segcn].push_back_segcl(scl);
     }
@@ -916,7 +967,9 @@ void coastmap::process_coastline(int x, int y)
     // valid %u\n", x,y,points.size(),cyclic,beginborder,endborder,valid);
 
     if (!valid)
+    {
         return; // skip
+    }
 
     // create bspline curve
     std::vector<vector2> tmp;
@@ -962,8 +1015,8 @@ void coastmap::process_coastline(int x, int y)
                 vector2 ab = (a2 + b2) * 0.5;
                 tmp.insert(tmp.begin(), ab); // push_front
                 tmp.push_back(ab);
-                //				cout << "a " << a << " b " << b << " c " << c << "
-                //ab " << ab << "\n";
+                //				cout << "a " << a << " b " << b << " c " << c <<
+                //" ab " << ab << "\n";
             }
             else
             {
@@ -979,8 +1032,8 @@ void coastmap::process_coastline(int x, int y)
                 tmp[0]     = bc;
                 tmp.push_back(b2);
                 tmp.push_back(bc);
-                //				cout << "a " << a << " b " << b << " c " << c << "
-                //bc " << bc << "\n";
+                //				cout << "a " << a << " b " << b << " c " << c <<
+                //" bc " << bc << "\n";
             }
         }
         else
@@ -998,9 +1051,13 @@ void coastmap::process_coastline(int x, int y)
     // the old technique. Limiting n to tmp.size()/2 or tmp.size()/4 would be a
     // solution. tmp.size()/2 looks good.
     if (n > BSPLINE_SMOOTH_FACTOR)
+    {
         n = BSPLINE_SMOOTH_FACTOR;
+    }
     if (n > tmp.size() / 2)
+    {
         n = tmp.size() / 2;
+    }
 
     // create smooth version of the coastline.
     bsplinet<vector2> curve(n, tmp); // points in map pixel coordinates
@@ -1030,7 +1087,9 @@ void coastmap::process_coastline(int x, int y)
         */
         // avoid double points here., fixme assert them?
         if (spoints.empty() || !(spoints.back() == cvi))
+        {
             spoints.push_back(cvi);
+        }
     }
 
     divide_and_distribute_cl(spoints, cyclic);
@@ -1063,18 +1122,28 @@ void coastmap::process_segment(int sx, int sy)
         {
             coastsegment::segcl& cl0 = cs.segcls[i];
             if (cl0.global_clnr == -1)
+            {
                 continue;
+            }
             if (cl0.cyclic)
+            {
                 continue;
+            }
             for (unsigned j = 0; j < cs.segcls.size(); ++j)
             {
                 if (j == i)
+                {
                     continue;
+                }
                 coastsegment::segcl& cl1 = cs.segcls[j];
                 if (cl1.cyclic)
+                {
                     continue;
+                }
                 if (cl0.global_clnr != cl1.global_clnr)
+                {
                     continue; // also avoids erased segs.
+                }
                 if (cl0.endpos == cl1.beginpos)
                 {
                     ASSERT(cl0.endpos != -1, "strange paranoia cl0endpos");
@@ -1128,7 +1197,7 @@ void coastmap::process_segment(int sx, int sy)
     }
 }
 
-unsigned coastmap::quadrant(const vector2i& d)
+auto coastmap::quadrant(const vector2i& d) -> unsigned
 {
     if (d.x < 0)
     {
@@ -1178,10 +1247,10 @@ unsigned coastmap::quadrant(const vector2i& d)
     }
 }
 
-vector2 coastmap::segcoord_to_real(
+auto coastmap::segcoord_to_real(
     int segx,
     int segy,
-    const coastsegment::segpos& sp) const
+    const coastsegment::segpos& sp) const -> vector2
 {
     vector2 tmp(
         double(segx) + double(sp.x) / SEGSCALE,
@@ -1189,7 +1258,7 @@ vector2 coastmap::segcoord_to_real(
     return (tmp * segw_real) + realoffset;
 }
 
-vector2f coastmap::segcoord_to_texc(int segx, int segy) const
+auto coastmap::segcoord_to_texc(int segx, int segy) const -> vector2f
 {
     // float get to its limit when segsx,segsy > 256, bot that doesn't really
     // matter.
@@ -1252,30 +1321,36 @@ coastmap::coastmap(const string& filename)
         // pixel width
         for (pixels_per_seg = 1; pixels_per_seg < pixperseqnonpower2;
              pixels_per_seg <<= 1)
+        {
             ;
+        }
 
         segsx     = mapw / pixels_per_seg;
         segsy     = maph / pixels_per_seg;
         segw_real = pixelw_real * pixels_per_seg;
         if (segsx * pixels_per_seg != mapw || segsy * pixels_per_seg != maph)
+        {
             THROW(
                 error,
                 string("coastmap: map size must be integer multiple of "
                        "segment size, in")
                     + filename);
+        }
 
         themap.resize(mapw * maph);
 
         surf.lock();
         if (surf->format->BytesPerPixel != 1 || surf->format->palette == nullptr
             || surf->format->palette->ncolors != 2)
+        {
             THROW(
                 error,
                 string("coastmap: image is no black/white 1bpp paletted "
                        "image, in ")
                     + filename);
+        }
 
-        auto* offset = (uint8_t*) (surf->pixels);
+        auto* offset = static_cast<uint8_t*>(surf->pixels);
         int mapoffy  = maph * mapw;
         for (int yy = 0; yy < int(maph); yy++)
         {
@@ -1300,7 +1375,9 @@ coastmap::coastmap(const string& filename)
 coastmap::~coastmap()
 {
     for (auto& it : props)
+    {
         modelcache().unref(it.modelname);
+    }
 }
 
 void coastmap::construction_threaded()
@@ -1308,7 +1385,9 @@ void coastmap::construction_threaded()
     // they are filled in by process_coastline
     coastsegments.resize(segsx * segsy);
     for (auto& coastsegment : coastsegments)
+    {
         coastsegment.atlanticmap = &*atlanticmap;
+    }
 
     // find coastlines
     // when to start processing: all patterns, except: 0,5,10,15
@@ -1317,7 +1396,9 @@ void coastmap::construction_threaded()
         for (int xx = 0; xx < int(mapw); ++xx)
         {
             if (mapf(xx, yy) & 0x80)
+            {
                 continue;
+            }
             uint8_t pattern = 0;
             uint8_t marker  = 0;
             for (int j = 0; j < 4; ++j)
@@ -1430,11 +1511,15 @@ void coastmap::render(
             glTranslatef(it.pos.x - p.x, it.pos.y - p.y, 0); //- p.z
             glRotatef(-it.dir, 0, 0, 1);
             if (mirrored)
+            {
                 // fixme: display_mirror_clip must be called with
                 // certain conditions, that are not used here yet...
                 modelcache().find(it.modelname)->display_mirror_clip();
+            }
             else
+            {
                 modelcache().find(it.modelname)->display();
+            }
             glPopMatrix();
         }
     }

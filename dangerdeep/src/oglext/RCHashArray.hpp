@@ -149,10 +149,10 @@ inline CRCHashArray::CRCHashArray()
 {
     // 1: initialize the hash array...
 
-    for (unsigned long uIndex = 0; uIndex < HASH_SIZE; ++uIndex)
+    for (auto & uIndex : m_pHashArray)
     {
 
-        m_pHashArray[uIndex] = NULL;
+        uIndex = nullptr;
     }
 }
 
@@ -162,12 +162,11 @@ inline CRCHashArray::~CRCHashArray()
 {
     // 1: go through all hash buckets...
 
-    for (unsigned long uIndex = 0; uIndex < HASH_SIZE; ++uIndex)
+    for (auto pNode : m_pHashArray)
     {
 
         // 1.1: delete a hash bucket...
 
-        SHashArrayNode* pNode = m_pHashArray[uIndex];
         while (pNode)
         {
 
@@ -214,7 +213,7 @@ inline CRenderingContext* CRCHashArray::GetRenderingContext(HRCKEY hRCKey)
 
     // 2: nothing was found...
 
-    return NULL;
+    return nullptr;
 }
 
 //!	Return the rendering context for a given key (or create a new one if
@@ -246,10 +245,10 @@ inline CRenderingContext* CRCHashArray::PrepareRenderingContext(HRCKEY hRCKey)
 
     // 2: if it's not a gl rendering context, we skip the rest...
 
-    if (hRCKey == NULL)
+    if (hRCKey == nullptr)
     {
 
-        return NULL;
+        return nullptr;
     }
 
     // 3: create a new rendering context...

@@ -41,7 +41,8 @@ sub_kdb_display::sub_kdb_display(user_interface& ui_) :
 {
 }
 
-bool sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     which_element_is_turned = et_none;
     if (m.down())
@@ -66,7 +67,8 @@ bool sub_kdb_display::handle_mouse_button_event(const mouse_click_data& m)
     return false;
 }
 
-bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     if (m.left())
     {
@@ -119,8 +121,8 @@ bool sub_kdb_display::handle_mouse_motion_event(const mouse_motion_data& m)
    delta_t > simulation_step then run next step.
 */
 
-std::pair<angle, double>
-find_peak_noise(angle startangle, double step, double maxstep, game& gm)
+auto find_peak_noise(angle startangle, double step, double maxstep, game& gm)
+    -> std::pair<angle, double>
 {
     auto* player    = dynamic_cast<submarine*>(gm.get_player());
     angle ang_peak  = startangle;

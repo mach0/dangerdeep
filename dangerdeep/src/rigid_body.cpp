@@ -95,7 +95,7 @@ water and the ship's part.
 */
 
 /// default force if only gravity applied, no torque
-force3d rigid_body::compute_default_gravity_force() const
+auto rigid_body::compute_default_gravity_force() const -> force3d
 {
     // force is in world space!
     /* general formulas:
@@ -150,7 +150,7 @@ void rigid_body::compute_helper_values()
 
     // turn velocity around z-axis is projection of w to z-axis, that is
     // simply w.z. Transform to angles per second. same for x/y.
-    auto av       = w.value * (180.0 / constant::PI);
+    auto av = w.value * (180.0 / constant::PI);
 
     turn_velocity = angular_velocity(av.z); // could also be named yaw_velocity.
     pitch_velocity = angular_velocity(av.x);
@@ -264,8 +264,8 @@ void rigid_body::simulate(
 }
 
 /// compute linear velocity of the rigid body at a given global position
-velocity3d
-rigid_body::compute_linear_velocity(const vector3& position_global) const
+auto rigid_body::compute_linear_velocity(const vector3& position_global) const
+    -> velocity3d
 {
     // result is v(t) + w(t) x r(t)  (linear velocity + omega cross relative
     // vector)
@@ -278,9 +278,9 @@ rigid_body::compute_linear_velocity(const vector3& position_global) const
 }
 
 /// handle collision response - return value is velocity/mass
-double rigid_body::compute_collision_response_value(
+auto rigid_body::compute_collision_response_value(
     const vector3& collision_pos,
-    const vector3& N) const
+    const vector3& N) const -> double
 {
     // WTF is N and what is this formula about? some force acting locally gives
     // force/torque. why not apply collision force?!

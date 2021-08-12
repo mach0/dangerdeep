@@ -42,7 +42,7 @@ class ressource_ptr
         ptr      = tmp;
     }
 
-    T* get() const { return ptr; }
+    [[nodiscard]] T* get() const { return ptr; }
 
   protected:
     T* ptr;

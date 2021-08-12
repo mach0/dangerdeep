@@ -48,17 +48,19 @@ triangle p_i, p_i+1, p_i+2 if all points are outside, then add triangle
 i,i+1,i+2, remove p_i+1 from point list else i:=i+1 (rotate list) end
 */
 
-bool triangulate::is_inside_triangle(
+auto triangulate::is_inside_triangle(
     const vector2& a,
     const vector2& b,
     const vector2& c,
-    const vector2& p)
+    const vector2& p) -> bool
 {
     double s, t;
     bool solved = (p - a).solve(b - a, c - a, s, t);
 
     if (!solved)
+    {
         return true;
+    }
     return (s >= 0 && t >= 0 && s <= 1 && t <= 1 && s + t <= 1);
 }
 
@@ -66,12 +68,14 @@ bool triangulate::is_inside_triangle(
 #include <fstream>
 #include <sstream>
 int failcount = 0;
-vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
+auto triangulate::compute(const vector<vector2>& vertices) -> vector<unsigned>
 {
     vector<unsigned> indices;
 
     if (vertices.size() < 3)
+    {
         return indices; // error!
+    }
 
     indices.reserve(3 * vertices.size());
 
@@ -87,7 +91,9 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
     auto vl_size = vertices.size();
 
     for (unsigned l = 0; l < vertices.size(); ++l)
+    {
         vl.push_back(l);
+    }
 
     unsigned i0 = 0;
     unsigned i1 = 1;
@@ -121,8 +127,8 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
             ostringstream oss;
             oss << "failed_triang_" << failcount++ << ".off";
 
-            ofstream out(oss.str().c_str());          
-            auto vs = unsigned(vertices.size());          
+            ofstream out(oss.str().c_str());
+            auto vs = unsigned(vertices.size());
             out << "OFF\n" << vs + 1 << " " << vs << " 0\n";
 
             vector2 median;
@@ -145,7 +151,9 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
                 << "\n";
 
             for (unsigned i = 0; i < vs; ++i)
+            {
                 out << "3 " << i << " " << vs << " " << (i + 1) % vs << "\n";
+            }
 
             return indices;
         }
@@ -165,7 +173,9 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
         {
             if (is_inside_triangle(
                     vertices[i0], vertices[i1], vertices[i2], vertices[i3]))
+            {
                 break;
+            }
         }
 
         if (i3 == i0)
@@ -175,7 +185,8 @@ vector<unsigned> triangulate::compute(const vector<vector2>& vertices)
             indices.push_back(i1);
             indices.push_back(i2);
 
-            //			cout << "TRI: adding triangle " << i0 << "/" << i1 << "/"
+            //			cout << "TRI: adding triangle " << i0 << "/" << i1 <<
+            //"/"
             //<< i2 << "\n";
             vl[i1] = unsigned(-1);
 

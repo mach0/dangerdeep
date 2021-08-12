@@ -183,7 +183,7 @@ void sea_object::set_sensor(sensor_system ss, std::unique_ptr<sensor>&& s)
     }
 }
 
-double sea_object::get_cross_section(const vector2& d) const
+auto sea_object::get_cross_section(const vector2& d) const -> double
 {
     if (mymodel.is_valid())
     {
@@ -194,7 +194,7 @@ double sea_object::get_cross_section(const vector2& d) const
     return 0.0;
 }
 
-string sea_object::compute_skin_name() const
+auto sea_object::compute_skin_name() const -> string
 {
     for (const auto& it : skin_variants)
     {
@@ -248,12 +248,12 @@ string sea_object::compute_skin_name() const
 void sea_object::set_random_skin_name(const date& d)
 {
     unsigned nr_possible = 0;
-    for (list<skin_variant>::const_iterator it = skin_variants.begin();
-         it != skin_variants.end();
-         ++it)
+    for (auto& skin_variant : skin_variants)
     {
-        if (d >= it->from && d <= it->until)
+        if (d >= skin_variant.from && d <= skin_variant.until)
+        {
             ++nr_possible;
+        }
     }
 
     if (nr_possible == 0)
@@ -268,9 +268,7 @@ void sea_object::set_random_skin_name(const date& d)
     }
 
     unsigned chosen = rnd(nr_possible);
-    for (list<skin_variant>::const_iterator it = skin_variants.begin();
-         it != skin_variants.end();
-         ++it)
+    for (auto it = skin_variants.begin(); it != skin_variants.end(); ++it)
     {
         if (d >= it->from && d <= it->until)
         {
@@ -298,7 +296,9 @@ void sea_object::set_skin_layout(const std::string& layout)
         if (mymodel.is_valid())
         {
             if (skin_name.length() > 0)
+            {
                 mymodel->unregister_layout(skin_name);
+            }
             mymodel->register_layout(layout);
         }
         skin_name = layout;
@@ -468,49 +468,64 @@ sea_object::sea_object(const game& gm_, const xml_elem& parent) :
     {
         string typestr = elem.attr("type");
         if (typestr == "lookout")
+        {
             set_sensor(lookout_system, std::make_unique<lookout_sensor>());
-
+        }
         else if (typestr == "passivesonar")
+        {
             set_sensor(
                 passive_sonar_system, std::make_unique<passive_sonar_sensor>());
-
+        }
         else if (typestr == "activesonar")
+        {
             set_sensor(
                 active_sonar_system, std::make_unique<active_sonar_sensor>());
-
+        }
         else if (typestr == "radar")
         {
             radar_sensor::radar_type type = radar_sensor::radar_type_default;
             string radar_model            = elem.attr("model");
 
             if ("British Type 271" == radar_model)
+            {
                 type = radar_sensor::radar_british_type_271;
-
+            }
             else if ("British Type 272" == radar_model)
+            {
                 type = radar_sensor::radar_british_type_272;
-
+            }
             else if ("British Type 273" == radar_model)
+            {
                 type = radar_sensor::radar_british_type_273;
-
+            }
             else if ("British Type 277" == radar_model)
+            {
                 type = radar_sensor::radar_british_type_277;
-
+            }
             else if ("German FuMO 29" == radar_model)
+            {
                 type = radar_sensor::radar_german_fumo_29;
-
+            }
             else if ("German FuMO 30" == radar_model)
+            {
                 type = radar_sensor::radar_german_fumo_30;
-
+            }
             else if ("German FuMO 61" == radar_model)
+            {
                 type = radar_sensor::radar_german_fumo_61;
-
+            }
             else if ("German FuMO 64" == radar_model)
+            {
                 type = radar_sensor::radar_german_fumo_64;
-
+            }
             else if ("German FuMO 391" == radar_model)
+            {
                 type = radar_sensor::radar_german_fumo_391;
+            }
             else
+            {
                 THROW(error, "invalid radar type name");
+            }
 
             set_sensor(radar_system, std::make_unique<radar_sensor>(type));
         }
@@ -534,11 +549,13 @@ void sea_object::load(const xml_elem& parent)
     // this checks if the filename of the specfile matches the internal id
     // string...
     if (specfilename != specfilename2)
+    {
         THROW(
             error,
             string("stored specfilename does not match, type=") + specfilename2
                 + string(", but read ") + specfilename
                 + string(" from spec file"));
+    }
 
     xml_elem st      = parent.child("state");
     position         = st.child("position").attrv3();
@@ -618,14 +635,20 @@ void sea_object::save(xml_elem& parent) const
     parent.add_child("target").set_attr(target.id);
 }
 
-string sea_object::get_description(unsigned detail) const
+auto sea_object::get_description(unsigned detail) const -> string
 {
     if (detail == 0)
+    {
         return descr_far;
+    }
     else if (detail == 1)
+    {
         return descr_medium;
+    }
     else
+    {
         return descr_near;
+    }
 }
 
 void sea_object::simulate(double delta_time, game& gm)
@@ -637,7 +660,9 @@ void sea_object::simulate(double delta_time, game& gm)
 
     // check target. heirs should check for "out of range" condition too
     if (!gm.is_valid(target))
+    {
         target = sea_object_id{};
+    }
 
     // check if list of detected objects needs to be compressed.
     // needs to be called for every frame and object, because objects can become
@@ -797,13 +822,14 @@ void sea_object::simulate(double delta_time, game& gm)
     // fixme: use orientation here and compute heading from it, not vice versa!
 }
 
-bool sea_object::damage(const vector3& fromwhere, unsigned strength, game& gm)
+auto sea_object::damage(const vector3& fromwhere, unsigned strength, game& gm)
+    -> bool
 {
     kill(); // fixme crude hack, replace by damage simulation
     return true;
 }
 
-unsigned sea_object::calc_damage() const
+auto sea_object::calc_damage() const -> unsigned
 {
     return is_dead() ? 100 : 0;
 }
@@ -811,7 +837,9 @@ unsigned sea_object::calc_damage() const
 void sea_object::set_inactive()
 {
     if (alive_stat == dead)
+    {
         THROW(error, "illegal alive_stat switch (dead to inactive)");
+    }
     alive_stat = inactive;
 }
 
@@ -830,7 +858,7 @@ void sea_object::kill()
     myai = nullptr;
 }
 
-float sea_object::surface_visibility(const vector2& watcher) const
+auto sea_object::surface_visibility(const vector2& watcher) const -> float
 {
     return get_cross_section(watcher);
 }
@@ -856,7 +884,7 @@ void sea_object::manipulate_heading(angle hdg)
 
 // fixme: should move to ship or maybe return pos. airplanes have engines, but
 // not dc's/shells.
-vector2 sea_object::get_engine_noise_source() const
+auto sea_object::get_engine_noise_source() const -> vector2
 {
     return get_pos().xy() - get_heading().direction() * 0.3f * get_length();
 }
@@ -883,18 +911,22 @@ void sea_object::display_mirror_clip() const
     }
 }
 
-sensor* sea_object::get_sensor(sensor_system ss)
+auto sea_object::get_sensor(sensor_system ss) -> sensor*
 {
     if (ss >= 0 && ss < last_sensor_system)
+    {
         return sensors[ss].get();
+    }
 
     return nullptr;
 }
 
-const sensor* sea_object::get_sensor(sensor_system ss) const
+auto sea_object::get_sensor(sensor_system ss) const -> const sensor*
 {
     if (ss >= 0 && ss < last_sensor_system)
+    {
         return sensors[ss].get();
+    }
 
     return nullptr;
 }
@@ -916,17 +948,19 @@ void sea_object::compress(std::vector<const sea_object*>& vec)
     vec.resize(j);
 }
 
-const model& sea_object::get_model() const
+auto sea_object::get_model() const -> const model&
 {
     if (mymodel.is_valid())
+    {
         return mymodel.get();
+    }
     THROW(error, "sea_object::get_model(), no model set");
 }
 
-unsigned sea_object::get_min_max_voxel_index_for_polyset(
+auto sea_object::get_min_max_voxel_index_for_polyset(
     const std::vector<polygon>& polys,
     vector3i& vxmin,
-    vector3i& vxmax) const
+    vector3i& vxmax) const -> unsigned
 {
     quaternion cjq       = orientation.conj();
     matrix4f obj2voxel   = get_model().get_base_mesh_transformation().inverse();
@@ -965,7 +999,7 @@ unsigned sea_object::get_min_max_voxel_index_for_polyset(
            * std::max(0, vxmax.z + 1 - vxmin.z);
 }
 
-vector3 sea_object::compute_linear_velocity(const vector3& p) const
+auto sea_object::compute_linear_velocity(const vector3& p) const -> vector3
 {
     // result is v(t) + w(t) x r(t)  (linear velocity + omega cross relative
     // vector)
@@ -975,9 +1009,9 @@ vector3 sea_object::compute_linear_velocity(const vector3& p) const
     return velocity + w.cross(p - position);
 }
 
-double sea_object::compute_collision_response_value(
+auto sea_object::compute_collision_response_value(
     const vector3& collision_pos,
-    const vector3& N) const
+    const vector3& N) const -> double
 {
     vector3 r = collision_pos - position;
     return mass_inv

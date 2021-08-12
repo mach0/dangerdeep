@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "primitives.h"
 
+#include <cmath>
+
 // this class is a bit pointless, can't be used with default shaders...
 
 primitives_plain::primitives_plain(
@@ -33,9 +35,13 @@ primitives_plain::primitives_plain(
     vertices(size)
 {
     if (with_colors)
+    {
         colors.resize(size);
+    }
     if (with_tex)
+    {
         texcoords.resize(size);
+    }
 }
 
 void primitives_plain::render()
@@ -125,13 +131,13 @@ void primitives::render()
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
-primitive_tex<4> primitives::textured_quad(
+auto primitives::textured_quad(
     const vector2f& xy0,
     const vector2f& xy1,
     const texture& tex,
     const vector2f& texc0,
     const vector2f& texc1,
-    const colorf& col)
+    const colorf& col) -> primitive_tex<4>
 {
     primitive_tex<4> result(GL_QUADS, col, tex);
     result.vertices[0].x  = xy0.x;
@@ -153,8 +159,10 @@ primitive_tex<4> primitives::textured_quad(
     return result;
 }
 
-primitive<4>
-primitives::quad(const vector2f& xy0, const vector2f& xy1, const colorf& col)
+auto primitives::quad(
+    const vector2f& xy0,
+    const vector2f& xy1,
+    const colorf& col) -> primitive<4>
 {
     primitive<4> result(GL_QUADS, col);
     result.vertices[0].x = xy0.x;
@@ -168,11 +176,11 @@ primitives::quad(const vector2f& xy0, const vector2f& xy1, const colorf& col)
     return result;
 }
 
-primitive<3> primitives::triangle(
+auto primitives::triangle(
     const vector2f& xy0,
     const vector2f& xy1,
     const vector2f& xy2,
-    const colorf& col)
+    const colorf& col) -> primitive<3>
 {
     primitive<3> result(GL_TRIANGLES, col);
     result.vertices[0].x = xy0.x;
@@ -184,10 +192,10 @@ primitive<3> primitives::triangle(
     return result;
 }
 
-primitive<4> primitives::rectangle(
+auto primitives::rectangle(
     const vector2f& xy0,
     const vector2f& xy1,
-    const colorf& col)
+    const colorf& col) -> primitive<4>
 {
     primitive<4> result(GL_LINE_LOOP, col);
     result.vertices[0].x = xy0.x;
@@ -201,7 +209,8 @@ primitive<4> primitives::rectangle(
     return result;
 }
 
-primitive<4> primitives::diamond(const vector2f& xy, float r, const colorf& col)
+auto primitives::diamond(const vector2f& xy, float r, const colorf& col)
+    -> primitive<4>
 {
     primitive<4> result(GL_LINE_LOOP, col);
     result.vertices[0].x = xy.x;
@@ -215,22 +224,24 @@ primitive<4> primitives::diamond(const vector2f& xy, float r, const colorf& col)
     return result;
 }
 
-primitives
-primitives::circle(const vector2f& xy, float radius, const colorf& col)
+auto primitives::circle(const vector2f& xy, float radius, const colorf& col)
+    -> primitives
 {
     // use 2 pixels per line each
     primitives result(GL_LINE_LOOP, unsigned(floor(M_PI * radius)), col);
     for (unsigned i = 0; i < result.vertices.size(); ++i)
     {
         float a              = i * 2 * M_PI / result.vertices.size();
-        result.vertices[i].x = xy.x + sin(a) * radius;
-        result.vertices[i].y = xy.y + cos(a) * radius;
+        result.vertices[i].x = xy.x + std::sin(a) * radius;
+        result.vertices[i].y = xy.y + std::cos(a) * radius;
     }
     return result;
 }
 
-primitive<2>
-primitives::line(const vector2f& xy0, const vector2f& xy1, const colorf& col)
+auto primitives::line(
+    const vector2f& xy0,
+    const vector2f& xy1,
+    const colorf& col) -> primitive<2>
 {
     primitive<2> result(GL_LINES, col);
     result.vertices[0].x = xy0.x;
@@ -240,8 +251,10 @@ primitives::line(const vector2f& xy0, const vector2f& xy1, const colorf& col)
     return result;
 }
 
-primitive<2>
-primitives::line(const vector3f& xyz0, const vector3f& xyz1, const colorf& col)
+auto primitives::line(
+    const vector3f& xyz0,
+    const vector3f& xyz1,
+    const colorf& col) -> primitive<2>
 {
     primitive<2> result(GL_LINES, col);
     result.vertices[0] = xyz0;
@@ -249,7 +262,7 @@ primitives::line(const vector3f& xyz0, const vector3f& xyz1, const colorf& col)
     return result;
 }
 
-primitive_tex<4> primitives::textured_quad(
+auto primitives::textured_quad(
     const vector3f& xyz0,
     const vector3f& xyz1,
     const vector3f& xyz2,
@@ -257,7 +270,7 @@ primitive_tex<4> primitives::textured_quad(
     const texture& tex,
     const vector2f& texc0,
     const vector2f& texc1,
-    const colorf& col)
+    const colorf& col) -> primitive_tex<4>
 {
     primitive_tex<4> result(GL_QUADS, col, tex);
     result.vertices[0]    = xyz0;
@@ -275,7 +288,7 @@ primitive_tex<4> primitives::textured_quad(
     return result;
 }
 
-primitives primitives::cylinder_z(
+auto primitives::cylinder_z(
     double radius_bottom,
     double radius_top,
     double z_bottom,
@@ -284,7 +297,7 @@ primitives primitives::cylinder_z(
     const texture& tex,
     double u_scal,
     unsigned nr_segs,
-    bool inside)
+    bool inside) -> primitives
 {
     primitives cyl(GL_QUAD_STRIP, (nr_segs + 1) * 2, tex);
     color col(255, 255, 255, 255);
@@ -295,7 +308,9 @@ primitives primitives::cylinder_z(
         double sa = sin(a);
         double ca = cos(a);
         if (inside)
+        {
             ca = -ca;
+        }
         col.a                    = uint8_t(128 + 127 * alpha);
         cyl.colors[2 * i]        = col;
         col.a                    = uint8_t(255 * alpha);

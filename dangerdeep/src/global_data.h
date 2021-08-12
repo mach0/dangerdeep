@@ -160,9 +160,10 @@ double transform_nautic_posx_to_real(const std::string& s);
 double transform_nautic_posy_to_real(const std::string& s);
 
 void jacobi_amp(double u, double k, double& sn, double& cn);
-vector2f transform_real_to_geo(const vector2f &pos);
+vector2f transform_real_to_geo(const vector2f& pos);
 
-std::list<std::string>string_split(const std::string& src, char splitter = ',');
+std::list<std::string>
+string_split(const std::string& src, char splitter = ',');
 
 // save a PGM (for debugging mostly)
 void save_pgm(

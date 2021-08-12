@@ -69,7 +69,7 @@ class vector2t
     {
     }
 
-    vector2t<D> normal() const
+    [[nodiscard]] vector2t<D> normal() const
     {
         D len = D(1.0) / length();
         return vector2t(x * len, y * len);
@@ -81,7 +81,7 @@ class vector2t
         x *= len;
         y *= len;
     }
-    vector2t<D> orthogonal() const { return vector2t(-y, x); }
+    [[nodiscard]] vector2t<D> orthogonal() const { return vector2t(-y, x); }
 
     vector2t<D> operator*(D scalar) const
     {
@@ -131,12 +131,12 @@ class vector2t
         return *this;
     }
 
-    vector2t<D> min(const vector2t<D>& other) const
+    [[nodiscard]] vector2t<D> min(const vector2t<D>& other) const
     {
         return vector2t(std::min(x, other.x), std::min(y, other.y));
     }
 
-    vector2t<D> max(const vector2t<D>& other) const
+    [[nodiscard]] vector2t<D> max(const vector2t<D>& other) const
     {
         return vector2t(std::max(x, other.x), std::max(y, other.y));
     }
@@ -151,16 +151,16 @@ class vector2t
         return x != other.x || y != other.y;
     }
 
-    D square_length() const { return x * x + y * y; }
-    D length() const { return D(::sqrt(square_length())); }
+    [[nodiscard]] D square_length() const { return x * x + y * y; }
+    [[nodiscard]] D length() const { return D(::sqrt(square_length())); }
 
-    D square_distance(const vector2t<D>& other) const
+    [[nodiscard]] D square_distance(const vector2t<D>& other) const
     {
         vector2t<D> n = *this - other;
         return n.square_length();
     }
 
-    D distance(const vector2t<D>& other) const
+    [[nodiscard]] D distance(const vector2t<D>& other) const
     {
         vector2t<D> n = *this - other;
         return n.length();
@@ -171,23 +171,21 @@ class vector2t
         return x * other.x + y * other.y;
     }
 
-    bool solve(
-            const vector2t<D>& o1,
-            const vector2t<D>& o2,
-            D& s1,
-            D& s2) const;
+    bool
+    solve(const vector2t<D>& o1, const vector2t<D>& o2, D& s1, D& s2) const;
 
     /// multiplies 2x2 matrix (given in columns c0-c1) with *this.
-    vector2t<D> matrixmul(const vector2t<D>& c0, const vector2t<D>& c1) const;
+    [[nodiscard]] vector2t<D>
+    matrixmul(const vector2t<D>& c0, const vector2t<D>& c1) const;
 
-    vector2t<D> coeff_mul(const vector2t<D>& other) const
+    [[nodiscard]] vector2t<D> coeff_mul(const vector2t<D>& other) const
     {
         return vector2t(x * other.x, y * other.y);
     }
 
-    vector3t<D> xy0() const { return vector3t<D>(x, y, 0); }
+    [[nodiscard]] vector3t<D> xy0() const { return vector3t<D>(x, y, 0); }
 
-    vector3t<D> xyz(D z) const { return vector3t<D>(x, y, z); }
+    [[nodiscard]] vector3t<D> xyz(D z) const { return vector3t<D>(x, y, z); }
 
     template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector2t<D2>& v);
@@ -204,20 +202,23 @@ class vector2t
         return x < other.x ? true : (x == other.x ? y < other.y : false);
     }
 
-    vector2t<D> floor() const { return vector2t(D(::floor(x)), D(::floor(y))); }
+    [[nodiscard]] vector2t<D> floor() const
+    {
+        return vector2t(D(::floor(x)), D(::floor(y)));
+    }
 
-    vector2t<D> frac() const
+    [[nodiscard]] vector2t<D> frac() const
     {
         return vector2t(D(x - ::floor(x)), D(y - ::floor(y)));
     }
 
-    vector2t<D> mod(D v) const
+    [[nodiscard]] vector2t<D> mod(D v) const
     {
         return *this - (*this / v).floor() * v;
     } // negative values are problematic for fmod. So we use own formula fmod(a,
       // b) = a - floor(a / b) * b
 
-    vector2t<D> abs() const
+    [[nodiscard]] vector2t<D> abs() const
     {
         return vector2t<D>(x < D(0) ? -x : x, y < D(0) ? -y : y);
     }

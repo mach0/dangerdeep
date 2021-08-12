@@ -117,8 +117,8 @@ submarine::stored_torpedo::stored_torpedo()
     = default;
 
 submarine::stored_torpedo::stored_torpedo(std::string type) :
-    specfilename(std::move(type)), status(st_loaded), associated(0),
-    remaining_time(0)
+    specfilename(std::move(type)), status(st_loaded)
+
 {
 }
 
@@ -161,11 +161,17 @@ submarine::tank::tank(xml_elem e) :
     flood_valve_open(false)
 {
     if (e.attr("type") == "trim")
+    {
         type = trim;
+    }
     else if (e.attr("type") == "ballast")
+    {
         type = ballast;
+    }
     else
+    {
         THROW(error, std::string("invalid tank type in file ") + e.doc_name());
+    }
 }
 
 void submarine::tank::simulate(double delta_time)
@@ -183,7 +189,7 @@ void submarine::tank::set_flood_valve(bool flood)
     flood_valve_open = flood;
 }
 
-double submarine::tank::push_air_inside(double amount_cbm)
+auto submarine::tank::push_air_inside(double amount_cbm) -> double
 {
     double used = std::min(fill, amount_cbm);
     fill -= used;
@@ -223,16 +229,16 @@ submarine::submarine(game& gm_, const xml_elem& parent) :
     hassnorkel(false), snorkel_depth(8.0), alarm_depth(150.0), snorkelup(false),
     battery_level(0)
 {
-    xml_elem sm           = parent.child("motion").child("submerged");
-    max_submerged_speed   = kts2ms(sm.attrf("maxspeed"));
-    double safedepth      = sm.attrf("safedepth");
-    double maxdepth       = sm.attrf("maxdepth");
+    xml_elem sm         = parent.child("motion").child("submerged");
+    max_submerged_speed = kts2ms(sm.attrf("maxspeed"));
+    double safedepth    = sm.attrf("safedepth");
+    double maxdepth     = sm.attrf("maxdepth");
 
-    max_depth             = safedepth + rnd() * (maxdepth - safedepth);
-    xml_elem dp           = parent.child("depths");
-    periscope_depth       = dp.attrf("scope");
-    snorkel_depth         = dp.attrf("snorkel");
-    alarm_depth           = dp.attrf("alarm");
+    max_depth       = safedepth + rnd() * (maxdepth - safedepth);
+    xml_elem dp     = parent.child("depths");
+    periscope_depth = dp.attrf("scope");
+    snorkel_depth   = dp.attrf("snorkel");
+    alarm_depth     = dp.attrf("alarm");
 
     xml_elem tp           = parent.child("torpedoes");
     xml_elem tb           = tp.child("tubes");
@@ -243,17 +249,19 @@ submarine::submarine(game& gm_, const xml_elem& parent) :
     number_of_tubes_at[4] = tb.attru("bowdeckreserve");
     number_of_tubes_at[5] = tb.attru("sterndeckreserve");
 
-    unsigned nrtrp        = 0;
+    unsigned nrtrp = 0;
     for (unsigned int i : number_of_tubes_at)
+    {
         nrtrp += i;
+    }
     torpedoes.resize(nrtrp);
 
-    xml_elem tf              = tp.child("transfertimes");
-    torp_transfer_times[0]   = tf.attru("bow");
-    torp_transfer_times[1]   = tf.attru("stern");
-    torp_transfer_times[2]   = tf.attru("bowdeck");
-    torp_transfer_times[3]   = tf.attru("sterndeck");
-    torp_transfer_times[4]   = tf.attru("bowsterndeck");
+    xml_elem tf            = tp.child("transfertimes");
+    torp_transfer_times[0] = tf.attru("bow");
+    torp_transfer_times[1] = tf.attru("stern");
+    torp_transfer_times[2] = tf.attru("bowdeck");
+    torp_transfer_times[3] = tf.attru("sterndeck");
+    torp_transfer_times[4] = tf.attru("bowsterndeck");
 
     xml_elem bt              = parent.child("battery");
     battery_capacity         = bt.attru("capacity");
@@ -286,11 +294,17 @@ submarine::submarine(game& gm_, const xml_elem& parent) :
     // set hearing device
     date dt = gm_.get_date();
     if (dt < date(1941, 6, 1))
+    {
         hearing_device = hearing_device_KDB;
+    }
     else if (dt < date(1944, 11, 1))
+    {
         hearing_device = hearing_device_GHG;
+    }
     else
+    {
         hearing_device = hearing_device_BG;
+    }
 
     // load the bridge data
     xml_elem br = parent.child("bridge");
@@ -358,7 +372,9 @@ void submarine::load(const xml_elem& parent)
     {
         unsigned id = e.attru("nr");
         if (id >= tanks.size())
+        {
             THROW(error, std::string("invalid tank nr in ") + e.doc_name());
+        }
         tanks[id].load(e);
     }
 
@@ -446,7 +462,7 @@ void submarine::transfer_torpedo(unsigned from, unsigned to)
     }
 }
 
-int submarine::find_stored_torpedo(bool usebow)
+auto submarine::find_stored_torpedo(bool usebow) -> int
 {
     pair<unsigned, unsigned> indices =
         (usebow) ? get_bow_reserve_indices() : get_stern_reserve_indices();
@@ -471,10 +487,14 @@ void submarine::simulate(double delta_time, game& gm)
 
     // diveplane animation
     if (diveplane_1_id >= 0)
+    {
         mymodel->set_object_angle(diveplane_1_id, -bow_depth_rudder.angle);
+    }
 
     if (diveplane_2_id >= 0)
+    {
         mymodel->set_object_angle(diveplane_2_id, -stern_depth_rudder.angle);
+    }
 
     // simulate all tanks (flooding) and recompute mass_flooded_tanks here
     mass_flooded_tanks = 0;
@@ -508,7 +528,9 @@ void submarine::simulate(double delta_time, game& gm)
     stern_depth_rudder.simulate(delta_time);
 
     if (-position.z > max_depth)
+    {
         kill();
+    }
 
     // ------------- simulate state changes ----------------------------------
     // log_debug("dive_state="<<unsigned(dive_state));
@@ -519,13 +541,19 @@ void submarine::simulate(double delta_time, game& gm)
         case dive_state_preparing_for_dive:
         case dive_state_preparing_for_crashdive:
             if (electric_engine)
+            {
                 electric_engine = false;
+            }
             if (!is_gun_manned())
             {
                 if (dive_state == dive_state_preparing_for_dive)
+                {
                     dive_state = dive_state_diving;
+                }
                 else
+                {
                     dive_state = dive_state_crashdive;
+                }
             }
             break;
         case dive_state_diving:
@@ -590,8 +618,10 @@ void submarine::simulate(double delta_time, game& gm)
                     //					torpedoes[st.associated].status =
                     // stored_torpedo::st_empty;	// empty
                     if (i < get_nr_of_bow_tubes() + get_nr_of_stern_tubes())
+                    {
                         gm.add_event(
                             std::make_unique<event_tube_reloaded>(i + 1));
+                    }
                 }
                 else
                 {                                               // unloading
@@ -642,18 +672,26 @@ void submarine::simulate(double delta_time, game& gm)
     // hack for test of hearing devices, change by date
     date dt = gm.get_date();
     if (dt < date(1941, 6, 1))
+    {
         hearing_device = hearing_device_KDB;
+    }
     else if (dt < date(1944, 11, 1))
+    {
         hearing_device = hearing_device_GHG;
+    }
     else
+    {
         hearing_device = hearing_device_BG;
+    }
 }
 
 void submarine::set_target(sea_object_id s, game& gm)
 {
     sea_object::set_target(s, gm);
     if (!gm.is_valid(target))
+    {
         return;
+    }
 
     TDC.set_torpedo_data(kts2ms(30), 7500); // fixme!!!!
     // the values below should be modified by quality of guessed target data
@@ -764,13 +802,21 @@ void submarine::init_fill_torpedo_tubes(const date& d)
     {
         unsigned r = rnd(6);
         if (r <= 1)
+        {
             torpedoes[i] = stored_torpedo(standard1);
+        }
         else if (r <= 2)
+        {
             torpedoes[i] = stored_torpedo(standard2);
+        }
         else if (r <= 3)
+        {
             torpedoes[i] = stored_torpedo(special1);
+        }
         else
+        {
             torpedoes[i] = stored_torpedo(special2);
+        }
     }
     idx = get_stern_tube_indices();
     for (unsigned i = idx.first; i < idx.second; ++i)
@@ -782,22 +828,34 @@ void submarine::init_fill_torpedo_tubes(const date& d)
     {
         unsigned r = rnd(6);
         if (r <= 1)
+        {
             torpedoes[i] = stored_torpedo(standard1);
+        }
         else if (r <= 3)
+        {
             torpedoes[i] = stored_torpedo(standard2);
+        }
         else if (r <= 4)
+        {
             torpedoes[i] = stored_torpedo(special1);
+        }
         else
+        {
             torpedoes[i] = stored_torpedo(special2);
+        }
     }
     idx = get_stern_reserve_indices();
     for (unsigned i = idx.first; i < idx.second; ++i)
     {
         unsigned r = rnd(2);
         if (r < 1)
+        {
             torpedoes[i] = stored_torpedo(stern);
+        }
         else
+        {
             torpedoes[i] = stored_torpedo(special2);
+        }
     }
     idx = get_bow_deckreserve_indices();
     for (unsigned i = idx.first; i < idx.second; ++i)
@@ -814,52 +872,57 @@ void submarine::init_fill_torpedo_tubes(const date& d)
 }
 
 // give number from 0-5 (bow tubes first)
-bool submarine::is_tube_ready(unsigned nr) const
+auto submarine::is_tube_ready(unsigned nr) const -> bool
 {
     if (nr > 5)
+    {
         return false;
+    }
 
     unsigned nrb = get_nr_of_bow_tubes();
     unsigned nrs = get_nr_of_stern_tubes();
     if (nr >= nrb + nrs)
+    {
         return false;
+    }
 
     return (torpedoes[nr].status == stored_torpedo::st_loaded);
 }
 
-pair<unsigned, unsigned> submarine::get_bow_tube_indices() const
+auto submarine::get_bow_tube_indices() const -> pair<unsigned, unsigned>
 {
     unsigned off = 0;
     return make_pair(off, off + get_nr_of_bow_tubes());
 }
 
-pair<unsigned, unsigned> submarine::get_stern_tube_indices() const
+auto submarine::get_stern_tube_indices() const -> pair<unsigned, unsigned>
 {
     unsigned off = get_nr_of_bow_tubes();
     return make_pair(off, off + get_nr_of_stern_tubes());
 }
 
-pair<unsigned, unsigned> submarine::get_bow_reserve_indices() const
+auto submarine::get_bow_reserve_indices() const -> pair<unsigned, unsigned>
 {
     unsigned off = get_nr_of_bow_tubes() + get_nr_of_stern_tubes();
     return make_pair(off, off + get_nr_of_bow_reserve());
 }
 
-pair<unsigned, unsigned> submarine::get_stern_reserve_indices() const
+auto submarine::get_stern_reserve_indices() const -> pair<unsigned, unsigned>
 {
     unsigned off = get_nr_of_bow_tubes() + get_nr_of_stern_tubes()
                    + get_nr_of_bow_reserve();
     return make_pair(off, off + get_nr_of_stern_reserve());
 }
 
-pair<unsigned, unsigned> submarine::get_bow_deckreserve_indices() const
+auto submarine::get_bow_deckreserve_indices() const -> pair<unsigned, unsigned>
 {
     unsigned off = get_nr_of_bow_tubes() + get_nr_of_stern_tubes()
                    + get_nr_of_bow_reserve() + get_nr_of_stern_reserve();
     return make_pair(off, off + get_nr_of_bow_deckreserve());
 }
 
-pair<unsigned, unsigned> submarine::get_stern_deckreserve_indices() const
+auto submarine::get_stern_deckreserve_indices() const
+    -> pair<unsigned, unsigned>
 {
     unsigned off = get_nr_of_bow_tubes() + get_nr_of_stern_tubes()
                    + get_nr_of_bow_reserve() + get_nr_of_stern_reserve()
@@ -867,36 +930,53 @@ pair<unsigned, unsigned> submarine::get_stern_deckreserve_indices() const
     return make_pair(off, off + get_nr_of_stern_deckreserve());
 }
 
-unsigned submarine::get_location_by_tubenr(unsigned tn) const
+auto submarine::get_location_by_tubenr(unsigned tn) const -> unsigned
 {
     pair<unsigned, unsigned> idx = get_bow_tube_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 1;
+    }
     idx = get_stern_tube_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 2;
+    }
     idx = get_bow_reserve_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 3;
+    }
     idx = get_stern_reserve_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 4;
+    }
     idx = get_bow_deckreserve_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 5;
+    }
     idx = get_stern_deckreserve_indices();
     if (tn >= idx.first && tn < idx.second)
+    {
         return 6;
+    }
     return 0;
 }
 
-double submarine::get_torp_transfer_time(unsigned from, unsigned to) const
+auto submarine::get_torp_transfer_time(unsigned from, unsigned to) const
+    -> double
 {
     unsigned fl = get_location_by_tubenr(from), tl = get_location_by_tubenr(to);
     if (fl == 0 || tl == 0)
+    {
         return 0.0;
+    }
     if (fl == tl)
+    {
         return 0.0;
+    }
     // possible path of transportation is: 1 <-> 3 <-> 5 <-> 6 <-> 4 <-> 2
     // each connection has a type specific time
     unsigned transl[7] = {0, 1, 6, 2, 5, 3, 4}; // translate to linear order
@@ -932,7 +1012,7 @@ double submarine::get_torp_transfer_time(unsigned from, unsigned to) const
     return tm;
 }
 
-double submarine::get_max_speed() const
+auto submarine::get_max_speed() const -> double
 {
     double ms;
 
@@ -947,13 +1027,15 @@ double submarine::get_max_speed() const
         // When submarine is submerged and snorkel is used the maximum
         // diesel speed is halved.
         if (has_snorkel() && is_submerged() && snorkelup)
+        {
             ms *= 0.5f;
+        }
     }
 
     return ms;
 }
 
-float submarine::surface_visibility(const vector2& watcher) const
+auto submarine::surface_visibility(const vector2& watcher) const -> float
 {
     // fixme: that model is too crude,
     // we compute cross sections with standard draught, so the hull is ~ 1m
@@ -1002,7 +1084,7 @@ float submarine::surface_visibility(const vector2& watcher) const
     return dive_factor;
 }
 
-float submarine::sonar_visibility(const vector2& watcher) const
+auto submarine::sonar_visibility(const vector2& watcher) const -> float
 {
     double depth     = get_depth();
     float diveFactor = 0.0f;
@@ -1207,7 +1289,7 @@ void submarine::ballast_tank_control_logic(double delta_time)
     // DBGOUT8(position.z,dive_to,mass_flooded_tanks,mass,s1,s2,s3,err);
 }
 
-double submarine::get_noise_factor() const
+auto submarine::get_noise_factor() const -> double
 {
     double noisefac = 1.0f;
 
@@ -1227,13 +1309,15 @@ double submarine::get_noise_factor() const
         // sea_object::get_noise_factor and must be corrected here by
         // multiply the actual noise factor with 2.
         if (has_snorkel() && is_submerged() && snorkelup)
+        {
             noisefac *= 2.0f;
+        }
     }
 
     return noisefac;
 }
 
-submarine::stored_torpedo& submarine::get_torp_in_tube(unsigned tubenr)
+auto submarine::get_torp_in_tube(unsigned tubenr) -> submarine::stored_torpedo&
 {
     if (tubenr < number_of_tubes_at[0] + number_of_tubes_at[1])
     {
@@ -1242,8 +1326,8 @@ submarine::stored_torpedo& submarine::get_torp_in_tube(unsigned tubenr)
     THROW(error, "illegal tube nr for get_torp_in_tube");
 }
 
-const submarine::stored_torpedo&
-submarine::get_torp_in_tube(unsigned tubenr) const
+auto submarine::get_torp_in_tube(unsigned tubenr) const
+    -> const submarine::stored_torpedo&
 {
     if (tubenr < number_of_tubes_at[0] + number_of_tubes_at[1])
     {
@@ -1300,11 +1384,15 @@ void submarine::depth_charge_explosion(const class depth_charge& dc)
         for (unsigned i = 0; i < parts.size() /*nr_of_parts*/; ++i)
         {
             if (parts[i].status < 0)
+            {
                 continue; // avoid non existent parts.
+            }
 
             vector3f tmp = (damage_schemes[i].p1 + damage_schemes[i].p2) * 0.5;
             if (tmp.square_length() == 0)
+            {
                 continue; // hack to avoid yet not exsisting data fixme
+            }
             vector3 part_center = get_pos()
                                   + vector3(
                                       (tmp.x - 0.5) * bb.x,
@@ -1333,7 +1421,9 @@ void submarine::calculate_fuel_factor(double delta_time)
     if (electric_engine)
     {
         if (battery_level >= 0.0f && battery_level <= 1.0f)
+        {
             battery_level -= delta_time * get_battery_consumption_rate();
+        }
     }
     else
     {
@@ -1341,11 +1431,13 @@ void submarine::calculate_fuel_factor(double delta_time)
 
         // Recharge battery.
         if (battery_level >= 0.0f && battery_level <= 1.0f)
+        {
             battery_level += delta_time * get_battery_recharge_rate();
+        }
     }
 }
 
-bool submarine::set_snorkel_up(bool snorkelup)
+auto submarine::set_snorkel_up(bool snorkelup) -> bool
 {
     // Snorkel can be toggled only when it is available
     // and the submarine is at least at snorkel depth.
@@ -1355,9 +1447,13 @@ bool submarine::set_snorkel_up(bool snorkelup)
 
         // Activate diesel or electric engines if snorkel is up or down.
         if (snorkelup)
+        {
             electric_engine = false;
+        }
         else
+        {
             electric_engine = true;
+        }
 
         return true;
     }
@@ -1365,7 +1461,8 @@ bool submarine::set_snorkel_up(bool snorkelup)
     return false;
 }
 
-bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
+auto submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
+    -> bool
 {
     bool usebowtubes = false;
 
@@ -1388,7 +1485,9 @@ bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
             }
         }
         if (tubenr < 0)
+        {
             return false; // no torpedo found
+        }
     }
     else
     { // check if tube nr is bow or stern
@@ -1402,7 +1501,9 @@ bool submarine::launch_torpedo(int tubenr, const vector3& targetpos, game& gm)
         {
             idx = get_stern_tube_indices();
             if (tn < idx.first || tn >= idx.second)
+            {
                 return false; // illegal tube nr.
+            }
         }
     }
 
@@ -1443,9 +1544,13 @@ void submarine::gun_manning_changed(bool is_gun_manned, game& gm)
     // fixme: these events occur endlessly once active!
     log_debug("gun_manning_changed is_gun_manned=" << is_gun_manned);
     if (is_gun_manned)
+    {
         gm.add_event(std::make_unique<event_gun_manned>());
+    }
     else
+    {
         gm.add_event(std::make_unique<event_gun_unmanned>());
+    }
 }
 
 void submarine::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
@@ -1495,7 +1600,7 @@ void submarine::flood_ballast_tanks()
     }
 }
 
-double submarine::push_air_to_ballast_tanks(double amount_cbm)
+auto submarine::push_air_to_ballast_tanks(double amount_cbm) -> double
 {
     // leverage over all ballast tanks? would be better...
     for (auto& it : tanks)

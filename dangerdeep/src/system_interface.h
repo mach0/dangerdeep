@@ -61,19 +61,19 @@ class system_interface : public singleton<system_interface>
     };
 
     /// Constructor
-    system_interface(const parameters& params = parameters());
+    system_interface(parameters params = parameters());
 
     /// Destructor
     ~system_interface();
 
     /// Get the parameters
-    const auto& get_parameters() const { return params; }
+    [[nodiscard]] const auto& get_parameters() const { return params; }
 
     /// Set new parameters, returns true on success
     bool set_parameters(const parameters& params);
 
     /// Add new event handler on top of stack
-    void add_input_event_handler(std::shared_ptr<input_event_handler>);
+    void add_input_event_handler(const std::shared_ptr<input_event_handler>&);
 
     /// Remove the topmost handler
     void remove_input_event_handler(std::shared_ptr<input_event_handler>);
@@ -103,17 +103,17 @@ class system_interface : public singleton<system_interface>
     gl_perspective_fovx(double fovx, double aspect, double znear, double zfar);
 
     /// Request current resolution
-    vector2i get_resolution() const { return params.resolution; }
+    [[nodiscard]] vector2i get_resolution() const { return params.resolution; }
 
     /// Request 2D offset on screen
-    vector2i get_2D_screen_offset() const { return offset_2D; }
+    [[nodiscard]] vector2i get_2D_screen_offset() const { return offset_2D; }
 
     /// Request 2D size on screen
-    vector2i get_2D_screen_size() const { return size_2D; }
+    [[nodiscard]] vector2i get_2D_screen_size() const { return size_2D; }
 
     /// Translate pseudo 2D coordinates (1024x768 range) to real coordinates.
     /// Note that y-coord is negated!
-    vector2f translate_2D_coordinates(const vector2i& c) const
+    [[nodiscard]] vector2f translate_2D_coordinates(const vector2i& c) const
     {
         return vector2f(
             scale_pseudo_2D.x * c.x + offset_pseudo_2D.x,
@@ -122,33 +122,39 @@ class system_interface : public singleton<system_interface>
 
     /// Translate pseudo 2D size (1024x768 range) to real size. Note that
     /// y-coord is NOT negated!
-    vector2f translate_2D_size(const vector2i& c) const
+    [[nodiscard]] vector2f translate_2D_size(const vector2i& c) const
     {
         return vector2f(scale_pseudo_2D.x * c.x, scale_pseudo_2D.y * c.y);
     }
 
     /// Translate pseudo 2D size (1024x768 range) to real size. Note that
     /// y-coord is NOT negated!
-    vector2f translate_2D_size(const vector2u& c) const
+    [[nodiscard]] vector2f translate_2D_size(const vector2u& c) const
     {
         return vector2f(scale_pseudo_2D.x * c.x, scale_pseudo_2D.y * c.y);
     }
 
-    vector2i get_res() const { return params.resolution; }
-    vector2i get_res_2d() const { return params.resolution2d; }
+    [[nodiscard]] vector2i get_res() const { return params.resolution; }
+    [[nodiscard]] vector2i get_res_2d() const { return params.resolution2d; }
     // old code compatibility layer
-    unsigned get_res_x() const { return params.resolution.x; }
-    unsigned get_res_y() const { return params.resolution.y; }
-    unsigned get_res_x_2d() const { return params.resolution2d.x; }
-    unsigned get_res_y_2d() const { return params.resolution2d.y; }
+    [[nodiscard]] unsigned get_res_x() const { return params.resolution.x; }
+    [[nodiscard]] unsigned get_res_y() const { return params.resolution.y; }
+    [[nodiscard]] unsigned get_res_x_2d() const
+    {
+        return params.resolution2d.x;
+    }
+    [[nodiscard]] unsigned get_res_y_2d() const
+    {
+        return params.resolution2d.y;
+    }
     // fixme only needed by uzo and widget, get rid of that!
-    unsigned get_res_area_2d_x() const { return offset_2D.x; }
-    unsigned get_res_area_2d_y() const { return offset_2D.y; }
-    unsigned get_res_area_2d_w() const { return size_2D.x; }
-    unsigned get_res_area_2d_h() const { return size_2D.y; }
+    [[nodiscard]] unsigned get_res_area_2d_x() const { return offset_2D.x; }
+    [[nodiscard]] unsigned get_res_area_2d_y() const { return offset_2D.y; }
+    [[nodiscard]] unsigned get_res_area_2d_w() const { return size_2D.x; }
+    [[nodiscard]] unsigned get_res_area_2d_h() const { return size_2D.y; }
 
     /// Request available screen resolutions
-    const std::vector<vector2i>& get_available_resolutions() const
+    [[nodiscard]] const std::vector<vector2i>& get_available_resolutions() const
     {
         return available_resolutions;
     }

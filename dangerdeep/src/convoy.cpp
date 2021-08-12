@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "ship.h"
 #include "system_interface.h"
 
+#include <cmath>
 #include <utility>
 using std::list;
 using std::make_pair;
@@ -79,13 +80,15 @@ ship_probability civilships[] = {
     {0.1, "empiredabchick"},
     {0.0, nullptr}};
 
-string get_random_ship(ship_probability* p, game& gm)
+auto get_random_ship(ship_probability* p, game& gm) -> string
 {
     // count how many ships we have, sum of probabilities
     double psum = 0;
     unsigned k  = 0;
     for (; p[k].name != nullptr; ++k)
+    {
         psum += p[k].prob;
+    }
     // printf("psum %f k %u\n", psum, k);
     // now compute one random ship
     double r = gm.randomf() * psum;
@@ -110,8 +113,10 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_) :
 
     waypoints.emplace_back(0, 0);
     for (int wp = 0; wp < 4; ++wp)
+    {
         waypoints.emplace_back(
             gm.randomf() * 300000 - 150000, gm.randomf() * 300000 - 150000);
+    }
     angle heading     = angle(*(++waypoints.begin()) - *(waypoints.begin()));
     vector2 coursevec = heading.direction();
     // position = vector2(0, 0);
@@ -134,17 +139,21 @@ convoy::convoy(game& gm_, convoy::types type_, convoy::esctypes esct_) :
 
         // compute size and structure of convoy
         unsigned nrships = (2 << cvsize) * 10 + gm.randomf() * 10 - 5;
-        auto sqrtnrships = unsigned(floor(sqrt(float(nrships))));
+        auto sqrtnrships = unsigned(std::floor(std::sqrt(float(nrships))));
         unsigned shps    = 0;
         for (unsigned j = 0; j <= sqrtnrships; ++j)
         {
             if (shps >= nrships)
+            {
                 break;
+            }
             int dy = int(j) - sqrtnrships / 2;
             for (unsigned i = 0; i <= sqrtnrships; ++i)
             {
                 if (shps >= nrships)
+                {
                     break;
+                }
                 int dx = int(i) - sqrtnrships / 2;
                 // fixme!!! replace by parsing ship dir for available types or
                 // hardcode them!!! each ship in data/ships stores its type. but
@@ -247,7 +256,7 @@ convoy::convoy(class game& gm_, const vector2& pos, std::string name_) :
 {
 }
 
-bool convoy::add_ship(sea_object_id id)
+auto convoy::add_ship(sea_object_id id) -> bool
 {
     auto& shp    = gm.get_ship(id);
     vector2 spos = shp.get_pos().xy() - position;
@@ -340,7 +349,7 @@ void convoy::save(xml_elem& parent) const
     }
 }
 
-unsigned convoy::get_nr_of_ships() const
+auto convoy::get_nr_of_ships() const -> unsigned
 {
     return merchants.size() + warships.size() + escorts.size();
 }
@@ -376,21 +385,27 @@ void convoy::simulate(double delta_time, game& gm)
         auto it2 = it;
         ++it;
         if (!gm.is_valid(it2->first))
+        {
             merchants.erase(it2);
+        }
     }
     for (auto it = warships.begin(); it != warships.end();)
     {
         auto it2 = it;
         ++it;
         if (!gm.is_valid(it2->first))
+        {
             warships.erase(it2);
+        }
     }
     for (auto it = escorts.begin(); it != escorts.end();)
     {
         auto it2 = it;
         ++it;
         if (!gm.is_valid(it2->first))
+        {
             escorts.erase(it2);
+        }
     }
 
     // fixme: set target course for ships here, but only every n seconds.

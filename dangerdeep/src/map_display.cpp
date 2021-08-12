@@ -104,7 +104,9 @@ void map_display::draw_trail(const sea_object* so, const vector2& offset) const
     {
         const list<ship::prev_pos>& l = shp->get_previous_positions();
         if (l.empty())
+        {
             return;
+        }
         vector2 p = (shp->get_pos().xy() + offset) * mapzoom;
         primitives tr(GL_LINE_STRIP, l.size() + 1);
         tr.vertices[0].x = 512 + p.x;
@@ -246,20 +248,30 @@ void map_display::draw_visual_contacts(
 
     // draw trails
     for (auto obj : objs)
+    {
         draw_trail(obj, offset);
+    }
 
     // draw vessel symbols
     for (auto obj : objs)
     {
         color c;
         if (dynamic_cast<const submarine*>(obj))
+        {
             c = color(255, 255, 128);
+        }
         else if (dynamic_cast<const torpedo*>(obj))
+        {
             c = color(255, 0, 0);
+        }
         else if (dynamic_cast<const ship*>(obj))
+        {
             c = color(192, 255, 192);
+        }
         else if (dynamic_cast<const airplane*>(obj))
+        {
             c = color(0, 0, 64);
+        }
         draw_vessel_symbol(offset, obj, c);
     }
 }
@@ -273,16 +285,22 @@ void map_display::draw_radar_contacts(
 
     // draw trails
     for (auto obj : objs)
+    {
         draw_trail(obj, offset);
+    }
 
     // draw vessel symbols
     for (auto obj : objs)
     {
         color c;
         if (dynamic_cast<const submarine*>(obj))
+        {
             c = color(255, 255, 128);
+        }
         else if (dynamic_cast<const ship*>(obj))
+        {
             c = color(192, 255, 192);
+        }
         draw_vessel_symbol(offset, obj, c);
     }
 }
@@ -687,7 +705,9 @@ void map_display::edit_del_obj(game_editor& gm)
 void map_display::edit_change_motion(game_editor& gm)
 {
     if (selection.empty())
+    {
         return;
+    }
 
     // compute max speed.
     int minspeed = 0, maxspeed = 0;
@@ -759,7 +779,9 @@ void map_display::edit_convoy_menu(game_editor& gm)
     {
         string nm = convoy.get_name();
         if (nm.length() == 0)
+        {
             nm = "???";
+        }
         edit_cvlist->append_entry(nm);
     }
     // fill in current cv name and speed
@@ -813,9 +835,13 @@ void map_display::display() const
     bool is_day_mode   = gm.is_day_mode();
 
     if (is_day_mode)
+    {
         glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    }
     else
+    {
         glClearColor(0.0f, 0.0f, 0.75f, 1.0f);
+    }
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     double max_view_dist = gm.get_max_view_distance();
@@ -1110,7 +1136,7 @@ void map_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool map_display::handle_key_event(const key_data& k)
+auto map_display::handle_key_event(const key_data& k) -> bool
 {
     if (ui.get_game().is_editor())
     {
@@ -1137,27 +1163,33 @@ bool map_display::handle_key_event(const key_data& k)
         if (is_configured_key(key_command::ZOOM_MAP, k))
         {
             if (mapzoom < 1)
+            {
                 mapzoom *= 2;
+            }
             return true;
         }
         else if (is_configured_key(key_command::UNZOOM_MAP, k))
         {
             if (mapzoom > 1.0 / 16384)
+            {
                 mapzoom /= 2;
+            }
             return true;
         }
         else if (k.keycode == key_code::m)
         {
             mapmode++;
             if (mapmode > 1)
+            {
                 mapmode = 0;
+            }
             return true;
         }
     }
     return false;
 }
 
-bool map_display::handle_mouse_button_event(const mouse_click_data& m)
+auto map_display::handle_mouse_button_event(const mouse_click_data& m) -> bool
 {
     auto& gm           = ui.get_game();
     sea_object* player = gm.get_player();
@@ -1254,7 +1286,9 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
                             if (s)
                             {
                                 if (cv.add_ship(it))
+                                {
                                     ++nrsh;
+                                }
                             }
                         }
                         // add convoy to class game, if it has ships
@@ -1282,9 +1316,13 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
             // check for shift / ctrl
             unsigned mode = 0; // replace selection
             if (key_mod_shift(state_of_key_modifiers))
+            {
                 mode = 1; // subtract
+            }
             if (key_mod_ctrl(state_of_key_modifiers))
+            {
                 mode = 2; // add
+            }
             if (mouse_position != mouse_position_down)
             {
                 // group select
@@ -1295,7 +1333,9 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
                 // fixme: later all objects
                 auto objs = gm.visible_surface_objects(player);
                 if (mode == 0)
+                {
                     selection.clear();
+                }
                 for (auto& obj : objs)
                 {
                     vector2 p = (obj->get_pos().xy()
@@ -1307,9 +1347,13 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
                     {
                         auto id = ge.get_id(*obj);
                         if (mode == 1)
+                        {
                             selection.erase(id);
+                        }
                         else
+                        {
                             selection.insert(id);
+                        }
                     }
                 }
                 check_edit_sel();
@@ -1323,7 +1367,9 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
                 double mapclickdist = 1e30;
                 sea_object_id target;
                 if (mode == 0)
+                {
                     selection.clear();
+                }
                 for (auto& obj : objs)
                 {
                     vector2 p = (obj->get_pos().xy()
@@ -1340,9 +1386,13 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
                     }
                 }
                 if (mode == 1)
+                {
                     selection.erase(target);
+                }
                 else
+                {
                     selection.insert(target);
+                }
                 check_edit_sel();
             }
             mouse_position_down = {-1, -1};
@@ -1362,7 +1412,9 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
         for (auto& obj : objs)
         {
             if (!obj->is_alive())
+            {
                 continue;
+            }
             vector2 p =
                 (obj->get_pos().xy() - (player->get_pos().xy() + mapoffset))
                 * mapzoom;
@@ -1384,14 +1436,16 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
     return false;
 }
 
-bool map_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto map_display::handle_mouse_motion_event(const mouse_motion_data& m) -> bool
 {
     if (ui.get_game().is_editor())
     {
         // handle mouse events for edit panel if that exists.
         if (edit_panel->is_mouse_over(m.position_2d)
             && widget::handle_mouse_motion_event(*edit_panel, m))
+        {
             return true;
+        }
         // check if foreground window is open and event should go to it
         if (edit_panel_fg != nullptr)
         {
@@ -1428,18 +1482,22 @@ bool map_display::handle_mouse_motion_event(const mouse_motion_data& m)
     return false;
 }
 
-bool map_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto map_display::handle_mouse_wheel_event(const mouse_wheel_data& m) -> bool
 {
     if (m.up())
     {
         if (mapzoom < 1)
+        {
             mapzoom *= 1.25;
+        }
         return true;
     }
     else if (m.down())
     {
         if (mapzoom > 1.0 / 16384)
+        {
             mapzoom /= 1.25;
+        }
     }
     return false;
 }

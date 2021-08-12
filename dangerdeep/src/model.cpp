@@ -105,79 +105,109 @@ unsigned model::loc_mc_tex_color;
 
 const std::string model::default_layout = "*default*";
 
-bool model::object::set_angle(float ang)
+auto model::object::set_angle(float ang) -> bool
 {
     if (ang < rotat_angle_min)
+    {
         return false;
+    }
     if (ang > rotat_angle_max)
+    {
         return false;
+    }
     rotat_angle = ang;
     return true;
 }
 
-bool model::object::set_translation(float value)
+auto model::object::set_translation(float value) -> bool
 {
     if (value < trans_val_min)
+    {
         return false;
+    }
     if (value > trans_val_max)
+    {
         return false;
+    }
     if (translation_constraint_axis == 0)
+    {
         translation.x = value;
+    }
     else if (translation_constraint_axis == 1)
+    {
         translation.y = value;
+    }
     else
+    {
         translation.z = value;
+    }
     return true;
 }
 
-model::object* model::object::find(unsigned id_)
+auto model::object::find(unsigned id_) -> model::object*
 {
     if (id == id_)
+    {
         return this;
+    }
     for (auto& it : children)
     {
         object* obj = it.find(id_);
         if (obj)
+        {
             return obj;
+        }
     }
     return nullptr;
 }
 
-model::object* model::object::find(const std::string& name_)
+auto model::object::find(const std::string& name_) -> model::object*
 {
     if (name == name_)
+    {
         return this;
+    }
     for (auto& it : children)
     {
         object* obj = it.find(name_);
         if (obj)
+        {
             return obj;
+        }
     }
     return nullptr;
 }
 
-const model::object* model::object::find(unsigned id_) const
+auto model::object::find(unsigned id_) const -> const model::object*
 {
     if (id == id_)
+    {
         return this;
+    }
     for (const auto& it : children)
     {
         const object* obj = it.find(id_);
         if (obj)
+        {
             return obj;
+        }
     }
     return nullptr;
 }
 
-const model::object* model::object::find(const std::string& name_) const
+auto model::object::find(const std::string& name_) const -> const model::object*
 {
     if (name == name_)
+    {
         return this;
+    }
     for (const auto& it : children)
     {
         const object* obj = it.find(name_);
         if (obj)
+        {
             return obj;
+        }
     }
     return nullptr;
 }
@@ -188,7 +218,9 @@ void model::object::display(const texture* caustic_map) const
     glTranslated(translation.x, translation.y, translation.z);
     glRotated(rotat_angle, rotat_axis.x, rotat_axis.y, rotat_axis.z);
     if (mymesh)
+    {
         mymesh->display(caustic_map);
+    }
     for (const auto& it : children)
     {
         it.display(caustic_map);
@@ -204,7 +236,9 @@ void model::object::display_mirror_clip() const
     glRotated(rotat_angle, rotat_axis.x, rotat_axis.y, rotat_axis.z);
 
     if (mymesh)
+    {
         mymesh->display_mirror_clip();
+    }
     for (const auto& it : children)
     {
         it.display_mirror_clip();
@@ -231,7 +265,7 @@ void model::object::compute_bounds(
     }
 }
 
-matrix4f model::object::get_transformation() const
+auto model::object::get_transformation() const -> matrix4f
 {
     return matrix4f::trans(translation)
            * quaternionf::rot(rotat_angle, rotat_axis).rotmat4();
@@ -322,7 +356,9 @@ void model::render_deinit()
 model::model()
 {
     if (init_count == 0)
+    {
         render_init();
+    }
     ++init_count;
 }
 
@@ -330,14 +366,18 @@ model::model(string filename_, bool use_material) :
     filename(std::move(filename_)), scene(0xffffffff, "<scene>", nullptr)
 {
     if (init_count == 0)
+    {
         render_init();
+    }
     ++init_count;
 
-    string::size_type st = filename.rfind(".");
+    string::size_type st = filename.rfind('.');
     string extension     = (st == string::npos) ? "" : filename.substr(st);
     for (char& e : extension)
+    {
         e = ::tolower(e);
-    st = filename.rfind("/"); // we use the slash as path separator on ALL
+    }
+    st = filename.rfind('/'); // we use the slash as path separator on ALL
                               // systems. C/C++ want it so.
     basepath = (st == string::npos) ? "" : filename.substr(0, st + 1);
     basename = filename.substr(
@@ -378,9 +418,13 @@ model::model(string filename_, bool use_material) :
     if (!use_material)
     {
         for (auto& meshe : meshes)
+        {
             meshe->mymaterial = nullptr;
+        }
         for (auto& it : materials)
+        {
             delete it;
+        }
         materials.clear();
     }
 
@@ -396,23 +440,33 @@ model::model(string filename_, bool use_material) :
 model::~model()
 {
     for (auto& meshe : meshes)
+    {
         delete meshe;
+    }
     for (auto& it : materials)
+    {
         delete it;
+    }
     --init_count;
     if (init_count == 0)
+    {
         render_deinit();
+    }
 }
 
 void model::compute_bounds()
 {
     // fixme: repace with bounding sphere hierarchy
     if (meshes.size() == 0)
+    {
         return;
+    }
 
     // could be done once... not here
     for (auto& meshe : meshes)
+    {
         meshe->compute_vertex_bounds();
+    }
 
     // with an objectree, we need to iterate the meshes along the tree and
     // handle per-object translations, without object tree just handle all
@@ -426,7 +480,9 @@ void model::compute_bounds()
     else
     {
         for (auto& meshe : meshes)
+        {
             meshe->compute_bounds(min, max, matrix4f::one());
+        }
     }
 
     boundsphere_radius = max.max(-min).length();
@@ -440,7 +496,7 @@ void model::compute_normals()
     }
 }
 
-int model::mesh::gl_primitive_type() const
+auto model::mesh::gl_primitive_type() const -> int
 {
     switch (indices_type)
     {
@@ -453,7 +509,7 @@ int model::mesh::gl_primitive_type() const
     }
 }
 
-const char* model::mesh::name_primitive_type() const
+auto model::mesh::name_primitive_type() const -> const char*
 {
     switch (indices_type)
     {
@@ -466,8 +522,8 @@ const char* model::mesh::name_primitive_type() const
     }
 }
 
-std::unique_ptr<model::mesh::triangle_iterator>
-model::mesh::get_tri_iterator() const
+auto model::mesh::get_tri_iterator() const
+    -> std::unique_ptr<model::mesh::triangle_iterator>
 {
     switch (indices_type)
     {
@@ -487,17 +543,21 @@ model::mesh::triangle_iterator::triangle_iterator(
     _i1(0), _i2(0), idx(indices), ptr(0)
 {
     if (idx.size() < 3)
+    {
         THROW(error, "triangle_iterator: must have at least one triangle");
+    }
     _i0 = idx[0];
     _i1 = idx[1];
     _i2 = idx[2];
     ptr = 3;
 }
 
-bool model::mesh::triangle_iterator::next()
+auto model::mesh::triangle_iterator::next() -> bool
 {
     if (ptr + 3 > idx.size())
+    {
         return false;
+    }
     _i0 = idx[ptr];
     _i1 = idx[ptr + 1];
     _i2 = idx[ptr + 2];
@@ -510,17 +570,21 @@ model::mesh::triangle_strip_iterator::triangle_strip_iterator(
     triangle_iterator(indices)
 {
     if (idx.size() < 3)
+    {
         THROW(error, "triangle_iterator: must have at least one triangle");
+    }
     _i0 = idx[0];
     _i1 = idx[1];
     _i2 = idx[2];
     ptr = 2; // points on index for next triangle
 }
 
-bool model::mesh::triangle_strip_iterator::next()
+auto model::mesh::triangle_strip_iterator::next() -> bool
 {
     if (ptr + 1 > idx.size())
+    {
         return false;
+    }
     // scheme depends on ptr value
     // either n-2,n-1,n for even n or n-1,n-2,n for odd n.
     unsigned x = ptr & 1;
@@ -534,7 +598,9 @@ bool model::mesh::triangle_strip_iterator::next()
 void model::mesh::compute_vertex_bounds()
 {
     if (vertices.size() == 0)
+    {
         return;
+    }
     min = max = vertices[0];
 
     for (auto it2 = ++vertices.begin(); it2 != vertices.end(); ++it2)
@@ -550,7 +616,9 @@ void model::mesh::compute_bounds(
     const matrix4f& transmat)
 {
     if (vertices.size() == 0)
+    {
         return;
+    }
     for (auto& vertice : vertices)
     {
         vector3f tmp = transmat * vertice;
@@ -627,16 +695,23 @@ void model::mesh::compute_normals()
             unsigned i1 = tit->i1();
             unsigned i2 = tit->i2();
             if (!vertexok[i0])
+            {
                 vertexok[i0] = compute_tangentx(i0, i1, i2);
+            }
             if (!vertexok[i1])
+            {
                 vertexok[i1] = compute_tangentx(i1, i2, i0);
+            }
             if (!vertexok[i2])
+            {
                 vertexok[i2] = compute_tangentx(i2, i0, i1);
+            }
         } while (tit->next());
     }
 }
 
-bool model::mesh::compute_tangentx(unsigned i0, unsigned i1, unsigned i2)
+auto model::mesh::compute_tangentx(unsigned i0, unsigned i1, unsigned i2)
+    -> bool
 {
     const vector2f& uv0 = texcoords[i0];
     const vector2f& uv1 = texcoords[i1];
@@ -722,7 +797,9 @@ model::mesh::mesh(
 {
     set_indices_type(pt_triangle_strip);
     if (w < 2 || h < 2 || heights.size() != w * h)
+    {
         THROW(error, "height field size invalid");
+    }
 
     // fill in vertices, texcoords
     vertices.reserve(heights.size());
@@ -812,14 +889,14 @@ model::mesh::mesh(
     compile();
 }
 
-unsigned model::mesh::get_nr_of_triangles() const
+auto model::mesh::get_nr_of_triangles() const -> unsigned
 {
     switch (indices_type)
     {
         case pt_triangles:
             return indices.size() / 3;
         case pt_triangle_strip:
-            return std::max(2U, (unsigned int) indices.size()) - 2;
+            return std::max(2U, static_cast<unsigned int>(indices.size())) - 2;
         default:
             return 0;
     }
@@ -857,9 +934,9 @@ void model::mesh::set_indices_type(primitive_type pt)
     indices_type = pt;
 }
 
-bool model::mesh::intersects(
+auto model::mesh::intersects(
     const mesh& other,
-    const matrix4f& transformation_this_to_other) const
+    const matrix4f& transformation_this_to_other) const -> bool
 {
     // we need to handle transformation of meshes.
     // compare transformed vertices: T * v == o.T * o.v
@@ -903,19 +980,25 @@ bool model::mesh::intersects(
     return false;
 }
 
-bool model::mesh::is_degenerated(
+auto model::mesh::is_degenerated(
     const vector3f& v0,
     const vector3f& v1,
     const vector3f& v2,
-    const float eps)
+    const float eps) -> bool
 {
     float eps2 = eps * eps;
     if (v0.square_distance(v1) < eps2)
+    {
         return true;
+    }
     if (v0.square_distance(v2) < eps2)
+    {
         return true;
+    }
     if (v1.square_distance(v2) < eps2)
+    {
         return true;
+    }
     return false;
 }
 
@@ -926,7 +1009,9 @@ void model::mesh::compile()
     {
         has_texture_u0 = mymaterial->needs_texcoords();
         if (mymaterial->normalmap.get())
+        {
             has_texture_u1 = true;
+        }
     }
     const unsigned vs = vertices.size();
 
@@ -949,7 +1034,7 @@ void model::mesh::compile()
         {
             vbo_tangents_righthanded.init_data(
                 4 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
-            auto* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
+            auto* xdata = static_cast<float*>(vbo_tangents_righthanded.map(GL_WRITE_ONLY));
             for (unsigned i = 0; i < vs; ++i)
             {
                 xdata[4 * i + 0] = tangentsx[i].x;
@@ -970,7 +1055,7 @@ void model::mesh::compile()
         {
             vbo_tangents_righthanded.init_data(
                 3 * sizeof(float) * vs, nullptr, GL_STATIC_DRAW);
-            auto* xdata = (float*) vbo_tangents_righthanded.map(GL_WRITE_ONLY);
+            auto* xdata = static_cast<float*>(vbo_tangents_righthanded.map(GL_WRITE_ONLY));
             for (unsigned i = 0; i < vs; ++i)
             {
                 xdata[3 * i + 0] = tangentsx[i].x;
@@ -999,12 +1084,16 @@ void model::mesh::compile()
 void model::mesh::transform(const matrix4f& m)
 {
     for (auto& vertice : vertices)
+    {
         vertice = m * vertice;
+    }
     // transform normals: only apply rotation
     matrix4f m2   = m;
     m2.elem(3, 0) = m2.elem(3, 1) = m2.elem(3, 2) = 0;
     for (auto& normal : normals)
+    {
         normal = m2 * normal;
+    }
 }
 
 void model::mesh::write_off_file(const string& fn) const
@@ -1023,11 +1112,13 @@ void model::mesh::write_off_file(const string& fn) const
     }
 }
 
-pair<model::mesh*, model::mesh*>
-model::mesh::split(const vector3f& abc, float d) const
+auto model::mesh::split(const vector3f& abc, float d) const
+    -> pair<model::mesh*, model::mesh*>
 {
     if (indices_type != pt_triangles)
+    {
         THROW(error, "split: can't handle primitives other than triangles!");
+    }
 
     auto* part0       = new model::mesh("split0");
     auto* part1       = new model::mesh("split1");
@@ -1058,26 +1149,42 @@ model::mesh::split(const vector3f& abc, float d) const
             ixtrans[i] = part0->vertices.size();
             part0->vertices.push_back(vertices[i]);
             if (texcoords.size() > 0)
+            {
                 part0->texcoords.push_back(texcoords[i]);
+            }
             if (normals.size() > 0)
+            {
                 part0->normals.push_back(normals[i]);
+            }
             if (tangentsx.size() > 0)
+            {
                 part0->tangentsx.push_back(tangentsx[i]);
+            }
             if (righthanded.size() > 0)
+            {
                 part0->righthanded.push_back(righthanded[i]);
+            }
         }
         else
         {
             ixtrans[i] = part1->vertices.size();
             part1->vertices.push_back(vertices[i]);
             if (texcoords.size() > 0)
+            {
                 part1->texcoords.push_back(texcoords[i]);
+            }
             if (normals.size() > 0)
+            {
                 part1->normals.push_back(normals[i]);
+            }
             if (tangentsx.size() > 0)
+            {
                 part1->tangentsx.push_back(tangentsx[i]);
+            }
             if (righthanded.size() > 0)
+            {
                 part0->righthanded.push_back(righthanded[i]);
+            }
         }
     }
 
@@ -1121,11 +1228,17 @@ model::mesh::split(const vector3f& abc, float d) const
         {
             float d0 = ds[j], d1 = ds[next[j]];
             if (d0 >= 0)
+            {
                 newindi0[newindi0ptr++] = ixtrans[ix[j]];
+            }
             else
+            {
                 newindi1[newindi1ptr++] = ixtrans[ix[j]];
+            }
             if (d0 * d1 >= 0)
+            {
                 continue;
+            }
             newindi0[newindi0ptr++] = p0v + splitptr;
             newindi1[newindi1ptr++] = p1v + splitptr;
             float fac               = fabs(d0) / (fabs(d0) + fabs(d1));
@@ -1165,7 +1278,9 @@ model::mesh::split(const vector3f& abc, float d) const
             ++splitptr;
         }
         if (splitptr != 2)
+        {
             THROW(error, "splitptr != 2 ?!");
+        }
         // add indices to parts.
         part0->indices.push_back(newindi0[0]);
         part0->indices.push_back(newindi0[1]);
@@ -1187,13 +1302,15 @@ model::mesh::split(const vector3f& abc, float d) const
         }
         if (!((newindi0ptr == 3 || newindi1ptr == 3)
               && (newindi0ptr + newindi1ptr == 7)))
+        {
             THROW(error, "newindi ptr corrupt!");
+        }
     }
 
     return make_pair(part0, part1);
 }
 
-bool model::mesh::is_inside(const vector3f& p) const
+auto model::mesh::is_inside(const vector3f& p) const -> bool
 {
     /* algorithm:
        for every triangle of the mesh, build a tetrahedron of the three
@@ -1244,7 +1361,7 @@ bool model::mesh::is_inside(const vector3f& p) const
 
 /* computing Volume
  */
-double model::mesh::compute_volume() const
+auto model::mesh::compute_volume() const -> double
 {
     double vsum = 0;
     std::unique_ptr<triangle_iterator> tit(get_tri_iterator());
@@ -1273,7 +1390,7 @@ double model::mesh::compute_volume() const
    with V_i each. Where V_i and c_i are volume and center of mass for each
    tetrahedron, given by c = 1/4 * (A+B+C+D) and V = 1/6 * (A-D)*(B-D)x(C-D)
 */
-vector3 model::mesh::compute_center_of_gravity() const
+auto model::mesh::compute_center_of_gravity() const -> vector3
 {
     vector3 vsum;
     double vdiv = 0;
@@ -1302,7 +1419,7 @@ vector3 model::mesh::compute_center_of_gravity() const
     return (1.0 / vdiv) * vsum;
 }
 
-bool model::mesh::has_adjacency_info() const
+auto model::mesh::has_adjacency_info() const -> bool
 {
     return triangle_adjacency.size() * 3 == get_nr_of_triangles();
 }
@@ -1322,7 +1439,7 @@ struct adjacency_edge_aux_data
         edge(e), v0(v0_), v1(v1_)
     {
     }
-    bool operator<(const adjacency_edge_aux_data& other) const
+    auto operator<(const adjacency_edge_aux_data& other) const -> bool
     {
         return v0 == other.v0 ? v1 < other.v1 : v0 < other.v0;
     }
@@ -1348,7 +1465,9 @@ void model::mesh::compute_adjacency()
         degenerated_edges += (idx[0] == idx[2]) ? 1 : 0;
         degenerated_edges += (idx[1] == idx[2]) ? 1 : 0;
         if (degenerated_edges > 0)
+        {
             continue;
+        }
         for (unsigned j = 0; j < 3; ++j)
         {
             unsigned v0 = idx[j];
@@ -1364,10 +1483,14 @@ void model::mesh::compute_adjacency()
                 const adjacency_edge_aux_data& a2 = *pib.first;
                 if (triangle_adjacency[a2.triangle * 3 + a2.edge]
                     != no_adjacency)
+                {
                     THROW(error, "inconsistent mesh");
+                }
                 if (triangle_adjacency[aa.triangle * 3 + aa.edge]
                     != no_adjacency)
+                {
                     THROW(error, "inconsistent mesh");
+                }
                 triangle_adjacency[a2.triangle * 3 + a2.edge] = aa.triangle;
                 triangle_adjacency[aa.triangle * 3 + aa.edge] = a2.triangle;
             }
@@ -1375,7 +1498,7 @@ void model::mesh::compute_adjacency()
     }
 }
 
-bool model::mesh::check_adjacency() const
+auto model::mesh::check_adjacency() const -> bool
 {
     // fixme: for all triangles check if adjacent triangle has vertex pair
     // matching edge and that edge has same pair as current edge
@@ -1405,7 +1528,8 @@ bool model::mesh::check_adjacency() const
    object - but this can give problems for simulation later,
    if the c.o.g is not at 0,0,0 ...
 */
-matrix3 model::mesh::compute_inertia_tensor(const matrix4f& transmat) const
+auto model::mesh::compute_inertia_tensor(const matrix4f& transmat) const
+    -> matrix3
 {
     matrix3 msum;
     const double mass = 1.0; // is just a scalar to the matrix
@@ -1478,7 +1602,9 @@ model::material::map::map()
 model::material::map::~map()
 {
     for (auto& it : skins)
+    {
         delete it.second.mytexture;
+    }
 }
 
 void model::material::map::register_layout(
@@ -1543,8 +1669,10 @@ void model::material::map::unregister_layout(const std::string& name)
     if (it != skins.end())
     {
         if (it->second.ref_count == 0)
+        {
             THROW(
                 error, "unregistered texture, but skin ref_count already zero");
+        }
         --(it->second.ref_count);
         if (it->second.ref_count == 0)
         {
@@ -1555,7 +1683,9 @@ void model::material::map::unregister_layout(const std::string& name)
     else
     {
         if (ref_count == 0)
+        {
             THROW(error, "unregistered texture, but ref_count already zero");
+        }
         --ref_count;
         if (ref_count == 0)
         {
@@ -1566,7 +1696,7 @@ void model::material::map::unregister_layout(const std::string& name)
 
 void model::material::map::set_layout(const std::string& layout)
 {
-    std::map<string, skin>::const_iterator it = skins.find(layout);
+    auto it = skins.find(layout);
     if (it != skins.end())
     {
         tex = it->second.mytexture;
@@ -1577,15 +1707,17 @@ void model::material::map::set_layout(const std::string& layout)
     }
 }
 
-int model::get_object_id_by_name(const std::string& name) const
+auto model::get_object_id_by_name(const std::string& name) const -> int
 {
     const object* obj = scene.find(name);
     if (!obj)
+    {
         return -1;
+    }
     return int(obj->id);
 }
 
-bool model::object_exists(unsigned objid) const
+auto model::object_exists(unsigned objid) const -> bool
 {
     const object* obj = scene.find(objid);
     return nullptr != obj;
@@ -1595,7 +1727,9 @@ void model::material::map::get_all_layout_names(
     std::set<std::string>& result) const
 {
     for (const auto& it : skins)
+    {
         result.insert(it.first);
+    }
 }
 
 model::material::material(std::string nm) : name(std::move(nm)) { }
@@ -1603,9 +1737,13 @@ model::material::material(std::string nm) : name(std::move(nm)) { }
 void model::material::map::set_gl_texture() const
 {
     if (tex)
+    {
         tex->set_gl_texture();
+    }
     else
+    {
         THROW(error, "set_gl_texture with empty texture");
+    }
 }
 
 void model::material::map::set_gl_texture(
@@ -1614,7 +1752,9 @@ void model::material::map::set_gl_texture(
     unsigned texunitnr) const
 {
     if (!tex)
+    {
         THROW(error, "set_gl_texture(shader) with empty texture");
+    }
     prog.set_gl_texture(*tex, loc, texunitnr);
 }
 
@@ -1624,7 +1764,9 @@ void model::material::map::set_gl_texture(
     unsigned texunitnr) const
 {
     if (!tex)
+    {
         THROW(error, "set_gl_texture(shader) with empty texture");
+    }
     gss.set_gl_texture(*tex, loc, texunitnr);
 }
 
@@ -1731,7 +1873,9 @@ void model::material::register_layout(
     const std::string& basepath)
 {
     if (colormap.get())
+    {
         colormap->register_layout(name, basepath, model::mapping);
+    }
     // fixme: what is best mapping for normal maps?
     // compute normalmap if not given
     // fixme: segfaults when enabled. see texture.cpp
@@ -1741,6 +1885,7 @@ void model::material::register_layout(
     // model file... and multiply with this value...
     float normalmapheight = 4.0f;
     if (normalmap.get())
+    {
         normalmap->register_layout(
             name,
             basepath,
@@ -1748,39 +1893,60 @@ void model::material::register_layout(
             true,
             normalmapheight,
             true);
+    }
     if (specularmap.get())
+    {
         specularmap->register_layout(
             name, basepath, texture::LINEAR_MIPMAP_LINEAR, false, 0.0f, true);
+    }
 }
 
 void model::material::unregister_layout(const std::string& name)
 {
     if (colormap.get())
+    {
         colormap->unregister_layout(name);
+    }
     if (normalmap.get())
+    {
         normalmap->unregister_layout(name);
+    }
     if (specularmap.get())
+    {
         specularmap->unregister_layout(name);
+    }
 }
 
 void model::material::set_layout(const std::string& layout)
 {
     if (colormap.get())
+    {
         colormap->set_layout(layout);
+    }
     if (normalmap.get())
+    {
         normalmap->set_layout(layout);
+    }
     if (specularmap.get())
+    {
         specularmap->set_layout(layout);
+    }
 }
 
 void model::material::get_all_layout_names(std::set<std::string>& result) const
 {
     if (colormap.get())
+    {
         colormap->get_all_layout_names(result);
+    }
     if (normalmap.get())
+    {
         normalmap->get_all_layout_names(result);
+    }
     if (specularmap.get())
+    {
         specularmap->get_all_layout_names(result);
+    }
 }
 
 model::material_glsl::material_glsl(
@@ -1792,7 +1958,9 @@ model::material_glsl::material_glsl(
     shadersetup(get_shader_dir() + vsfn, get_shader_dir() + fsfn), nrtex(0)
 {
     for (unsigned int& i : loc_texunit)
+    {
         i = 0;
+    }
 }
 
 void model::material_glsl::compute_texloc()
@@ -1803,6 +1971,7 @@ void model::material_glsl::compute_texloc()
     {
         loc_texunit[i] = shadersetup.get_uniform_location(texnames[i]);
         if (loc_texunit[i] == unsigned(-1))
+        {
             THROW(
                 error,
                 std::string("unable to lookup uniform location of shader for "
@@ -1811,6 +1980,7 @@ void model::material_glsl::compute_texloc()
                     + ", NOTE: shader needs to _USE_ the uniform (defining the "
                       "symbol is not enough, use means it has to contribute to "
                       "the output) to be linked into the shader program!");
+        }
     }
 }
 
@@ -1905,7 +2075,9 @@ void model::mesh::display(const texture* caustic_map) const
     {
         has_texture_u0 = mymaterial->needs_texcoords();
         if (mymaterial->normalmap.get())
+        {
             has_texture_u1 = true;
+        }
     }
 
     // set up vertex data.
@@ -2033,9 +2205,13 @@ void model::set_layout(const std::string& layout)
     //	cout << "set layout '" << layout << "' for model '" << filename <<
     //"'\n";
     if (current_layout == layout)
+    {
         return;
+    }
     for (auto& it : materials)
+    {
         it->set_layout(layout);
+    }
     current_layout = layout;
 }
 
@@ -2079,59 +2255,75 @@ void model::display_mirror_clip() const
     }
 }
 
-model::mesh& model::get_mesh(unsigned nr)
+auto model::get_mesh(unsigned nr) -> model::mesh&
 {
     return *meshes.at(nr);
 }
 
-const model::mesh& model::get_mesh(unsigned nr) const
+auto model::get_mesh(unsigned nr) const -> const model::mesh&
 {
     return *meshes.at(nr);
 }
 
-model::mesh& model::get_base_mesh()
+auto model::get_base_mesh() -> model::mesh&
 {
     if (scene.children.empty())
+    {
         return get_mesh(0);
+    }
     mesh* m = scene.children.front().mymesh;
     if (!m)
+    {
         THROW(error, "can't compute base mesh, mymesh=0");
+    }
     return *m;
 }
 
-const model::mesh& model::get_base_mesh() const
+auto model::get_base_mesh() const -> const model::mesh&
 {
     if (scene.children.empty())
+    {
         return get_mesh(0);
+    }
     mesh* m = scene.children.front().mymesh;
     if (!m)
+    {
         THROW(error, "can't compute base mesh, mymesh=0");
+    }
     return *m;
 }
 
-model::material& model::get_material(unsigned nr)
+auto model::get_material(unsigned nr) -> model::material&
 {
     return *(materials.at(nr));
 }
 
-const model::material& model::get_material(unsigned nr) const
+auto model::get_material(unsigned nr) const -> const model::material&
 {
     return *(materials.at(nr));
 }
 
-static inline unsigned char2hex(char c)
+static inline auto char2hex(char c) -> unsigned
 {
     if (c >= '0' && c <= '9')
+    {
         return unsigned(c - '0');
+    }
     else if (c >= 'A' && c <= 'F')
+    {
         return unsigned(c - 'A' + 10);
+    }
     else if (c >= 'a' && c <= 'f')
+    {
         return unsigned(c - 'a' + 10);
+    }
     else
+    {
         return 0;
+    }
 }
 
-static inline float hex2float(const std::string& s, size_t off)
+static inline auto hex2float(const std::string& s, size_t off) -> float
 {
     unsigned n0 = char2hex(s[off]);
     unsigned n1 = char2hex(s[off + 1]);
@@ -2140,7 +2332,7 @@ static inline float hex2float(const std::string& s, size_t off)
 
 void model::read_phys_file(const string& filename)
 {
-    string fn = filename.substr(0, filename.rfind(".")) + ".phys";
+    string fn = filename.substr(0, filename.rfind('.')) + ".phys";
     xml_doc physdat(fn);
     try
     {
@@ -2180,7 +2372,9 @@ void model::read_phys_file(const string& filename)
         iss3 >> insidevol[k];
     }
     if (iss3.fail())
+    {
         THROW(error, filename + ", error reading inside volume data");
+    }
 
     vector<float> massdistri;
     if (ve.has_child("mass-distribution"))
@@ -2192,7 +2386,9 @@ void model::read_phys_file(const string& filename)
             iss4 >> massdistri[k];
         }
         if (iss4.fail())
+        {
             THROW(error, "error reading mass distribution data");
+        }
     }
 
     const vector3f& bmax = m.max;
@@ -2226,7 +2422,9 @@ void model::read_phys_file(const string& filename)
                     voxel_index_by_pos[ptr] = int(voxel_data.size());
                     float m                 = f * mass_part;
                     if (!massdistri.empty())
+                    {
                         m = massdistri[ptr];
+                    }
                     voxel_data.emplace_back(
                         vector3f(
                             ixx + 0.5 + bmin.x / voxel_size.x,
@@ -2245,7 +2443,9 @@ void model::read_phys_file(const string& filename)
     if (massdistri.empty())
     {
         for (auto& i : voxel_data)
+        {
             i.relative_mass /= mass_part_sum;
+        }
     }
     // compute neighbouring information
     ptr       = 0;
@@ -2290,11 +2490,13 @@ void model::read_phys_file(const string& filename)
     }
 }
 
-float model::get_cross_section(float angle) const
+auto model::get_cross_section(float angle) const -> float
 {
     unsigned cs = cross_sections.size();
     if (cs == 0)
+    {
         return 0.0f;
+    }
     float fcs    = angle * cs / 360.0;
     float fac    = fcs - floor(fcs);
     unsigned id0 = unsigned(floor(fcs)) % cs;
@@ -2302,11 +2504,13 @@ float model::get_cross_section(float angle) const
     return cross_sections[id0] * (1.0f - fac) + cross_sections[id1] * fac;
 }
 
-string model::tolower(const string& s)
+auto model::tolower(const string& s) -> string
 {
     string s2 = s;
     for (unsigned i = 0; i < s.length(); ++i)
+    {
         s2[i] = ::tolower(s[i]);
+    }
     return s2;
 }
 
@@ -2405,7 +2609,9 @@ void model::write_to_dftd_model_file(
             for (; matid < materials.size(); ++matid)
             {
                 if (materials[matid] == mp->mymaterial)
+                {
                     break;
+                }
             }
             msh.set_attr(matid, "material");
         }
@@ -2494,13 +2700,15 @@ void model::write_color_to_dftd_model_file(
     cl.set_attr(osscl.str(), "color");
 }
 
-color model::read_color_from_dftd_model_file(
+auto model::read_color_from_dftd_model_file(
     const xml_elem& parent,
-    const std::string& type)
+    const std::string& type) -> color
 {
     xml_elem ecol = parent.child(type);
     if (!ecol.has_attr("color"))
+    {
         THROW(xml_error, "no color information given", parent.doc_name());
+    }
     string tmp = ecol.attr("color");
     istringstream iss(tmp);
     float r, g, b;
@@ -2525,11 +2733,13 @@ void model::material::map::write_to_dftd_model_file(
     }
 }
 
-model::material::map::map(const xml_elem& parent) : tex(nullptr), ref_count(0)
+model::material::map::map(const xml_elem& parent)
 {
     if (!parent.has_attr("filename"))
+    {
         THROW(
             xml_error, "no filename given for materialmap!", parent.doc_name());
+    }
     filename = parent.attr("filename");
 
     // skins
@@ -2539,7 +2749,9 @@ model::material::map::map(const xml_elem& parent) : tex(nullptr), ref_count(0)
         pair<std::map<string, skin>::iterator, bool> insok =
             skins.insert(make_pair(layoutname, skin()));
         if (!insok.second)
+        {
             THROW(xml_error, "layout names not unique", elem.doc_name());
+        }
         skin& s    = insok.first->second;
         s.filename = elem.attr("filename");
         // load textures in init() function.
@@ -2557,11 +2769,15 @@ void model::read_off_file(const string& fn)
 {
     FILE* f = fopen(fn.c_str(), "rb");
     if (!f)
+    {
         return;
+    }
     unsigned i;
     unsigned nr_vertices, nr_faces;
     if (3 != fscanf(f, "OFF\n%u %u %u\n", &nr_vertices, &nr_faces, &i))
+    {
         THROW(error, "Failed to read OFF header");
+    }
     mesh* m = new mesh("offread");
     m->name = basename;
     m->vertices.resize(nr_vertices);
@@ -2571,7 +2787,9 @@ void model::read_off_file(const string& fn)
     {
         float a, b, c;
         if (3 != fscanf(f, "%f %f %f\n", &a, &b, &c))
+        {
             THROW(error, "Short read on OFF vertices");
+        }
         m->vertices[i].x = a;
         m->vertices[i].y = b;
         m->vertices[i].z = c;
@@ -2580,9 +2798,13 @@ void model::read_off_file(const string& fn)
     {
         unsigned j, v0, v1, v2;
         if (4 != fscanf(f, "%u %u %u %u\n", &j, &v0, &v1, &v2))
+        {
             THROW(error, "Short read on OFF faces");
+        }
         if (j != 3)
+        {
             return;
+        }
         m->indices[i * 3]     = v0;
         m->indices[i * 3 + 1] = v1;
         m->indices[i * 3 + 2] = v2;
@@ -2597,9 +2819,10 @@ void model::read_off_file(const string& fn)
 // -------------------------------- dftd model file reading
 // -------------------------------------
 
-static string next_part_of_string(const string& s, string::size_type& fromwhere)
+static auto next_part_of_string(const string& s, string::size_type& fromwhere)
+    -> string
 {
-    string::size_type st = s.find(" ", fromwhere);
+    string::size_type st = s.find(' ', fromwhere);
     if (st == string::npos)
     {
         string tmp = s.substr(fromwhere);
@@ -2611,7 +2834,9 @@ static string next_part_of_string(const string& s, string::size_type& fromwhere)
         string tmp = s.substr(fromwhere, st - fromwhere);
         fromwhere  = st + 1;
         if (fromwhere == s.length())
+        {
             fromwhere = string::npos;
+        }
         return tmp;
     }
 }
@@ -2623,15 +2848,17 @@ void model::read_dftd_model_file(const std::string& filename)
     xml_elem root = doc.child("dftd-model");
     float version = root.attrf("version");
     // fixme: float is a bad idea for a version string, because of accuracy
-    if (version > 1.21) // fixme with relations 1.2
+    if (version > 1.21)
+    { // fixme with relations 1.2
         THROW(xml_error, "model file format version unknown ", root.doc_name());
+    }
 
     // read elements.
     map<unsigned, material*> mat_id_mapping;
     unsigned nr_of_objecttrees = 0;
     for (auto e : root)
     {
-        string etype = e.get_name();
+        const string& etype = e.get_name();
         if (etype == "material")
         {
             // materials.
@@ -2665,11 +2892,13 @@ void model::read_dftd_model_file(const std::string& filename)
                 if (is_shader_material)
                 {
                     if (matglsl->nrtex >= DFTD_MAX_TEXTURE_UNITS)
+                    {
                         THROW(
                             xml_error,
                             string("too many material maps for glsl material ")
                                 + type,
                             emap.doc_name());
+                    }
                     matglsl->texmaps[matglsl->nrtex] =
                         std::make_unique<material::map>(emap);
                     matglsl->texnames[matglsl->nrtex] = type;
@@ -2700,15 +2929,19 @@ void model::read_dftd_model_file(const std::string& filename)
             {
                 xml_elem eshin = e.child("shininess");
                 if (!eshin.has_attr("exponent"))
+                {
                     THROW(
                         xml_error,
                         "shininess defined but no exponent given!",
                         e.doc_name());
+                }
                 mat->shininess = eshin.attrf("exponent");
             }
 
             if (is_shader_material)
+            {
                 matglsl->compute_texloc();
+            }
 
             materials.push_back(nullptr); // exception safe
             materials.back() = mat.release();
@@ -2763,14 +2996,20 @@ void model::read_dftd_model_file(const std::string& filename)
             {
                 string idxtype = indis.attr("type");
                 if (idxtype == "triangles")
+                {
                     msh->set_indices_type(mesh::pt_triangles);
+                }
                 else if (idxtype == "triangle_strip")
+                {
                     msh->set_indices_type(mesh::pt_triangle_strip);
+                }
                 else
+                {
                     THROW(
                         xml_error,
                         string("invalid indices type, mesh ") + msh->name,
                         filename);
+                }
             }
             values = indis.child_text();
             msh->indices.reserve(nrindis);
@@ -2780,10 +3019,12 @@ void model::read_dftd_model_file(const std::string& filename)
                 unsigned idx;
                 issi >> idx;
                 if (idx >= nrverts)
+                {
                     THROW(
                         xml_error,
                         string("vertex index out of range, mesh ") + msh->name,
                         filename);
+                }
                 msh->indices.push_back(idx);
             }
             // tex coords
@@ -2831,10 +3072,12 @@ void model::read_dftd_model_file(const std::string& filename)
         {
             ++nr_of_objecttrees;
             if (nr_of_objecttrees > 1)
+            {
                 THROW(
                     xml_error,
                     "more than one object tree defined!",
                     e.doc_name());
+            }
         }
         else
         {
@@ -2863,8 +3106,10 @@ void model::read_objects(const xml_elem& parent, object& parentobj)
         {
             unsigned meshid = e.attru("mesh");
             if (meshid >= meshes.size())
+            {
                 THROW(
                     xml_error, "illegal mesh id in object node", e.doc_name());
+            }
             msh = meshes[meshid];
         }
         object obj(e.attru("id"), e.attr("name"), msh);
@@ -2881,11 +3126,17 @@ void model::read_objects(const xml_elem& parent, object& parentobj)
                 string tmp;
                 iss2 >> tmp >> obj.trans_val_min >> obj.trans_val_max;
                 if (tmp == "x")
+                {
                     obj.translation_constraint_axis = 0;
+                }
                 else if (tmp == "y")
+                {
                     obj.translation_constraint_axis = 1;
+                }
                 else
+                {
                     obj.translation_constraint_axis = 2;
+                }
             }
         }
         if (e.has_child("rotation"))
@@ -2906,67 +3157,85 @@ void model::read_objects(const xml_elem& parent, object& parentobj)
 // -------------------------------- end of dftd model file reading
 // ------------------------------
 
-bool model::set_object_angle(unsigned objid, double ang)
+auto model::set_object_angle(unsigned objid, double ang) -> bool
 {
     object* obj = scene.find(objid);
     if (!obj)
+    {
         return false;
+    }
     return obj->set_angle(ang);
 }
 
-bool model::set_object_angle(const std::string& objname, double ang)
+auto model::set_object_angle(const std::string& objname, double ang) -> bool
 {
     object* obj = scene.find(objname);
     if (!obj)
+    {
         return false;
+    }
     return obj->set_angle(ang);
 }
 
-vector2f model::get_object_angle_constraints(unsigned objid)
+auto model::get_object_angle_constraints(unsigned objid) -> vector2f
 {
     object* obj = scene.find(objid);
     if (!obj)
+    {
         return vector2f();
+    }
     return {obj->rotat_angle_min, obj->rotat_angle_max};
 }
 
-vector2f model::get_object_angle_constraints(const std::string& objname)
+auto model::get_object_angle_constraints(const std::string& objname) -> vector2f
 {
     object* obj = scene.find(objname);
     if (!obj)
+    {
         return vector2f();
+    }
     return {obj->rotat_angle_min, obj->rotat_angle_max};
 }
 
-bool model::set_object_translation(unsigned objid, double value)
+auto model::set_object_translation(unsigned objid, double value) -> bool
 {
     object* obj = scene.find(objid);
     if (!obj)
+    {
         return false;
+    }
     return obj->set_translation(value);
 }
 
-bool model::set_object_translation(const std::string& objname, double value)
+auto model::set_object_translation(const std::string& objname, double value)
+    -> bool
 {
     object* obj = scene.find(objname);
     if (!obj)
+    {
         return false;
+    }
     return obj->set_translation(value);
 }
 
-vector2f model::get_object_translation_constraints(unsigned objid)
+auto model::get_object_translation_constraints(unsigned objid) -> vector2f
 {
     object* obj = scene.find(objid);
     if (!obj)
+    {
         return vector2f();
+    }
     return {obj->trans_val_min, obj->trans_val_max};
 }
 
-vector2f model::get_object_translation_constraints(const std::string& objname)
+auto model::get_object_translation_constraints(const std::string& objname)
+    -> vector2f
 {
     object* obj = scene.find(objname);
     if (!obj)
+    {
         return vector2f();
+    }
     return {obj->trans_val_min, obj->trans_val_max};
 }
 
@@ -2979,7 +3248,9 @@ void model::register_layout(const std::string& name)
         THROW(error, filename + ": trying to register empty layout!");
     }
     for (auto& it : materials)
+    {
         it->register_layout(name, basepath);
+    }
 }
 
 void model::unregister_layout(const std::string& name)
@@ -2989,13 +3260,17 @@ void model::unregister_layout(const std::string& name)
         THROW(error, filename + ": trying to unregister empty layout!");
     }
     for (auto& it : materials)
+    {
         it->unregister_layout(name);
+    }
 }
 
 void model::get_all_layout_names(std::set<std::string>& result) const
 {
     for (auto it : materials)
+    {
         it->get_all_layout_names(result);
+    }
     result.insert(default_layout);
 }
 
@@ -3009,14 +3284,16 @@ bool model::is_inside(const vector3f& p) const
 }
 */
 
-matrix4f model::get_base_mesh_transformation() const
+auto model::get_base_mesh_transformation() const -> matrix4f
 {
     if (scene.children.empty())
+    {
         return matrix4f::one();
+    }
     return scene.children.front().get_transformation();
 }
 
-unsigned model::get_voxel_closest_to(const vector3f& pos)
+auto model::get_voxel_closest_to(const vector3f& pos) -> unsigned
 {
     matrix4f transmat =
         get_base_mesh_transformation() * matrix4f::diagonal(voxel_size);
@@ -3033,7 +3310,9 @@ unsigned model::get_voxel_closest_to(const vector3f& pos)
         }
     }
     if (!closestvoxel)
+    {
         THROW(error, "no voxel data available");
+    }
     return closestvoxel - 1;
 }
 
@@ -3043,8 +3322,8 @@ unsigned model::get_voxel_closest_to(const vector3f& pos)
 // with the usual 5x7x7 partition a voxel for a 20m*100m wide*long ship is ca.
 // 4m*14m in size, so a torpedo can damage several voxels...
 // here it is:
-std::vector<unsigned>
-model::get_voxels_within_sphere(const vector3f& pos, double radius)
+auto model::get_voxels_within_sphere(const vector3f& pos, double radius)
+    -> std::vector<unsigned>
 {
     matrix4f transmat =
         get_base_mesh_transformation() * matrix4f::diagonal(voxel_size);
@@ -3056,7 +3335,9 @@ model::get_voxels_within_sphere(const vector3f& pos, double radius)
         vector3f p = transmat.mul4vec3xlat(voxel_data[i].relative_position);
         double d   = p.square_distance(pos);
         if (d <= rad2)
+        {
             result.push_back(i);
+        }
     }
     return result;
 }

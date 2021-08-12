@@ -59,13 +59,16 @@ class box_t
         }
     }
     /// Return size of box
-    vector3t<D> size() const { return maxpos - minpos; }
+    [[nodiscard]] vector3t<D> size() const { return maxpos - minpos; }
 
     /// Return center of box
-    vector3t<D> center() const { return (maxpos + minpos) / D(2); }
+    [[nodiscard]] vector3t<D> center() const
+    {
+        return (maxpos + minpos) / D(2);
+    }
 
     /// Check if coordinate is inside box
-    bool is_inside(const vector3t<D>& p) const
+    [[nodiscard]] bool is_inside(const vector3t<D>& p) const
     {
         return !is_empty && p.x >= minpos.x && p.y >= minpos.y
                && p.z >= minpos.z && p.x <= maxpos.x && p.y <= maxpos.y
@@ -115,7 +118,7 @@ class box_t
     }
 
     /// Get translated version
-    box_t<D> translated(const vector3t<D>& v) const
+    [[nodiscard]] box_t<D> translated(const vector3t<D>& v) const
     {
         box_t copy(*this);
         if (!copy.is_empty)

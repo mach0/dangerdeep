@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 
 #include <GL/glu.h>
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -99,7 +100,9 @@ sky::sky(
 
     cloud_interpolate_func.resize(256);
     for (unsigned n = 0; n < 256; ++n)
+    {
         cloud_interpolate_func[n] = unsigned(128 - cos(n * M_PI / 256) * 128);
+    }
 
     noisemaps_0 = compute_noisemaps();
     noisemaps_1 = compute_noisemaps();
@@ -107,7 +110,7 @@ sky::sky(
 
     clouds_texcoords.init_data(
         nr_sky_vertices * 2 * 4, nullptr, GL_STATIC_DRAW);
-    auto* ptr = (float*) clouds_texcoords.map(GL_WRITE_ONLY);
+    auto* ptr = static_cast<float*>(clouds_texcoords.map(GL_WRITE_ONLY));
     for (unsigned beta = 0; beta <= sectors_v; ++beta)
     {
         float t = (1.0 - float(beta) / sectors_v) / 2;
@@ -142,7 +145,9 @@ void sky::advance_cloud_animation(double fac)
     else
     {
         if (newphase > oldphase)
+        {
             compute_clouds();
+        }
     }
 }
 
@@ -163,9 +168,13 @@ void sky::compute_clouds()
     vector<vector<uint8_t>> cmaps = noisemaps_0;
     float f                       = cloud_animphase;
     for (unsigned i = 0; i < cloud_levels; ++i)
+    {
         for (unsigned j = 0; j < mapsize2 * mapsize2; ++j)
+        {
             cmaps[i][j] =
                 uint8_t(noisemaps_0[i][j] * (1 - f) + noisemaps_1[i][j] * f);
+        }
+    }
 
     // create full map
     const unsigned res = 256;
@@ -185,10 +194,14 @@ void sky::compute_clouds()
             // FIXME generate a lookup table for this function, depending on
             // coverage/sharpness
             if (v < 96)
+            {
                 v = 96;
+            }
             v -= 96;
             if (v > 255)
+            {
                 v = 255;
+            }
             fullmap[fullmapptr++] = v;
         }
     }
@@ -197,7 +210,7 @@ void sky::compute_clouds()
         fullmap, res, res, GL_LUMINANCE, texture::LINEAR, texture::REPEAT);
 }
 
-vector<vector<uint8_t>> sky::compute_noisemaps()
+auto sky::compute_noisemaps() -> vector<vector<uint8_t>>
 {
     unsigned mapsize  = 8 - cloud_levels;
     unsigned mapsize2 = (2 << mapsize);
@@ -206,17 +219,19 @@ vector<vector<uint8_t>> sky::compute_noisemaps()
     {
         noisemaps[i].resize(mapsize2 * mapsize2);
         for (unsigned j = 0; j < mapsize2 * mapsize2; ++j)
-            noisemaps[i][j] = (unsigned char) (255 * rnd());
+        {
+            noisemaps[i][j] = static_cast<unsigned char>(255 * rnd());
+        }
         smooth_and_equalize_bytemap(mapsize2, noisemaps[i]);
     }
     return noisemaps;
 }
 
-uint8_t sky::get_value_from_bytemap(
+auto sky::get_value_from_bytemap(
     unsigned x,
     unsigned y,
     unsigned level,
-    const vector<uint8_t>& nmap)
+    const vector<uint8_t>& nmap) -> uint8_t
 {
     // x,y are in 0...255, shift them according to level
     unsigned shift    = cloud_levels - 1 - level;
@@ -265,9 +280,13 @@ void sky::smooth_and_equalize_bytemap(unsigned s, vector<uint8_t>& map1)
                 + (unsigned(map2[y * s + x])) / 4;
             map1[y * s + x] = uint8_t(v);
             if (v < minv)
+            {
                 minv = v;
+            }
             if (v > maxv)
+            {
                 maxv = v;
+            }
         }
     }
     for (unsigned y = 0; y < s; ++y)
@@ -287,9 +306,13 @@ void sky::set_time(double tm)
     tm        = helper::mod(tm, 86400.0);
     double cf = myfrac(tm / CLOUD_ANIMATION_CYCLE_TIME) - cloud_animphase;
     if (fabs(cf) < (1.0 / (3600.0 * 256.0)))
+    {
         cf = 0.0;
+    }
     if (cf < 0)
+    {
         cf += 1.0;
+    }
     advance_cloud_animation(cf);
 }
 
@@ -466,7 +489,8 @@ void sky::display(
     glEnable(GL_FOG);
 }
 
-color sky::get_horizon_color(const game& gm, const vector3& viewpos) const
+auto sky::get_horizon_color(const game& gm, const vector3& viewpos) const
+    -> color
 {
     // but why is reading of _first_ color done here? this depends on view
     // direction?! fixme !!!
@@ -495,15 +519,21 @@ void sky::build_dome(const unsigned int sectors_h, const unsigned int sectors_v)
     for (unsigned int i = 0; i <= sectors_v; i++)
     {
         if (i == 0)
+        {
             phi = 0.001; //	if phi==0 skycolor = -INF, -INF, -INF (BAD)
+        }
         else if (i == sectors_v)
+        {
             phi = M_PI * 0.5; //	zenith
+        }
         else
         {
-            float gap =
-                pow((float) i / sectors_v, 1.3f); //	more strips near horizon
+            float gap = std::pow(
+                static_cast<float>(i) / sectors_v, 1.3f); //	more strips near horizon
             if (gap < 0.5)
+            {
                 gap = 0.5;
+            }
             phi = (i * (M_PI * 0.5) / sectors_v) * gap;
         }
 
@@ -512,9 +542,9 @@ void sky::build_dome(const unsigned int sectors_h, const unsigned int sectors_v)
         {
             theta = 2 * j * M_PI / sectors_h;
 
-            x = radius * cos(theta) * cos(phi);
-            y = radius * sin(theta) * cos(phi);
-            z = radius * sin(phi);
+            x = radius * std::cos(theta) * std::cos(phi);
+            y = radius * std::sin(theta) * std::cos(phi);
+            z = radius * std::sin(phi);
 
             skyangles.emplace_back((1 - theta / (M_PI * 2)) * 2 * M_PI, phi);
             skyverts.emplace_back(x, y, z);
@@ -572,8 +602,9 @@ void sky::rebuild_colors(
 
     //	sun_azimuth and sun_elevation are used only for sky color rendering
     //	so they are refreshed every 0.5 deg of sun movement.
-    if (fabs(sun_azimuth - sun_azimuth2) > REBUILD_EPSILON_AZIMUTH
-        || fabs(sun_elevation - sun_elevation2) > REBUILD_EPSILON_ELEVATION)
+    if (std::fabs(sun_azimuth - sun_azimuth2) > REBUILD_EPSILON_AZIMUTH
+        || std::fabs(sun_elevation - sun_elevation2)
+               > REBUILD_EPSILON_ELEVATION)
     {
         sun_azimuth   = sun_azimuth2;
         sun_elevation = sun_elevation2;
@@ -591,11 +622,17 @@ void sky::rebuild_colors(
             colorf c = skycol.get_color(skyangle->x, skyangle->y);
             c.a      = sky_alpha;
             if (c.r > 1.0)
+            {
                 c.r = 1.0;
+            }
             if (c.g > 1.0)
+            {
                 c.g = 1.0;
+            }
             if (c.b > 1.0)
+            {
                 c.b = 1.0;
+            }
             *skycolor = c;
 #endif
 

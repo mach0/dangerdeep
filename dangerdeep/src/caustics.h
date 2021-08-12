@@ -42,5 +42,5 @@ class caustics
     caustics();
 
     void set_time(double tm);
-    texture* get_map() const;
+    [[nodiscard]] texture* get_map() const;
 };

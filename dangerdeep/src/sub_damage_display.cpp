@@ -125,19 +125,29 @@ void sub_damage_display::display() const
     {
         const auto r = rect_data[i];
         if (r.x() == 0)
+        {
             continue; // display test hack fixme
+        }
         int x = r.x() + r.w() / 2 - 16, y = r.y() + r.h() / 2 - 16 + ydrawdiff;
         if (parts[i].status > 0.0)
         {
             unsigned t = 4;
             if (parts[i].status <= 0.25)
+            {
                 t = 0;
+            }
             else if (parts[i].status <= 0.50)
+            {
                 t = 1;
+            }
             else if (parts[i].status <= 0.75)
+            {
                 t = 2;
+            }
             else if (parts[i].status < 1.00)
+            {
                 t = 3;
+            }
             element_for_id(et_repairstate).set_phase(t);
             element_for_id(et_repairstate).get_texture().draw({x, y});
         }
@@ -147,7 +157,9 @@ void sub_damage_display::display() const
     for (unsigned i = 0; i < parts.size(); ++i)
     {
         if (parts[i].status < 0)
+        {
             continue; // part does not exist
+        }
         rect r = rect_data[i];
         r.minpos.y += ydrawdiff;
         // fixme use rect inside!
@@ -164,15 +176,25 @@ void sub_damage_display::display() const
             if (parts[i].status > 0)
             {
                 if (parts[i].status <= 0.25)
+                {
                     damcat = 1;
+                }
                 else if (parts[i].status <= 0.50)
+                {
                     damcat = 2;
+                }
                 else if (parts[i].status <= 0.75)
+                {
                     damcat = 3;
+                }
                 else if (parts[i].status < 1.00)
+                {
                     damcat = 4;
+                }
                 else
+                {
                     damcat = 5;
+                }
             }
 
             // display basic information
@@ -220,7 +242,8 @@ void sub_damage_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool sub_damage_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto sub_damage_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     mouse_position = m.position_2d;
     return false;

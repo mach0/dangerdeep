@@ -85,7 +85,9 @@ void tdc::simulate(double delta_t)
     else
     {
         if (!bearing_dial.is_clockwise_nearer(bearing))
+        {
             bearingturn = -bearingturn;
+        }
         bearing_dial += angle(bearingturn);
     }
 
@@ -139,7 +141,9 @@ void tdc::simulate(double delta_t)
         // check that this is right...
         angle gamma = lead_angle - heading;
         if (compute_stern_tube)
+        {
             gamma += angle(180);
+        }
         double bowdist = sqrt(trd * trd + c * c - 2 * trd * c * gamma.cos());
         parallaxangle  = angle::from_rad(asin(gamma.sin() * c / bowdist));
 #if 0
@@ -233,7 +237,7 @@ void tdc::set_additional_parallaxangle(angle ala)
     additional_parallaxangle = ala;
 }
 
-angle tdc::get_target_course() const
+auto tdc::get_target_course() const -> angle
 {
     angle reverse_bearing = angle(180) + bearing_dial;
     if (target_bow_is_left)

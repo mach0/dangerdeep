@@ -37,7 +37,8 @@ sub_bg_display::sub_bg_display(user_interface& ui_) :
 {
 }
 
-bool sub_bg_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_bg_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     which_element_is_turned = et_none;
     if (m.down())
@@ -56,7 +57,8 @@ bool sub_bg_display::handle_mouse_button_event(const mouse_click_data& m)
     return false;
 }
 
-bool sub_bg_display::handle_mouse_motion_event(const mouse_motion_data& m)
+auto sub_bg_display::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     if (m.left())
     {

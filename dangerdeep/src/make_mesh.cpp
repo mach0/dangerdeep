@@ -33,7 +33,7 @@ using namespace std;
 namespace make_mesh
 {
 
-vector3f vec(int vi)
+auto vec(int vi) -> vector3f
 {
     switch (vi)
     {
@@ -96,14 +96,14 @@ void quadface(
         m->righthanded[bv + 3]                      = true;
 }
 
-model::mesh* cube(
+auto cube(
     float w,
     float l,
     float h,
     float uscal,
     float vscal,
     bool out,
-    const string& name)
+    const string& name) -> model::mesh*
 {
     auto* m = new model::mesh("cube");
     m->name = name;
@@ -131,7 +131,7 @@ model::mesh* cube(
     return m;
 }
 
-model::mesh* sphere(
+auto sphere(
     float radius,
     float height,
     unsigned slices,
@@ -139,12 +139,16 @@ model::mesh* sphere(
     float uscal,
     float vscal,
     bool out,
-    const string& name)
+    const string& name) -> model::mesh*
 {
     if (slices < 3)
+    {
         slices = 3;
+    }
     if (stacks < 2)
+    {
         stacks = 2;
+    }
     auto* m = new model::mesh("sphere");
     m->name = name;
 
@@ -180,7 +184,9 @@ model::mesh* sphere(
             m->vertices[vptr] = vector3f(xr * yr, yc, zr * yr);
             m->normals[vptr]  = m->vertices[vptr].normal();
             if (!out)
+            {
                 m->normals[vptr] = -m->normals[vptr];
+            }
             m->tangentsx[vptr] = vector3f(-zr * yr, yc, xr * yr);
             ++vptr;
         }
@@ -223,7 +229,7 @@ model::mesh* sphere(
     return m;
 }
 
-model::mesh* cylinder(
+auto cylinder(
     float r,
     float h,
     unsigned rsegs,
@@ -231,12 +237,12 @@ model::mesh* cylinder(
     float vscal,
     bool cap,
     bool out, // fixme: out seems to be ignored!
-    const string& name)
+    const string& name) -> model::mesh*
 {
     return cone(r, r, h, rsegs, uscal, vscal, cap, out, name);
 }
 
-model::mesh* cone(
+auto cone(
     float r0,
     float r1,
     float h,
@@ -245,11 +251,13 @@ model::mesh* cone(
     float vscal,
     bool cap,
     bool out,
-    const string& name)
+    const string& name) -> model::mesh*
 {
     // fixme: out?, fixme cap map falsch, rest auch checken
     if (rsegs < 3)
+    {
         rsegs = 3;
+    }
     auto* m = new model::mesh("cone");
     m->name = name;
 
@@ -272,9 +280,13 @@ model::mesh* cone(
     m->tangentsx.resize(nrvert);
     unsigned nrindis = rsegs * 2 * 3;
     if (cap && r0 > 0)
+    {
         nrindis += rsegs * 3;
+    }
     if (cap && r1 > 0)
+    {
         nrindis += rsegs * 3;
+    }
     m->indices.resize(nrindis);
 
     for (unsigned i = 0; i <= rsegs; ++i)
@@ -344,7 +356,7 @@ model::mesh* cone(
     return m;
 }
 
-model::mesh* torus(
+auto torus(
     float outerr,
     float innerr,
     unsigned outerrsegs,
@@ -352,12 +364,16 @@ model::mesh* torus(
     float uscal,
     float vscal,
     bool out,
-    const string& name)
+    const string& name) -> model::mesh*
 {
     if (outerrsegs < 3)
+    {
         outerrsegs = 3;
+    }
     if (innerrsegs < 3)
+    {
         innerrsegs = 3;
+    }
     auto* m         = new model::mesh("torus");
     m->name         = name;
     unsigned nrvert = (outerrsegs + 1) * (innerrsegs + 1);
@@ -416,7 +432,7 @@ model::mesh part_of_torus(float outerr, float innerr,
                         bool cap = true, bool out = true, const string& name);
 */
 
-model::mesh* heightfield(
+auto heightfield(
     unsigned resx,
     unsigned resy,
     const vector<uint8_t>& heights,
@@ -426,13 +442,15 @@ model::mesh* heightfield(
     float xnoise,
     float ynoise,
     float znoise,
-    const string& name)
+    const string& name) -> model::mesh*
 {
     if (resx < 2 || resy < 2 || heights.size() != resx * resy)
+    {
         return nullptr;
+    }
 
-    auto* m         = new model::mesh("heightfield");
-    m->name         = name;
+    auto* m = new model::mesh("heightfield");
+    m->name = name;
 
     unsigned nrvert = resx * resy;
 
@@ -446,9 +464,9 @@ model::mesh* heightfield(
     {
         for (unsigned j = 0; j < resx; ++j)
         {
-            float r0 = static_cast<float>(rand() / RAND_MAX);
-            float r1 = static_cast<float>(rand() / RAND_MAX);
-            float r2 = static_cast<float>(rand() / RAND_MAX);
+            auto r0 = static_cast<float>(rand() / RAND_MAX);
+            auto r1 = static_cast<float>(rand() / RAND_MAX);
+            auto r2 = static_cast<float>(rand() / RAND_MAX);
 
             m->vertices[i * resx + j] = vector3f(
                 xscal * j + (r0 * 2 - 1) * xnoise,
@@ -480,8 +498,8 @@ model::mesh* heightfield(
             const vector3f& v2 = m->vertices[m->indices[ib + 2]];
             const vector3f& v3 = m->vertices[m->indices[ib + 5]];
 
-            vector3f ortho     = (v1 - v0).orthogonal(v2 - v0);
-            float lf           = 1.0 / ortho.length();
+            vector3f ortho = (v1 - v0).orthogonal(v2 - v0);
+            float lf       = 1.0 / ortho.length();
 
             if (isfinite(lf))
             {

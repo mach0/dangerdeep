@@ -50,13 +50,17 @@ logbook_display::logbook_display(class user_interface& ui_) :
 void logbook_display::previous_page()
 {
     if (current_page > 0)
+    {
         current_page -= 2;
+    }
 }
 
 void logbook_display::next_page()
 {
     if (current_page + 2 < nr_of_pages)
+    {
         current_page += 2;
+    }
 }
 
 void logbook_display::display() const
@@ -88,13 +92,17 @@ void logbook_display::display() const
         if (cur_page == current_page)
         {
             if (first_entry_cp_left < 0)
+            {
                 first_entry_cp_left = int(i);
+            }
             last_entry_cp_left = int(i) + 1;
         }
         if (cur_page == current_page + 1)
         {
             if (first_entry_cp_right < 0)
+            {
                 first_entry_cp_right = int(i);
+            }
             last_entry_cp_right = int(i) + 1;
         }
         entry_page_and_line.emplace_back(cur_page, cur_line);
@@ -211,7 +219,7 @@ void logbook_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool logbook_display::handle_key_event(const key_data& k)
+auto logbook_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down() && k.keycode == key_code::LESS)
     {
@@ -228,7 +236,8 @@ bool logbook_display::handle_key_event(const key_data& k)
     return false;
 }
 
-bool logbook_display::handle_mouse_button_event(const mouse_click_data& m)
+auto logbook_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     if (m.down())
     {

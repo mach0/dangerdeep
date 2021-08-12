@@ -44,7 +44,7 @@ class cylinder_t
     }
 
     /// determine distance to cylinder
-    D distance(const vector3t<D>& a) const
+    [[nodiscard]] D distance(const vector3t<D>& a) const
     {
         // check for distance of sphere center to line
         // project onto line
@@ -67,7 +67,7 @@ class cylinder_t
     }
 
     /// determine if point is inside
-    bool is_inside(const vector3t<D>& a) const
+    [[nodiscard]] bool is_inside(const vector3t<D>& a) const
     {
         // project onto line
         const auto delta = end - start;
@@ -84,7 +84,7 @@ class cylinder_t
     }
 
     /// determine if intersects sphere
-    bool intersects(const sphere_t<D>& s) const
+    [[nodiscard]] bool intersects(const sphere_t<D>& s) const
     {
         // check for distance of sphere center to line
         // project onto line

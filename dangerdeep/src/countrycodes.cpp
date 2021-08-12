@@ -28,7 +28,7 @@ const char* countrycodes[NR_OF_COUNTRIES] = {
 
 const char* parties[NR_OF_PARTIES] = {"?", "NEUTRAL", "ALLIES", "AXIS"};
 
-partycode party_of_country(countrycode c, date d)
+auto party_of_country(countrycode c, date d) -> partycode
 {
     switch (c)
     {
@@ -39,19 +39,24 @@ partycode party_of_country(countrycode c, date d)
         case GREATBRITAIN:
             return ALLIES;
         case FRANCE:
-            if (d < date(1940, 6, 30)
-                || d > date(1944, 8, 30)) // fixme: we need more accurate dates.
+            if (d < date(1940, 6, 30) || d > date(1944, 8, 30))
+            { // fixme: we need more accurate dates.
                 return ALLIES;
+            }
             return AXIS;
         case UNITEDSTATES:
-            if (d < date(1941, 12, 11)) // fixme: exact date?
+            if (d < date(1941, 12, 11))
+            { // fixme: exact date?
                 return NEUTRAL;
+            }
             return ALLIES;
         case CANADA:
             return ALLIES;
         case ITALY:
-            if (d < date(1943, 8, 30)) // fixme: we need more accurate dates.
+            if (d < date(1943, 8, 30))
+            { // fixme: we need more accurate dates.
                 return AXIS;
+            }
             return ALLIES;
         case NORWAY:
             return ALLIES; // exile, but neutral before 1940
@@ -67,7 +72,9 @@ partycode party_of_country(countrycode c, date d)
             return ALLIES; // neutral before 1941
         case SOWJETUNION:
             if (d < date(1941, 6, 22))
+            {
                 return NEUTRAL;
+            }
             return ALLIES;
         case JAPAN:
             return AXIS;

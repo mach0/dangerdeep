@@ -45,13 +45,17 @@ using namespace std;
 void ships_sunk_display::next_page(unsigned nrships)
 {
     if (first_displayed_object + 12 < nrships)
+    {
         first_displayed_object += 12;
+    }
 }
 
 void ships_sunk_display::previous_page(unsigned nrships)
 {
     if (first_displayed_object >= 12)
+    {
         first_displayed_object -= 12;
+    }
 }
 
 ships_sunk_display::ships_sunk_display(user_interface& ui_) :
@@ -131,7 +135,7 @@ void ships_sunk_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool ships_sunk_display::handle_key_event(const key_data& k)
+auto ships_sunk_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down() && k.keycode == key_code::LESS)
     {
@@ -149,7 +153,8 @@ bool ships_sunk_display::handle_key_event(const key_data& k)
     return false;
 }
 
-bool ships_sunk_display::handle_mouse_button_event(const mouse_click_data& m)
+auto ships_sunk_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     if (m.down())
     {

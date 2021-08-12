@@ -98,11 +98,12 @@ class water
                 const std::vector<float>& heights,
                 unsigned res_shift,
                 double sampledist);
-            const vector3f& get_data(unsigned x, unsigned y) const
+            [[nodiscard]] const vector3f& get_data(unsigned x, unsigned y) const
             {
                 return wavedata[(y << resolution_shift) + x];
             }
-            const vector3f& get_normal(unsigned x, unsigned y) const
+            [[nodiscard]] const vector3f&
+            get_normal(unsigned x, unsigned y) const
             {
                 return normals[(y << resolution_shift) + x];
             }
@@ -110,7 +111,7 @@ class water
             void debug_dump(); // used only for debugging
         };
 
-        float get_height(unsigned idx) const
+        [[nodiscard]] float get_height(unsigned idx) const
         {
             return mipmaps.front().wavedata[idx].z;
         }
@@ -210,7 +211,10 @@ class water
             unsigned highest_level,
             unsigned border);
         void render() const;
-        unsigned get_nr_indices() const { return nr_indices; } // for analysis
+        [[nodiscard]] unsigned get_nr_indices() const
+        {
+            return nr_indices;
+        } // for analysis
 
       private:
         geoclipmap_patch()                        = delete;

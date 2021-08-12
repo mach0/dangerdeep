@@ -49,6 +49,6 @@ class image
     /// draw image at position
     void draw(int x, int y, const colorf& col = colorf(1, 1, 1, 1)) const;
 
-    unsigned get_width() const { return width; };
-    unsigned get_height() const { return height; };
+    [[nodiscard]] unsigned get_width() const { return width; };
+    [[nodiscard]] unsigned get_height() const { return height; };
 };

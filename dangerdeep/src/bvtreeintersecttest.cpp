@@ -128,8 +128,7 @@ int mymain(std::vector<string>& args)
     bool doquit = false;
     auto ic     = std::make_shared<input_event_handler_custom>();
 
-    ic->set_handler([&](const input_event_handler::key_data& k)
-    {
+    ic->set_handler([&](const input_event_handler::key_data& k) {
         if (k.down())
         {
             switch (k.keycode)
@@ -185,8 +184,7 @@ int mymain(std::vector<string>& args)
         }
         return false;
     });
-    ic->set_handler([&](const input_event_handler::mouse_motion_data& m)
-    {
+    ic->set_handler([&](const input_event_handler::mouse_motion_data& m) {
         if (m.right())
         {
             matrix4f transf;
@@ -252,8 +250,7 @@ int mymain(std::vector<string>& args)
         }
         return false;
     });
-    ic->set_handler([&](const input_event_handler::mouse_wheel_data& m)
-    {
+    ic->set_handler([&](const input_event_handler::mouse_wheel_data& m) {
         if (m.up())
         {
             pos.z -= 1;

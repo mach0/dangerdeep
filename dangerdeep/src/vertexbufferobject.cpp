@@ -36,7 +36,9 @@ vertexbufferobject::vertexbufferobject(bool indexbuffer) :
 vertexbufferobject::~vertexbufferobject()
 {
     if (mapped)
+    {
         unmap();
+    }
     glDeleteBuffers(1, &id);
 }
 
@@ -68,14 +70,18 @@ void vertexbufferobject::unbind() const
     glBindBuffer(target, 0);
 }
 
-void* vertexbufferobject::map(int access)
+auto vertexbufferobject::map(int access) -> void*
 {
     if (mapped)
+    {
         THROW(error, "vertex buffer object mapped twice");
+    }
     bind();
     void* addr = glMapBuffer(target, access);
     if (addr == nullptr)
+    {
         THROW(error, "vertex buffer object mapping failed");
+    }
     mapped = true;
     return addr;
 }
@@ -83,7 +89,9 @@ void* vertexbufferobject::map(int access)
 void vertexbufferobject::unmap()
 {
     if (!mapped)
+    {
         THROW(error, "vertex buffer object not mapped before unmap()");
+    }
     mapped = false;
     bind(); // FIXME: do we really need this?
     if (glUnmapBuffer(target) != GL_TRUE)

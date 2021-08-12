@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "polygon.h"
 
 #include <iostream>
+#include <utility>
 
 frustum::frustum(polygon poly, const vector3& viewp, double znear_) :
     viewpos(viewp), znear(znear_)
@@ -39,11 +40,13 @@ frustum::frustum(polygon poly, const vector3& viewp, double znear_) :
     }
 }
 
-polygon frustum::clip(polygon p) const
+auto frustum::clip(polygon p) const -> polygon
 {
-    polygon result = p;
+    polygon result = std::move(p);
     for (const auto& plane : planes)
+    {
         result = result.clip(plane).first;
+    }
     return result;
 }
 
@@ -60,7 +63,7 @@ void frustum::print() const
 }
 */
 
-frustum frustum::from_opengl()
+auto frustum::from_opengl() -> frustum
 {
     matrix4 mv     = matrix4::get_gl(GL_MODELVIEW_MATRIX);
     matrix4 prj    = matrix4::get_gl(GL_PROJECTION_MATRIX);
@@ -86,10 +89,12 @@ void frustum::translate(const vector3& delta)
 {
     viewpos += delta;
     for (auto& plane : planes)
+    {
         plane.translate(delta);
+    }
 }
 
-frustum frustum::get_mirrored() const
+auto frustum::get_mirrored() const -> frustum
 {
     frustum f   = *this;
     f.viewpos.z = -f.viewpos.z;

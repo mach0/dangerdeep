@@ -57,7 +57,8 @@ sub_tdc2_display::sub_tdc2_display(user_interface& ui_) :
 {
 }
 
-bool sub_tdc2_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_tdc2_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     auto& gm  = ui.get_game();
     auto* sub = dynamic_cast<submarine*>(gm.get_player());

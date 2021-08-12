@@ -57,7 +57,7 @@ class vector3t
     {
     }
 
-    vector3t<D> normal() const
+    [[nodiscard]] vector3t<D> normal() const
     {
         D len = D(1.0) / length();
         return vector3t(x * len, y * len, z * len);
@@ -71,7 +71,7 @@ class vector3t
         z *= len;
     }
 
-    vector3t<D> orthogonal(const vector3t<D>& other) const
+    [[nodiscard]] vector3t<D> orthogonal(const vector3t<D>& other) const
     {
         return cross(other);
     }
@@ -122,19 +122,19 @@ class vector3t
         return *this;
     }
 
-    vector3t<D> min(const vector3t<D>& other) const
+    [[nodiscard]] vector3t<D> min(const vector3t<D>& other) const
     {
         return vector3t(
             std::min(x, other.x), std::min(y, other.y), std::min(z, other.z));
     }
 
-    vector3t<D> max(const vector3t<D>& other) const
+    [[nodiscard]] vector3t<D> max(const vector3t<D>& other) const
     {
         return vector3t(
             std::max(x, other.x), std::max(y, other.y), std::max(z, other.z));
     }
 
-    vector3t<D> sign() const
+    [[nodiscard]] vector3t<D> sign() const
     {
         return vector3t(
             x < 0 ? D(-1) : (x > 0 ? D(1) : D(0)),
@@ -142,7 +142,7 @@ class vector3t
             z < 0 ? D(-1) : (z > 0 ? D(1) : D(0)));
     }
 
-    vector3t<D> abs() const
+    [[nodiscard]] vector3t<D> abs() const
     {
         return vector3t(
             x < D(0) ? -x : x, y < D(0) ? -y : y, z < D(0) ? -z : z);
@@ -158,16 +158,16 @@ class vector3t
         return x != other.x || y != other.y || z != other.z;
     }
 
-    D square_length() const { return x * x + y * y + z * z; }
-    D length() const { return D(::sqrt(square_length())); }
+    [[nodiscard]] D square_length() const { return x * x + y * y + z * z; }
+    [[nodiscard]] D length() const { return D(::sqrt(square_length())); }
 
-    D square_distance(const vector3t<D>& other) const
+    [[nodiscard]] D square_distance(const vector3t<D>& other) const
     {
         vector3t<D> n = *this - other;
         return n.square_length();
     }
 
-    D distance(const vector3t<D>& other) const
+    [[nodiscard]] D distance(const vector3t<D>& other) const
     {
         vector3t<D> n = *this - other;
         return n.length();
@@ -178,7 +178,7 @@ class vector3t
         return x * other.x + y * other.y + z * other.z;
     }
 
-    vector3t<D> cross(const vector3t<D>& other) const
+    [[nodiscard]] vector3t<D> cross(const vector3t<D>& other) const
     {
         return vector3t(
             y * other.z - z * other.y,
@@ -195,20 +195,23 @@ class vector3t
         D& s3) const;
 
     /// multiplies 3x3 matrix (given in columns c0-c2) with *this.
-    vector3t<D> matrixmul(
+    [[nodiscard]] vector3t<D> matrixmul(
         const vector3t<D>& c0,
         const vector3t<D>& c1,
         const vector3t<D>& c2) const;
 
-    vector3t<D> coeff_mul(const vector3t<D>& other) const
+    [[nodiscard]] vector3t<D> coeff_mul(const vector3t<D>& other) const
     {
         return vector3t(x * other.x, y * other.y, z * other.z);
     }
 
-    vector2t<D> xy() const { return vector2t<D>(x, y); }
-    vector2t<D> yz() const { return vector2t<D>(y, z); }
-    vector4t<D> xyz0() const { return vector4t<D>(x, y, z, 0); }
-    vector4t<D> xyzw(D w) const { return vector4t<D>(x, y, z, w); }
+    [[nodiscard]] vector2t<D> xy() const { return vector2t<D>(x, y); }
+    [[nodiscard]] vector2t<D> yz() const { return vector2t<D>(y, z); }
+    [[nodiscard]] vector4t<D> xyz0() const { return vector4t<D>(x, y, z, 0); }
+    [[nodiscard]] vector4t<D> xyzw(D w) const
+    {
+        return vector4t<D>(x, y, z, w);
+    }
 
     template<typename D2>
     friend std::ostream& operator<<(std::ostream& os, const vector3t<D2>& v);
@@ -228,9 +231,13 @@ class vector3t
         p[2] = z;
     }
 
-    vector3t<D> rcp() const { return vector3t(D(1) / x, D(1) / y, D(1) / z); }
+    [[nodiscard]] vector3t<D> rcp() const
+    {
+        return vector3t(D(1) / x, D(1) / y, D(1) / z);
+    }
 
-    D determinate(const vector3t<D>& b, const vector3t<D>& c) const
+    [[nodiscard]] D
+    determinate(const vector3t<D>& b, const vector3t<D>& c) const
     {
         return x * b.y * c.z + b.x * c.y * z + c.x * y * b.z - x * c.y * b.z
                - b.x * y * c.z - c.x * b.y * z;
@@ -265,7 +272,7 @@ class vector3t
     }
 
     /// Get axis value
-    constexpr D at(axis a) const
+    [[nodiscard]] constexpr D at(axis a) const
     {
         switch (a)
         {

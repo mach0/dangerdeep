@@ -56,7 +56,7 @@ void caustics::set_time(double tm)
     }
 }
 
-texture* caustics::get_map() const
+auto caustics::get_map() const -> texture*
 {
     return texture_pointers[current_texture].get();
 }

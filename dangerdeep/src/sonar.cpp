@@ -145,7 +145,7 @@ const double noise_signature::typical_noise_signature
 const double noise::typical_frequency[NR_OF_FREQUENCY_BANDS] =
     {900, 2500, 5000, 6800};
 
-noise noise::compute_ambient_noise_strength(double seastate)
+auto noise::compute_ambient_noise_strength(double seastate) -> noise
 {
     noise result;
     for (unsigned band = 0; band < NR_OF_FREQUENCY_BANDS; ++band)
@@ -156,10 +156,10 @@ noise noise::compute_ambient_noise_strength(double seastate)
     return result;
 }
 
-noise noise_signature::compute_signal_strength(
+auto noise_signature::compute_signal_strength(
     double distance,
     double speed,
-    bool caviation) const
+    bool caviation) const -> noise
 {
     noise result;
     for (unsigned band = 0; band < noise::NR_OF_FREQUENCY_BANDS; ++band)
@@ -168,7 +168,9 @@ noise noise_signature::compute_signal_strength(
         double L_base = band_data[band].basic_noise_level
                         + band_data[band].speed_factor * speed;
         if (caviation)
+        {
             L_base += noise::cavitation_noise;
+        }
         // compute propagation reduction
         // Sound intensity I = p^2 / (c * ro) with:
         // p = Pressure (N/m^2 = Pa)
@@ -180,7 +182,9 @@ noise noise_signature::compute_signal_strength(
         // * log_10 (R^2)
         //            = L - 20 * log_10 (R)
         if (distance < 1)
+        {
             distance = 1;
+        }
         double L_prop = -20 * log10(distance);
         // compute absorption
         double L_absorb = -noise::noise_absorption[band] * distance;
@@ -189,7 +193,9 @@ noise noise_signature::compute_signal_strength(
         // avoid extreme values (would give NaN otherwise, when converting to
         // real values and back)
         if (L_source < -100)
+        {
             L_source = -100;
+        }
 
         //  	printf("L_base=%f L_prop=%f L_abs=%f L_src=%f\n",
         //  	       L_base, L_prop, L_absorb, L_source);
@@ -201,7 +207,7 @@ noise noise_signature::compute_signal_strength(
 const double noise::frequency_band_strength_factor[NR_OF_FREQUENCY_BANDS] =
     {1.0, 0.9, 0.8, 0.7};
 
-double noise::compute_total_noise_strength() const
+auto noise::compute_total_noise_strength() const -> double
 {
     double sum = 0;
     for (unsigned band = 0; band < NR_OF_FREQUENCY_BANDS; ++band)
@@ -211,7 +217,7 @@ double noise::compute_total_noise_strength() const
     return sum;
 }
 
-shipclass noise::determine_shipclass() const
+auto noise::determine_shipclass() const -> shipclass
 {
     // normalize noise by highest value of all frequencies.
     // do the same for noise signatures of ship classes to compare them better
@@ -257,10 +263,10 @@ shipclass noise::determine_shipclass() const
 }
 
 // translated from python script, refine later
-double compute_signal_strength_GHG(
+auto compute_signal_strength_GHG(
     angle signal_angle,
     double frequency,
-    angle apparatus_angle)
+    angle apparatus_angle) -> double
 {
 #if 1
     double cosang = std::max(0.0, (signal_angle - apparatus_angle).cos());

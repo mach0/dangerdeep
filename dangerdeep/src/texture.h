@@ -62,7 +62,7 @@ class sdl_image
     void unlock();
 
     /// get pointer to surface
-    SDL_Surface* get_SDL_Surface() const { return img; }
+    [[nodiscard]] SDL_Surface* get_SDL_Surface() const { return img; }
 
     /// access elements of surface
     SDL_Surface* operator->() const noexcept { return img; }
@@ -72,10 +72,10 @@ class sdl_image
     get_plain_data(unsigned& w, unsigned& h, unsigned& byte_per_pixel);
 
     /// get width of image
-    unsigned get_width() const;
+    [[nodiscard]] unsigned get_width() const;
 
     /// get height of image
-    unsigned get_height() const;
+    [[nodiscard]] unsigned get_height() const;
 
   protected:
     SDL_Surface* img;
@@ -320,15 +320,15 @@ class texture
         unsigned w,
         unsigned h);
 
-    int get_format() const { return format; }
-    unsigned get_bpp() const;
-    unsigned get_opengl_name() const { return opengl_name; }
+    [[nodiscard]] int get_format() const { return format; }
+    [[nodiscard]] unsigned get_bpp() const;
+    [[nodiscard]] unsigned get_opengl_name() const { return opengl_name; }
     void set_gl_texture() const;
-    std::string get_name() const { return texfilename; }
-    unsigned get_width() const { return width; }
-    unsigned get_height() const { return height; }
-    unsigned get_gl_width() const { return gl_width; }
-    unsigned get_gl_height() const { return gl_height; }
+    [[nodiscard]] std::string get_name() const { return texfilename; }
+    [[nodiscard]] unsigned get_width() const { return width; }
+    [[nodiscard]] unsigned get_height() const { return height; }
+    [[nodiscard]] unsigned get_gl_width() const { return gl_width; }
+    [[nodiscard]] unsigned get_gl_height() const { return gl_height; }
 
     // 2d drawing must be turned on for this functions
     void draw(int x, int y, const colorf& col = colorf(1, 1, 1, 1)) const;
@@ -463,8 +463,8 @@ class texture3d : public texture
         const std::vector<uint8_t>& pixels,
         int format);
 
-    unsigned get_depth() const { return depth; }
-    unsigned get_gl_depth() const { return gl_depth; }
+    [[nodiscard]] unsigned get_depth() const { return depth; }
+    [[nodiscard]] unsigned get_gl_depth() const { return gl_depth; }
 
     /// render a quad with the texture applied
     void draw(

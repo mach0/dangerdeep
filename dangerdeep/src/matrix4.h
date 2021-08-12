@@ -41,8 +41,8 @@ class matrix4t
     /// empty matrix
     matrix4t()
     {
-        for (int i = 0; i < 4 * 4; ++i)
-            values[i] = (D)(0);
+        for (auto& value : values)
+            value = (D)(0);
     }
 
     /// create full matrix
@@ -133,7 +133,7 @@ class matrix4t
     }
 
     /// return pointer to array of elements
-    const D* elemarray() const { return &values[0]; }
+    [[nodiscard]] const D* elemarray() const { return &values[0]; }
 
     /// return pointer to array of elements
     D* elemarray() { return &values[0]; }
@@ -355,7 +355,7 @@ class matrix4t
     }
 
     /// get transposed matrix
-    matrix4t<D> transposed() const
+    [[nodiscard]] matrix4t<D> transposed() const
     {
         return matrix4t<D>(
             values[0],
@@ -377,7 +377,7 @@ class matrix4t
     }
 
     /// get inverse of matrix
-    matrix4t<D> inverse() const
+    [[nodiscard]] matrix4t<D> inverse() const
     {
         matrix4t<D> r(*this);
         matrix_invert<D, 4U>(r.elemarray());
@@ -385,7 +385,7 @@ class matrix4t
     }
 
     /// get upper left 3x3 matrix
-    matrix3t<D> upper_left_3x3() const
+    [[nodiscard]] matrix3t<D> upper_left_3x3() const
     {
         return matrix3t<D>(
             values[0],
@@ -414,17 +414,17 @@ class matrix4t
     }
 
     // get n-th row/col, ignores last value
-    vector3t<D> row3(unsigned i) const
+    [[nodiscard]] vector3t<D> row3(unsigned i) const
     {
         return vector3t<D>(values[4 * i], values[4 * i + 1], values[4 * i + 2]);
     }
-    vector3t<D> column3(unsigned i) const
+    [[nodiscard]] vector3t<D> column3(unsigned i) const
     {
         return vector3t<D>(values[i], values[i + 4], values[i + 8]);
     }
 
     // get n-th row/col, with last value
-    vector4t<D> row(unsigned i) const
+    [[nodiscard]] vector4t<D> row(unsigned i) const
     {
         return vector4t<D>(
             values[4 * i],
@@ -432,7 +432,7 @@ class matrix4t
             values[4 * i + 2],
             values[4 * i + 3]);
     }
-    vector4t<D> column(unsigned i) const
+    [[nodiscard]] vector4t<D> column(unsigned i) const
     {
         return vector4t<D>(
             values[i], values[i + 4], values[i + 8], values[i + 12]);
@@ -603,7 +603,7 @@ class matrix4t
     }
 
     /// multiply 4x4 matrix with 3-vector, with w-renormalization
-    vector3t<D> mul4vec3(const vector3t<D>& v) const
+    [[nodiscard]] vector3t<D> mul4vec3(const vector3t<D>& v) const
     {
         D r[4];
         for (unsigned j = 0; j < 4; ++j)
@@ -616,7 +616,7 @@ class matrix4t
     }
 
     /// multiply 4x4 matrix with 3-vector, ignore projection part (faster)
-    vector3t<D> mul4vec3xlat(const vector3t<D>& v) const
+    [[nodiscard]] vector3t<D> mul4vec3xlat(const vector3t<D>& v) const
     {
         D r[3];
         for (unsigned j = 0; j < 3; ++j)
@@ -634,7 +634,7 @@ class matrix4t
     }
 
     D& elem(unsigned col, unsigned row) { return values[col + row * 4]; }
-    const D& elem(unsigned col, unsigned row) const
+    [[nodiscard]] const D& elem(unsigned col, unsigned row) const
     {
         return values[col + row * 4];
     }

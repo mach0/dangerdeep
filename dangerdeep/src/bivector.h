@@ -61,7 +61,7 @@ class bivector
         return data[p.x + p.y * datasize.x];
     }
 
-    const T& at(const vector2i& p) const
+    [[nodiscard]] const T& at(const vector2i& p) const
     {
         if (p.x >= datasize.x || p.y >= datasize.y)
         {
@@ -83,7 +83,7 @@ class bivector
         return data[x + y * datasize.x];
     }
 
-    const T& at(int x, int y) const
+    [[nodiscard]] const T& at(int x, int y) const
     {
         if (x >= datasize.x || y >= datasize.y)
         {
@@ -96,15 +96,16 @@ class bivector
 
     T& operator[](const vector2i& p) { return at(p); }
     const T& operator[](const vector2i& p) const { return at(p); }
-    const vector2i& size() const { return datasize; }
+    [[nodiscard]] const vector2i& size() const { return datasize; }
 
     void resize(const vector2i& newsz, const T& v = T());
 
-    bivector<T> sub_area(const vector2i& offset, const vector2i& sz) const;
+    [[nodiscard]] bivector<T>
+    sub_area(const vector2i& offset, const vector2i& sz) const;
 
     ///@note bivector must have power of two dimensions for this!
-    bivector<T> shifted(const vector2i& offset) const;
-    bivector<T> transposed() const;
+    [[nodiscard]] bivector<T> shifted(const vector2i& offset) const;
+    [[nodiscard]] bivector<T> transposed() const;
 
     void swap(bivector<T>& other)
     {
@@ -120,21 +121,21 @@ class bivector
 
     // get pointer to storage, be very careful with that!
     T* data_ptr() { return &data[0]; }
-    const T* data_ptr() const { return &data[0]; }
+    [[nodiscard]] const T* data_ptr() const { return &data[0]; }
 
     // special operations
-    bivector<T> upsampled(bool wrap = false) const;
-    bivector<T> downsampled(bool force_even_size = false) const;
+    [[nodiscard]] bivector<T> upsampled(bool wrap = false) const;
+    [[nodiscard]] bivector<T> downsampled(bool force_even_size = false) const;
 
-    T get_min() const;
-    T get_max() const;
-    T get_min_abs() const;
-    T get_max_abs() const;
+    [[nodiscard]] T get_min() const;
+    [[nodiscard]] T get_max() const;
+    [[nodiscard]] T get_min_abs() const;
+    [[nodiscard]] T get_max_abs() const;
 
     bivector<T>& operator*=(const T& s);
     bivector<T>& operator+=(const T& v);
     bivector<T>& operator+=(const bivector<T>& v);
-    bivector<T> smooth_upsampled(bool wrap = false) const;
+    [[nodiscard]] bivector<T> smooth_upsampled(bool wrap = false) const;
 
     // algebraic operations, omponent-wise add, sub, multiply (of same datasize)
     // sum of square of differences etc.

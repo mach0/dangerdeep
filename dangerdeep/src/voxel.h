@@ -73,7 +73,7 @@ class voxel_data
                                          ///< it, -1 if not existing
 
     /// get voxel data by position, may return 0 for not existing voxels
-    const voxel* get_voxel_by_pos(const vector3i& v) const
+    [[nodiscard]] const voxel* get_voxel_by_pos(const vector3i& v) const
     {
         int i = voxel_index_by_pos
             [(v.z * voxel_resolution.y + v.y) * voxel_resolution.x + v.x];

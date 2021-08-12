@@ -358,8 +358,8 @@ void view_model(const string& modelfilename, const string& datafilename)
     model::mesh* msh =
         make_mesh::cube(3 * sc, 3 * sc, 3 * sc, 1.0f, 1.0f, false);
     //	model::mesh* msh = make_mesh::sphere(1.5*sc, 3*sc, 16, 16, 1.0f, 1.0f,
-    //false); 	model::mesh* msh = make_mesh::cylinder(1.5*sc, 3*sc,
-    //16, 1.0f, 1.0f, true, false);
+    // false); 	model::mesh* msh = make_mesh::cylinder(1.5*sc, 3*sc,
+    // 16, 1.0f, 1.0f, true, false);
     msh->mymaterial = mat;
     // mdl->add_mesh(msh);
     msh->compile();

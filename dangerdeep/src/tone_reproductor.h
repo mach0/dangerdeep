@@ -73,7 +73,7 @@ class tone_reproductor
     void set_display_gamma(float _gamma) { gamma = _gamma; }
 
     // Return adapted luminance from world to display
-    float adapt_luminance(float world_luminance) const
+    [[nodiscard]] float adapt_luminance(float world_luminance) const
     {
         return powf(
                    (float) (world_luminance * constant::PI * 0.0001f),

@@ -50,8 +50,8 @@ class area
     bool is_inside(vector2i p) const
     {
         return (
-            p.x >= offset.x && p.x < offset.x + int(size.x) &&
-            p.y >= offset.y && p.y < offset.y + int(size.y));
+            p.x >= offset.x && p.x < offset.x + int(size.x) && p.y >= offset.y
+            && p.y < offset.y + int(size.y));
     }
 
     vector2i get_limit() const { return offset + vector2i(size); }
