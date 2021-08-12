@@ -67,7 +67,7 @@ class tone_reproductor
 
     // Set the maximum display luminance : default value = 100 cd/m^2
     // This value is used to scale the RGB range
-    void set_max_display_luminance(float _MaxdL) { MaxdL = MaxdL; }
+    void set_max_display_luminance(float _MaxdL) { MaxdL = _MaxdL; }
 
     // Set the display gamma : default value = 2.3
     void set_display_gamma(float _gamma) { gamma = _gamma; }

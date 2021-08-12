@@ -71,37 +71,37 @@ stars::stars(const float max_magnitude)
         switch (spectrum)
         {
             case 'O':
-                col = colorf(0.8 / 1.3, 1.0 / 1.3, 1.3 / 1.3);
+                col = colorf(0.8 / 1.3, 1.0 / 1.3, 1.0);
                 break;
             case 'B':
-                col = colorf(0.9 / 1.2, 1.0 / 1.2, 1.2 / 1.2);
+                col = colorf(0.9 / 1.2, 1.0 / 1.2, 1.0);
                 break;
             case 'A':
-                col = colorf(0.95 / 1.15, 1.0 / 1.15, 1.15 / 1.15);
+                col = colorf(0.95 / 1.15, 1.0 / 1.15, 1.0);
                 break;
             case 'F':
-                col = colorf(1.05 / 1.05, 1.0 / 1.05, 1.05 / 1.05);
+                col = colorf(1.0, 1.0 / 1.05, 1.0);
                 break;
             case 'G':
-                col = colorf(1.3 / 1.3, 1.0 / 1.3, 0.9 / 1.3);
+                col = colorf(1.0, 1.0 / 1.3, 0.9 / 1.3);
                 break;
             case 'K':
-                col = colorf(1.15 / 1.15, 0.95 / 1.15, 0.8 / 1.15);
+                col = colorf(1.0, 0.95 / 1.15, 0.8 / 1.15);
                 break;
             case 'M':
-                col = colorf(1.15 / 1.15, 0.85 / 1.15, 0.8 / 1.15);
+                col = colorf(1.0, 0.85 / 1.15, 0.8 / 1.15);
                 break;
             case 'R':
-                col = colorf(1.3 / 1.3, 0.85 / 1.3, 0.6 / 1.3);
+                col = colorf(1.0, 0.85 / 1.3, 0.6 / 1.3);
                 break;
             case 'S':
-                col = colorf(1.5 / 1.5, 0.8 / 1.5, 0.2 / 1.5);
+                col = colorf(1.0, 0.8 / 1.5, 0.2 / 1.5);
                 break;
             case 'N':
-                col = colorf(1.5 / 1.5, 0.8 / 1.5, 0.2 / 1.5);
+                col = colorf(1.0, 0.8 / 1.5, 0.2 / 1.5);
                 break;
             case 'W':
-                col = colorf(1.5 / 1.5, 0.8 / 1.5, 0.2 / 1.5);
+                col = colorf(1.0, 0.8 / 1.5, 0.2 / 1.5);
                 break;
             case 'X':
                 col = colorf(1.0, 1.0, 1.0);
@@ -138,16 +138,19 @@ void stars::display(const float max_view_dist) const
     glVertexPointer(3, GL_FLOAT, 0, nullptr);
     // update alpha values for twinkle stars
     auto* color = (colorf*) &star_colors[star_count_static];
+
     for (unsigned int i = star_count_static; i < star_count; i++)
     {
-        color->a =
-            0.5f + (0.3f * rand() / RAND_MAX); //	alpha in range [0.5, 0.8]
+        // alpha in [0.5, 0.8] range
+        color->a = 0.5f + 0.3f * static_cast<float>(rand() / RAND_MAX);
         color++;
     }
     star_colors_VBO.init_data(
         star_colors.size() * sizeof(colorf), &star_colors[0], GL_STREAM_DRAW);
+
     star_colors_VBO.bind();
     glsl_shader_setup::default_col->use();
+
     glVertexAttribPointer(
         glsl_shader_setup::idx_c_color,
         4,
@@ -155,6 +158,7 @@ void stars::display(const float max_view_dist) const
         GL_FALSE,
         sizeof(float) * 4,
         nullptr);
+
     glEnableVertexAttribArray(glsl_shader_setup::idx_c_color);
     glDrawArrays(GL_POINTS, 0, star_count);
 

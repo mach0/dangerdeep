@@ -58,6 +58,7 @@ class cfg : public singleton<class cfg>
 
     std::map<std::string, bool> valb;
     std::map<std::string, int> vali;
+    std::map<std::string, unsigned> valu;
     std::map<std::string, float> valf;
     std::map<std::string, std::string> vals;
     std::map<key_command, key> valk;
@@ -80,18 +81,21 @@ class cfg : public singleton<class cfg>
 
     void register_option(const std::string& name, bool value);
     void register_option(const std::string& name, int value);
+    void register_option(const std::string& name, unsigned value);
     void register_option(const std::string& name, float value);
     void register_option(const std::string& name, const std::string& value);
     void register_key(const std::string& name, key_code kc, key_mod km);
 
     void set(const std::string& name, bool value);
     void set(const std::string& name, int value);
+    void set(const std::string& name, unsigned value);
     void set(const std::string& name, float value);
     void set(const std::string& name, const std::string& value);
     void set_key(key_command nr, key_code kc, key_mod km);
 
     bool getb(const std::string& name) const;
     int geti(const std::string& name) const;
+    int getu(const std::string& name) const;
     float getf(const std::string& name) const;
     std::string gets(const std::string& name) const;
     key getkey(key_command nr) const;

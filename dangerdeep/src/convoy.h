@@ -47,8 +47,10 @@ class convoy
     class game& gm;
     double remaining_time; // time to next thought/situation analysis, fixme
                            // move to ai!
+
     vector2 position;
     double velocity; // local (forward) velocity.
+
     // alive_stat?
     std::string name;
 

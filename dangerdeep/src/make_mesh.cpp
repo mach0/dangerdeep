@@ -430,29 +430,36 @@ model::mesh* heightfield(
 {
     if (resx < 2 || resy < 2 || heights.size() != resx * resy)
         return nullptr;
+
     auto* m         = new model::mesh("heightfield");
     m->name         = name;
+
     unsigned nrvert = resx * resy;
+
     m->vertices.resize(nrvert);
     m->texcoords.resize(nrvert);
     m->normals.resize(nrvert);
     m->tangentsx.resize(nrvert);
     m->indices.resize((resx - 1) * (resy - 1) * 2 * 3);
+
     for (unsigned i = 0; i < resy; ++i)
     {
         for (unsigned j = 0; j < resx; ++j)
         {
-            float r0                  = float(rand()) / RAND_MAX;
-            float r1                  = float(rand()) / RAND_MAX;
-            float r2                  = float(rand()) / RAND_MAX;
+            float r0 = static_cast<float>(rand() / RAND_MAX);
+            float r1 = static_cast<float>(rand() / RAND_MAX);
+            float r2 = static_cast<float>(rand() / RAND_MAX);
+
             m->vertices[i * resx + j] = vector3f(
                 xscal * j + (r0 * 2 - 1) * xnoise,
                 yscal * i + (r1 * 2 - 1) * ynoise,
                 zscal * float(heights[i * resx + j]) * (1.0f / 255)
                     + (r2 * 2 - 1) * znoise);
+
             // mapping is always straight, even with noise
             m->texcoords[i * resx + j] =
                 vector2f(float(j) / (resx - 1), float(i) / (resy - 1));
+
             // normals are computed later
             m->tangentsx[i * resx + j] = vector3f(1, 0, 0);
         }
@@ -472,8 +479,10 @@ model::mesh* heightfield(
             const vector3f& v1 = m->vertices[m->indices[ib + 1]];
             const vector3f& v2 = m->vertices[m->indices[ib + 2]];
             const vector3f& v3 = m->vertices[m->indices[ib + 5]];
+
             vector3f ortho     = (v1 - v0).orthogonal(v2 - v0);
             float lf           = 1.0 / ortho.length();
+
             if (isfinite(lf))
             {
                 vector3f face_normal = ortho * lf;
@@ -481,8 +490,10 @@ model::mesh* heightfield(
                 m->normals[m->indices[ib + 1]] += face_normal;
                 m->normals[m->indices[ib + 2]] += face_normal;
             }
+
             ortho = (v1 - v2).orthogonal(v3 - v2);
             lf    = 1.0 / ortho.length();
+
             if (isfinite(lf))
             {
                 vector3f face_normal = ortho * lf;
