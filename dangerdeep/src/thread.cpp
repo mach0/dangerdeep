@@ -109,11 +109,15 @@ void thread::request_abort()
 void thread::start()
 {
     if (abort_request)
+    {
         THROW(error, "thread abort requested, but start() called");
+    }
 
     std::unique_lock<std::mutex> ml(state_mutex);
     if (mystate != state::none)
+    {
         THROW(error, "thread already started, but start() called again");
+    }
 
     thread_id = std::thread(&thread::run, this);
 
@@ -122,25 +126,31 @@ void thread::start()
 
     // now check if thread has started
     if (mystate == state::init_failed)
+    {
         THROW(error, ("thread start failed: ") + error_message);
 
-    // very rare, but possible
+        // very rare, but possible
+    }
     else if (mystate == state::aborted)
+    {
         THROW(error, ("thread run failed: ") + error_message);
+    }
 }
 
 /// Wait for thread to finish
 void thread::join()
 {
     thread_id.join();
-    auto mystate_copy       = std::move(mystate);
+    auto mystate_copy       = mystate;
     auto error_message_copy = std::move(error_message);
     delete this;
 
     if (mystate_copy != thread::state::finished)
+    {
         THROW(
             error,
             std::string("thread aborted with error: ") + error_message_copy);
+    }
 }
 
 /// destroy thread, try to abort and join it or delete the object if it hasn't
@@ -155,13 +165,19 @@ void thread::destruct()
 
     // request if thread runs, in that case send abort request
     if (ts == state::running)
+    {
         request_abort();
+    }
 
     // request if thread has ever run, in that case we need to join
     if (mystate != state::none)
+    {
         join();
+    }
     else
+    {
         delete this;
+    }
 }
 
 /// let caller sleep
@@ -171,7 +187,7 @@ void thread::sleep(unsigned ms)
 }
 
 /// request if thread runs
-bool thread::is_running()
+auto thread::is_running() -> bool
 {
     // only reading is normally safe, but not for multi-core architectures.
     std::unique_lock<std::mutex> ml(state_mutex);

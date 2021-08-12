@@ -134,11 +134,11 @@ class model
         virtual void unregister_layout(const std::string& name);
         virtual void set_layout(const std::string& layout);
         virtual void get_all_layout_names(std::set<std::string>& result) const;
-        virtual bool needs_texcoords() const
+        [[nodiscard]] virtual bool needs_texcoords() const
         {
             return colormap.get() != nullptr;
         }
-        virtual bool use_default_shader() const { return true; }
+        [[nodiscard]] virtual bool use_default_shader() const { return true; }
     };
 
     class material_glsl : public material
@@ -161,13 +161,19 @@ class model
         void set_layout(const std::string& layout) override;
         void get_all_layout_names(std::set<std::string>& result) const override;
         void compute_texloc();
-        const std::string& get_vertexshaderfn() const { return vertexshaderfn; }
-        const std::string& get_fragmentshaderfn() const
+        [[nodiscard]] const std::string& get_vertexshaderfn() const
+        {
+            return vertexshaderfn;
+        }
+        [[nodiscard]] const std::string& get_fragmentshaderfn() const
         {
             return fragmentshaderfn;
         }
-        bool needs_texcoords() const override { return nrtex > 0; }
-        bool use_default_shader() const override { return false; }
+        [[nodiscard]] bool needs_texcoords() const override
+        {
+            return nrtex > 0;
+        }
+        [[nodiscard]] bool use_default_shader() const override { return false; }
         glsl_shader_setup& get_shadersetup() { return shadersetup; }
 
         std::unique_ptr<map>
@@ -203,9 +209,9 @@ class model
           public:
             triangle_iterator(const std::vector<uint32_t>& indices);
             virtual ~triangle_iterator() = default;
-            unsigned i0() const { return _i0; }
-            unsigned i1() const { return _i1; }
-            unsigned i2() const { return _i2; }
+            [[nodiscard]] unsigned i0() const { return _i0; }
+            [[nodiscard]] unsigned i1() const { return _i1; }
+            [[nodiscard]] unsigned i2() const { return _i2; }
             virtual bool next();
         };
 
@@ -406,15 +412,15 @@ class model
         bool set_translation(float value);
         object* find(unsigned id);
         object* find(const std::string& name);
-        const object* find(unsigned id) const;
-        const object* find(const std::string& name) const;
+        [[nodiscard]] const object* find(unsigned id) const;
+        [[nodiscard]] const object* find(const std::string& name) const;
         void display(const texture* caustic_map = nullptr) const;
         void display_mirror_clip() const;
         void compute_bounds(
             vector3f& min,
             vector3f& max,
             const matrix4f& transmat) const;
-        matrix4f get_transformation() const;
+        [[nodiscard]] matrix4f get_transformation() const;
     };
 
     // store that for debugging purposes.
@@ -529,21 +535,25 @@ class model
     */
     void display_mirror_clip() const;
     mesh& get_mesh(unsigned nr);
-    const mesh& get_mesh(unsigned nr) const;
+    [[nodiscard]] const mesh& get_mesh(unsigned nr) const;
     /// get mesh at root of object tree or first mesh if no tree defined
     mesh& get_base_mesh();
-    const mesh& get_base_mesh() const;
+    [[nodiscard]] const mesh& get_base_mesh() const;
     material& get_material(unsigned nr);
-    const material& get_material(unsigned nr) const;
-    unsigned get_nr_of_meshes() const { return meshes.size(); }
-    unsigned get_nr_of_materials() const { return materials.size(); }
-    vector3f get_min() const { return min; }
-    vector3f get_max() const { return max; }
-    float get_length() const { return (max - min).y; }
-    float get_width() const { return (max - min).x; }
-    float get_height() const { return (max - min).z; }
-    vector3f get_boundbox_size() const { return max - min; }
-    float get_cross_section(float angle) const; // give angle in degrees.
+    [[nodiscard]] const material& get_material(unsigned nr) const;
+    [[nodiscard]] unsigned get_nr_of_meshes() const { return meshes.size(); }
+    [[nodiscard]] unsigned get_nr_of_materials() const
+    {
+        return materials.size();
+    }
+    [[nodiscard]] vector3f get_min() const { return min; }
+    [[nodiscard]] vector3f get_max() const { return max; }
+    [[nodiscard]] float get_length() const { return (max - min).y; }
+    [[nodiscard]] float get_width() const { return (max - min).x; }
+    [[nodiscard]] float get_height() const { return (max - min).z; }
+    [[nodiscard]] vector3f get_boundbox_size() const { return max - min; }
+    [[nodiscard]] float
+    get_cross_section(float angle) const; // give angle in degrees.
     static std::string tolower(const std::string& s);
     void add_mesh(mesh* m)
     {
@@ -578,9 +588,9 @@ class model
     vector2f get_object_translation_constraints(const std::string& objname);
 
     // find object with certain name, -1 if not found
-    int get_object_id_by_name(const std::string& name) const;
+    [[nodiscard]] int get_object_id_by_name(const std::string& name) const;
 
-    bool object_exists(unsigned objid) const;
+    [[nodiscard]] bool object_exists(unsigned objid) const;
 
     void register_layout(const std::string& name = default_layout);
     void unregister_layout(const std::string& name = default_layout);
@@ -589,7 +599,7 @@ class model
     // in "result"
     void get_all_layout_names(std::set<std::string>& result) const;
 
-    std::string get_filename() const { return filename; }
+    [[nodiscard]] std::string get_filename() const { return filename; }
 
     /*
     /// check if a given point is inside the model
@@ -598,17 +608,26 @@ class model
     */
 
     /// request voxel data resolution
-    const vector3i& get_voxel_resolution() const { return voxel_resolution; }
+    [[nodiscard]] const vector3i& get_voxel_resolution() const
+    {
+        return voxel_resolution;
+    }
     /// request voxel size
-    const vector3f& get_voxel_size() const { return voxel_size; }
+    [[nodiscard]] const vector3f& get_voxel_size() const { return voxel_size; }
     /// request voxel "radius"
-    float get_voxel_radius() const { return voxel_radius; }
+    [[nodiscard]] float get_voxel_radius() const { return voxel_radius; }
     /// request total volume by voxels
-    float get_total_volume_by_voxels() const { return total_volume_by_voxels; }
+    [[nodiscard]] float get_total_volume_by_voxels() const
+    {
+        return total_volume_by_voxels;
+    }
     /// request voxel data
-    const std::vector<voxel>& get_voxel_data() const { return voxel_data; }
+    [[nodiscard]] const std::vector<voxel>& get_voxel_data() const
+    {
+        return voxel_data;
+    }
     /// get voxel data by position, may return 0 for not existing voxels
-    const voxel* get_voxel_by_pos(const vector3i& v) const
+    [[nodiscard]] const voxel* get_voxel_by_pos(const vector3i& v) const
     {
         int i = voxel_index_by_pos
             [(v.z * voxel_resolution.y + v.y) * voxel_resolution.x + v.x];
@@ -617,7 +636,7 @@ class model
 
     /// get transformation of root node (object tree translation + mesh
     /// transformation)
-    matrix4f get_base_mesh_transformation() const;
+    [[nodiscard]] matrix4f get_base_mesh_transformation() const;
 
     /// get voxel closest to a real world position
     ///@returns voxel index of closest voxel
@@ -635,5 +654,8 @@ class model
     // checked... not good for battleship fights.
 
     /// get radius of bounding sphere
-    double get_bounding_sphere_radius() const { return boundsphere_radius; }
+    [[nodiscard]] double get_bounding_sphere_radius() const
+    {
+        return boundsphere_radius;
+    }
 };

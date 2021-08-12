@@ -42,8 +42,8 @@ void sub_uzo_display::pre_display() const
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-freeview_display::projection_data
-sub_uzo_display::get_projection_data(class game& gm) const
+auto sub_uzo_display::get_projection_data(class game& gm) const
+    -> freeview_display::projection_data
 {
     projection_data pd;
     pd.x = SYS().get_res_area_2d_x();
@@ -68,9 +68,13 @@ void sub_uzo_display::set_modelview_matrix(game& gm, const vector3& viewpos)
     float elev        = -ui.get_elevation().value();
     const float LIMIT = 20.0f;
     if (elev < -LIMIT - 90.0f)
+    {
         elev = -LIMIT - 90.0f;
+    }
     if (elev > +LIMIT - 90.0f)
+    {
         elev = +LIMIT - 90.0f;
+    }
     glRotated(elev, 1, 0, 0);
 
     // if we're aboard the player's vessel move the world instead of the ship
@@ -117,7 +121,7 @@ sub_uzo_display::sub_uzo_display(user_interface& ui_) :
     drawbridge            = false;
 }
 
-bool sub_uzo_display::handle_key_event(const key_data& k)
+auto sub_uzo_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -136,7 +140,8 @@ bool sub_uzo_display::handle_key_event(const key_data& k)
     return freeview_display::handle_key_event(k);
 }
 
-bool sub_uzo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto sub_uzo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+    -> bool
 {
     if (m.up())
     {
@@ -151,7 +156,7 @@ bool sub_uzo_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
     return freeview_display::handle_mouse_wheel_event(m);
 }
 
-unsigned sub_uzo_display::get_popup_allow_mask() const
+auto sub_uzo_display::get_popup_allow_mask() const -> unsigned
 {
     return (1 << submarine_interface::popup_mode_ecard);
 }

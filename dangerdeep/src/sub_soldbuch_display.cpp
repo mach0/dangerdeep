@@ -145,7 +145,7 @@ void sub_soldbuch_display::display() const
     ss.str("");
     ss << pi.flotilla;
     std::string flotname = texts::get(164);
-    flotname.replace(flotname.find("#"), 1, ss.str());
+    flotname.replace(flotname.find('#'), 1, ss.str());
     font_jphsl->print(
         offset.x + 95, offset.y + 438, flotname, color(20, 20, 30));
     // identification

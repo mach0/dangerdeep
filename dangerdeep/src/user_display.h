@@ -143,7 +143,7 @@ class user_display : public input_event_handler
     };
 
     // needed for correct destruction of heirs.
-    virtual ~user_display() = default;
+    ~user_display() override = default;
     // very basic. Just draw display
     virtual void display() const = 0;
     // mask contains one bit per popup (at most 31 popups)

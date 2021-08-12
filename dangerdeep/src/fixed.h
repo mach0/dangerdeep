@@ -38,9 +38,12 @@ class fixed32
     fixed32& operator=(const fixed32& f) = default;
     fixed32(int32_t n) : x(n) { }
     fixed32(float f) : x(int32_t(f * ONE)) { }
-    fixed32 frac() const { return fixed32(x & (ONE - 1)); }
-    fixed32 floor() const { return fixed32(x & (~(ONE - 1))); }
-    fixed32 ceil() const { return fixed32((x + (ONE - 1)) & (~(ONE - 1))); }
+    [[nodiscard]] fixed32 frac() const { return fixed32(x & (ONE - 1)); }
+    [[nodiscard]] fixed32 floor() const { return fixed32(x & (~(ONE - 1))); }
+    [[nodiscard]] fixed32 ceil() const
+    {
+        return fixed32((x + (ONE - 1)) & (~(ONE - 1)));
+    }
     fixed32 operator+(const fixed32& f) const { return fixed32(x + f.x); }
     fixed32 operator-(const fixed32& f) const { return fixed32(x - f.x); }
     fixed32 operator-() const { return fixed32(-x); }
@@ -76,7 +79,7 @@ class fixed32
         return fixed32(int32_t((int64_t(x) << SHIFT) / f.x));
     }
     fixed32 operator/(int n) const { return fixed32(x / n); }
-    int intpart() const { return int(x >> SHIFT); }
-    int round() const { return int((x + HALF) >> SHIFT); }
-    int32_t value() const { return x; }
+    [[nodiscard]] int intpart() const { return int(x >> SHIFT); }
+    [[nodiscard]] int round() const { return int((x + HALF) >> SHIFT); }
+    [[nodiscard]] int32_t value() const { return x; }
 };

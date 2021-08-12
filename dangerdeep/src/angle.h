@@ -73,16 +73,19 @@ class angle
             .normal();
     }
 
-    double value() const { return clamped(val); }
-    unsigned ui_value() const { return unsigned(clamped(helper::round(val))); }
+    [[nodiscard]] double value() const { return clamped(val); }
+    [[nodiscard]] unsigned ui_value() const
+    {
+        return unsigned(clamped(helper::round(val)));
+    }
 
-    unsigned ui_abs_value180() const
+    [[nodiscard]] unsigned ui_abs_value180() const
     {
         return unsigned(fabs(helper::round(value_pm180())));
     }
 
-    double rad() const { return value() * constant::PI / 180.0; }
-    double value_pm180() const
+    [[nodiscard]] double rad() const { return value() * constant::PI / 180.0; }
+    [[nodiscard]] double value_pm180() const
     {
         double d = clamped(val);
         return d <= 180.0 ? d : d - 360.0;
@@ -95,7 +98,7 @@ class angle
 
     /// returns true if the turn from "this" to "a" is shorter when done
     /// clockwise
-    bool is_clockwise_nearer(const angle& a) const
+    [[nodiscard]] bool is_clockwise_nearer(const angle& a) const
     {
         return clamped(a.val - val) <= 180.0;
     }
@@ -118,7 +121,7 @@ class angle
         return *this;
     }
 
-    double diff(const angle& other) const
+    [[nodiscard]] double diff(const angle& other) const
     {
         double d = clamped(other.val - val);
         if (d > 180.0)
@@ -126,16 +129,16 @@ class angle
         return d;
     }
 
-    double diff_in_direction(bool ccw, const angle& other) const
+    [[nodiscard]] double diff_in_direction(bool ccw, const angle& other) const
     {
         return ccw ? clamped(val - other.val) : clamped(other.val - val);
     }
 
-    double sin() const { return ::sin(rad()); }
-    double cos() const { return ::cos(rad()); }
-    double tan() const { return ::tan(rad()); }
+    [[nodiscard]] double sin() const { return ::sin(rad()); }
+    [[nodiscard]] double cos() const { return ::cos(rad()); }
+    [[nodiscard]] double tan() const { return ::tan(rad()); }
 
-    vector2 direction() const
+    [[nodiscard]] vector2 direction() const
     {
         double r = rad();
         return {::sin(r), ::cos(r)};

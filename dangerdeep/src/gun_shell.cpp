@@ -34,8 +34,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <utility>
 
-gun_shell::gun_shell(game& gm_) :
-    sea_object(gm_, "gun_shell.ddxml"), damage_amount(0)
+gun_shell::gun_shell(game& gm_) : sea_object(gm_, "gun_shell.ddxml")
 {
     // for loading
     mass     = 20;
@@ -53,9 +52,9 @@ gun_shell::gun_shell(
     sea_object(gm_, "gun_shell.ddxml"),
     caliber(caliber_)
 {
-    orientation     = quaternion::rot(-direction.value(), 0, 0, 1);
-    mass            = 20;
-    mass_inv        = 1.0 / mass;
+    orientation = quaternion::rot(-direction.value(), 0, 0, 1);
+    mass        = 20;
+    mass_inv    = 1.0 / mass;
 
     linear_momentum = mass
                       * orientation.rotate(vector3(
@@ -131,10 +130,12 @@ void gun_shell::check_collision(game& gm)
     double dvl = dv2.square_length();
 
     if (dvl < 1e-8)
+    {
         return;
+    }
 
-    dvl           = sqrt(dvl);
-    vector3 dv    = dv2 * (1.0 / dvl);
+    dvl        = sqrt(dvl);
+    vector3 dv = dv2 * (1.0 / dvl);
 
     auto allships = gm.get_all_ships();
 
@@ -146,7 +147,9 @@ void gun_shell::check_collision(game& gm)
         double tmp = kd * kd - k * k + r * r;
 
         if (tmp <= 0.0)
+        {
             continue;
+        }
 
         tmp       = sqrt(tmp);
         double t0 = -kd + tmp, t1 = -kd - tmp;
@@ -157,7 +160,9 @@ void gun_shell::check_collision(game& gm)
             // log_debug("gun_shell "<<this<<" intersects bsphere of "<<s);
             check_collision_precise(gm, *s, -k, dv2 - k);
             if (alive_stat == dead)
+            {
                 return; // no more checks after hit
+            }
         }
     }
 
@@ -208,8 +213,8 @@ void gun_shell::check_collision_precise(
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
 
-        tmax     = std::min(tmax, tb);
-        tmin     = std::max(tmin, ta);
+        tmax = std::min(tmax, tb);
+        tmin = std::max(tmin, ta);
     }
     if (fabs(d.y) > 1e-5)
     {
@@ -218,8 +223,8 @@ void gun_shell::check_collision_precise(
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
 
-        tmax     = std::min(tmax, tb);
-        tmin     = std::max(tmin, ta);
+        tmax = std::min(tmax, tb);
+        tmin = std::max(tmin, ta);
     }
     if (fabs(d.z) > 1e-5)
     {
@@ -228,8 +233,8 @@ void gun_shell::check_collision_precise(
         float ta = std::min(t0, t1);
         float tb = std::max(t0, t1);
 
-        tmax     = std::min(tmax, tb);
-        tmin     = std::max(tmin, ta);
+        tmax = std::min(tmax, tb);
+        tmin = std::max(tmin, ta);
     }
 
     if (tmin <= tmax)
@@ -240,7 +245,9 @@ void gun_shell::check_collision_precise(
         check_collision_voxel(
             gm, s, oldrelbbox + dd * tmin, oldrelbbox + dd * tmax);
         if (alive_stat == dead)
+        {
             return; // no more checks after hit
+        }
     }
 }
 
@@ -263,8 +270,8 @@ void gun_shell::check_collision_voxel(
     // and determine voxel number by pos.
     // if coordinate is invalid, no hit, otherwise check voxel state (volume >
     // 0.25 or similar) if the voxel is filled.
-    vector3f voxel_size_rcp  = s.get_model().get_voxel_size().rcp();
-    const vector3i& vres     = s.get_model().get_voxel_resolution();
+    vector3f voxel_size_rcp = s.get_model().get_voxel_size().rcp();
+    const vector3i& vres    = s.get_model().get_voxel_resolution();
 
     vector3i vidxmax         = vres - vector3i(1, 1, 1);
     vector3f voxel_pos_trans = vector3f(vres) * 0.5f;
@@ -278,7 +285,7 @@ void gun_shell::check_collision_voxel(
         vector3f voxpos = oldvoxpos + diffvoxpos * kf;
         vector3i v =
             vector3i(voxpos.coeff_mul(voxel_size_rcp) + voxel_pos_trans);
-        v      = v.max(vector3i(0, 0, 0)).min(vidxmax);
+        v = v.max(vector3i(0, 0, 0)).min(vidxmax);
 
         int vn = (v.z * vres.y + v.y) * vres.x + v.x;
 
@@ -354,7 +361,7 @@ void gun_shell::display() const
     vector3 side = vn.orthogonal(up);
     up           = side.orthogonal(vn);
 
-    float m[16]  = {
+    float m[16] = {
         static_cast<float>(side.x),
         static_cast<float>(side.y),
         static_cast<float>(side.z),
@@ -377,7 +384,7 @@ void gun_shell::display() const
     glPopMatrix();
 }
 
-float gun_shell::surface_visibility(const vector2& watcher) const
+auto gun_shell::surface_visibility(const vector2& watcher) const -> float
 {
     return 100.0f; // square meters... test hack
 }

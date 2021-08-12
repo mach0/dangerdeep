@@ -120,10 +120,14 @@ user_interface::user_interface(game& gm) :
         void on_sel_change() override
         {
             if (!active)
+            {
                 return;
+            }
             int s = get_selected();
             if (s >= 0)
+            {
                 music::instance().play_track(unsigned(s), 500);
+            }
         }
         musiclist(int x, int y, int w, int h) :
             widget_list(x, y, w, h), active(false)
@@ -418,19 +422,23 @@ void user_interface::finish_construction()
     mycoastmap.finish_construction();
 }
 
-std::shared_ptr<user_interface> user_interface::create(game& gm)
+auto user_interface::create(game& gm) -> std::shared_ptr<user_interface>
 {
     sea_object* p = gm.get_player();
     std::shared_ptr<user_interface> ui;
     // check for interfaces
     if (dynamic_cast<submarine*>(p))
+    {
         ui = std::make_shared<submarine_interface>(gm);
+    }
 #if 0
 	else if (dynamic_cast<ship*>(p)) ui = std::make_shared<ship_interface>(gm);
 	else if (dynamic_cast<airplane*>(p)) ui = std::make_shared<airplane_interface>(gm);
 #endif
     if (ui)
+    {
         ui->finish_construction();
+    }
     return ui;
 }
 
@@ -439,26 +447,30 @@ user_interface::~user_interface()
     particle::deinit();
 }
 
-const water& user_interface::get_water() const
+auto user_interface::get_water() const -> const water&
 {
     return mygame->get_water();
 }
 
-angle user_interface::get_relative_bearing() const
+auto user_interface::get_relative_bearing() const -> angle
 {
     if (bearing_is_relative)
+    {
         return bearing;
+    }
     return bearing - mygame->get_player()->get_heading();
 }
 
-angle user_interface::get_absolute_bearing() const
+auto user_interface::get_absolute_bearing() const -> angle
 {
     if (bearing_is_relative)
+    {
         return mygame->get_player()->get_heading() + bearing;
+    }
     return bearing;
 }
 
-angle user_interface::get_elevation() const
+auto user_interface::get_elevation() const -> angle
 {
     return elevation;
 }
@@ -483,7 +495,9 @@ void user_interface::display() const
 
     // popups
     if (current_popup > 0)
+    {
         popups[current_popup - 1]->display();
+    }
 
     // draw screen selector if visible
     if (screen_selector_visible)
@@ -532,7 +546,7 @@ void user_interface::set_time(double tm)
     mygame->get_water().set_time(tm);
 }
 
-bool user_interface::handle_key_event(const key_data& k)
+auto user_interface::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -558,7 +572,8 @@ bool user_interface::handle_key_event(const key_data& k)
     return displays[current_display]->handle_key_event(k);
 }
 
-bool user_interface::handle_mouse_button_event(const mouse_click_data& m)
+auto user_interface::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     if (panel_visible)
     {
@@ -605,13 +620,16 @@ bool user_interface::handle_mouse_button_event(const mouse_click_data& m)
     return displays[current_display]->handle_mouse_button_event(m);
 }
 
-bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
+auto user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
+    -> bool
 {
     if (panel_visible)
     {
         if (panel->is_mouse_over(m.position_2d)
             && widget::handle_mouse_motion_event(*panel, m))
+        {
             return true;
+        }
     }
 
     if (main_menu_visible)
@@ -666,15 +684,23 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
             {
                 p += m.relative_motion_2d;
                 if (p.x < 0)
+                {
                     p.x = 0;
+                }
                 if (p.y < 0)
+                {
                     p.y = 0;
+                }
                 // 2006-11-30 doc1972 negative pos and size of a playlist makes
                 // no sence, so we cast
-                if ((unsigned int) (p.x + s.x) > SYS().get_res_x_2d())
+                if (static_cast<unsigned int>(p.x + s.x) > SYS().get_res_x_2d())
+                {
                     p.x = SYS().get_res_x_2d() - s.x;
-                if ((unsigned int) (p.y + s.y) > SYS().get_res_y_2d())
+                }
+                if (static_cast<unsigned int>(p.y + s.y) > SYS().get_res_y_2d())
+                {
                     p.y = SYS().get_res_y_2d() - s.y;
+                }
                 music_playlist->set_pos(p);
             }
         }
@@ -689,7 +715,7 @@ bool user_interface::handle_mouse_motion_event(const mouse_motion_data& m)
     return displays[current_display]->handle_mouse_motion_event(m);
 }
 
-bool user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto user_interface::handle_mouse_wheel_event(const mouse_wheel_data& m) -> bool
 {
     if (panel_visible && panel->is_mouse_over(m.position_2d))
     {
@@ -791,7 +817,9 @@ void user_interface::draw_terrain(
     frustum viewfrustum = frustum::from_opengl();
     glPushMatrix();
     if (mirrored)
+    {
         glScalef(1.0f, 1.0f, -1.0f);
+    }
     viewfrustum.translate(viewpos);
     mygeoclipmap->set_viewerpos(viewpos);
     mygeoclipmap->display(viewfrustum, -viewpos, mirrored, above_water);
@@ -856,7 +884,7 @@ void user_interface::toggle_pause()
     }
 }
 
-bool user_interface::time_scale_up()
+auto user_interface::time_scale_up() -> bool
 {
     if (time_scale < 4096)
     {
@@ -866,7 +894,7 @@ bool user_interface::time_scale_up()
     return false;
 }
 
-bool user_interface::time_scale_down()
+auto user_interface::time_scale_down() -> bool
 {
     if (time_scale > 1)
     {
@@ -913,7 +941,9 @@ void user_interface::draw_infopanel(bool onlytexts) const
     for (auto it = messages.rbegin(); it != messages.rend(); ++it)
     {
         if (it->first < vanish_time)
+        {
             break;
+        }
         double alpha =
             std::min(1.0, (it->first - vanish_time) / message_fadeout_time);
         font_vtremington12->print(
@@ -929,7 +959,9 @@ void user_interface::add_message(const string& s)
 
     // remove old messages
     while (messages.size() > 6)
+    {
         messages.pop_front();
+    }
     double vanish_time = mygame->get_time() - message_vanish_time;
     for (auto it = messages.begin(); it != messages.end();)
     {
@@ -959,7 +991,9 @@ void user_interface::set_allowed_popup()
 {
     // 0 is always valid (no popup)
     if (current_popup == 0)
+    {
         return;
+    }
 
     unsigned mask = displays[current_display]->get_popup_allow_mask();
     mask >>= (current_popup - 1);
@@ -967,7 +1001,9 @@ void user_interface::set_allowed_popup()
     {
         // is popup number valid?
         if (mask & 1)
+        {
             return;
+        }
         ++current_popup;
         mask >>= 1;
     }
@@ -983,7 +1019,9 @@ void user_interface::set_current_display(unsigned curdis)
         return;
     }
     if (mygame)
+    {
         mygame->freeze_time();
+    }
     displays[current_display]->leave();
     current_display = curdis;
 
@@ -996,7 +1034,9 @@ void user_interface::set_current_display(unsigned curdis)
 
     displays[current_display]->enter(daymode);
     if (mygame)
+    {
         mygame->unfreeze_time();
+    }
 
     // check if current popup is still allowed. if not, clear popup
     if (current_popup > 0)
@@ -1004,7 +1044,9 @@ void user_interface::set_current_display(unsigned curdis)
         unsigned mask = displays[current_display]->get_popup_allow_mask();
         mask >>= (current_popup - 1);
         if ((mask & 1) == 0)
+        {
             current_popup = 0;
+        }
     }
 }
 
@@ -1028,9 +1070,13 @@ void user_interface::playlist_mode_changed()
 void user_interface::playlist_mute()
 {
     if (playlist_mute_checkbox->is_checked())
+    {
         music::instance().stop();
+    }
     else
+    {
         music::instance().play();
+    }
 }
 
 void user_interface::show_screen_selector()

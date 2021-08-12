@@ -76,16 +76,19 @@ class polygon_t
 
     /// check if polygon is empty. Each polygon must have at least three
     /// vertices or it is empty
-    bool empty() const { return points.size() < 3; }
+    [[nodiscard]] bool empty() const { return points.size() < 3; }
 
     /// Add new point
     void add_point(const vector3t<D>& p) { points.push_back(p); }
 
     /// return number of points
-    unsigned nr_of_points() const { return unsigned(points.size()); }
+    [[nodiscard]] unsigned nr_of_points() const
+    {
+        return unsigned(points.size());
+    }
 
     /// Get next index from this
-    unsigned next_index(unsigned i) const
+    [[nodiscard]] unsigned next_index(unsigned i) const
     {
         ++i;
         if (i >= nr_of_points())
@@ -94,7 +97,7 @@ class polygon_t
     }
 
     /// Get previous index from this
-    unsigned prev_index(unsigned i) const
+    [[nodiscard]] unsigned prev_index(unsigned i) const
     {
         if (i == 0)
             i = nr_of_points();
@@ -103,7 +106,7 @@ class polygon_t
     }
 
     /// compute normal of polygon. Only valid if all points are in a plane.
-    vector3t<D> normal() const
+    [[nodiscard]] vector3t<D> normal() const
     {
         if (empty())
             return vector3t<D>();
@@ -201,11 +204,11 @@ class polygon_t
         D last_point_distance     = pt.distance(points.back());
         unsigned last_point_index = nr_of_points() - 1;
 
-        int last_point_side       = (last_point_distance > epsilon)
-                                        ? 1
-                                        : (last_point_distance < -epsilon ? -1 : 0);
+        int last_point_side = (last_point_distance > epsilon)
+                                  ? 1
+                                  : (last_point_distance < -epsilon ? -1 : 0);
 
-        int current_side          = last_point_side;
+        int current_side = last_point_side;
 
         if (current_side == 0)
         {
@@ -305,7 +308,7 @@ class polygon_t
     }
 
     /// clip (cut off) polygon against plane. Works only for convex polygons!
-    polygon_t cut(const plane_t<D>& plan) const
+    [[nodiscard]] polygon_t cut(const plane_t<D>& plan) const
     {
         clip_result_front crf;
         clip_point_no_result cpnr;
@@ -315,7 +318,8 @@ class polygon_t
     }
 
     /// Clip convex polygon by plane with frontside/backside result
-    std::pair<polygon_t, polygon_t> clip(const plane_t<D>& plan) const
+    [[nodiscard]] std::pair<polygon_t, polygon_t>
+    clip(const plane_t<D>& plan) const
     {
         clip_result_front_and_back crfb;
         clip_point_no_result cpnr;
@@ -326,7 +330,7 @@ class polygon_t
 
     /// Clip with axis aligned plane with frontside/backside result
     template<axis a>
-    std::pair<polygon_t, polygon_t> clip(D axis_value) const
+    [[nodiscard]] std::pair<polygon_t, polygon_t> clip(D axis_value) const
     {
         clip_result_front_and_back crfb;
         clip_point_no_result cpnr;
@@ -354,7 +358,7 @@ class polygon_t
     }
 
     /// compute plane that poly lies in
-    plane_t<D> get_plane() const
+    [[nodiscard]] plane_t<D> get_plane() const
     {
         if (empty())
             return plane_t<D>();
@@ -372,7 +376,7 @@ class polygon_t
     /// assume z axis as direction. determine number of intersections of polygon
     /// with one axis going out of the point (e.g. X axis), even number is
     /// outside
-    bool is_inside(const vector2t<D>& point) const
+    [[nodiscard]] bool is_inside(const vector2t<D>& point) const
     {
         if (empty())
             return false;

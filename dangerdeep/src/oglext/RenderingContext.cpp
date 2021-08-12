@@ -31,7 +31,7 @@
 #include "Macros.h"
 #include "OglExt.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 // =============================================================================================================
 // ===                                C L A S S   A D M I N I S T R A T I O N
@@ -186,7 +186,7 @@ CRenderingContext::CRenderingContext()
 
 //!	Return address of a given OpenGL Function.
 
-void* CRenderingContext::GetProcAddress(char const* szFunction)
+auto CRenderingContext::GetProcAddress(char const* szFunction) -> void*
 {
 #if defined(_WIN32)
 
@@ -273,7 +273,7 @@ void* CRenderingContext::GetProcAddress(char const* szFunction)
     if (!szNewFunction)
     {
 
-        return NULL;
+        return nullptr;
     }
 
     // U.2: create the new function name...
@@ -287,7 +287,7 @@ void* CRenderingContext::GetProcAddress(char const* szFunction)
 #ifndef GLX_GLXEXT_LEGACY
 
     void* pProcAddress =
-        (void*) ::glXGetProcAddress((GLubyte const*) szNewFunction);
+        reinterpret_cast<void*>(::glXGetProcAddress(reinterpret_cast<GLubyte const*>(szNewFunction)));
 
 #else
 
@@ -314,7 +314,7 @@ void* CRenderingContext::GetProcAddress(char const* szFunction)
 
 //!	Initialize GL_VERSION_1_2.
 
-bool CRenderingContext::InitVersion12()
+auto CRenderingContext::InitVersion12() -> bool
 {
     bool bReturn = true;
 
@@ -373,7 +373,7 @@ bool CRenderingContext::InitVersion12()
 
 //!	Initialize GL_VERSION_1_3.
 
-bool CRenderingContext::InitVersion13()
+auto CRenderingContext::InitVersion13() -> bool
 {
     bool bReturn = true;
 
@@ -440,7 +440,7 @@ bool CRenderingContext::InitVersion13()
 
 //!	Initialize GL_VERSION_1_4.
 
-bool CRenderingContext::InitVersion14()
+auto CRenderingContext::InitVersion14() -> bool
 {
     bool bReturn = true;
 
@@ -506,7 +506,7 @@ bool CRenderingContext::InitVersion14()
 
 //!	Initialize GL_VERSION_1_5.
 
-bool CRenderingContext::InitVersion15()
+auto CRenderingContext::InitVersion15() -> bool
 {
     bool bReturn = true;
 
@@ -546,7 +546,7 @@ bool CRenderingContext::InitVersion15()
 
 //!	Initialize GL_VERSION_2_0.
 
-bool CRenderingContext::InitVersion20()
+auto CRenderingContext::InitVersion20() -> bool
 {
     bool bReturn = true;
 
@@ -666,7 +666,7 @@ bool CRenderingContext::InitVersion20()
 
 //!	Initialize GL_3DFX_tbuffer.
 
-bool CRenderingContext::Init3dfxTbuffer()
+auto CRenderingContext::Init3dfxTbuffer() -> bool
 {
     bool bReturn = true;
 
@@ -688,7 +688,7 @@ bool CRenderingContext::Init3dfxTbuffer()
 
 //!	Initialize GL_APPLE_element_array.
 
-bool CRenderingContext::InitAppleElementArray()
+auto CRenderingContext::InitAppleElementArray() -> bool
 {
     bool bReturn = true;
 
@@ -714,7 +714,7 @@ bool CRenderingContext::InitAppleElementArray()
 
 //!	Initialize GL_APPLE_fence.
 
-bool CRenderingContext::InitAppleFence()
+auto CRenderingContext::InitAppleFence() -> bool
 {
     bool bReturn = true;
 
@@ -743,7 +743,7 @@ bool CRenderingContext::InitAppleFence()
 
 //!	Initialize GL_APPLE_vertex_array_object.
 
-bool CRenderingContext::InitAppleVertexArrayObject()
+auto CRenderingContext::InitAppleVertexArrayObject() -> bool
 {
     bool bReturn = true;
 
@@ -768,7 +768,7 @@ bool CRenderingContext::InitAppleVertexArrayObject()
 
 //!	Initialize GL_APPLE_vertex_array_range.
 
-bool CRenderingContext::InitAppleVertexArrayRange()
+auto CRenderingContext::InitAppleVertexArrayRange() -> bool
 {
     bool bReturn = true;
 
@@ -792,7 +792,7 @@ bool CRenderingContext::InitAppleVertexArrayRange()
 
 //!	Initialize GL_ARB_color_buffer_float.
 
-bool CRenderingContext::InitArbColorBufferFloat()
+auto CRenderingContext::InitArbColorBufferFloat() -> bool
 {
     bool bReturn = true;
 
@@ -814,7 +814,7 @@ bool CRenderingContext::InitArbColorBufferFloat()
 
 //!	Initialize GL_ARB_draw_buffers.
 
-bool CRenderingContext::InitArbDrawBuffers()
+auto CRenderingContext::InitArbDrawBuffers() -> bool
 {
     bool bReturn = true;
 
@@ -836,7 +836,7 @@ bool CRenderingContext::InitArbDrawBuffers()
 
 //!	Initialize GL_ARB_matrix_palette.
 
-bool CRenderingContext::InitArbMatrixPalette()
+auto CRenderingContext::InitArbMatrixPalette() -> bool
 {
     bool bReturn = true;
 
@@ -862,7 +862,7 @@ bool CRenderingContext::InitArbMatrixPalette()
 
 //!	Initialize GL_ARB_multisample.
 
-bool CRenderingContext::InitArbMultisample()
+auto CRenderingContext::InitArbMultisample() -> bool
 {
     bool bReturn = true;
 
@@ -884,7 +884,7 @@ bool CRenderingContext::InitArbMultisample()
 
 //!	Initialize GL_ARB_multitexture.
 
-bool CRenderingContext::InitArbMultitexture()
+auto CRenderingContext::InitArbMultitexture() -> bool
 {
     bool bReturn = true;
 
@@ -939,7 +939,7 @@ bool CRenderingContext::InitArbMultitexture()
 
 //!	Initialize GL_ARB_occlusion_query.
 
-bool CRenderingContext::InitArbOcclusionQuery()
+auto CRenderingContext::InitArbOcclusionQuery() -> bool
 {
     bool bReturn = true;
 
@@ -968,7 +968,7 @@ bool CRenderingContext::InitArbOcclusionQuery()
 
 //!	Initialize GL_ARB_point_parameters.
 
-bool CRenderingContext::InitArbPointParameters()
+auto CRenderingContext::InitArbPointParameters() -> bool
 {
     bool bReturn = true;
 
@@ -991,7 +991,7 @@ bool CRenderingContext::InitArbPointParameters()
 
 //!	Initialize GL_ARB_shader_objects.
 
-bool CRenderingContext::InitArbShaderObjects()
+auto CRenderingContext::InitArbShaderObjects() -> bool
 {
     bool bReturn = true;
 
@@ -1051,7 +1051,7 @@ bool CRenderingContext::InitArbShaderObjects()
 
 //!	Initialize GL_ARB_texture_compression.
 
-bool CRenderingContext::InitArbTextureCompression()
+auto CRenderingContext::InitArbTextureCompression() -> bool
 {
     bool bReturn = true;
 
@@ -1079,7 +1079,7 @@ bool CRenderingContext::InitArbTextureCompression()
 
 //!	Initialize GL_ARB_transpose_matrix.
 
-bool CRenderingContext::InitArbTransposeMatrix()
+auto CRenderingContext::InitArbTransposeMatrix() -> bool
 {
     bool bReturn = true;
 
@@ -1104,7 +1104,7 @@ bool CRenderingContext::InitArbTransposeMatrix()
 
 //!	Initialize GL_ARB_vertex_blend.
 
-bool CRenderingContext::InitArbVertexBlend()
+auto CRenderingContext::InitArbVertexBlend() -> bool
 {
     bool bReturn = true;
 
@@ -1135,7 +1135,7 @@ bool CRenderingContext::InitArbVertexBlend()
 
 //!	Initialize GL_ARB_vertex_buffer_object.
 
-bool CRenderingContext::InitArbVertexBufferObject()
+auto CRenderingContext::InitArbVertexBufferObject() -> bool
 {
     bool bReturn = true;
 
@@ -1167,7 +1167,7 @@ bool CRenderingContext::InitArbVertexBufferObject()
 
 //!	Initialize GL_ARB_vertex_program.
 
-bool CRenderingContext::InitArbVertexProgram()
+auto CRenderingContext::InitArbVertexProgram() -> bool
 {
     bool bReturn = true;
 
@@ -1250,7 +1250,7 @@ bool CRenderingContext::InitArbVertexProgram()
 
 //!	Initialize GL_ARB_vertex_shader.
 
-bool CRenderingContext::InitArbVertexShader()
+auto CRenderingContext::InitArbVertexShader() -> bool
 {
     bool bReturn = true;
 
@@ -1274,7 +1274,7 @@ bool CRenderingContext::InitArbVertexShader()
 
 //!	Initialize GL_ARB_window_pos.
 
-bool CRenderingContext::InitArbWindowPos()
+auto CRenderingContext::InitArbWindowPos() -> bool
 {
     bool bReturn = true;
 
@@ -1311,7 +1311,7 @@ bool CRenderingContext::InitArbWindowPos()
 
 //!	Initialize GL_ATI_draw_buffers.
 
-bool CRenderingContext::InitAtiDrawBuffers()
+auto CRenderingContext::InitAtiDrawBuffers() -> bool
 {
     bool bReturn = true;
 
@@ -1333,7 +1333,7 @@ bool CRenderingContext::InitAtiDrawBuffers()
 
 //!	Initialize GL_ATI_element_array.
 
-bool CRenderingContext::InitAtiElementArray()
+auto CRenderingContext::InitAtiElementArray() -> bool
 {
     bool bReturn = true;
 
@@ -1357,7 +1357,7 @@ bool CRenderingContext::InitAtiElementArray()
 
 //!	Initialize GL_ATI_envmap_bumpmap.
 
-bool CRenderingContext::InitAtiEnvmapBumpmap()
+auto CRenderingContext::InitAtiEnvmapBumpmap() -> bool
 {
     bool bReturn = true;
 
@@ -1382,7 +1382,7 @@ bool CRenderingContext::InitAtiEnvmapBumpmap()
 
 //!	Initialize GL_ATI_fragment_shader.
 
-bool CRenderingContext::InitAtiFragmentShader()
+auto CRenderingContext::InitAtiFragmentShader() -> bool
 {
     bool bReturn = true;
 
@@ -1417,7 +1417,7 @@ bool CRenderingContext::InitAtiFragmentShader()
 
 //!	Initialize GL_ATI_map_object_buffer.
 
-bool CRenderingContext::InitAtiMapObjectBuffer()
+auto CRenderingContext::InitAtiMapObjectBuffer() -> bool
 {
     bool bReturn = true;
 
@@ -1440,7 +1440,7 @@ bool CRenderingContext::InitAtiMapObjectBuffer()
 
 //!	Initialize GL_ATI_pn_triangles.
 
-bool CRenderingContext::InitAtiPnTriangles()
+auto CRenderingContext::InitAtiPnTriangles() -> bool
 {
     bool bReturn = true;
 
@@ -1463,7 +1463,7 @@ bool CRenderingContext::InitAtiPnTriangles()
 
 //!	Initialize GL_ATI_separate_stencil.
 
-bool CRenderingContext::InitAtiSeparateStencil()
+auto CRenderingContext::InitAtiSeparateStencil() -> bool
 {
     bool bReturn = true;
 
@@ -1486,7 +1486,7 @@ bool CRenderingContext::InitAtiSeparateStencil()
 
 //!	Initialize GL_ATI_vertex_array_object.
 
-bool CRenderingContext::InitAtiVertexArrayObject()
+auto CRenderingContext::InitAtiVertexArrayObject() -> bool
 {
     bool bReturn = true;
 
@@ -1519,7 +1519,7 @@ bool CRenderingContext::InitAtiVertexArrayObject()
 
 //!	Initialize GL_ATI_vertex_attrib_array_object.
 
-bool CRenderingContext::InitAtiVertexAttribArrayObject()
+auto CRenderingContext::InitAtiVertexAttribArrayObject() -> bool
 {
     bool bReturn = true;
 
@@ -1543,7 +1543,7 @@ bool CRenderingContext::InitAtiVertexAttribArrayObject()
 
 //!	Initialize GL_ATI_vertex_streams.
 
-bool CRenderingContext::InitAtiVertexStreams()
+auto CRenderingContext::InitAtiVertexStreams() -> bool
 {
     bool bReturn = true;
 
@@ -1609,7 +1609,7 @@ bool CRenderingContext::InitAtiVertexStreams()
 
 //!	Initialize GL_EXT_blend_color.
 
-bool CRenderingContext::InitExtBlendColor()
+auto CRenderingContext::InitExtBlendColor() -> bool
 {
     bool bReturn = true;
 
@@ -1631,7 +1631,7 @@ bool CRenderingContext::InitExtBlendColor()
 
 //!	Initialize GL_EXT_blend_equation_separate.
 
-bool CRenderingContext::InitExtBlendEquationSeparate()
+auto CRenderingContext::InitExtBlendEquationSeparate() -> bool
 {
     bool bReturn = true;
 
@@ -1653,7 +1653,7 @@ bool CRenderingContext::InitExtBlendEquationSeparate()
 
 //!	Initialize GL_EXT_blend_func_separate.
 
-bool CRenderingContext::InitExtBlendFuncSeparate()
+auto CRenderingContext::InitExtBlendFuncSeparate() -> bool
 {
     bool bReturn = true;
 
@@ -1675,7 +1675,7 @@ bool CRenderingContext::InitExtBlendFuncSeparate()
 
 //!	Initialize GL_EXT_blend_minmax.
 
-bool CRenderingContext::InitExtBlendMinmax()
+auto CRenderingContext::InitExtBlendMinmax() -> bool
 {
     bool bReturn = true;
 
@@ -1697,7 +1697,7 @@ bool CRenderingContext::InitExtBlendMinmax()
 
 //!	Initialize GL_EXT_color_subtable.
 
-bool CRenderingContext::InitExtColorSubtable()
+auto CRenderingContext::InitExtColorSubtable() -> bool
 {
     bool bReturn = true;
 
@@ -1722,7 +1722,7 @@ bool CRenderingContext::InitExtColorSubtable()
 
 //!	Initialize GL_EXT_compiled_vertex_array.
 
-bool CRenderingContext::InitExtCompiledVertexArray()
+auto CRenderingContext::InitExtCompiledVertexArray() -> bool
 {
     bool bReturn = true;
 
@@ -1745,7 +1745,7 @@ bool CRenderingContext::InitExtCompiledVertexArray()
 
 //!	Initialize GL_EXT_convolution.
 
-bool CRenderingContext::InitExtConvolution()
+auto CRenderingContext::InitExtConvolution() -> bool
 {
     bool bReturn = true;
 
@@ -1779,7 +1779,7 @@ bool CRenderingContext::InitExtConvolution()
 
 //!	Initialize GL_EXT_coordinate_frame.
 
-bool CRenderingContext::InitExtCoordinateFrame()
+auto CRenderingContext::InitExtCoordinateFrame() -> bool
 {
     bool bReturn = true;
 
@@ -1822,7 +1822,7 @@ bool CRenderingContext::InitExtCoordinateFrame()
 
 //!	Initialize GL_EXT_copy_texture.
 
-bool CRenderingContext::InitExtCopyTexture()
+auto CRenderingContext::InitExtCopyTexture() -> bool
 {
     bool bReturn = true;
 
@@ -1848,7 +1848,7 @@ bool CRenderingContext::InitExtCopyTexture()
 
 //!	Initialize GL_EXT_cull_vertex.
 
-bool CRenderingContext::InitExtCullVertex()
+auto CRenderingContext::InitExtCullVertex() -> bool
 {
     bool bReturn = true;
 
@@ -1871,7 +1871,7 @@ bool CRenderingContext::InitExtCullVertex()
 
 //!	Initialize GL_EXT_depth_bounds_test.
 
-bool CRenderingContext::InitExtDepthBoundsTest()
+auto CRenderingContext::InitExtDepthBoundsTest() -> bool
 {
     bool bReturn = true;
 
@@ -1893,7 +1893,7 @@ bool CRenderingContext::InitExtDepthBoundsTest()
 
 //!	Initialize GL_EXT_draw_range_elements.
 
-bool CRenderingContext::InitExtDrawRangeElements()
+auto CRenderingContext::InitExtDrawRangeElements() -> bool
 {
     bool bReturn = true;
 
@@ -1915,7 +1915,7 @@ bool CRenderingContext::InitExtDrawRangeElements()
 
 //!	Initialize GL_EXT_fog_coord.
 
-bool CRenderingContext::InitExtFogCoord()
+auto CRenderingContext::InitExtFogCoord() -> bool
 {
     bool bReturn = true;
 
@@ -1941,7 +1941,7 @@ bool CRenderingContext::InitExtFogCoord()
 
 //!	Initialize GL_EXT_framebuffer_object.
 
-bool CRenderingContext::InitExtFramebufferObject()
+auto CRenderingContext::InitExtFramebufferObject() -> bool
 {
     bool bReturn = true;
 
@@ -1979,7 +1979,7 @@ bool CRenderingContext::InitExtFramebufferObject()
 
 //!	Initialize GL_EXT_histogram.
 
-bool CRenderingContext::InitExtHistogram()
+auto CRenderingContext::InitExtHistogram() -> bool
 {
     bool bReturn = true;
 
@@ -2010,7 +2010,7 @@ bool CRenderingContext::InitExtHistogram()
 
 //!	Initialize GL_EXT_index_func.
 
-bool CRenderingContext::InitExtIndexFunc()
+auto CRenderingContext::InitExtIndexFunc() -> bool
 {
     bool bReturn = true;
 
@@ -2032,7 +2032,7 @@ bool CRenderingContext::InitExtIndexFunc()
 
 //!	Initialize GL_EXT_index_material.
 
-bool CRenderingContext::InitExtIndexMaterial()
+auto CRenderingContext::InitExtIndexMaterial() -> bool
 {
     bool bReturn = true;
 
@@ -2054,7 +2054,7 @@ bool CRenderingContext::InitExtIndexMaterial()
 
 //!	Initialize GL_EXT_light_texture.
 
-bool CRenderingContext::InitExtLightTexture()
+auto CRenderingContext::InitExtLightTexture() -> bool
 {
     bool bReturn = true;
 
@@ -2078,7 +2078,7 @@ bool CRenderingContext::InitExtLightTexture()
 
 //!	Initialize GL_EXT_multi_draw_arrays.
 
-bool CRenderingContext::InitExtMultiDrawArrays()
+auto CRenderingContext::InitExtMultiDrawArrays() -> bool
 {
     bool bReturn = true;
 
@@ -2101,7 +2101,7 @@ bool CRenderingContext::InitExtMultiDrawArrays()
 
 //!	Initialize GL_EXT_multisample.
 
-bool CRenderingContext::InitExtMultisample()
+auto CRenderingContext::InitExtMultisample() -> bool
 {
     bool bReturn = true;
 
@@ -2124,7 +2124,7 @@ bool CRenderingContext::InitExtMultisample()
 
 //!	Initialize GL_EXT_paletted_texture.
 
-bool CRenderingContext::InitExtPalettedTexture()
+auto CRenderingContext::InitExtPalettedTexture() -> bool
 {
     bool bReturn = true;
 
@@ -2150,7 +2150,7 @@ bool CRenderingContext::InitExtPalettedTexture()
 
 //!	Initialize GL_EXT_pixel_transform.
 
-bool CRenderingContext::InitExtPixelTransform()
+auto CRenderingContext::InitExtPixelTransform() -> bool
 {
     bool bReturn = true;
 
@@ -2175,7 +2175,7 @@ bool CRenderingContext::InitExtPixelTransform()
 
 //!	Initialize GL_EXT_point_parameters.
 
-bool CRenderingContext::InitExtPointParameters()
+auto CRenderingContext::InitExtPointParameters() -> bool
 {
     bool bReturn = true;
 
@@ -2198,7 +2198,7 @@ bool CRenderingContext::InitExtPointParameters()
 
 //!	Initialize GL_EXT_polygon_offset.
 
-bool CRenderingContext::InitExtPolygonOffset()
+auto CRenderingContext::InitExtPolygonOffset() -> bool
 {
     bool bReturn = true;
 
@@ -2220,7 +2220,7 @@ bool CRenderingContext::InitExtPolygonOffset()
 
 //!	Initialize GL_EXT_secondary_color.
 
-bool CRenderingContext::InitExtSecondaryColor()
+auto CRenderingContext::InitExtSecondaryColor() -> bool
 {
     bool bReturn = true;
 
@@ -2258,7 +2258,7 @@ bool CRenderingContext::InitExtSecondaryColor()
 
 //!	Initialize GL_EXT_stencil_two_side.
 
-bool CRenderingContext::InitExtStencilTwoSide()
+auto CRenderingContext::InitExtStencilTwoSide() -> bool
 {
     bool bReturn = true;
 
@@ -2280,7 +2280,7 @@ bool CRenderingContext::InitExtStencilTwoSide()
 
 //!	Initialize GL_EXT_subtexture.
 
-bool CRenderingContext::InitExtSubtexture()
+auto CRenderingContext::InitExtSubtexture() -> bool
 {
     bool bReturn = true;
 
@@ -2303,7 +2303,7 @@ bool CRenderingContext::InitExtSubtexture()
 
 //!	Initialize GL_EXT_texture3D.
 
-bool CRenderingContext::InitExtTexture3d()
+auto CRenderingContext::InitExtTexture3d() -> bool
 {
     bool bReturn = true;
 
@@ -2326,7 +2326,7 @@ bool CRenderingContext::InitExtTexture3d()
 
 //!	Initialize GL_EXT_texture_object.
 
-bool CRenderingContext::InitExtTextureObject()
+auto CRenderingContext::InitExtTextureObject() -> bool
 {
     bool bReturn = true;
 
@@ -2353,7 +2353,7 @@ bool CRenderingContext::InitExtTextureObject()
 
 //!	Initialize GL_EXT_texture_perturb_normal.
 
-bool CRenderingContext::InitExtTexturePerturbNormal()
+auto CRenderingContext::InitExtTexturePerturbNormal() -> bool
 {
     bool bReturn = true;
 
@@ -2375,7 +2375,7 @@ bool CRenderingContext::InitExtTexturePerturbNormal()
 
 //!	Initialize GL_EXT_vertex_array.
 
-bool CRenderingContext::InitExtVertexArray()
+auto CRenderingContext::InitExtVertexArray() -> bool
 {
     bool bReturn = true;
 
@@ -2405,7 +2405,7 @@ bool CRenderingContext::InitExtVertexArray()
 
 //!	Initialize GL_EXT_vertex_shader.
 
-bool CRenderingContext::InitExtVertexShader()
+auto CRenderingContext::InitExtVertexShader() -> bool
 {
     bool bReturn = true;
 
@@ -2468,7 +2468,7 @@ bool CRenderingContext::InitExtVertexShader()
 
 //!	Initialize GL_EXT_vertex_weighting.
 
-bool CRenderingContext::InitExtVertexWeighting()
+auto CRenderingContext::InitExtVertexWeighting() -> bool
 {
     bool bReturn = true;
 
@@ -2492,7 +2492,7 @@ bool CRenderingContext::InitExtVertexWeighting()
 
 //!	Initialize GL_GREMEDY_string_marker.
 
-bool CRenderingContext::InitGremedyStringMarker()
+auto CRenderingContext::InitGremedyStringMarker() -> bool
 {
     bool bReturn = true;
 
@@ -2514,7 +2514,7 @@ bool CRenderingContext::InitGremedyStringMarker()
 
 //!	Initialize GL_HP_image_transform.
 
-bool CRenderingContext::InitHpImageTransform()
+auto CRenderingContext::InitHpImageTransform() -> bool
 {
     bool bReturn = true;
 
@@ -2541,7 +2541,7 @@ bool CRenderingContext::InitHpImageTransform()
 
 //!	Initialize GL_IBM_multimode_draw_arrays.
 
-bool CRenderingContext::InitIbmMultimodeDrawArrays()
+auto CRenderingContext::InitIbmMultimodeDrawArrays() -> bool
 {
     bool bReturn = true;
 
@@ -2564,7 +2564,7 @@ bool CRenderingContext::InitIbmMultimodeDrawArrays()
 
 //!	Initialize GL_IBM_vertex_array_lists.
 
-bool CRenderingContext::InitIbmVertexArrayLists()
+auto CRenderingContext::InitIbmVertexArrayLists() -> bool
 {
     bool bReturn = true;
 
@@ -2593,7 +2593,7 @@ bool CRenderingContext::InitIbmVertexArrayLists()
 
 //!	Initialize GL_INGR_blend_func_separate.
 
-bool CRenderingContext::InitIngrBlendFuncSeparate()
+auto CRenderingContext::InitIngrBlendFuncSeparate() -> bool
 {
     bool bReturn = true;
 
@@ -2615,7 +2615,7 @@ bool CRenderingContext::InitIngrBlendFuncSeparate()
 
 //!	Initialize GL_INTEL_parallel_arrays.
 
-bool CRenderingContext::InitIntelParallelArrays()
+auto CRenderingContext::InitIntelParallelArrays() -> bool
 {
     bool bReturn = true;
 
@@ -2640,7 +2640,7 @@ bool CRenderingContext::InitIntelParallelArrays()
 
 //!	Initialize GL_MESA_resize_buffers.
 
-bool CRenderingContext::InitMesaResizeBuffers()
+auto CRenderingContext::InitMesaResizeBuffers() -> bool
 {
     bool bReturn = true;
 
@@ -2662,7 +2662,7 @@ bool CRenderingContext::InitMesaResizeBuffers()
 
 //!	Initialize GL_MESA_window_pos.
 
-bool CRenderingContext::InitMesaWindowPos()
+auto CRenderingContext::InitMesaWindowPos() -> bool
 {
     bool bReturn = true;
 
@@ -2707,7 +2707,7 @@ bool CRenderingContext::InitMesaWindowPos()
 
 //!	Initialize GL_NV_element_array.
 
-bool CRenderingContext::InitNvElementArray()
+auto CRenderingContext::InitNvElementArray() -> bool
 {
     bool bReturn = true;
 
@@ -2733,7 +2733,7 @@ bool CRenderingContext::InitNvElementArray()
 
 //!	Initialize GL_NV_evaluators.
 
-bool CRenderingContext::InitNvEvaluators()
+auto CRenderingContext::InitNvEvaluators() -> bool
 {
     bool bReturn = true;
 
@@ -2763,7 +2763,7 @@ bool CRenderingContext::InitNvEvaluators()
 
 //!	Initialize GL_NV_fence.
 
-bool CRenderingContext::InitNvFence()
+auto CRenderingContext::InitNvFence() -> bool
 {
     bool bReturn = true;
 
@@ -2791,7 +2791,7 @@ bool CRenderingContext::InitNvFence()
 
 //!	Initialize GL_NV_fragment_program.
 
-bool CRenderingContext::InitNvFragmentProgram()
+auto CRenderingContext::InitNvFragmentProgram() -> bool
 {
     bool bReturn = true;
 
@@ -2818,7 +2818,7 @@ bool CRenderingContext::InitNvFragmentProgram()
 
 //!	Initialize GL_NV_half_float.
 
-bool CRenderingContext::InitNvHalfFloat()
+auto CRenderingContext::InitNvHalfFloat() -> bool
 {
     bool bReturn = true;
 
@@ -2885,7 +2885,7 @@ bool CRenderingContext::InitNvHalfFloat()
 
 //!	Initialize GL_NV_occlusion_query.
 
-bool CRenderingContext::InitNvOcclusionQuery()
+auto CRenderingContext::InitNvOcclusionQuery() -> bool
 {
     bool bReturn = true;
 
@@ -2913,7 +2913,7 @@ bool CRenderingContext::InitNvOcclusionQuery()
 
 //!	Initialize GL_NV_pixel_data_range.
 
-bool CRenderingContext::InitNvPixelDataRange()
+auto CRenderingContext::InitNvPixelDataRange() -> bool
 {
     bool bReturn = true;
 
@@ -2936,7 +2936,7 @@ bool CRenderingContext::InitNvPixelDataRange()
 
 //!	Initialize GL_NV_point_sprite.
 
-bool CRenderingContext::InitNvPointSprite()
+auto CRenderingContext::InitNvPointSprite() -> bool
 {
     bool bReturn = true;
 
@@ -2959,7 +2959,7 @@ bool CRenderingContext::InitNvPointSprite()
 
 //!	Initialize GL_NV_primitive_restart.
 
-bool CRenderingContext::InitNvPrimitiveRestart()
+auto CRenderingContext::InitNvPrimitiveRestart() -> bool
 {
     bool bReturn = true;
 
@@ -2982,7 +2982,7 @@ bool CRenderingContext::InitNvPrimitiveRestart()
 
 //!	Initialize GL_NV_register_combiners.
 
-bool CRenderingContext::InitNvRegisterCombiners()
+auto CRenderingContext::InitNvRegisterCombiners() -> bool
 {
     bool bReturn = true;
 
@@ -3016,7 +3016,7 @@ bool CRenderingContext::InitNvRegisterCombiners()
 
 //!	Initialize GL_NV_register_combiners2.
 
-bool CRenderingContext::InitNvRegisterCombiners2()
+auto CRenderingContext::InitNvRegisterCombiners2() -> bool
 {
     bool bReturn = true;
 
@@ -3039,7 +3039,7 @@ bool CRenderingContext::InitNvRegisterCombiners2()
 
 //!	Initialize GL_NV_stencil_two_side.
 
-bool CRenderingContext::InitNvStencilTwoSide()
+auto CRenderingContext::InitNvStencilTwoSide() -> bool
 {
     bool bReturn = true;
 
@@ -3061,7 +3061,7 @@ bool CRenderingContext::InitNvStencilTwoSide()
 
 //!	Initialize GL_NV_vertex_array_range.
 
-bool CRenderingContext::InitNvVertexArrayRange()
+auto CRenderingContext::InitNvVertexArrayRange() -> bool
 {
     bool bReturn = true;
 
@@ -3084,7 +3084,7 @@ bool CRenderingContext::InitNvVertexArrayRange()
 
 //!	Initialize GL_NV_vertex_program.
 
-bool CRenderingContext::InitNvVertexProgram()
+auto CRenderingContext::InitNvVertexProgram() -> bool
 {
     bool bReturn = true;
 
@@ -3169,7 +3169,7 @@ bool CRenderingContext::InitNvVertexProgram()
 
 //!	Initialize GL_NVX_conditional_render.
 
-bool CRenderingContext::InitNvxConditionalRender()
+auto CRenderingContext::InitNvxConditionalRender() -> bool
 {
     bool bReturn = true;
 
@@ -3192,7 +3192,7 @@ bool CRenderingContext::InitNvxConditionalRender()
 
 //!	Initialize GL_PGI_misc_hints.
 
-bool CRenderingContext::InitPgiMiscHints()
+auto CRenderingContext::InitPgiMiscHints() -> bool
 {
     bool bReturn = true;
 
@@ -3214,7 +3214,7 @@ bool CRenderingContext::InitPgiMiscHints()
 
 //!	Initialize GL_SGI_color_table.
 
-bool CRenderingContext::InitSgiColorTable()
+auto CRenderingContext::InitSgiColorTable() -> bool
 {
     bool bReturn = true;
 
@@ -3242,7 +3242,7 @@ bool CRenderingContext::InitSgiColorTable()
 
 //!	Initialize GL_SGIS_detail_texture.
 
-bool CRenderingContext::InitSgisDetailTexture()
+auto CRenderingContext::InitSgisDetailTexture() -> bool
 {
     bool bReturn = true;
 
@@ -3265,7 +3265,7 @@ bool CRenderingContext::InitSgisDetailTexture()
 
 //!	Initialize GL_SGIS_fog_function.
 
-bool CRenderingContext::InitSgisFogFunction()
+auto CRenderingContext::InitSgisFogFunction() -> bool
 {
     bool bReturn = true;
 
@@ -3288,7 +3288,7 @@ bool CRenderingContext::InitSgisFogFunction()
 
 //!	Initialize GL_SGIS_multisample.
 
-bool CRenderingContext::InitSgisMultisample()
+auto CRenderingContext::InitSgisMultisample() -> bool
 {
     bool bReturn = true;
 
@@ -3311,7 +3311,7 @@ bool CRenderingContext::InitSgisMultisample()
 
 //!	Initialize GL_SGIS_pixel_texture.
 
-bool CRenderingContext::InitSgisPixelTexture()
+auto CRenderingContext::InitSgisPixelTexture() -> bool
 {
     bool bReturn = true;
 
@@ -3338,7 +3338,7 @@ bool CRenderingContext::InitSgisPixelTexture()
 
 //!	Initialize GL_SGIS_point_parameters.
 
-bool CRenderingContext::InitSgisPointParameters()
+auto CRenderingContext::InitSgisPointParameters() -> bool
 {
     bool bReturn = true;
 
@@ -3361,7 +3361,7 @@ bool CRenderingContext::InitSgisPointParameters()
 
 //!	Initialize GL_SGIS_sharpen_texture.
 
-bool CRenderingContext::InitSgisSharpenTexture()
+auto CRenderingContext::InitSgisSharpenTexture() -> bool
 {
     bool bReturn = true;
 
@@ -3384,7 +3384,7 @@ bool CRenderingContext::InitSgisSharpenTexture()
 
 //!	Initialize GL_SGIS_texture4D.
 
-bool CRenderingContext::InitSgisTexture4d()
+auto CRenderingContext::InitSgisTexture4d() -> bool
 {
     bool bReturn = true;
 
@@ -3407,7 +3407,7 @@ bool CRenderingContext::InitSgisTexture4d()
 
 //!	Initialize GL_SGIS_texture_color_mask.
 
-bool CRenderingContext::InitSgisTextureColorMask()
+auto CRenderingContext::InitSgisTextureColorMask() -> bool
 {
     bool bReturn = true;
 
@@ -3429,7 +3429,7 @@ bool CRenderingContext::InitSgisTextureColorMask()
 
 //!	Initialize GL_SGIS_texture_filter4.
 
-bool CRenderingContext::InitSgisTextureFilter4()
+auto CRenderingContext::InitSgisTextureFilter4() -> bool
 {
     bool bReturn = true;
 
@@ -3452,7 +3452,7 @@ bool CRenderingContext::InitSgisTextureFilter4()
 
 //!	Initialize GL_SGIX_async.
 
-bool CRenderingContext::InitSgixAsync()
+auto CRenderingContext::InitSgixAsync() -> bool
 {
     bool bReturn = true;
 
@@ -3479,7 +3479,7 @@ bool CRenderingContext::InitSgixAsync()
 
 //!	Initialize GL_SGIX_flush_raster.
 
-bool CRenderingContext::InitSgixFlushRaster()
+auto CRenderingContext::InitSgixFlushRaster() -> bool
 {
     bool bReturn = true;
 
@@ -3501,7 +3501,7 @@ bool CRenderingContext::InitSgixFlushRaster()
 
 //!	Initialize GL_SGIX_fragment_lighting.
 
-bool CRenderingContext::InitSgixFragmentLighting()
+auto CRenderingContext::InitSgixFragmentLighting() -> bool
 {
     bool bReturn = true;
 
@@ -3540,7 +3540,7 @@ bool CRenderingContext::InitSgixFragmentLighting()
 
 //!	Initialize GL_SGIX_framezoom.
 
-bool CRenderingContext::InitSgixFramezoom()
+auto CRenderingContext::InitSgixFramezoom() -> bool
 {
     bool bReturn = true;
 
@@ -3562,7 +3562,7 @@ bool CRenderingContext::InitSgixFramezoom()
 
 //!	Initialize GL_SGIX_igloo_interface.
 
-bool CRenderingContext::InitSgixIglooInterface()
+auto CRenderingContext::InitSgixIglooInterface() -> bool
 {
     bool bReturn = true;
 
@@ -3584,7 +3584,7 @@ bool CRenderingContext::InitSgixIglooInterface()
 
 //!	Initialize GL_SGIX_instruments.
 
-bool CRenderingContext::InitSgixInstruments()
+auto CRenderingContext::InitSgixInstruments() -> bool
 {
     bool bReturn = true;
 
@@ -3611,7 +3611,7 @@ bool CRenderingContext::InitSgixInstruments()
 
 //!	Initialize GL_SGIX_list_priority.
 
-bool CRenderingContext::InitSgixListPriority()
+auto CRenderingContext::InitSgixListPriority() -> bool
 {
     bool bReturn = true;
 
@@ -3638,7 +3638,7 @@ bool CRenderingContext::InitSgixListPriority()
 
 //!	Initialize GL_SGIX_pixel_texture.
 
-bool CRenderingContext::InitSgixPixelTexture()
+auto CRenderingContext::InitSgixPixelTexture() -> bool
 {
     bool bReturn = true;
 
@@ -3660,7 +3660,7 @@ bool CRenderingContext::InitSgixPixelTexture()
 
 //!	Initialize GL_SGIX_polynomial_ffd.
 
-bool CRenderingContext::InitSgixPolynomialFfd()
+auto CRenderingContext::InitSgixPolynomialFfd() -> bool
 {
     bool bReturn = true;
 
@@ -3685,7 +3685,7 @@ bool CRenderingContext::InitSgixPolynomialFfd()
 
 //!	Initialize GL_SGIX_reference_plane.
 
-bool CRenderingContext::InitSgixReferencePlane()
+auto CRenderingContext::InitSgixReferencePlane() -> bool
 {
     bool bReturn = true;
 
@@ -3707,7 +3707,7 @@ bool CRenderingContext::InitSgixReferencePlane()
 
 //!	Initialize GL_SGIX_sprite.
 
-bool CRenderingContext::InitSgixSprite()
+auto CRenderingContext::InitSgixSprite() -> bool
 {
     bool bReturn = true;
 
@@ -3732,7 +3732,7 @@ bool CRenderingContext::InitSgixSprite()
 
 //!	Initialize GL_SGIX_tag_sample_buffer.
 
-bool CRenderingContext::InitSgixTagSampleBuffer()
+auto CRenderingContext::InitSgixTagSampleBuffer() -> bool
 {
     bool bReturn = true;
 
@@ -3754,7 +3754,7 @@ bool CRenderingContext::InitSgixTagSampleBuffer()
 
 //!	Initialize GL_SUN_global_alpha.
 
-bool CRenderingContext::InitSunGlobalAlpha()
+auto CRenderingContext::InitSunGlobalAlpha() -> bool
 {
     bool bReturn = true;
 
@@ -3783,7 +3783,7 @@ bool CRenderingContext::InitSunGlobalAlpha()
 
 //!	Initialize GL_SUN_mesh_array.
 
-bool CRenderingContext::InitSunMeshArray()
+auto CRenderingContext::InitSunMeshArray() -> bool
 {
     bool bReturn = true;
 
@@ -3805,7 +3805,7 @@ bool CRenderingContext::InitSunMeshArray()
 
 //!	Initialize GL_SUN_triangle_list.
 
-bool CRenderingContext::InitSunTriangleList()
+auto CRenderingContext::InitSunTriangleList() -> bool
 {
     bool bReturn = true;
 
@@ -3833,7 +3833,7 @@ bool CRenderingContext::InitSunTriangleList()
 
 //!	Initialize GL_SUN_vertex.
 
-bool CRenderingContext::InitSunVertex()
+auto CRenderingContext::InitSunVertex() -> bool
 {
     bool bReturn = true;
 
@@ -3894,7 +3894,7 @@ bool CRenderingContext::InitSunVertex()
 
 //!	Initialize GL_SUNX_constant_data.
 
-bool CRenderingContext::InitSunxConstantData()
+auto CRenderingContext::InitSunxConstantData() -> bool
 {
     bool bReturn = true;
 

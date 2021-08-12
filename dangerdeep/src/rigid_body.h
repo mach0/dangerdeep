@@ -72,7 +72,7 @@ class rigid_body
     // recomputed every frame by simulate() method
     velocity3d local_velocity;
 
-    force3d compute_default_gravity_force() const;
+    [[nodiscard]] force3d compute_default_gravity_force() const;
 
     void set_mass_and_inertia_tensor(
         mass1d mass_,
@@ -92,15 +92,15 @@ class rigid_body
         duration delta_time,
         std::initializer_list<std::pair<vector3, vector3>> local_forces);
 
-    velocity3d compute_linear_velocity(const vector3& position_global) const;
+    [[nodiscard]] velocity3d
+    compute_linear_velocity(const vector3& position_global) const;
 
-    double compute_collision_response_value(
+    [[nodiscard]] double compute_collision_response_value(
         const vector3& collision_pos,
         const vector3& N) const;
 
-    void apply_collision_impulse(
-            const vector3& collision_pos,
-            const momentum3d& J);
+    void
+    apply_collision_impulse(const vector3& collision_pos, const momentum3d& J);
 
     void manipulate_position(const vector3& newpos);
     void manipulate_speed(velocity1d localforwardspeed);

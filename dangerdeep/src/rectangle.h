@@ -33,10 +33,10 @@ class rectangle_t
 {
   public:
     vector2t<D> minpos, maxpos; ///< Minimum and maximum values
-    bool is_empty;              ///< Is rectangle empty and invalid?
+    bool is_empty{true};        ///< Is rectangle empty and invalid?
 
     /// Construct invalid empty rectangle
-    rectangle_t() : is_empty(true) { }
+    rectangle_t() { }
 
     /// Construct by two vectors - note! data is not checked! Sort by yourself
     /// and make sure data is valid rectangle!
@@ -78,13 +78,16 @@ class rectangle_t
     }
 
     /// Return size of rectangle
-    vector2t<D> size() const { return maxpos - minpos; }
+    [[nodiscard]] vector2t<D> size() const { return maxpos - minpos; }
 
     /// Return center of rectangle
-    vector2t<D> center() const { return (maxpos + minpos) / D(2); }
+    [[nodiscard]] vector2t<D> center() const
+    {
+        return (maxpos + minpos) / D(2);
+    }
 
     /// Check if coordinate is inside rectangle
-    bool is_inside(const vector2t<D>& p) const
+    [[nodiscard]] bool is_inside(const vector2t<D>& p) const
     {
         return !is_empty && p.x >= minpos.x && p.y >= minpos.y
                && p.x <= maxpos.x && p.y <= maxpos.y;
@@ -133,7 +136,7 @@ class rectangle_t
     }
 
     /// Get translated version
-    rectangle_t<D> translated(const vector2t<D>& v) const
+    [[nodiscard]] rectangle_t<D> translated(const vector2t<D>& v) const
     {
         rectangle_t copy(*this);
         if (!copy.is_empty)
@@ -145,16 +148,16 @@ class rectangle_t
     }
 
     /// Get values
-    D x() const { return minpos.x; }
+    [[nodiscard]] D x() const { return minpos.x; }
 
     /// Get values
-    D y() const { return minpos.y; }
+    [[nodiscard]] D y() const { return minpos.y; }
 
     /// Get values
-    D w() const { return maxpos.x - minpos.x; }
+    [[nodiscard]] D w() const { return maxpos.x - minpos.x; }
 
     /// Get values
-    D h() const { return maxpos.y - minpos.y; }
+    [[nodiscard]] D h() const { return maxpos.y - minpos.y; }
 };
 
 typedef rectangle_t<double> rectangle;

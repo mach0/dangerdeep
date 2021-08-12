@@ -50,8 +50,9 @@ class sub_torpedo_display : public user_display
       public:
         desc_text(const std::string& filename);
         // give startline and number of lines to fetch (nr=0: all).
-        std::string str(unsigned startline = 0, unsigned nrlines = 0) const;
-        unsigned nr_of_lines() const { return txtlines.size(); }
+        [[nodiscard]] std::string
+        str(unsigned startline = 0, unsigned nrlines = 0) const;
+        [[nodiscard]] unsigned nr_of_lines() const { return txtlines.size(); }
     };
 
     mutable objcachet<desc_text> desc_texts;

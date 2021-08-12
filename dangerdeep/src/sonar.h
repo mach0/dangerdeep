@@ -104,7 +104,7 @@ struct noise
 
     ///\brief transform all strength values from absolute, linear values to dB
     /// values
-    noise to_dB() const
+    [[nodiscard]] noise to_dB() const
     {
         noise result;
         for (unsigned i = 0; i < NR_OF_FREQUENCY_BANDS; ++i)
@@ -113,7 +113,7 @@ struct noise
     }
 
     ///\brief transform all strength values from dB to absolute, linear values
-    noise to_absolute() const
+    [[nodiscard]] noise to_absolute() const
     {
         noise result;
         for (unsigned i = 0; i < NR_OF_FREQUENCY_BANDS; ++i)
@@ -161,17 +161,17 @@ struct noise
 
     ///\brief compute medium total strength of noise from all frequency bands,
     /// flat, not in dB
-    double compute_total_noise_strength() const;
+    [[nodiscard]] double compute_total_noise_strength() const;
 
     ///\brief compute medium total strength of noise from all frequency bands,
     /// in dB
-    double compute_total_noise_strength_dB() const
+    [[nodiscard]] double compute_total_noise_strength_dB() const
     {
         return absolute_to_dB(compute_total_noise_strength());
     }
 
     ///\brief compute shipclass of signal (can be none), values must be in dB!
-    shipclass determine_shipclass() const;
+    [[nodiscard]] shipclass determine_shipclass() const;
 };
 
 ///\brief This class groups all data for an underwater noise source
@@ -198,7 +198,7 @@ struct noise_signature
         @param	cavitation	wether target causes caviation
         @param	seastate	roughness of sea (1.0 = highest storm, 0.2=normal)
     */
-    noise compute_signal_strength(
+    [[nodiscard]] noise compute_signal_strength(
         double distance,
         double speed,
         bool caviation = false) const;

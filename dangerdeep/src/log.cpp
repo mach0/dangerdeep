@@ -49,7 +49,7 @@ struct log_msg
     {
     }
 
-    std::string pretty_print() const
+    [[nodiscard]] auto pretty_print() const -> std::string
     {
         std::ostringstream oss;
         switch (lvl)
@@ -74,7 +74,7 @@ struct log_msg
         return oss.str();
     }
 
-    std::string pretty_print_console() const
+    [[nodiscard]] auto pretty_print_console() const -> std::string
     {
         std::ostringstream oss;
         switch (lvl)
@@ -106,10 +106,10 @@ class log_internal
     std::mutex mtx;
     std::vector<log_msg> loglines;
     std::unordered_map<std::thread::id, const char*> threadnames;
-    log_internal() { }
+    log_internal() = default;
 };
 
-log::log() : mylogint(nullptr)
+log::log()
 {
     mylogint                                          = new log_internal();
     mylogint->threadnames[std::this_thread::get_id()] = "__main__";
@@ -134,11 +134,13 @@ void log::write(std::ostream& out, log::level limit_level) const
     for (const auto& logmsg : mylogint->loglines)
     {
         if (logmsg.lvl <= limit_level)
+        {
             out << logmsg.pretty_print() << std::endl;
+        }
     }
 }
 
-std::string log::get_last_n_lines(unsigned n) const
+auto log::get_last_n_lines(unsigned n) const -> std::string
 {
     std::string result;
     std::unique_lock<std::mutex> ml(mylogint->mtx);
@@ -146,12 +148,16 @@ std::string log::get_last_n_lines(unsigned n) const
     if (n > l)
     {
         for (unsigned k = 0; k < n - l; ++k)
+        {
             result += "\n";
+        }
         n = l;
     }
     auto it = mylogint->loglines.end();
     for (; n > 0; --n)
+    {
         --it;
+    }
     for (; it != mylogint->loglines.end(); ++it)
     {
         result += it->pretty_print_console() + "\n";
@@ -177,15 +183,17 @@ void log::end_thread()
     //	mylogint->threadnames.erase(std::this_thread::get_id());
 }
 
-const char* log::get_thread_name() const
+auto log::get_thread_name() const -> const char*
 {
     return get_thread_name(std::this_thread::get_id());
 }
 
-const char* log::get_thread_name(std::thread::id tid) const
+auto log::get_thread_name(std::thread::id tid) const -> const char*
 {
     auto it = mylogint->threadnames.find(tid);
     if (it == mylogint->threadnames.end())
+    {
         THROW(error, "no thread name registered for thread! BUG!");
+    }
     return it->second;
 }

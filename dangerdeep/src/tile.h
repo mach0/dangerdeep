@@ -41,9 +41,9 @@ class tile
     T get_value(vector2i coord);
 
     /* simple getters */
-    unsigned long get_last_access() const { return last_access; };
-    vector2i get_bottom_left() const { return bottom_left; };
-    const morton_bivector<T>& get_data() const { return data; };
+    [[nodiscard]] unsigned long get_last_access() const { return last_access; };
+    [[nodiscard]] vector2i get_bottom_left() const { return bottom_left; };
+    [[nodiscard]] const morton_bivector<T>& get_data() const { return data; };
 
   protected:
     morton_bivector<T> data;

@@ -93,19 +93,46 @@ class height_generator
         }
     }
     */
-    const texture& get_base_texture() const { return *base_texture; }
-    const texture& get_noise_texture() const { return *noise_texture; }
-    const texture& get_sand_texture() const { return *sand_texture; }
-    const texture& get_mud_texture() const { return *mud_texture; }
-    const texture& get_grass_texture() const { return *grass_texture; }
-    const texture& get_forest_texture() const { return *forest_texture; }
-    const texture& get_rock_texture() const { return *rock_texture; }
-    const texture& get_snow_texture() const { return *snow_texture; }
-    const texture& get_forest_brdf_texture() const
+    [[nodiscard]] const texture& get_base_texture() const
+    {
+        return *base_texture;
+    }
+    [[nodiscard]] const texture& get_noise_texture() const
+    {
+        return *noise_texture;
+    }
+    [[nodiscard]] const texture& get_sand_texture() const
+    {
+        return *sand_texture;
+    }
+    [[nodiscard]] const texture& get_mud_texture() const
+    {
+        return *mud_texture;
+    }
+    [[nodiscard]] const texture& get_grass_texture() const
+    {
+        return *grass_texture;
+    }
+    [[nodiscard]] const texture& get_forest_texture() const
+    {
+        return *forest_texture;
+    }
+    [[nodiscard]] const texture& get_rock_texture() const
+    {
+        return *rock_texture;
+    }
+    [[nodiscard]] const texture& get_snow_texture() const
+    {
+        return *snow_texture;
+    }
+    [[nodiscard]] const texture& get_forest_brdf_texture() const
     {
         return *forest_brdf_texture;
     }
-    const texture& get_rock_brdf_texture() const { return *rock_brdf_texture; }
+    [[nodiscard]] const texture& get_rock_brdf_texture() const
+    {
+        return *rock_brdf_texture;
+    }
 
     float get_tex_stretch_factor() { return tex_stretch_factor; }
     /// compute normal values of given detail and coordinate area (including
@@ -154,10 +181,13 @@ class height_generator
     virtual void get_min_max_height(double& minh, double& maxh) const = 0;
 
     /// get sample spacing of detail level 0 (geometry)
-    double get_sample_spacing() const { return sample_spacing; }
+    [[nodiscard]] double get_sample_spacing() const { return sample_spacing; }
 
     /// get color res factor (log2 of it)
-    unsigned get_log2_color_res_factor() const { return log2_color_res_factor; }
+    [[nodiscard]] unsigned get_log2_color_res_factor() const
+    {
+        return log2_color_res_factor;
+    }
 
   protected:
     /// normal constructor for heirs

@@ -193,21 +193,24 @@ class torpedo : public ship
     void
     compute_force_and_torque(vector3& F, vector3& T, game& gm) const override;
     void depth_steering_logic();
-    double get_turn_accel_factor() const override
+    [[nodiscard]] double get_turn_accel_factor() const override
     {
         return 50.0;
     } // rudder area etc.
-    double get_turn_drag_area() const override;
-    double get_turn_drag_coeff() const override { return 10.0; }
-    double get_throttle_speed() const override;
-    double get_secondary_run_lenth() const;
+    [[nodiscard]] double get_turn_drag_area() const override;
+    [[nodiscard]] double get_turn_drag_coeff() const override { return 10.0; }
+    [[nodiscard]] double get_throttle_speed() const override;
+    [[nodiscard]] double get_secondary_run_lenth() const;
 
-    bool causes_spray() const override
+    [[nodiscard]] bool causes_spray() const override
     {
         return false;
     } // causes wake, only true for steam torpedoes and maybe for Walter engine
 
-    bool detect_other_sea_objects() const override { return false; }
+    [[nodiscard]] bool detect_other_sea_objects() const override
+    {
+        return false;
+    }
 
   public:
     // create empty object from specification xml file
@@ -227,10 +230,10 @@ class torpedo : public ship
     virtual void launch(const vector3& launchpos, angle parenthdg);
 
     // depends on warhead, will change with newer damage simulation
-    virtual unsigned get_hit_points() const;
+    [[nodiscard]] virtual unsigned get_hit_points() const;
 
-    virtual double get_range() const;
-    double get_torp_speed() const;
+    [[nodiscard]] virtual double get_range() const;
+    [[nodiscard]] double get_torp_speed() const;
 
     /// fire fuse and test if it works. depends also on angle to target, to be
     /// added later as parameter.

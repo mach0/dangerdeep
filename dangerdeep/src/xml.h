@@ -75,23 +75,23 @@ class xml_elem
     friend class xml_doc;
 
   public:
-    bool has_attr(const std::string& name = "value") const;
-    std::string attr(const std::string& name = "value") const;
-    int attri(const std::string& name = "value") const;
-    unsigned attru(const std::string& name = "value") const;
-    double attrf(const std::string& name = "value") const;
+    [[nodiscard]] bool has_attr(const std::string& name = "value") const;
+    [[nodiscard]] std::string attr(const std::string& name = "value") const;
+    [[nodiscard]] int attri(const std::string& name = "value") const;
+    [[nodiscard]] unsigned attru(const std::string& name = "value") const;
+    [[nodiscard]] double attrf(const std::string& name = "value") const;
 
-    vector3 attrv3() const;
-    vector2 attrv2() const;
-    vector2i attrv2i() const;
-    quaternion attrq() const;
-    angle attra() const;
+    [[nodiscard]] vector3 attrv3() const;
+    [[nodiscard]] vector2 attrv2() const;
+    [[nodiscard]] vector2i attrv2i() const;
+    [[nodiscard]] quaternion attrq() const;
+    [[nodiscard]] angle attra() const;
 
-    bool attrb(const std::string& name = "value") const;
+    [[nodiscard]] bool attrb(const std::string& name = "value") const;
 
-    xml_elem child(const std::string& name) const;
+    [[nodiscard]] xml_elem child(const std::string& name) const;
 
-    bool has_child(const std::string& name) const;
+    [[nodiscard]] bool has_child(const std::string& name) const;
 
     xml_elem add_child(const std::string& name);
 
@@ -136,15 +136,15 @@ class xml_elem
         val = attrb(name);
     }
 
-    const std::string& get_name() const;
+    [[nodiscard]] const std::string& get_name() const;
 
     void add_child_text(const std::string& txt); // add text child
 
-    const std::string& child_text()
+    [[nodiscard]] const std::string& child_text()
         const; // returns value of text child, throws error if there is none
 
     // get name of document
-    const std::string& doc_name() const;
+    [[nodiscard]] const std::string& doc_name() const;
 
     /// An iterator to iterate over children of a XML node. Chose children with
     /// defined and same name or any child.
@@ -187,8 +187,8 @@ class xml_elem
         {
         }
 
-        iterator begin() const;
-        iterator end() const { return parent.end(); }
+        [[nodiscard]] iterator begin() const;
+        [[nodiscard]] iterator end() const { return parent.end(); }
 
       protected:
         const xml_elem& parent;
@@ -197,8 +197,11 @@ class xml_elem
 
     friend class iterator_range_samename;
 
-    iterator begin() const;
-    iterator end() const { return iterator(*this, nullptr, false); }
+    [[nodiscard]] iterator begin() const;
+    [[nodiscard]] iterator end() const
+    {
+        return iterator(*this, nullptr, false);
+    }
 
     iterator_range_samename iterate(const char* childname) const
     {
@@ -219,7 +222,7 @@ class xml_doc
     std::unique_ptr<TiXmlDocument> doc;
 
   public:
-    xml_doc(const std::string &fn);
+    xml_doc(const std::string& fn);
     ~xml_doc();
 
     void load();
@@ -228,5 +231,5 @@ class xml_doc
     xml_elem first_child();
     xml_elem child(const std::string& name);
     xml_elem add_child(const std::string& name);
-    const std::string& get_filename() const;
+    [[nodiscard]] const std::string& get_filename() const;
 };

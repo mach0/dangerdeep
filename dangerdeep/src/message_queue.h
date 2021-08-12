@@ -79,7 +79,7 @@ class message_queue
     std::condition_variable ackcondvar;
 
     bool msginqueue{false};
-    bool abortwait{false};              // set to true by wakeup_receiver()
+    bool abortwait{false}; // set to true by wakeup_receiver()
 
     std::vector<message::ptr> ackqueue; // queue with acknowledged messages
 

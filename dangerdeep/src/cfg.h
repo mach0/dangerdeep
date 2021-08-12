@@ -49,7 +49,7 @@ class cfg : public singleton<class cfg>
             action(std::move(ac)), keycode(kc), keymod(km & key_mod::basic)
         {
         }
-        bool equal(key_code kc, key_mod km) const;
+        [[nodiscard]] bool equal(key_code kc, key_mod km) const;
     };
 
   private:
@@ -93,12 +93,12 @@ class cfg : public singleton<class cfg>
     void set(const std::string& name, const std::string& value);
     void set_key(key_command nr, key_code kc, key_mod km);
 
-    bool getb(const std::string& name) const;
-    int geti(const std::string& name) const;
-    int getu(const std::string& name) const;
-    float getf(const std::string& name) const;
-    std::string gets(const std::string& name) const;
-    key getkey(key_command nr) const;
+    [[nodiscard]] bool getb(const std::string& name) const;
+    [[nodiscard]] int geti(const std::string& name) const;
+    [[nodiscard]] int getu(const std::string& name) const;
+    [[nodiscard]] float getf(const std::string& name) const;
+    [[nodiscard]] std::string gets(const std::string& name) const;
+    [[nodiscard]] key getkey(key_command nr) const;
 
     void parse_value(
         const std::string& s); // give elements of command line array to it!

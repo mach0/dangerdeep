@@ -110,8 +110,8 @@ class widget
         std::unique_ptr<texture> sbarsurf;
         const font* myfont;
         color textcol, textselectcol, textdisabledcol;
-        int frame_size() const;
-        int icon_size() const;
+        [[nodiscard]] int frame_size() const;
+        [[nodiscard]] int icon_size() const;
         theme(
             const char* elements_filename,
             const char* icons_filename,

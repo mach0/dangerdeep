@@ -177,7 +177,7 @@ class objcachet
         }
         ~reference() { mycache.unref(myobj); }
         T* get() { return myobj; }
-        const T* get() const { return myobj; }
+        [[nodiscard]] const T* get() const { return myobj; }
     };
 };
 
@@ -190,9 +190,9 @@ class object_handle
     ~object_handle() { unref(); }
 
     C& get() { return *storage; }
-    const C& get() const { return *storage; }
+    [[nodiscard]] const C& get() const { return *storage; }
 
-    bool is_valid() const { return mystore != nullptr; }
+    [[nodiscard]] bool is_valid() const { return mystore != nullptr; }
     C* operator->() { return storage; }
 
     const C* operator->() const { return storage; }

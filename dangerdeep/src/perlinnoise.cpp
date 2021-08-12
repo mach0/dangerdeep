@@ -70,9 +70,9 @@ void perlinnoise::noise_func::set_line_for_interpolation(
     linefac1 = fixed32::one() - linefac2;
 }
 
-uint8_t perlinnoise::noise_func::interpolate(
+auto perlinnoise::noise_func::interpolate(
     const vector<fixed32>& interpolation_func,
-    fixed32 x) const
+    fixed32 x) const -> uint8_t
 {
     fixed32 bx = (phasex + x).frac();
     // remap to value/subvalue coordinates
@@ -91,7 +91,8 @@ uint8_t perlinnoise::noise_func::interpolate(
     return uint8_t(res);
 }
 
-uint8_t perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
+auto perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
+    -> uint8_t
 {
     fixed32 bx = (phasex + x).frac();
     fixed32 by = (phasey + y).frac();
@@ -126,7 +127,7 @@ uint8_t perlinnoise::noise_func::interpolate_sqr(fixed32 x, fixed32 y) const
     return uint8_t(res);
 }
 
-bool is_power2(unsigned x)
+auto is_power2(unsigned x) -> bool
 {
     return (x & (x - 1)) == 0;
 }
@@ -138,19 +139,31 @@ perlinnoise::perlinnoise(
     resultsize(size)
 {
     if (!is_power2(size))
+    {
         THROW(error, "size is not power of two");
+    }
     if (!is_power2(sizeminfreq))
+    {
         THROW(error, "sizeminfreq is not power of two");
+    }
     if (!is_power2(sizemaxfreq))
+    {
         THROW(error, "sizemaxfreq is not power of two");
+    }
     if (!(sizeminfreq >= 1 && sizeminfreq <= size
           && sizeminfreq <= sizemaxfreq))
+    {
         THROW(error, "sizeminfreq out of range");
+    }
     if (!(sizemaxfreq >= 2 && sizemaxfreq <= size))
+    {
         THROW(error, "sizemaxfreq out of range");
+    }
     unsigned nrfunc = 0;
     for (unsigned j = sizemaxfreq / sizeminfreq; j > 0; j >>= 1)
+    {
         ++nrfunc;
+    }
     // generate functions, most significant first.
     noise_functions.reserve(nrfunc);
     for (unsigned i = 0; i < nrfunc; ++i)
@@ -194,15 +207,15 @@ void perlinnoise::set_phase(unsigned func, float px, float py)
     }
 }
 
-static inline int32_t clamp_zero(int32_t x)
+static inline auto clamp_zero(int32_t x) -> int32_t
 {
     return x & ~(x >> 31);
 }
-static inline int32_t clamp_value(int32_t x, int32_t val)
+static inline auto clamp_value(int32_t x, int32_t val) -> int32_t
 {
     return val - clamp_zero(val - x);
 }
-vector<uint8_t> perlinnoise::generate() const
+auto perlinnoise::generate() const -> vector<uint8_t>
 {
     vector<uint8_t> result(resultsize * resultsize);
     fixed32 dxy  = fixed32::one() / resultsize;
@@ -237,7 +250,7 @@ vector<uint8_t> perlinnoise::generate() const
     return result;
 }
 
-vector<uint8_t> perlinnoise::generate_sqr() const
+auto perlinnoise::generate_sqr() const -> vector<uint8_t>
 {
     vector<uint8_t> result(resultsize * resultsize);
     fixed32 dxy  = fixed32::one() / resultsize;
@@ -273,11 +286,17 @@ perlinnoise::perlinnoise(
     bool /*dummy*/)
 {
     if (!is_power2(levelsize))
+    {
         THROW(error, "levelsize is not power of two");
+    }
     if (!is_power2(sizeminfreq))
+    {
         THROW(error, "sizeminfreq is not power of two");
+    }
     if (levels < 1)
+    {
         THROW(error, "levels must be >= 1");
+    }
 
     resultsize = levelsize * sizeminfreq * (1 << (levels - 1));
 
@@ -297,7 +316,7 @@ perlinnoise::perlinnoise(
     }
 }
 
-uint8_t perlinnoise::value(unsigned x, unsigned y, unsigned depth) const
+auto perlinnoise::value(unsigned x, unsigned y, unsigned depth) const -> uint8_t
 {
     fixed32 dxy = fixed32::one() / resultsize;
     x           = x & (resultsize - 1);
@@ -320,7 +339,7 @@ uint8_t perlinnoise::value(unsigned x, unsigned y, unsigned depth) const
     return uint8_t(clamp_value(clamp_zero(((sum * 19) >> 5) + 128), 255));
 }
 
-float perlinnoise::valuef(unsigned x, unsigned y, unsigned depth) const
+auto perlinnoise::valuef(unsigned x, unsigned y, unsigned depth) const -> float
 {
     fixed32 dxy = fixed32::one() / resultsize;
     x           = x & (resultsize - 1);
@@ -343,12 +362,12 @@ float perlinnoise::valuef(unsigned x, unsigned y, unsigned depth) const
     return sum;
 }
 
-std::vector<uint8_t> perlinnoise::values(
+auto perlinnoise::values(
     unsigned x,
     unsigned y,
     unsigned w,
     unsigned h,
-    unsigned depth) const
+    unsigned depth) const -> std::vector<uint8_t>
 {
     std::vector<uint8_t> result(w * h);
     fixed32 dxy = fixed32::one() / resultsize;
@@ -386,12 +405,12 @@ std::vector<uint8_t> perlinnoise::values(
     return result;
 }
 
-std::vector<float> perlinnoise::valuesf(
+auto perlinnoise::valuesf(
     unsigned x,
     unsigned y,
     unsigned w,
     unsigned h,
-    unsigned depth) const
+    unsigned depth) const -> std::vector<float>
 {
     std::vector<float> result(w * h);
     fixed32 dxy = fixed32::one() / resultsize;
@@ -454,7 +473,7 @@ perlinnoise3d::noise_func::noise_func(
     }
 }
 
-inline float myfrac(float a)
+inline auto myfrac(float a) -> float
 {
     return a - floorf(a);
 }
@@ -492,9 +511,9 @@ void perlinnoise3d::noise_func::set_plane_for_interpolation(
     planefac1 = 1.0f - planefac2;
 }
 
-float perlinnoise3d::noise_func::interpolate(
+auto perlinnoise3d::noise_func::interpolate(
     const vector<float>& interpolation_func,
-    float x) const
+    float x) const -> float
 {
     float bx = myfrac(phasex + x);
     // remap to value/subvalue coordinates
@@ -525,19 +544,31 @@ perlinnoise3d::perlinnoise3d(
     resultsize(size)
 {
     if (!is_power2(size))
+    {
         THROW(error, "size is not power of two");
+    }
     if (!is_power2(sizeminfreq))
+    {
         THROW(error, "sizeminfreq is not power of two");
+    }
     if (!is_power2(sizemaxfreq))
+    {
         THROW(error, "sizemaxfreq is not power of two");
+    }
     if (!(sizeminfreq >= 1 && sizeminfreq <= size
           && sizeminfreq <= sizemaxfreq))
+    {
         THROW(error, "sizeminfreq out of range");
+    }
     if (!(sizemaxfreq >= 2 && sizemaxfreq <= size))
+    {
         THROW(error, "sizemaxfreq out of range");
+    }
     unsigned nrfunc = 0;
     for (unsigned j = sizemaxfreq / sizeminfreq; j > 0; j >>= 1)
+    {
         ++nrfunc;
+    }
     // generate functions, most significant first.
     noise_functions.reserve(nrfunc);
     for (unsigned i = 0; i < nrfunc; ++i)
@@ -568,7 +599,7 @@ void perlinnoise3d::set_phase(unsigned func, float px, float py, float pz)
     }
 }
 
-vector<float> perlinnoise3d::generate(float& minv, float& maxv) const
+auto perlinnoise3d::generate(float& minv, float& maxv) const -> vector<float>
 {
     vector<float> result(resultsize * resultsize * resultsize);
     float dxyz   = 1.0f / resultsize;
@@ -614,8 +645,8 @@ vector<float> perlinnoise3d::generate(float& minv, float& maxv) const
     return result;
 }
 
-float perlinnoise3d::valuef(unsigned x, unsigned y, unsigned z, unsigned depth)
-    const
+auto perlinnoise3d::valuef(unsigned x, unsigned y, unsigned z, unsigned depth)
+    const -> float
 {
     float dxyz = 1.0f / resultsize;
     x          = x & (resultsize - 1);

@@ -120,7 +120,7 @@ class morton_bivector
         }
         return data[coord_to_morton(p)];
     }
-    const T& at(const vector2i& p) const
+    [[nodiscard]] const T& at(const vector2i& p) const
     {
         if (p.x >= datasize || p.y >= datasize)
         {
@@ -140,7 +140,7 @@ class morton_bivector
         }
         return data[coord_to_morton(vector2i(x, y))];
     }
-    const T& at(int x, int y) const
+    [[nodiscard]] const T& at(int x, int y) const
     {
         if (x >= datasize || y >= datasize)
         {
@@ -153,12 +153,13 @@ class morton_bivector
 
     T& operator[](const vector2i& p) { return at(p); }
     const T& operator[](const vector2i& p) const { return at(p); }
-    const long& size() const { return datasize; }
+    [[nodiscard]] const long& size() const { return datasize; }
     void resize(const long& newsz, const T& v = T());
-    morton_bivector<T> sub_area(const vector2i& offset, const long& sz) const;
+    [[nodiscard]] morton_bivector<T>
+    sub_area(const vector2i& offset, const long& sz) const;
 
-    morton_bivector<T> shifted(const vector2i& offset) const;
-    morton_bivector<T> transposed() const;
+    [[nodiscard]] morton_bivector<T> shifted(const vector2i& offset) const;
+    [[nodiscard]] morton_bivector<T> transposed() const;
 
     void swap(morton_bivector<T>& other)
     {
@@ -175,19 +176,20 @@ class morton_bivector
 
     // get pointer to storage, be very careful with that!
     T* data_ptr() { return &data[0]; }
-    const T* data_ptr() const { return &data[0]; }
+    [[nodiscard]] const T* data_ptr() const { return &data[0]; }
 
     // special operations
-    morton_bivector<T> upsampled(bool wrap = false) const;
-    morton_bivector<T> downsampled(bool force_even_size = false) const;
-    T get_min() const;
-    T get_max() const;
-    T get_min_abs() const;
-    T get_max_abs() const;
+    [[nodiscard]] morton_bivector<T> upsampled(bool wrap = false) const;
+    [[nodiscard]] morton_bivector<T>
+    downsampled(bool force_even_size = false) const;
+    [[nodiscard]] T get_min() const;
+    [[nodiscard]] T get_max() const;
+    [[nodiscard]] T get_min_abs() const;
+    [[nodiscard]] T get_max_abs() const;
     morton_bivector<T>& operator*=(const T& s);
     morton_bivector<T>& operator+=(const T& v);
     morton_bivector<T>& operator+=(const bivector<T>& v);
-    morton_bivector<T> smooth_upsampled(bool wrap = false) const;
+    [[nodiscard]] morton_bivector<T> smooth_upsampled(bool wrap = false) const;
 
     // algebraic operations, omponent-wise add, sub, multiply (of same datasize)
     // sum of square of differences etc.
@@ -205,7 +207,8 @@ class morton_bivector
     inline void generate_morton_tables(std::vector<long>&, std::vector<long>&);
     inline unsigned long coord_to_morton(vector2i& coord);
     inline unsigned long coord_to_morton(const vector2i& coord);
-    inline unsigned long coord_to_morton(const vector2i& coord) const;
+    [[nodiscard]] inline unsigned long
+    coord_to_morton(const vector2i& coord) const;
 };
 
 template<class T>

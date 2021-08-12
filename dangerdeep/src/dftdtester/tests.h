@@ -63,7 +63,7 @@ class tests
     int do_compression_check();
     int do_halffloat_check();
 
-    int pt_out(std::string message, enum status);
+    int pt_out(const std::string& message, enum status);
 
     void* opengl;
     void* xlib;

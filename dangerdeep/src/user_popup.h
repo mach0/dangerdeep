@@ -44,7 +44,7 @@ class user_popup : public input_event_handler
 
   public:
     /// Destructor. needed for correct destruction of heirs.
-    virtual ~user_popup() = default;
+    ~user_popup() override = default;
     /// Display method - very basic. Just draw display (elements)
     virtual void display() const;
 

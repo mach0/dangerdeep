@@ -228,7 +228,7 @@ class sea_object
     std::string skin_name; // name of skin, computed from values above
 
     // computes name of skin variant name according to data above.
-    std::string compute_skin_name() const;
+    [[nodiscard]] std::string compute_skin_name() const;
 
     //
     // ---------------- rigid body variables, maybe group in extra class
@@ -325,7 +325,7 @@ class sea_object
         @param d location vector of the detecting object
         @return cross section in square meters.
     */
-    virtual double get_cross_section(const vector2& d) const;
+    [[nodiscard]] virtual double get_cross_section(const vector2& d) const;
 
     // construct sea_object without spec file (for simple objects like DCs,
     // shells, ...) these models have no skin support, because there is no spec
@@ -333,11 +333,14 @@ class sea_object
     sea_object(game& gm_, std::string modelname_);
 
     // construct a sea_object. called by heirs
-    sea_object(const game &gm_, const xml_elem& parent);
+    sea_object(const game& gm_, const xml_elem& parent);
 
     // wether objects of that class should call visible_sea_objects to detect
     // other objects. redefine if needed.
-    virtual bool detect_other_sea_objects() const { return false; }
+    [[nodiscard]] virtual bool detect_other_sea_objects() const
+    {
+        return false;
+    }
 
   public:
     virtual ~sea_object();
@@ -346,10 +349,16 @@ class sea_object
     virtual void save(xml_elem& parent) const;
 
     // detail: 0 - category, 1 - finer category, >=2 - exact category
-    virtual std::string get_description(unsigned detail) const;
-    const std::string& get_specfilename() const { return specfilename; }
-    const std::string& get_modelname() const { return modelname; }
-    const std::string& get_skin_layout() const { return skin_name; }
+    [[nodiscard]] virtual std::string get_description(unsigned detail) const;
+    [[nodiscard]] const std::string& get_specfilename() const
+    {
+        return specfilename;
+    }
+    [[nodiscard]] const std::string& get_modelname() const { return modelname; }
+    [[nodiscard]] const std::string& get_skin_layout() const
+    {
+        return skin_name;
+    }
 
     virtual void simulate(double delta_time, game& gm);
     //	virtual bool is_collision(const sea_object* other);
@@ -366,7 +375,7 @@ class sea_object
 
     virtual void set_target(sea_object_id s, game& gm) { target = s; }
 
-    virtual unsigned
+    [[nodiscard]] virtual unsigned
     calc_damage() const; // returns damage in percent (100 means dead)
 
     /// switch object state from alive to inactive.
@@ -382,36 +391,61 @@ class sea_object
     virtual void reanimate();
 #endif // CODE_MODE
 
-    virtual bool is_dead() const { return alive_stat == dead; }
-    virtual bool is_inactive() const { return alive_stat == inactive; }
-    virtual bool is_alive() const { return alive_stat == alive; }
-    virtual bool is_reference_ok() const
+    [[nodiscard]] virtual bool is_dead() const { return alive_stat == dead; }
+    [[nodiscard]] virtual bool is_inactive() const
+    {
+        return alive_stat == inactive;
+    }
+    [[nodiscard]] virtual bool is_alive() const { return alive_stat == alive; }
+    [[nodiscard]] virtual bool is_reference_ok() const
     {
         return alive_stat == alive || alive_stat == inactive;
     }
 
     // command interface - no special commands for a generic sea_object
 
-    virtual const vector3& get_pos() const { return position; }
-    virtual const vector3& get_velocity() const { return velocity; }
-    virtual const vector3& get_local_velocity() const { return local_velocity; }
-    virtual double get_speed() const { return get_local_velocity().y; }
-    virtual const quaternion& get_orientation() const { return orientation; }
-    virtual double get_turn_velocity() const { return turn_velocity; }
-    virtual double get_pitch_velocity() const { return pitch_velocity; }
-    virtual double get_roll_velocity() const { return roll_velocity; }
-    virtual double get_depth() const { return -position.z; }
-    virtual float get_width() const { return size3d.x; }
-    virtual float get_length() const { return size3d.y; }
-    virtual float get_height() const { return size3d.z; }
-    virtual float surface_visibility(const vector2& watcher) const;
-    virtual angle get_heading() const { return heading; }
+    [[nodiscard]] virtual const vector3& get_pos() const { return position; }
+    [[nodiscard]] virtual const vector3& get_velocity() const
+    {
+        return velocity;
+    }
+    [[nodiscard]] virtual const vector3& get_local_velocity() const
+    {
+        return local_velocity;
+    }
+    [[nodiscard]] virtual double get_speed() const
+    {
+        return get_local_velocity().y;
+    }
+    [[nodiscard]] virtual const quaternion& get_orientation() const
+    {
+        return orientation;
+    }
+    [[nodiscard]] virtual double get_turn_velocity() const
+    {
+        return turn_velocity;
+    }
+    [[nodiscard]] virtual double get_pitch_velocity() const
+    {
+        return pitch_velocity;
+    }
+    [[nodiscard]] virtual double get_roll_velocity() const
+    {
+        return roll_velocity;
+    }
+    [[nodiscard]] virtual double get_depth() const { return -position.z; }
+    [[nodiscard]] virtual float get_width() const { return size3d.x; }
+    [[nodiscard]] virtual float get_length() const { return size3d.y; }
+    [[nodiscard]] virtual float get_height() const { return size3d.z; }
+    [[nodiscard]] virtual float
+    surface_visibility(const vector2& watcher) const;
+    [[nodiscard]] virtual angle get_heading() const { return heading; }
     virtual class ai* get_ai() { return myai.get(); }
     auto get_target() { return target; }
-    const auto get_target() const { return target; }
-    bool is_invulnerable() const { return invulnerable; }
-    countrycode get_country() const { return country; }
-    partycode get_party() const { return party; }
+    [[nodiscard]] const auto get_target() const { return target; }
+    [[nodiscard]] bool is_invulnerable() const { return invulnerable; }
+    [[nodiscard]] countrycode get_country() const { return country; }
+    [[nodiscard]] partycode get_party() const { return party; }
 
     /* NOTE! the following function(s) are only to set up games!
        They are used only in the editor or by class convoy while creating
@@ -431,23 +465,32 @@ class sea_object
         that are fare less audible than the turbine engines of other ships.
         @return noise modification factor
     */
-    virtual double get_noise_factor() const { return 0; }
-    virtual vector2 get_engine_noise_source() const;
+    [[nodiscard]] virtual double get_noise_factor() const { return 0; }
+    [[nodiscard]] virtual vector2 get_engine_noise_source() const;
 
     virtual void display(const texture* caustic_map = nullptr) const;
     virtual void display_mirror_clip() const;
-    double get_bounding_radius() const
+    [[nodiscard]] double get_bounding_radius() const
     {
         return size3d.x + size3d.y;
     } // fixme: could be computed more exact
     virtual void set_skin_layout(const std::string& layout);
 
     virtual sensor* get_sensor(sensor_system ss);
-    virtual const sensor* get_sensor(sensor_system ss) const;
+    [[nodiscard]] virtual const sensor* get_sensor(sensor_system ss) const;
 
-    const auto& get_visible_objects() const { return visible_objects; }
-    const auto& get_radar_objects() const { return radar_objects; }
-    const auto& get_sonar_objects() const { return sonar_objects; }
+    [[nodiscard]] const auto& get_visible_objects() const
+    {
+        return visible_objects;
+    }
+    [[nodiscard]] const auto& get_radar_objects() const
+    {
+        return radar_objects;
+    }
+    [[nodiscard]] const auto& get_sonar_objects() const
+    {
+        return sonar_objects;
+    }
 
     // check for a vector of pointers if the objects are still alive
     // and remove entries of dead objects (do not delete the objects itself!)
@@ -456,7 +499,7 @@ class sea_object
     static void compress(std::list<const sea_object*>& lst);
 
     /// get reference to model of this object, throws error if no model
-    const class model& get_model() const;
+    [[nodiscard]] const class model& get_model() const;
 
     /// get minimum and maximum voxel index covering a point (polygon) set
     ///@returns number of voxels covered
@@ -469,10 +512,10 @@ class sea_object
     void set_random_skin_name(const date& d);
 
     /// get linear velocity of any point when considered relative to object
-    vector3 compute_linear_velocity(const vector3& p) const;
+    [[nodiscard]] vector3 compute_linear_velocity(const vector3& p) const;
 
     /// compute collision response impulse term
-    double compute_collision_response_value(
+    [[nodiscard]] double compute_collision_response_value(
         const vector3& collision_pos,
         const vector3& N) const;
 

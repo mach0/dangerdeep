@@ -149,9 +149,9 @@ void geoclipmap::set_viewerpos(const vector3& new_viewpos)
     // check for a total reset of base_viewpos
     if (new_viewpos.xy().distance(base_viewpos) > 10000.0)
     {
-        for (unsigned i = 0; i < levels.size(); ++i)
+        for (auto& level : levels)
         {
-            levels[i]->clear_area();
+            level->clear_area();
         }
         base_viewpos = new_viewpos.xy();
     }
@@ -202,7 +202,9 @@ void geoclipmap::display(
     int above_water) const
 {
     if (wireframe)
+    {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
     // display levels from inside to outside
     // unsigned min_level =
     // unsigned(std::max(floor(log2(new_viewpos.z/(0.4*resolution*L))), 0.0));
@@ -213,7 +215,9 @@ void geoclipmap::display(
     glTranslated(translation.x, translation.y, translation.z);
     frustum f2 = f;
     if (is_mirror)
+    {
         f2 = f.get_mirrored();
+    }
     myshader[si]->set_uniform(loc_above_water[si], above_water);
 
     myshader[si]->set_gl_texture(
@@ -258,7 +262,9 @@ void geoclipmap::display(
     }
     glPopMatrix();
     if (wireframe)
+    {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
 }
 
 geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level) :
@@ -314,9 +320,9 @@ geoclipmap::level::level(geoclipmap& gcm_, unsigned idx, bool outmost_level) :
     }
 }
 
-geoclipmap::area geoclipmap::level::set_viewerpos(
+auto geoclipmap::level::set_viewerpos(
     const vector3& new_viewpos,
-    const geoclipmap::area& inner)
+    const geoclipmap::area& inner) -> geoclipmap::area
 {
     // x_base/y_base tells offset in sample data according to level and
     // viewer position (new_viewpos)
@@ -385,7 +391,9 @@ geoclipmap::area geoclipmap::level::set_viewerpos(
             ++nr_updates;
         }
         if (nr_updates > 2)
+        {
             THROW(error, "got more than 2 update regions?! BUG!");
+        }
     }
     // we updated the vertices, so update area/offset
     dataoffset = gcm.clamp(outer.bl - vboarea.bl + dataoffset);
@@ -419,8 +427,10 @@ geoclipmap::area geoclipmap::level::set_viewerpos(
 void geoclipmap::level::update_region(const geoclipmap::area& upar)
 {
     if (upar.empty())
+    {
         THROW(error, "update area empty?! BUG!"); // continue; // can happen on
-                                                  // initial update
+    }
+    // initial update
     vector2i sz = upar.size();
     // height data coordinates upar.bl ... upar.tr need to be updated, but what
     // VBO offset? since data is stored toroidically in VBO, a rectangle can be
@@ -671,17 +681,19 @@ static const int geoidx[2 * 4 * 6] = {
 };
 
 // give real world offset (per-level coordinates) here as well as frustum-ref
-unsigned geoclipmap::level::generate_indices(
+auto geoclipmap::level::generate_indices(
     const frustum& f,
     uint32_t* buffer,
     unsigned idxbase,
-    const vector2i& offset,       // in per-level coordinates, global
-    const vector2i& size,         // size of patch
-    const vector2i& vbooff) const // offset in VBO
+    const vector2i& offset, // in per-level coordinates, global
+    const vector2i& size,   // size of patch
+    const vector2i& vbooff) const -> unsigned // offset in VBO
 {
     // log_debug("genindi="<<index<<" size="<<size);
     if (size.x <= 1 || size.y <= 1)
+    {
         return idxbase;
+    }
 
     /* how clipping works:
        each patch forms a rectangle in xy-plane. Together with min. and max.
@@ -727,7 +739,9 @@ unsigned geoclipmap::level::generate_indices(
     }
 
     if (allempty)
+    {
         return idxbase;
+    }
 
     // convert coordinates back to integer values with rounding down/up
     vector2i minvi(int(floor(minv.x / L_l)), int(floor(minv.y / L_l)));
@@ -754,7 +768,9 @@ unsigned geoclipmap::level::generate_indices(
     vector2i size2   = newsize;
     // check again if patch is still valid
     if (size2.x <= 1 || size2.y <= 1)
+    {
         return idxbase;
+    }
 
 #if 1
     // for innermost level, when size2=(res_vbo-1,res_vbo-1), how many indices
@@ -796,11 +812,11 @@ unsigned geoclipmap::level::generate_indices(
 
 // needed indices for this call:
 // (size2.x*2+2)*(size2.y-1)
-unsigned geoclipmap::level::generate_indices2(
+auto geoclipmap::level::generate_indices2(
     uint32_t* buffer,
     unsigned idxbase,
     const vector2i& size2,
-    const vector2i& vbooff2) const
+    const vector2i& vbooff2) const -> unsigned
 {
     // fixme: according to the profiler, this eats 70% of cpu time!!!
     // gcm.mod costs 3 instructions because of dereferencing...
@@ -854,8 +870,8 @@ unsigned geoclipmap::level::generate_indices2(
     return bufptr - buffer;
 }
 
-unsigned
-geoclipmap::level::generate_indices_T(uint32_t* buffer, unsigned idxbase) const
+auto geoclipmap::level::generate_indices_T(uint32_t* buffer, unsigned idxbase)
+    const -> unsigned
 {
     unsigned ptr = idxbase;
     vector2i v   = dataoffset;
@@ -898,9 +914,9 @@ geoclipmap::level::generate_indices_T(uint32_t* buffer, unsigned idxbase) const
     return ptr;
 }
 
-unsigned geoclipmap::level::generate_indices_horizgap(
+auto geoclipmap::level::generate_indices_horizgap(
     uint32_t* buffer,
-    unsigned idxbase) const
+    unsigned idxbase) const -> unsigned
 {
     // repeat last index for degenerated triangle conjunction. legal, because
     // there are always indices in buffer from former generate_indices_T.
@@ -1068,8 +1084,10 @@ void geoclipmap::level::display(const frustum& f, bool is_mirror) const
 
     // render the data
     if (nridx < 4)
+    {
         return; // first index is remove always, and we need at least 3 for one
-                // triangle
+    }
+    // triangle
     vertices.bind();
     glVertexPointer(3, GL_FLOAT, geoclipmap_fperv * 4, (float*) nullptr + 0);
     glVertexAttribPointer(

@@ -36,7 +36,10 @@ class airplane : public sea_object
   protected:
     double rollfac, pitchfac; // rudder state, pitch/roll factor per time.
 
-    bool detect_other_sea_objects() const override { return true; }
+    [[nodiscard]] bool detect_other_sea_objects() const override
+    {
+        return true;
+    }
 
   public:
     /// defined to make it storeable in map, don't use
@@ -50,14 +53,14 @@ class airplane : public sea_object
 
     void simulate(double delta_time, game& gm) override;
 
-    virtual double get_mass() const { return 4000.0; } // 4 tons.
-    virtual double get_engine_thrust() const { return 20000.0; }
-    virtual double get_drag_factor() const { return 0.00005184; }
-    virtual double get_antislide_factor() const { return 0.0025; }
-    virtual double get_antilift_factor() const { return 0.04; }
-    virtual double get_lift_factor() const { return 0.75; }
-    virtual double get_roll_deg_per_sec() const { return 90.0; }
-    virtual double get_pitch_deg_per_sec() const { return 45.0; }
+    [[nodiscard]] virtual double get_mass() const { return 4000.0; } // 4 tons.
+    [[nodiscard]] virtual double get_engine_thrust() const { return 20000.0; }
+    [[nodiscard]] virtual double get_drag_factor() const { return 0.00005184; }
+    [[nodiscard]] virtual double get_antislide_factor() const { return 0.0025; }
+    [[nodiscard]] virtual double get_antilift_factor() const { return 0.04; }
+    [[nodiscard]] virtual double get_lift_factor() const { return 0.75; }
+    [[nodiscard]] virtual double get_roll_deg_per_sec() const { return 90.0; }
+    [[nodiscard]] virtual double get_pitch_deg_per_sec() const { return 45.0; }
 
     // command interface for airplanes
     virtual void roll_left();

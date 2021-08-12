@@ -114,7 +114,7 @@ class font
         @returns pointer where text processing stopped, when max. height
        reached, or length of text
     */
-    unsigned print_wrapped(
+    [[nodiscard]] unsigned print_wrapped(
         int x,
         int y,
         unsigned w,
@@ -127,7 +127,7 @@ class font
         @param text - the text
         @returns size in pixels
     */
-    vector2i get_size(const std::string& text) const;
+    [[nodiscard]] vector2i get_size(const std::string& text) const;
     /** get number of lines when printing with wrap
         @param w - maximum width in pixels
         @param text - the text
@@ -135,12 +135,12 @@ class font
         @returns height in lines and textpos where printing stopped (maxlines
        reached)
     */
-    std::pair<unsigned, unsigned> get_nr_of_lines_wrapped(
+    [[nodiscard]] std::pair<unsigned, unsigned> get_nr_of_lines_wrapped(
         unsigned w,
         const std::string& text,
         unsigned maxlines = 0) const;
-    unsigned get_char_width(unsigned c) const;
-    unsigned get_height() const { return height; }
+    [[nodiscard]] unsigned get_char_width(unsigned c) const;
+    [[nodiscard]] unsigned get_height() const { return height; }
 
     // common functions for working with UTF-8 strings
     static unsigned character_left(const std::string& text, unsigned cp);

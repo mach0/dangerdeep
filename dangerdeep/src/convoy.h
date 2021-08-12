@@ -96,10 +96,10 @@ class convoy
     void load(const xml_elem& parent);
     void save(xml_elem& parent) const;
 
-    unsigned get_nr_of_ships() const;
+    [[nodiscard]] unsigned get_nr_of_ships() const;
 
-    vector2 get_pos() const { return position; }
-    std::string get_name() const { return name; }
+    [[nodiscard]] vector2 get_pos() const { return position; }
+    [[nodiscard]] std::string get_name() const { return name; }
 
     virtual class ai* get_ai() { return myai.get(); }
 

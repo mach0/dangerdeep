@@ -53,7 +53,9 @@ stars::stars(const float max_magnitude)
         float mag = star_node.attrf("mag");
 
         if (mag > max_magnitude)
+        {
             break; //	skip star if its magnitude > max (input sorted by mag)
+        }
 
         colorf col;
 
@@ -61,7 +63,9 @@ stars::stars(const float max_magnitude)
         //		but stars brightness uses an exponential, not linear scale
         col.a = (1 / (3 + mag)) + 0.3f;
         if (col.a > 1.0f)
+        {
             col.a = 1.0f;
+        }
 
         vector3f pos(
             star_node.attrf("x"), star_node.attrf("y"), star_node.attrf("z"));
@@ -116,7 +120,9 @@ stars::stars(const float max_magnitude)
         star_count++;
 
         if (mag < MIN_TWINKLE_MAGNITUDE)
+        {
             star_count_static++;
+        }
     }
 
     log_info(star_pos.size() << " stars loaded.");
@@ -137,7 +143,7 @@ void stars::display(const float max_view_dist) const
     star_positions.bind();
     glVertexPointer(3, GL_FLOAT, 0, nullptr);
     // update alpha values for twinkle stars
-    auto* color = (colorf*) &star_colors[star_count_static];
+    auto* color = const_cast<colorf*>(&star_colors[star_count_static]);
 
     for (unsigned int i = star_count_static; i < star_count; i++)
     {

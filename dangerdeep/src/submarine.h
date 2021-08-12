@@ -165,7 +165,7 @@ class submarine : public ship
        values.
         @return double hourly percentage battery consumption value
     */
-    virtual double get_battery_consumption_rate() const
+    [[nodiscard]] virtual double get_battery_consumption_rate() const
     {
         return battery_value_a
                * (exp(get_throttle_speed() / battery_value_t) - 1.0f);
@@ -174,7 +174,7 @@ class submarine : public ship
         This method method calculates the battery recharge rate.
         @return battery recharge rate
     */
-    virtual double get_battery_recharge_rate() const
+    [[nodiscard]] virtual double get_battery_recharge_rate() const
     {
         return (
             1.0f
@@ -233,10 +233,10 @@ class submarine : public ship
         ///@returns rest air that did not fit to tank in m^3
         double push_air_inside(double amount_cbm);
 
-        types get_type() const { return type; }
-        double get_volume() const { return volume; }
-        const vector3& get_pos() const { return pos; }
-        double get_fill() const { return fill; }
+        [[nodiscard]] types get_type() const { return type; }
+        [[nodiscard]] double get_volume() const { return volume; }
+        [[nodiscard]] const vector3& get_pos() const { return pos; }
+        [[nodiscard]] double get_fill() const { return fill; }
 
       protected:
         // values read from spec file, constant at runtime
@@ -290,104 +290,134 @@ class submarine : public ship
     // custom missions)
     virtual void init_fill_torpedo_tubes(const class date& d);
 
-    const std::vector<stored_torpedo>& get_torpedoes() const
+    [[nodiscard]] const std::vector<stored_torpedo>& get_torpedoes() const
     {
         return torpedoes;
     }
 
     // give number from 0-5 (bow tubes first)
-    bool is_tube_ready(unsigned nr) const;
+    [[nodiscard]] bool is_tube_ready(unsigned nr) const;
 
     // get number of tubes / stored reserve torpedoes
-    virtual unsigned get_nr_of_bow_tubes() const
+    [[nodiscard]] virtual unsigned get_nr_of_bow_tubes() const
     {
         return number_of_tubes_at[0];
     }
-    virtual unsigned get_nr_of_stern_tubes() const
+    [[nodiscard]] virtual unsigned get_nr_of_stern_tubes() const
     {
         return number_of_tubes_at[1];
     }
-    virtual unsigned get_nr_of_bow_reserve() const
+    [[nodiscard]] virtual unsigned get_nr_of_bow_reserve() const
     {
         return number_of_tubes_at[2];
     }
-    virtual unsigned get_nr_of_stern_reserve() const
+    [[nodiscard]] virtual unsigned get_nr_of_stern_reserve() const
     {
         return number_of_tubes_at[3];
     }
-    virtual unsigned get_nr_of_bow_deckreserve() const
+    [[nodiscard]] virtual unsigned get_nr_of_bow_deckreserve() const
     {
         return number_of_tubes_at[4];
     }
-    virtual unsigned get_nr_of_stern_deckreserve() const
+    [[nodiscard]] virtual unsigned get_nr_of_stern_deckreserve() const
     {
         return number_of_tubes_at[5];
     }
 
     // get first index of storage and first index after it (computed with
     // functions above)
-    std::pair<unsigned, unsigned> get_bow_tube_indices() const;
-    std::pair<unsigned, unsigned> get_stern_tube_indices() const;
-    std::pair<unsigned, unsigned> get_bow_reserve_indices() const;
-    std::pair<unsigned, unsigned> get_stern_reserve_indices() const;
-    std::pair<unsigned, unsigned> get_bow_deckreserve_indices() const;
-    std::pair<unsigned, unsigned> get_stern_deckreserve_indices() const;
-    unsigned get_location_by_tubenr(unsigned tn)
+    [[nodiscard]] std::pair<unsigned, unsigned> get_bow_tube_indices() const;
+    [[nodiscard]] std::pair<unsigned, unsigned> get_stern_tube_indices() const;
+    [[nodiscard]] std::pair<unsigned, unsigned> get_bow_reserve_indices() const;
+    [[nodiscard]] std::pair<unsigned, unsigned>
+    get_stern_reserve_indices() const;
+    [[nodiscard]] std::pair<unsigned, unsigned>
+    get_bow_deckreserve_indices() const;
+    [[nodiscard]] std::pair<unsigned, unsigned>
+    get_stern_deckreserve_indices() const;
+    [[nodiscard]] unsigned get_location_by_tubenr(unsigned tn)
         const; // returns 1-6 as location number, 0 if not supported
 
     // The simulation of acceleration when switching between electro and diesel
     // engines is done via engine simulation. So the boat "brakes" until
     // it reaches its submerged speed. This is not correct, because speed
     // decreases too fast, but it should be satisfying for now. fixme
-    double get_max_speed() const override;
+    [[nodiscard]] double get_max_speed() const override;
 
     // compute probabilty that sub can be seen (determined by depth, speed,
     // state: periscope state, snorkeling etc., shape)
-    float surface_visibility(const vector2& watcher) const override;
-    virtual float sonar_visibility(const vector2& watcher) const;
-    double get_noise_factor() const override;
+    [[nodiscard]] float
+    surface_visibility(const vector2& watcher) const override;
+    [[nodiscard]] virtual float sonar_visibility(const vector2& watcher) const;
+    [[nodiscard]] double get_noise_factor() const override;
     // return pointer to torpedo in tube or NULL if tube is empty
     virtual stored_torpedo& get_torp_in_tube(unsigned tubenr);
-    virtual const stored_torpedo& get_torp_in_tube(unsigned tubenr) const;
-    virtual bool is_scope_up() const { return scope_raise_level >= 0.8f; }
-    virtual float get_scope_raise_level() const { return scope_raise_level; }
-    virtual double get_periscope_depth() const { return periscope_depth; }
-    virtual bool is_submerged() const
+    [[nodiscard]] virtual const stored_torpedo&
+    get_torp_in_tube(unsigned tubenr) const;
+    [[nodiscard]] virtual bool is_scope_up() const
+    {
+        return scope_raise_level >= 0.8f;
+    }
+    [[nodiscard]] virtual float get_scope_raise_level() const
+    {
+        return scope_raise_level;
+    }
+    [[nodiscard]] virtual double get_periscope_depth() const
+    {
+        return periscope_depth;
+    }
+    [[nodiscard]] virtual bool is_submerged() const
     {
         return dive_state == dive_state_diving;
     }
-    virtual double get_max_depth() const { return max_depth; }
-    virtual bool is_electric_engine() const
+    [[nodiscard]] virtual double get_max_depth() const { return max_depth; }
+    [[nodiscard]] virtual bool is_electric_engine() const
     {
         return (electric_engine == true);
     }
-    virtual bool is_snorkel_up() const { return (snorkelup == true); }
-    virtual bool has_snorkel() const { return (hassnorkel == true); }
-    virtual double get_snorkel_depth() const { return snorkel_depth; }
-    virtual double get_alarm_depth() const { return alarm_depth; }
-    virtual double get_battery_level() const { return battery_level; }
-    virtual const std::vector<part>& get_damage_status() const { return parts; }
+    [[nodiscard]] virtual bool is_snorkel_up() const
+    {
+        return (snorkelup == true);
+    }
+    [[nodiscard]] virtual bool has_snorkel() const
+    {
+        return (hassnorkel == true);
+    }
+    [[nodiscard]] virtual double get_snorkel_depth() const
+    {
+        return snorkel_depth;
+    }
+    [[nodiscard]] virtual double get_alarm_depth() const { return alarm_depth; }
+    [[nodiscard]] virtual double get_battery_level() const
+    {
+        return battery_level;
+    }
+    [[nodiscard]] virtual const std::vector<part>& get_damage_status() const
+    {
+        return parts;
+    }
 
     // get/compute torpedo transfer time and helper functions (uses functions
     // below to compute)
-    virtual double get_torp_transfer_time(unsigned from, unsigned to) const;
-    virtual double get_bow_reload_time() const
+    [[nodiscard]] virtual double
+    get_torp_transfer_time(unsigned from, unsigned to) const;
+    [[nodiscard]] virtual double get_bow_reload_time() const
     {
         return torp_transfer_times[0];
     }
-    virtual double get_stern_reload_time() const
+    [[nodiscard]] virtual double get_stern_reload_time() const
     {
         return torp_transfer_times[1];
     }
-    virtual double get_bow_deck_reload_time() const
+    [[nodiscard]] virtual double get_bow_deck_reload_time() const
     {
         return torp_transfer_times[2];
     }
-    virtual double get_stern_deck_reload_time() const
+    [[nodiscard]] virtual double get_stern_deck_reload_time() const
     {
         return torp_transfer_times[3];
     }
-    virtual double get_bow_stern_deck_transfer_time() const
+    [[nodiscard]] virtual double get_bow_stern_deck_transfer_time() const
     {
         return torp_transfer_times[4];
     }
@@ -418,18 +448,27 @@ class submarine : public ship
     virtual bool has_deck_gun() { return has_guns(); }
 
     virtual tdc& get_tdc() { return TDC; }
-    virtual const tdc& get_tdc() const { return TDC; }
+    [[nodiscard]] virtual const tdc& get_tdc() const { return TDC; }
     // virtual sonar_operator& get_sonarman() { return sonarman; } // not
     // needed. dangerous, sonarman could get manipulated.
-    virtual const sonar_operator& get_sonarman() const { return sonarman; }
+    [[nodiscard]] virtual const sonar_operator& get_sonarman() const
+    {
+        return sonarman;
+    }
 
-    virtual double get_bow_rudder() const { return bow_depth_rudder.angle; }
-    virtual double get_stern_rudder() const { return stern_depth_rudder.angle; }
-    virtual double get_bow_rudder_max_angle() const
+    [[nodiscard]] virtual double get_bow_rudder() const
+    {
+        return bow_depth_rudder.angle;
+    }
+    [[nodiscard]] virtual double get_stern_rudder() const
+    {
+        return stern_depth_rudder.angle;
+    }
+    [[nodiscard]] virtual double get_bow_rudder_max_angle() const
     {
         return bow_depth_rudder.max_angle;
     }
-    virtual double get_stern_rudder_max_angle() const
+    [[nodiscard]] virtual double get_stern_rudder_max_angle() const
     {
         return stern_depth_rudder.max_angle;
     }
@@ -444,14 +483,14 @@ class submarine : public ship
         permanent_dive = true;
     }
 
-    const std::string& get_torpedomanage_img_name() const
+    [[nodiscard]] const std::string& get_torpedomanage_img_name() const
     {
         return torpedomanage_sidetopimg;
     }
 
-    virtual hearing_device_type get_hearing_device_type() const
+    [[nodiscard]] virtual hearing_device_type get_hearing_device_type() const
     {
         return hearing_device;
     }
-    virtual gauges_type get_gauges_type() const { return gauges; }
+    [[nodiscard]] virtual gauges_type get_gauges_type() const { return gauges; }
 };

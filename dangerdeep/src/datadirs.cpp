@@ -26,14 +26,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "filehelper.h"
 #include "log.h"
 
-static std::string& get_global_data_dir()
+static auto get_global_data_dir() -> std::string&
 {
     static std::string global_datadir = DFTD_DATADIR;
     return global_datadir;
 }
 
 /// Get global data directory
-const std::string& get_data_dir()
+auto get_data_dir() -> const std::string&
 {
     return get_global_data_dir();
 }
@@ -89,8 +89,8 @@ void data_file_handler::parse_for_data_files(
     }
 }
 
-const std::string&
-data_file_handler::get_rel_path(const std::string& objectid) const
+auto data_file_handler::get_rel_path(const std::string& objectid) const
+    -> const std::string&
 {
     static std::string emptystr;
     auto it = data_files.find(objectid);
@@ -105,18 +105,20 @@ data_file_handler::get_rel_path(const std::string& objectid) const
     return it->second;
 }
 
-std::string data_file_handler::get_path(const std::string& objectid) const
+auto data_file_handler::get_path(const std::string& objectid) const
+    -> std::string
 {
     return get_data_dir() + get_rel_path(objectid);
 }
 
-std::string
-data_file_handler::get_rel_filename(const std::string& objectid) const
+auto data_file_handler::get_rel_filename(const std::string& objectid) const
+    -> std::string
 {
     return get_rel_path(objectid) + objectid + data_file_ext;
 }
 
-std::string data_file_handler::get_filename(const std::string& objectid) const
+auto data_file_handler::get_filename(const std::string& objectid) const
+    -> std::string
 {
     return get_data_dir() + get_rel_filename(objectid);
 }

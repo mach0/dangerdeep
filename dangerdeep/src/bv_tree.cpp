@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
 #include "bv_tree.h"
+
 #include "error.h"
 #include "triangle_intersection.h"
 
@@ -33,11 +34,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 namespace
 {
-unsigned create_bv_subtree(
+auto create_bv_subtree(
     const std::vector<vector3f>& vertices,
     std::vector<bv_tree::node>& nodes,
     unsigned index_begin,
-    unsigned index_end)
+    unsigned index_end) -> unsigned
 {
     if (index_begin == index_end)
     {
@@ -162,10 +163,10 @@ unsigned create_bv_subtree(
     return unsigned(nodes.size() - 1);
 }
 
-bool is_inside(
+auto is_inside(
     const vector3f& v,
     const std::vector<bv_tree::node>& nodes,
-    unsigned node_index)
+    unsigned node_index) -> bool
 {
     auto& node = nodes[node_index];
 
@@ -233,15 +234,15 @@ bv_tree::bv_tree(
     // that close to each other, so we don't need this acceleration.
 }
 
-bool bv_tree::is_inside(const vector3f& v) const
+auto bv_tree::is_inside(const vector3f& v) const -> bool
 {
     return ::is_inside(v, nodes, unsigned(nodes.size() - 1));
 }
 
-bool bv_tree::collides(
+auto bv_tree::collides(
     const param& p0,
     const param& p1,
-    std::vector<vector3f>& contact_points)
+    std::vector<vector3f>& contact_points) -> bool
 {
     // Note: code is nearly identical to function below. We need a solution to
     // have that code only once!
@@ -256,8 +257,7 @@ bool bv_tree::collides(
         check_intersection;
 
     check_intersection = [&](const bv_tree::node& node0,
-                             const bv_tree::node& node1)
-    {
+                             const bv_tree::node& node1) {
         const auto transformed_volume1 = spheref(
             combined_transform.mul4vec3xlat(node1.volume.center),
             node1.volume.radius);
@@ -279,7 +279,7 @@ bool bv_tree::collides(
                 const auto& v1t = p0.vertices[node0.tri_idx[1]];
                 const auto& v2t = p0.vertices[node0.tri_idx[2]];
 
-                vector3f v3t    = combined_transform.mul4vec3xlat(
+                vector3f v3t = combined_transform.mul4vec3xlat(
                     p1.vertices[node1.tri_idx[0]]);
 
                 vector3f v4t = combined_transform.mul4vec3xlat(
@@ -336,10 +336,10 @@ bool bv_tree::collides(
     return check_intersection(p0.tree.nodes.back(), p1.tree.nodes.back());
 }
 
-bool bv_tree::closest_collision(
+auto bv_tree::closest_collision(
     const param& p0,
     const param& p1,
-    vector3f& contact_point)
+    vector3f& contact_point) -> bool
 {
     // Transform vertices of p1 and then compare to p0
     const auto inverse_p0_tree_transform = p0.transform.inverse();
@@ -354,8 +354,7 @@ bool bv_tree::closest_collision(
         check_intersection;
 
     check_intersection = [&](const bv_tree::node& node0,
-                             const bv_tree::node& node1)
-    {
+                             const bv_tree::node& node1) {
         const auto transformed_volume1 = spheref(
             combined_transform.mul4vec3xlat(node1.volume.center),
             node1.volume.radius);
@@ -377,7 +376,7 @@ bool bv_tree::closest_collision(
                 const auto& v1t = p0.vertices[node0.tri_idx[1]];
                 const auto& v2t = p0.vertices[node0.tri_idx[2]];
 
-                vector3f v3t    = combined_transform.mul4vec3xlat(
+                vector3f v3t = combined_transform.mul4vec3xlat(
                     p1.vertices[node1.tri_idx[0]]);
 
                 vector3f v4t = combined_transform.mul4vec3xlat(
@@ -458,10 +457,10 @@ bool bv_tree::closest_collision(
     return check_intersection(p0.tree.nodes.back(), p1.tree.nodes.back());
 }
 
-bool bv_tree::collides(
+auto bv_tree::collides(
     const param& p,
     const spheref& sp,
-    vector3f& contact_point)
+    vector3f& contact_point) -> bool
 {
     const auto inverse_tree_transform = p.transform.inverse();
     const auto transformed_sphere =
@@ -471,8 +470,7 @@ bool bv_tree::collides(
     // sphere, closest child first
     std::function<bool(const bv_tree::node&)> check_intersection;
 
-    check_intersection = [&](const bv_tree::node& node)
-    {
+    check_intersection = [&](const bv_tree::node& node) {
         if (node.volume.intersects(transformed_sphere))
         {
             if (node.is_leaf())
@@ -506,14 +504,14 @@ bool bv_tree::collides(
     return check_intersection(p.tree.nodes.back());
 }
 
-bool bv_tree::collides(
+auto bv_tree::collides(
     const param& p,
     const cylinderf& cyl,
-    vector3f& contact_point)
+    vector3f& contact_point) -> bool
 {
     const auto inverse_tree_transform = p.transform.inverse();
 
-    const auto transformed_cylinder   = cylinderf(
+    const auto transformed_cylinder = cylinderf(
         inverse_tree_transform * cyl.start,
         inverse_tree_transform * cyl.end,
         cyl.radius);
@@ -522,8 +520,7 @@ bool bv_tree::collides(
     // cylinder, closest child first
     std::function<bool(const bv_tree::node&)> check_intersection;
 
-    check_intersection = [&](const bv_tree::node& node)
-    {
+    check_intersection = [&](const bv_tree::node& node) {
         if (transformed_cylinder.intersects(node.volume))
         {
             if (node.is_leaf())

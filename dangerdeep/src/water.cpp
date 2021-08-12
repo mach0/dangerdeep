@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "texture.h"
 #include "water.h"
 
+#include <cmath>
 #include <fstream>
 #include <glu.h>
 #include <iomanip>
@@ -54,10 +55,10 @@ using std::setw;
 using std::vector;
 
 #ifndef fmin
-#define fmin(x, y) (x < y) ? x : y
+#define fmin(x, y) ((x) < (y)) ? (x) : y
 #endif
 #ifndef fmax
-#define fmax(x, y) (x > y) ? x : y
+#define fmax(x, y) ((x) > (y)) ? (x) : y
 #endif
 
 // fixme: allow rendering of geoclipmap patches as grid/lines for easier
@@ -134,10 +135,12 @@ static float totalmin = 0, totalmax = 0;
 #endif
 
 // computes valid detail values
-static unsigned cmpdtl(int x)
+static auto cmpdtl(int x) -> unsigned
 {
     if (x < 4 || x > 512)
+    {
         return 128;
+    }
     return nextgteqpow2(unsigned(x));
 }
 
@@ -361,7 +364,7 @@ water::water(double tm) :
         for (unsigned x = 0; x < perimetertexs; ++x)
         {
             float fx  = x - 127.5f;
-            auto d    = unsigned(sqrt(fy * fy + fx * fx));
+            auto d    = unsigned(std::sqrt(fy * fy + fx * fx));
             uint8_t a = 0;
             if (d < perimetertexs / 2)
             {
@@ -627,7 +630,9 @@ void water::draw_foam_for_ship(
     const list<ship::prev_pos>& prevposn = shp->get_previous_positions();
     // can render strip of quads only when more than one position is stored.
     if (prevposn.empty())
+    {
         return;
+    }
 
     primitives foamtrail(
         GL_QUAD_STRIP, 2 + prevposn.size() * 2, *foamamounttrail);
@@ -786,16 +791,20 @@ void water::compute_amount_of_foam_texture(
     //	glPopMatrix();
 }
 
-static inline double round_(double x)
+static inline auto round_(double x) -> double
 {
     // note: just using
     // return floor(x + 0.5);
     // seems to work too, makes more sense with rounding. why this strange
     // formula?!
     if (x < 0)
+    {
         return -floor(-x + 0.5);
+    }
     else
+    {
         return floor(x + 0.5);
+    }
 }
 
 void water::display(
@@ -915,7 +924,7 @@ void water::display(
         // and z recomputed by renormalization in v-shader...
         vertices.init_data(
             nr_verts_total * nr_vert_attr * 4, nullptr, GL_STREAM_DRAW);
-        auto* vertex_data = (float*) vertices.map(GL_WRITE_ONLY);
+        auto* vertex_data = static_cast<float*>(vertices.map(GL_WRITE_ONLY));
         // printf("nr_verts_total %u, memory %u\n", nr_verts_total,
         // nr_verts_total*nr_vert_attr*4); with N=64 we have 21125 vertices,
         // eating 507000 bytes of memory (shader).
@@ -1076,13 +1085,21 @@ void water::display(
         }
         unsigned x_patchidx = 1, y_patchidx = 1;
         if (x_size[0] == N / 4 - 1)
+        {
             x_patchidx = 0;
+        }
         else if (x_size[0] == N / 4 + 1)
+        {
             x_patchidx = 2;
+        }
         if (y_size[0] == N / 4 - 1)
+        {
             y_patchidx = 0;
+        }
         else if (y_size[0] == N / 4 + 1)
+        {
             y_patchidx = 2;
+        }
         // printf("x/y patch idx=%u %u\n", x_patchidx, y_patchidx);
         unsigned patchidx = y_patchidx * 3 + x_patchidx;
 
@@ -1134,13 +1151,13 @@ void water::display(
     cleanup_textures();
 }
 
-float water::get_height(const vector2& pos) const
+auto water::get_height(const vector2& pos) const -> float
 {
     float ffac  = wave_resolution * wavetile_length_rcp;
     float x     = float(helper::mod(pos.x, double(wavetile_length))) * ffac;
     float y     = float(helper::mod(pos.y, double(wavetile_length))) * ffac;
-    int ix      = int(floor(x));
-    int iy      = int(floor(y));
+    int ix      = int(std::floor(x));
+    int iy      = int(std::floor(y));
     int ix2     = (ix + 1) & (wave_resolution - 1);
     int iy2     = (iy + 1) & (wave_resolution - 1);
     float fracx = x - ix;
@@ -1158,7 +1175,7 @@ float water::get_height(const vector2& pos) const
     return (1.0f - fracy) * e + fracy * f;
 }
 
-vector3f water::get_wave_normal_at(unsigned x, unsigned y) const
+auto water::get_wave_normal_at(unsigned x, unsigned y) const -> vector3f
 {
     unsigned x1 = (x + wave_resolution - 1) & (wave_resolution - 1);
     unsigned x2 = (x + 1) & (wave_resolution - 1);
@@ -1174,13 +1191,13 @@ vector3f water::get_wave_normal_at(unsigned x, unsigned y) const
 // fixme: the correctness of the result of this function and the one above is
 // not fully tested. with a realistic buoyancy model we don't need that function
 // any longer!
-vector3f water::get_normal(const vector2& pos, double rollfac) const
+auto water::get_normal(const vector2& pos, double rollfac) const -> vector3f
 {
     float ffac  = wave_resolution * wavetile_length_rcp;
     float x     = float(helper::mod(pos.x, double(wavetile_length))) * ffac;
     float y     = float(helper::mod(pos.y, double(wavetile_length))) * ffac;
-    int ix      = int(floor(x));
-    int iy      = int(floor(y));
+    int ix      = int(std::floor(x));
+    int iy      = int(std::floor(y));
     int ix2     = (ix + 1) & (wave_resolution - 1);
     int iy2     = (iy + 1) & (wave_resolution - 1);
     float fracx = x - ix;
@@ -1327,7 +1344,9 @@ void water::compute_amount_of_foam()
 
     float rndtab[37];
     for (float& k : rndtab)
+    {
         k = rnd();
+    }
 
     // factor to build derivatives correctly
     const double deriv_fac = wavetile_length_rcp * wave_resolution;
@@ -1503,7 +1522,7 @@ void water::set_time(double tm)
     }
 }
 
-float water::exact_fresnel(float x)
+auto water::exact_fresnel(float x) -> float
 {
     // the real formula (recheck it!)
     /*
@@ -1529,9 +1548,12 @@ float water::exact_fresnel(float x)
 void water::set_refraction_color(const colorf& light_color)
 {
     // compute wether a visible change has happened
-    if (fabs(light_color.brightness() - last_light_color.brightness()) * 128
+    if (std::fabs(light_color.brightness() - last_light_color.brightness())
+            * 128
         < 1.0f)
+    {
         return;
+    }
     last_light_color = light_color;
 
     // fixme: color depends also on weather. bad weather -> light is less bright
@@ -1805,7 +1827,9 @@ water::geoclipmap_patch::geoclipmap_patch(
     // 	       level, border, xoff, yoff, columns, rows);
     // border = 0 (none), 1 (top), 2 (right), 4 (bottom), 8 (left)
     if (border != 0 && level == 0)
+    {
         THROW(error, "can't use border on innermost level");
+    }
     // number of indices: per row we have 2 per quad plus 2 for the start and 2
     // for the change to the next row (but not for last row).
     nr_indices = rows * (columns * 2 + 2 + 2) - 2;
@@ -1828,7 +1852,7 @@ water::geoclipmap_patch::geoclipmap_patch(
     // if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway,
     // just in case.
     vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
-    auto* index_data    = (uint32_t*) vbo.map(GL_WRITE_ONLY);
+    auto* index_data    = static_cast<uint32_t*>(vbo.map(GL_WRITE_ONLY));
     uint32_t last_index = 0; // avoid reading from VBO
 #else
     vbo.init_data(nr_indices * 2, 0, GL_STATIC_DRAW);
@@ -2082,7 +2106,7 @@ water::geoclipmap_patch::geoclipmap_patch(
     // if N <= 64, 16bit are enough to index vertices.... but we use 32 anyway,
     // just in case.
     vbo.init_data(nr_indices * 4, nullptr, GL_STATIC_DRAW);
-    auto* index_data = (uint32_t*) vbo.map(GL_WRITE_ONLY);
+    auto* index_data = static_cast<uint32_t*>(vbo.map(GL_WRITE_ONLY));
 #else
     vbo.init_data(nr_indices * 2, 0, GL_STATIC_DRAW);
     uint16_t* index_data = (uint16_t*) vbo.map(GL_WRITE_ONLY);

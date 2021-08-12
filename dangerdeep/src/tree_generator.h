@@ -217,7 +217,7 @@ vector3f tree_generator::generate_log(
     cp.push_back(root);
 
     vector3f xaxis(1, 0, 0); // fixme: if axis==xaxis?!
-    vector3f yaxis = axis.cross(xaxis).normal();    
+    vector3f yaxis = axis.cross(xaxis).normal();
     xaxis          = yaxis.cross(axis);
 
     for (unsigned i = 1; i < 3; ++i)
@@ -341,15 +341,15 @@ vector3f tree_generator::generate_log(
             lxaxis.normalize();
             lyaxis.normalize();
 
-            mshleaves.vertices[vidx]  = p;
-            mshleaves.normals[vidx]   = axis;
-            unsigned lt               = rnd(4);
+            mshleaves.vertices[vidx] = p;
+            mshleaves.normals[vidx]  = axis;
+            unsigned lt              = rnd(4);
 
             mshleaves.texcoords[vidx] = vector2f((0.5f + lt) * 0.25, 1.0f);
             ++vidx;
 
-            float x                   = (i & 1) ? -0.04f : 0.04f;
-            float y                   = (i & 1) ? -0.04f : 0.04f;
+            float x = (i & 1) ? -0.04f : 0.04f;
+            float y = (i & 1) ? -0.04f : 0.04f;
 
             mshleaves.vertices[vidx]  = p + lxaxis * x + lyaxis * y;
             mshleaves.normals[vidx]   = axis;
@@ -397,7 +397,7 @@ void tree_generator::generate_tree(
     static const unsigned children1[5] = {4, 4, 5, 6, 0};
     static const float bendfac[5]      = {0.3, 0.5, 0.6, 0.7, 0.8};
 
-    float len      = (length1[lvl] - length0[lvl]) * rnd() + length0[lvl];
+    float len = (length1[lvl] - length0[lvl]) * rnd() + length0[lvl];
 
     vector3f rootc = generate_log(
         msh,

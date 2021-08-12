@@ -37,7 +37,7 @@ tests::~tests() = default;
 
 using namespace std;
 
-int tests::main()
+auto tests::main() -> int
 {
     if (loadlibs())
     {
@@ -83,17 +83,17 @@ int tests::main()
 
 void tests::load_gl_info()
 {
-    const char* c_vendor = (const char*) glGetString(GL_VENDOR);
-    const char* c_render = (const char*) glGetString(GL_RENDERER);
+    const char* c_vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    const char* c_render = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
 
 #if defined(__APPLE__) || defined(__MACOSX__) || defined(MINGW32)
     const char* c_glsl = "Not available";
 #else
-    const char* c_glsl = (const char*) glGetString(GL_SHADING_LANGUAGE_VERSION);
+    const char* c_glsl = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
 #endif
 
-    c_version    = (const char*) glGetString(GL_VERSION);
-    c_extensions = (const char*) glGetString(GL_EXTENSIONS);
+    c_version    = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    c_extensions = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
 
     string vendor = c_vendor ? c_vendor : "Unknown";
     string render = c_render ? c_render : "Unknown";
@@ -112,7 +112,7 @@ void tests::load_gl_info()
         unsigned spos = 0;
         while (spos < extensions.length())
         {
-            string::size_type pos = extensions.find(" ", spos);
+            string::size_type pos = extensions.find(' ', spos);
             if (pos == string::npos)
             {
                 supported_extensions.insert(extensions.substr(spos));
@@ -129,7 +129,7 @@ void tests::load_gl_info()
     }
 }
 
-int tests::pt_out(std::string message, enum status status)
+auto tests::pt_out(const std::string& message, enum status status) -> int
 {
     switch (status)
     {
@@ -150,7 +150,7 @@ int tests::pt_out(std::string message, enum status status)
     return 0;
 }
 
-int tests::do_version_check()
+auto tests::do_version_check() -> int
 {
     if (c_version)
     {
@@ -189,7 +189,9 @@ int tests::do_version_check()
             status = sGOOD;
 
             if (0 == minor)
+            {
                 status = sMED;
+            }
         }
         else if (major >= 3)
         {
@@ -207,7 +209,7 @@ int tests::do_version_check()
     }
 }
 
-int tests::do_texunit_check()
+auto tests::do_texunit_check() -> int
 {
     int texture_units       = 0;
     int texture_image_units = 0;
@@ -250,7 +252,7 @@ int tests::do_texunit_check()
         status);
 }
 
-int tests::do_vbo_check()
+auto tests::do_vbo_check() -> int
 {
     enum status status;
     if (extension_supported("GL_ARB_vertex_buffer_object"))
@@ -265,7 +267,7 @@ int tests::do_vbo_check()
     return pt_out("Support for vertex buffer objects", status);
 }
 
-int tests::do_fb_check()
+auto tests::do_fb_check() -> int
 {
     enum status status;
     if (extension_supported("GL_EXT_framebuffer_object"))
@@ -279,7 +281,7 @@ int tests::do_fb_check()
 
     return pt_out("Support for framebuffer objects", status);
 }
-int tests::do_power2_check()
+auto tests::do_power2_check() -> int
 {
     enum status status;
     if (extension_supported("GL_ARB_texture_non_power_of_two"))
@@ -294,7 +296,7 @@ int tests::do_power2_check()
     return pt_out("Support for non power of two textures", status);
 }
 
-int tests::do_fshader_check()
+auto tests::do_fshader_check() -> int
 {
     enum status status;
     if (extension_supported("GL_ARB_fragment_shader"))
@@ -309,7 +311,7 @@ int tests::do_fshader_check()
     return pt_out("Support for fragment shaders", status);
 }
 
-int tests::do_vshader_check()
+auto tests::do_vshader_check() -> int
 {
     enum status status;
     if (extension_supported("GL_ARB_vertex_shader"))
@@ -324,7 +326,7 @@ int tests::do_vshader_check()
     return pt_out("Support for vertex shaders", status);
 }
 
-int tests::do_shaderobj_check()
+auto tests::do_shaderobj_check() -> int
 {
     enum status status;
     if (extension_supported("GL_ARB_shader_objects"))
@@ -339,7 +341,7 @@ int tests::do_shaderobj_check()
     return pt_out("Support for shader objects", status);
 }
 
-int tests::do_compression_check()
+auto tests::do_compression_check() -> int
 {
     enum status status;
     if (extension_supported("GL_EXT_texture_compression_s3tc")
@@ -355,7 +357,7 @@ int tests::do_compression_check()
     return pt_out("Support for texture compression", status);
 }
 
-int tests::do_halffloat_check()
+auto tests::do_halffloat_check() -> int
 {
     enum status status;
     if (extension_supported("ARB_half_float_pixel")
@@ -371,47 +373,67 @@ int tests::do_halffloat_check()
     return pt_out("Support for 16bit floats", status);
 }
 
-int tests::do_gl_tests()
+auto tests::do_gl_tests() -> int
 {
     int retval = 1;
 
     load_gl_info();
 
     if (0 == do_version_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_texunit_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_vbo_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_fb_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_power2_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_fshader_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_vshader_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_shaderobj_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_compression_check())
+    {
         retval = 0;
+    }
 
     if (0 == do_halffloat_check())
+    {
         retval = 0;
+    }
 
     return retval;
 }
 
 // more stolen code
-bool tests::extension_supported(const string& s)
+auto tests::extension_supported(const string& s) -> bool
 {
     auto it = supported_extensions.find(s);
     return (it != supported_extensions.end());
@@ -451,11 +473,11 @@ int tests::unloadlibs()
 
 #else
 
-int tests::loadlibs()
+auto tests::loadlibs() -> int
 {
     return 0;
 }
-int tests::unloadlibs()
+auto tests::unloadlibs() -> int
 {
     return 0;
 }

@@ -65,7 +65,7 @@ class sensor
         @parm d distance value in meters
         @return factor of declined signal
     */
-    virtual double get_distance_factor(double d) const;
+    [[nodiscard]] virtual double get_distance_factor(double d) const;
     /**
         A detector can be directed to a specified bearing and has a detection
         cone. A target can only be detected when the target is within this cone.
@@ -76,7 +76,7 @@ class sensor
         @param h heading of the detecting unit
         @return is target within detection cone or not
     */
-    virtual bool
+    [[nodiscard]] virtual bool
     is_within_detection_cone(const vector2& r, const angle& h) const;
 
   public:
@@ -112,17 +112,20 @@ class sensor
         Returns the range value.
         @return range
     */
-    virtual double get_range() const { return range; }
+    [[nodiscard]] virtual double get_range() const { return range; }
     /**
         Returns the bearing of the detector.
         @return bearing
     */
-    virtual angle get_bearing() const { return bearing; }
+    [[nodiscard]] virtual angle get_bearing() const { return bearing; }
     /**
         Returns the detection angle.
         @return detectionAngle
     */
-    virtual double get_detection_cone() const { return detection_cone; }
+    [[nodiscard]] virtual double get_detection_cone() const
+    {
+        return detection_cone;
+    }
     /**
         This method can be used to move the bearing of the detector. Whenever
         this method is called the bearing is shifted about the two third
@@ -234,7 +237,7 @@ class active_sensor : public sensor
         @parm d distance value in meters
         @return factor of declined signal
     */
-    double get_distance_factor(double d) const override;
+    [[nodiscard]] double get_distance_factor(double d) const override;
 
   public:
     active_sensor(double range = 0.0f);

@@ -78,7 +78,10 @@ class sonar_operator
     // only make a simulation step each n seconds, n ca. 0.1 or so, simulate
     // human reaction on events.
     virtual void simulate(class game& gm, double delta_t);
-    const std::map<double, contact>& get_contacts() const { return contacts; }
+    [[nodiscard]] const std::map<double, contact>& get_contacts() const
+    {
+        return contacts;
+    }
     void load(const class xml_elem& parent);
     void save(class xml_elem& parent) const;
 };

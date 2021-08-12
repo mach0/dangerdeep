@@ -34,7 +34,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 void torpedo_camera_display::pre_display() const
 {
     if (!trackobj)
+    {
         return;
+    }
     if (!trackobj->is_reference_ok())
     {
         trackobj = nullptr;
@@ -43,8 +45,8 @@ void torpedo_camera_display::pre_display() const
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-freeview_display::projection_data
-torpedo_camera_display::get_projection_data(class game& gm) const
+auto torpedo_camera_display::get_projection_data(class game& gm) const
+    -> freeview_display::projection_data
 {
     projection_data pd;
     pd.x          = SYS().get_res_x() * 3 / 4;
@@ -61,14 +63,18 @@ torpedo_camera_display::get_projection_data(class game& gm) const
 void torpedo_camera_display::post_display() const
 {
     if (!trackobj)
+    {
         return;
+    }
     // nothing to do
 }
 
-vector3 torpedo_camera_display::get_viewpos(class game& gm) const
+auto torpedo_camera_display::get_viewpos(class game& gm) const -> vector3
 {
     if (trackobj)
+    {
         return trackobj->get_pos() + add_pos;
+    }
     return {};
 }
 
@@ -82,7 +88,7 @@ torpedo_camera_display::torpedo_camera_display(user_interface& ui_) :
     drawbridge            = false;
 }
 
-unsigned torpedo_camera_display::get_popup_allow_mask() const
+auto torpedo_camera_display::get_popup_allow_mask() const -> unsigned
 {
     return 0;
 }

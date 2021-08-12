@@ -239,8 +239,10 @@ void submarine_interface::fire_tube(submarine* player, int nr)
             ostringstream oss;
             oss << texts::get(49);
             if (mygame->is_valid(player->get_target()))
+            {
                 oss << " " << texts::get(6) << ": "
                     << mytarget.get_description(2);
+            }
             mygame->add_logbook_entry(oss.str());
             play_sound_effect(SFX_TUBE_LAUNCH, player->get_pos());
         }
@@ -302,7 +304,7 @@ void submarine_interface::fire_tube(submarine* player, int nr)
     }
 }
 
-bool submarine_interface::handle_key_event(const key_data& k)
+auto submarine_interface::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -652,17 +654,29 @@ bool submarine_interface::handle_key_event(const key_data& k)
                                 .xy(),
                             *mygame);
                         if (ship::TARGET_OUT_OF_RANGE == res)
+                        {
                             add_message(texts::get(218));
+                        }
                         else if (ship::NO_AMMO_REMAINING == res)
+                        {
                             add_message(texts::get(219));
+                        }
                         else if (ship::RELOADING == res)
+                        {
                             add_message(texts::get(130));
+                        }
                         else if (ship::GUN_NOT_MANNED == res)
+                        {
                             add_message(texts::get(131));
+                        }
                         else if (ship::GUN_TARGET_IN_BLINDSPOT == res)
+                        {
                             add_message(texts::get(132));
+                        }
                         else if (ship::GUN_FIRED == res)
+                        {
                             add_message(texts::get(270));
+                        }
                     }
                     else
                     {
@@ -686,12 +700,16 @@ bool submarine_interface::handle_key_event(const key_data& k)
                         if (player->is_gun_manned())
                         {
                             if (player->unman_guns())
+                            {
                                 add_message(texts::get(126));
+                            }
                         }
                         else
                         {
                             if (player->man_guns())
+                            {
                                 add_message(texts::get(133));
+                            }
                         }
                     }
                 }
@@ -745,7 +763,8 @@ bool submarine_interface::handle_key_event(const key_data& k)
     return user_interface::handle_key_event(k);
 }
 
-bool submarine_interface::handle_mouse_button_event(const mouse_click_data& m)
+auto submarine_interface::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     // switch screen selector on if it is not visible
     if (m.down() && m.right())

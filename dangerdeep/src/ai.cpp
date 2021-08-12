@@ -167,21 +167,31 @@ void ai::act(ship& parent, class game& gm, double delta_time)
     { // this depends on ai type, convoys zigzag different! fixme
         // course diff up to 45 deg for dd's, depends on ship type
         if (zigzagstate == 7)
+        {
             parent.head_to_course(main_course - angle(45), -1);
+        }
         else if (zigzagstate == 13)
+        {
             parent.head_to_course(main_course + angle(45), 1);
+        }
         ++zigzagstate;
         if (zigzagstate > 18)
+        {
             zigzagstate = 1;
+        }
     }
 }
 
 void ai::set_zigzag(bool stat)
 {
     if (stat)
+    {
         zigzagstate = 1;
+    }
     else
+    {
         zigzagstate = 0;
+    }
 }
 
 void ai::act_escort(ship& parent, game& gm, double delta_time)
@@ -242,11 +252,15 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
         {
             if (ship::GUN_NOT_MANNED
                 == parent.fire_shell_at(nearest_contact->get_pos().xy(), gm))
+            {
                 parent.man_guns();
+            }
         }
         attack_contact(nearest_contact->get_pos());
         if (gm.is_valid(myconvoy))
+        {
             gm.get_convoy(myconvoy).add_contact(nearest_contact->get_pos());
+        }
         parent.set_throttle(ship::aheadflank);
         attackrun = true;
     }
@@ -270,7 +284,9 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
             {
                 // fixme: choose best contact!
                 if (gm.is_valid(myconvoy))
+                {
                     gm.get_convoy(myconvoy).add_contact(contacts.front());
+                }
                 attack_contact(contacts.front());
             }
         }
@@ -308,7 +324,9 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
             { // update contact
                 // fixme: choose best contact!
                 if (gm.is_valid(myconvoy))
+                {
                     gm.get_convoy(myconvoy).add_contact(contacts.front());
+                }
                 attack_contact(contacts.front());
             }
             set_zigzag(
@@ -337,7 +355,9 @@ void ai::act_escort(ship& parent, game& gm, double delta_time)
     }
 
     if (rem_manouver_time > 0)
+    {
         rem_manouver_time -= AI_THINK_CYCLE_TIME;
+    }
 }
 
 void ai::act_dumb(ship& parent, game& gm, double delta_time)
@@ -354,7 +374,9 @@ void ai::act_dumb(ship& parent, game& gm, double delta_time)
             if (parent.get_pos().xy().distance(waypoints.front()) < WPEXACTNESS)
             {
                 if (cyclewaypoints)
+                {
                     waypoints.push_back(waypoints.front());
+                }
                 waypoints.erase(waypoints.begin());
             }
         }
@@ -393,18 +415,20 @@ void ai::act_convoy(ship& parent, game& gm, double delta_time)
     // war ships follow their course, with zigzags / evasive manouvers /
     // increasing speed
     //	for (list<pair<ship*, vector2> >::iterator it = warships.begin(); it !=
-    // warships.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy()
+    // warships.end(); ++it) {
+    // it->first->get_ai()->set_waypoint(position.xy()
     // + it->second);
     //	}
 
     // escorts follow their escort pattern or attack if alarmed
     //	for (list<pair<ship*, vector2> >::iterator it = escorts.begin(); it !=
-    // escorts.end(); ++it) { 		it->first->get_ai()->set_waypoint(position.xy()
+    // escorts.end(); ++it) {
+    // it->first->get_ai()->set_waypoint(position.xy()
     // + it->second);
     //	}
 }
 
-bool ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos)
+auto ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos) -> bool
 {
     vector2 d  = pos - parent.get_pos().xy();
     vector2 hd = parent.get_heading().direction();
@@ -452,13 +476,13 @@ bool ai::set_course_to_pos(ship& parent, game& gm, const vector2& pos)
         //	however, the straight path does not hit the target exactly, since
         // the ship moves 	while turning. In reality the ship would turn until
         // it is facing the target 	directly. Here the ai recomputes the path
-        // every 10seconds, so this doesn't matter. 	2004/02/24. an even better
-        // course would be: turn to a course so that when it is reached 	the
-        // target position lies exactly in that direction, e.g. target bearing is
-        // 30 degrees, 	if we turn to 30, we're already a bit off the target
-        // (bearing then is not 0, maybe 5) 	so turn to ~35 degrees and then run
-        // straight. Such exact path computation is not 	realistic though, humans
-        // are no computers...
+        // every 10seconds, so this doesn't matter. 	2004/02/24. an even
+        // better course would be: turn to a course so that when it is reached
+        // the target position lies exactly in that direction, e.g. target
+        // bearing is 30 degrees, 	if we turn to 30, we're already a bit off
+        // the target (bearing then is not 0, maybe 5) 	so turn to ~35 degrees
+        // and then run straight. Such exact path computation is not realistic
+        // though, humans are no computers...
         /*
                 double needed_turn_rate = (r1 == 0) ? 0 : 1.0/r1; //speed/r1;
                 double fac =

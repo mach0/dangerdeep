@@ -39,8 +39,8 @@
 
 #include "glext.h"
 
-#include <stdlib.h>
-#include <string.h>
+#include <cstdlib>
+#include <cstring>
 
 // ---[ CLASS PROTO-TYPES
 // ]-------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ class CRenderingContext
 
     bool IsExtensionSupported(
         const char* szExtensions) const; //  extensions supported?
-    unsigned long GetVersion() const;    //     return the version
+    [[nodiscard]] unsigned long GetVersion() const;    //     return the version
 
     // - -[ static functions ]- - - - - - - - - - - - - - - - - - - - - - - - -
     // - - - - - - - - - - - - - - - - -
@@ -3491,7 +3491,7 @@ inline void CRenderingContext::InitExtensionString()
 {
     // 1: initialize first pointer and get the opengl extension string...
 
-    m_pFirstExtensionName = NULL;
+    m_pFirstExtensionName = nullptr;
 
     char const* szExtensions = (char const*) ::glGetString(GL_EXTENSIONS);
     if (!szExtensions)

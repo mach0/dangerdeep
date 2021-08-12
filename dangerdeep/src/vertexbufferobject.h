@@ -59,7 +59,7 @@ class vertexbufferobject
     /// GL_WRITE_ONLY_ARB, > GL_READ_WRITE_ARB.
     void* map(int access);
     ///> get size of mapped space
-    unsigned get_map_size() const { return size; }
+    [[nodiscard]] unsigned get_map_size() const { return size; }
     ///> unmap buffer
     void unmap();
 };

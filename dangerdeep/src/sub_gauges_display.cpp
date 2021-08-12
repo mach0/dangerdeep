@@ -42,20 +42,22 @@ enum element_type
     et_diesel             = 10
 };
 
-const submarine::gauges_type get_gauges_type(user_interface& ui)
+auto get_gauges_type(user_interface& ui) -> const submarine::gauges_type
 {
     return static_cast<submarine*>(ui.get_game().get_player())
         ->get_gauges_type();
 }
-const char* get_type(user_interface& ui)
+auto get_type(user_interface& ui) -> const char*
 {
     auto gt = get_gauges_type(ui);
     if (gt == submarine::gauges_type::VII)
+    {
         return "sub_gauges_VII";
+    }
     return "sub_gauges_II";
 }
 
-int throttle_to_value(submarine::throttle_status ts)
+auto throttle_to_value(submarine::throttle_status ts) -> int
 {
     switch (ts)
     {
@@ -102,7 +104,8 @@ void sub_gauges_display::display() const
     draw_elements();
 }
 
-bool sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
+auto sub_gauges_display::handle_mouse_button_event(const mouse_click_data& m)
+    -> bool
 {
     if (m.down())
     {

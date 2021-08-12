@@ -48,7 +48,7 @@ class highscorelist
         entry& operator=(const entry& e) = default;
         void save(std::ostream& out) const;
 
-        bool
+        [[nodiscard]] bool
         is_worse_than(unsigned pts) const; // is entry worse than given value?
     };
 
@@ -62,10 +62,10 @@ class highscorelist
 
     void save(const std::string& filename) const;
 
-    unsigned get_listpos_for(unsigned points)
+    [[nodiscard]] unsigned get_listpos_for(unsigned points)
         const; // returns place in list or entries.size() if not in list
 
-    bool is_good_enough(
+    [[nodiscard]] bool is_good_enough(
         unsigned points) const; // check if score is good enough for an entry
 
     void record(

@@ -187,14 +187,17 @@ class heightmap
     }
 
     /// get height with coordinate clamping and bilinear height interpolation
-    float compute_height(const vector2f& coord) const;
+    [[nodiscard]] auto compute_height(const vector2f& coord) const -> float;
 
-    const std::vector<float>& heights() const { return data; }
-    unsigned get_xres() const { return xres; }
-    unsigned get_yres() const { return yres; }
+    [[nodiscard]] auto heights() const -> const std::vector<float>&
+    {
+        return data;
+    }
+    [[nodiscard]] auto get_xres() const -> unsigned { return xres; }
+    [[nodiscard]] auto get_yres() const -> unsigned { return yres; }
 };
 
-float heightmap::compute_height(const vector2f& coord) const
+auto heightmap::compute_height(const vector2f& coord) const -> float
 {
     // clamp
     vector2f c = coord.max(min_coord).min(max_coord) - min_coord;
@@ -209,15 +212,19 @@ float heightmap::compute_height(const vector2f& coord) const
     unsigned x2 = x + 1, y2 = y + 1;
 
     if (x2 + 1 >= xres)
+    {
         x2 = xres - 1;
+    }
 
     if (y2 + 1 >= yres)
+    {
         y2 = yres - 1;
+    }
 
-    return (data[y * xres + x] * (1.0f - c.x) +
-            data[y * xres + x2] * c.x) * (1.0f - c.y) + (
-            data[y2 * xres + x] * (1.0f - c.x) +
-            data[y2 * xres + x2] * c.x) * c.y;
+    return (data[y * xres + x] * (1.0f - c.x) + data[y * xres + x2] * c.x)
+               * (1.0f - c.y)
+           + (data[y2 * xres + x] * (1.0f - c.x) + data[y2 * xres + x2] * c.x)
+                 * c.y;
 }
 
 class camera
@@ -226,16 +233,22 @@ class camera
     vector3 look_at;
 
   public:
-    camera(const vector3& p = vector3(), const vector3& la = vector3(0, 1, 0)) :
+    explicit camera(const vector3& p = vector3(), const vector3& la = vector3(0, 1, 0)) :
         position(p), look_at(la)
     {
     }
 
-    const vector3& get_pos() const { return position; }
+    [[nodiscard]] auto get_pos() const -> const vector3& { return position; }
 
-    vector3 view_dir() const { return (look_at - position).normal(); }
+    [[nodiscard]] auto view_dir() const -> vector3
+    {
+        return (look_at - position).normal();
+    }
 
-    angle look_direction() const { return angle((look_at - position).xy()); }
+    [[nodiscard]] auto look_direction() const -> angle
+    {
+        return angle((look_at - position).xy());
+    }
 
     void set(const vector3& pos, const vector3& lookat)
     {
@@ -243,12 +256,12 @@ class camera
         look_at  = lookat;
     }
 
-    matrix4 get_transformation() const;
+    [[nodiscard]] auto get_transformation() const -> matrix4;
 
     void set_gl_trans() const;
 };
 
-matrix4 camera::get_transformation() const
+auto camera::get_transformation() const -> matrix4
 {
     // compute transformation matrix from camera
     // orientation
@@ -262,11 +275,22 @@ matrix4 camera::get_transformation() const
     vector3 p(xdir * position, ydir * position, zdir * position);
 
     return matrix4(
-        xdir.x, xdir.y, xdir.z, -p.x,
-        ydir.x, ydir.y, ydir.z, -p.y,
-        zdir.x, zdir.y, zdir.z, -p.z,
-        0, 0, 0, 1
-                );
+        xdir.x,
+        xdir.y,
+        xdir.z,
+        -p.x,
+        ydir.x,
+        ydir.y,
+        ydir.z,
+        -p.y,
+        zdir.x,
+        zdir.y,
+        zdir.z,
+        -p.z,
+        0,
+        0,
+        0,
+        1);
 }
 
 void camera::set_gl_trans() const
@@ -296,10 +320,10 @@ class canyon
     };
 
   public:
-    canyon(unsigned w = 256, unsigned h = 256);
+    explicit canyon(unsigned w = 256, unsigned h = 256);
     void display() const;
 
-    /*const*/ std::vector<float>& get_heightdata() /*const*/
+    /*const*/ auto get_heightdata() -> std::vector<float>& /*const*/
     {
         return heightdata;
     }
@@ -455,7 +479,7 @@ struct plant_alpha_sortidx
     {
     }
 
-    bool operator<(const plant_alpha_sortidx& other) const
+    auto operator<(const plant_alpha_sortidx& other) const -> bool
     {
         return sqd > other.sqd;
     }
@@ -536,7 +560,7 @@ plant_set::plant_set(
         }
         float th = treeheight * rnd() * 0.25;
         float tw = treewidth * rnd() * 0.25;
-        float hd  = heightdata[idxy * w + idxx] * 0.5;
+        float hd = heightdata[idxy * w + idxx] * 0.5;
 
         plants.emplace_back(
             vector3f(x, y, hd),
@@ -568,7 +592,7 @@ plant_set::plant_set(
     // vertex data per plant are 4 * (3+2+1) floats (3x pos, 2x texc, 1x attr)
     plantvertexdata.init_data(
         4 * (3 + 2 + 1) * 4 * plants.size(), nullptr, GL_STATIC_DRAW);
-    auto* vertexdata = (float*) plantvertexdata.map(GL_WRITE_ONLY);
+    auto* vertexdata = static_cast<float*>(plantvertexdata.map(GL_WRITE_ONLY));
 
     for (unsigned i = 0; i < plants.size(); ++i)
     {
@@ -635,7 +659,7 @@ void plant_set::display(const vector3& viewpos, float zang) const
     // fixme: why transfer this to a VBO? why not drawing these indices
     // directly from the array?!
     plantindexdata.init_data(4 * 4 * plants.size(), nullptr, GL_STREAM_DRAW);
-    auto* indexdata = (uint32_t*) plantindexdata.map(GL_WRITE_ONLY);
+    auto* indexdata = static_cast<uint32_t*>(plantindexdata.map(GL_WRITE_ONLY));
 
     for (unsigned i = 0; i < plants.size(); ++i)
     {
@@ -733,9 +757,9 @@ void add_tree(
     for (unsigned i = 0; i <= 8; ++i)
     {
         angle a(ang - i * 360 / 8);
-        vector3f pos2 = pos +
-                (a.direction() * (treewidth + tw) * 0.5).xyz(
-                    (postop.z - pos.z) * 0.25);
+        vector3f pos2 = pos
+                        + (a.direction() * (treewidth + tw) * 0.5)
+                              .xyz((postop.z - pos.z) * 0.25);
 
         vertices.push_back(pos2);
         normals.emplace_back(a.direction().xyz(2.0f).normal());
@@ -816,12 +840,12 @@ void add_tree(
 #endif
 }
 
-unique_ptr<model::mesh> generate_trees(
+auto generate_trees(
     const vector<float>& heightdata,
     unsigned nr          = 20000,
     unsigned w           = 256,
     unsigned h           = 256,
-    const vector2f& scal = vector2f(2.0f, 2.0f))
+    const vector2f& scal = vector2f(2.0f, 2.0f)) -> unique_ptr<model::mesh>
 {
     float areaw = w * scal.x, areah = h * scal.y;
     unique_ptr<model::mesh> m(new model::mesh("trees"));
@@ -908,7 +932,7 @@ class lookup_function
     float dmin, dmax, drange_rcp;
 
   public:
-    lookup_function(float dmin_ = 0.0f, float dmax_ = 1.0f) :
+    explicit lookup_function(float dmin_ = 0.0f, float dmax_ = 1.0f) :
         values(size + 2), dmin(dmin_), dmax(dmax_),
         drange_rcp(1.0f / (dmax_ - dmin_))
     {
@@ -920,12 +944,16 @@ class lookup_function
         // just do it.
         values[size + 1] = values[size];
     }
-    T value(float f) const
+    auto value(float f) const -> T
     {
         if (f < dmin)
+        {
             f = dmin;
+        }
         if (f > dmax)
+        {
             f = dmax;
+        }
 
         // note: if drange_rcp is a bit too large (float is unprecise)
         // the result could be a bit larger than 1.0f * size
@@ -934,7 +962,7 @@ class lookup_function
         // make "values" one entry bigger and duplicate the last value.
         return values[unsigned(size * ((f - dmin) * drange_rcp))];
     }
-    unsigned get_value_range() const { return size + 1; }
+    [[nodiscard]] auto get_value_range() const -> unsigned { return size + 1; }
 };
 
 void show_credits()
@@ -998,7 +1026,9 @@ void show_credits()
     int textpos        = -lines_per_page;
     int textlines      = 0;
     for (; credits[textlines] != nullptr; ++textlines)
+    {
         ;
+    }
     int textendpos   = textlines;
     float lineoffset = 0.0f;
 
@@ -1059,12 +1089,16 @@ void show_credits()
 
     ic->set_handler([&quit](const input_event_handler::mouse_click_data& mc) {
         if (mc.up())
+        {
             quit = true;
+        }
         return true;
     });
     ic->set_handler([&quit](const input_event_handler::key_data& kd) {
         if (kd.up() && kd.keycode == key_code::ESCAPE)
+        {
             quit = true;
+        }
         return true;
     });
     SYS().add_input_event_handler(ic);
@@ -1137,7 +1171,9 @@ void show_credits()
             glPopMatrix();
 
             if (fadein_ctr >= 64)
+            {
                 fadein_tex.reset();
+            }
         }
 
         for (int i = textpos; i <= textpos + lines_per_page; ++i)
@@ -1187,7 +1223,9 @@ void show_credits()
         textpos += tmp;
 
         if (textpos >= textendpos)
+        {
             textpos = -lines_per_page;
+        }
 
         ctr += ctradd * (tm2 - tm) / 1000.0f;
         tm = tm2;

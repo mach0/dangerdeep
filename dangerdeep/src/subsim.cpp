@@ -121,40 +121,52 @@ string savegamedirectory =
     string(getenv("HOME")) + "/.dangerdeep/";
 #endif
 
-string
-get_savegame_name_for(const string& descr, map<string, string>& savegames)
+auto get_savegame_name_for(const string& descr, map<string, string>& savegames)
+    -> string
 {
     unsigned num = 1;
     for (auto& savegame : savegames)
     {
         if (savegame.second == descr)
+        {
             return savegamedirectory + savegame.first;
+        }
 
         unsigned num2 = unsigned(atoi((savegame.first.substr(5, 4)).c_str()));
 
         if (num2 >= num)
+        {
             num = num2 + 1;
+        }
     }
     char tmp[20];
     sprintf(tmp, "save_%04u.dftd", num);
     return savegamedirectory + tmp;
 }
 
-bool is_savegame_name(const string& s)
+auto is_savegame_name(const string& s) -> bool
 {
     if (s.length() != 14)
+    {
         return false;
+    }
 
     if (s.substr(0, 5) != "save_")
+    {
         return false;
+    }
 
     if (s.substr(9, 7) != ".dftd")
+    {
         return false;
+    }
 
     for (int i = 5; i < 9; ++i)
     {
         if (s[i] < '0' || s[i] > '9')
+        {
             return false;
+        }
     }
 
     return true;
@@ -189,8 +201,11 @@ class loadsavequit_dialogue : public widget
     void update_list();
 
   public:
-    string get_gamefilename_to_load() const { return gamefilename_to_load; }
-    widget_edit* get_gamename() const { return gamename; }
+    auto get_gamefilename_to_load() const -> string
+    {
+        return gamefilename_to_load;
+    }
+    auto get_gamename() const -> widget_edit* { return gamename; }
     explicit loadsavequit_dialogue(const game* g); // give 0 to disable saving
 };
 
@@ -285,7 +300,9 @@ void loadsavequit_dialogue::save()
         int ok = widget::run(*w);
         w.reset();
         if (!ok)
+        {
             return;
+        }
     }
 
     gamesaved = true;
@@ -315,7 +332,9 @@ void loadsavequit_dialogue::erase()
         int s = gamelist->get_selected() - 1;
         update_list();
         if (s < 0)
+        {
             s = 0;
+        }
         gamelist->set_selected(s);
         gamename->set_text(gamelist->get_selected_entry());
     }
@@ -329,7 +348,9 @@ void loadsavequit_dialogue::quit()
             create_dialogue_ok_cancel(texts::get(182), texts::get(190)));
         int q = widget::run(*w);
         if (q)
+        {
             close(1);
+        }
     }
     else
     {
@@ -348,7 +369,9 @@ void loadsavequit_dialogue::update_list()
         {
             string e = savegamedir.read();
             if (e.empty())
+            {
                 break;
+            }
             if (is_savegame_name(e))
             {
                 string descr =
@@ -366,7 +389,9 @@ void loadsavequit_dialogue::update_list()
     {
         gamelist->append_entry(savegame.second);
         if (savegame.second == gamename->get_text())
+        {
             gamelist->set_selected(sel);
+        }
         ++sel;
     }
 
@@ -453,7 +478,9 @@ void check_for_highscore(const game& gm)
         std::string txt = texts::get(199);
 
         if (pos == 0)
+        {
             txt += "\n\n" + texts::get(201);
+        }
 
         w.add_child(std::make_unique<widget_text>(400, 200, 0, 0, txt));
         widget::run(w, 0, false);
@@ -513,7 +540,8 @@ void show_results_for_game(const game& gm)
 
 // main play loop
 // fixme: clean this up!!!
-game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
+auto game__exec(game& gm, const std::shared_ptr<user_interface>& ui)
+    -> game::run_state
 {
     // fixme: add special ui heir: playback
     // to record videos.
@@ -542,7 +570,9 @@ game::run_state game__exec(game& gm, std::shared_ptr<user_interface> ui)
         // scaling is too high. fixme
         unsigned thistime = SYS().millisec();
         if (gm.get_freezetime_start() > 0)
+        {
             THROW(error, "freeze_time() called without unfreeze_time() call");
+        }
 
         lasttime += gm.process_freezetime();
         unsigned time_scale = ui->time_scaling();
@@ -794,12 +824,14 @@ class widget_image_select : public widget
         current(imagenames.begin())
     {
         if (imagenames.empty())
+        {
             THROW(error, "can't use widget_image_select with empty list");
+        }
 
         background = imagecache().ref(*current + extension);
         add_child(std::make_unique<widget_text>(20, 20, 0, 0, texts::get(117)));
     }
-    virtual const std::string& get_current_imagename() const
+    virtual auto get_current_imagename() const -> const std::string&
     {
         return *current;
     }
@@ -810,12 +842,16 @@ class widget_image_select : public widget
             current++;
 
             if (current == imagenames.end())
+            {
                 current = imagenames.begin();
+            }
         }
         else
         {
             if (current == imagenames.begin())
+            {
                 current = imagenames.end();
+            }
 
             current--;
         }
@@ -843,7 +879,9 @@ class widget_image_select : public widget
             ++nextimg;
 
             if (nextimg == imagenames.end())
+            {
                 nextimg = imagenames.begin();
+            }
         }
         if (nextimg != current)
         {
@@ -855,7 +893,7 @@ class widget_image_select : public widget
             redraw();
         }
     }
-    virtual unsigned get_selected() const
+    virtual auto get_selected() const -> unsigned
     {
         auto it    = imagenames.begin();
         unsigned n = 0;
@@ -899,7 +937,9 @@ class widget_button_next : public widget_button
         colorf col = colorf(1.0, 1.0, 1.0, 1.0);
 
         if (mouseover != this)
+        {
             col = colorf(1.0, 1.0, 1.0, 0.75);
+        }
 
         background->draw(
             p.x + size.x / 2 - bw / 2, p.y + size.y / 2 - bh / 2, col);
@@ -938,10 +978,10 @@ void show_flotilla_description(const std::string& infopopupdescr)
     widget::run(*w);
 }
 
-bool choose_player_info(
+auto choose_player_info(
     game::player_info& pi,
     const std::string& subtype,
-    const date& gamedate)
+    const date& gamedate) -> bool
 {
     widget w(0, 0, 1024, 768, "", nullptr, "playerselection_background.jpg");
 
@@ -999,7 +1039,9 @@ bool choose_player_info(
                 if (avail)
                 {
                     if (tp.has_attr("base"))
+                    {
                         base = tp.attr("base");
+                    }
                     break;
                 }
             }
@@ -1060,7 +1102,9 @@ bool choose_player_info(
         {
             widget_image_select::on_release();
             if (flst)
+            {
                 flst->set_selected(get_selected());
+            }
         }
     };
 
@@ -1160,7 +1204,7 @@ bool choose_player_info(
     for (auto& availableflotilla : availableflotillas)
     {
         std::string fn = flotname;
-        fn.replace(fn.find("#"), 1, str(availableflotilla.nr));
+        fn.replace(fn.find('#'), 1, str(availableflotilla.nr));
         wflotilla->append_entry(fn);
     }
 
@@ -1176,7 +1220,9 @@ bool choose_player_info(
 
     std::list<std::string> playerphotos;
     for (unsigned i = 1; i <= 11; ++i)
+    {
         playerphotos.push_back(std::string("player_photo") + str(i));
+    }
 
     w.add_child(std::make_unique<widget_text>(
         661 + 20, 40 + 30, 0, 0, texts::get(162)));
@@ -1380,7 +1426,9 @@ void create_convoy_mission()
             game::player_info pi;
             bool ok = choose_player_info(pi, st, gamedate);
             if (!ok)
+            {
                 continue;
+            }
 
             // reset loading screen here to show user we are doing something
             // fixme: give data to game! player data. maybe combine that to a
@@ -1416,7 +1464,9 @@ void choose_historical_mission()
         {
             string e = missiondir.read();
             if (e.empty())
+            {
                 break;
+            }
             if (e.length() > 4 && e.substr(e.length() - 4) == ".xml")
             {
                 missions.push_back(e);
@@ -1436,9 +1486,13 @@ void choose_historical_mission()
         {
             int sel = get_selected();
             if (sel >= 0 && sel < int(descrs.size()))
+            {
                 wdescr->set_text(descrs[sel]);
+            }
             else
+            {
                 wdescr->set_text("");
+            }
         }
         msnlist(
             int x,
@@ -1553,7 +1607,9 @@ void choose_saved_game()
     int q = widget::run(dlg, 0, false);
 
     if (q == 0)
+    {
         return;
+    }
 
     if (q == 2)
     {
@@ -1697,8 +1753,8 @@ void apply_mode(widget_list* wlg)
 {
     string wks = wlg->get_selected_entry();
 
-    auto height = atoi(wks.substr(wks.rfind("x") + 1).c_str());
-    auto width  = atoi(wks.substr(0, wks.rfind("x")).c_str());
+    auto height = atoi(wks.substr(wks.rfind('x') + 1).c_str());
+    auto width  = atoi(wks.substr(0, wks.rfind('x')).c_str());
 
     // try to set video mode BEFORE writing to config file, so that if video
     // mode is broken, user is not forced to same mode again on restart
@@ -1736,7 +1792,9 @@ void menu_resolution()
         wlg->append_entry(
             str(available_resolution.x) + "x" + str(available_resolution.y));
         if (available_resolution == curr_res)
+        {
             curr_entry = i;
+        }
         ++i;
     }
     wlg->set_selected(curr_entry);
@@ -1805,7 +1863,7 @@ void configure_key(widget_list* wkeys)
     unsigned sel = wkeys->get_selected();
     confkey_widget w(256, 256, 512, 256, texts::get(216), nullptr, "", sel);
     string wks = wkeys->get_selected_entry();
-    wks        = wks.substr(0, wks.find("\t"));
+    wks        = wks.substr(0, wks.find('\t'));
 
     w.add_child(std::make_unique<widget_text>(40, 40, 432, 32, wks));
     widget::run(w, 0, true);
@@ -1979,7 +2037,9 @@ void menu_opt_video()
             anisotropic_level->append_entry(str(base));
 
             if (cfg::instance().getf("anisotropic_level") == base)
+            {
                 anisotropic_level->set_selected(count);
+            }
         }
     }
 
@@ -2036,7 +2096,9 @@ void menu_opt_video()
         unsigned selected = anisotropic_level_.get_selected();
 
         for (unsigned ix = max_list; ix > selected; ix--)
+        {
             max_ani /= 2.0f;
+        }
 
         cfg::instance().set("anisotropic_level", max_ani);
     }
@@ -2236,13 +2298,13 @@ void menu_show_vessels()
     widget::run(w, 0, false);
 }
 
-bool file_exists(const string& fn)
+auto file_exists(const string& fn) -> bool
 {
     ifstream in(fn.c_str(), ios::in | ios::binary);
     return in.good();
 }
 
-bool set_dir(const string& dir, string& setdir)
+auto set_dir(const string& dir, string& setdir) -> bool
 {
     // check if it is a directory.
     if (!is_directory(dir))
@@ -2261,7 +2323,7 @@ bool set_dir(const string& dir, string& setdir)
     return true;
 }
 
-int mymain(std::vector<string>& args)
+auto mymain(std::vector<string>& args) -> int
 {
     // report critical errors (on Unix/Posix systems)
     install_segfault_handler();
@@ -2509,7 +2571,9 @@ int mymain(std::vector<string>& args)
         else if (*it == "--vsync")
         {
             if (putenv((char*) "__GL_SYNC_TO_VBLANK=1") < 0)
+            {
                 cout << "ERROR: vsync setting failed.\n";
+            }
 #endif
         }
         else
@@ -2997,13 +3061,17 @@ int mymain(std::vector<string>& args)
             ic.set_handler(
                 [&quit](const input_event_handler::mouse_click_data& mc) {
                     if (mc.up())
+                    {
                         quit = true;
+                    }
                     return true;
                 });
 
             ic.set_handler([&quit](const input_event_handler::key_data& kd) {
                 if (kd.keycode == key_code::ESCAPE)
+                {
                     quit = true;
+                }
                 return true;
             });
 
@@ -3069,7 +3137,9 @@ int mymain(std::vector<string>& args)
     catch (exception& e)
     {
         if (!make_dir(savegamedirectory))
+        {
             THROW(error, "could not create save game directory.");
+        }
     }
 
     try
@@ -3079,7 +3149,9 @@ int mymain(std::vector<string>& args)
     catch (exception& e)
     {
         if (!make_dir(configdirectory))
+        {
             THROW(error, "could not create config directory.");
+        }
     }
 
     try
@@ -3089,15 +3161,21 @@ int mymain(std::vector<string>& args)
     catch (exception& e)
     {
         if (!make_dir(highscoredirectory))
+        {
             THROW(error, "could not create save game directory.");
+        }
     }
 
     // read highscores
     if (!file_exists(highscoredirectory + HSL_MISSION_NAME))
+    {
         highscorelist().save(highscoredirectory + HSL_MISSION_NAME);
+    }
 
     if (!file_exists(highscoredirectory + HSL_CAREER_NAME))
+    {
         highscorelist().save(highscoredirectory + HSL_CAREER_NAME);
+    }
 
     hsl_mission = highscorelist(highscoredirectory + HSL_MISSION_NAME);
     hsl_career  = highscorelist(highscoredirectory + HSL_CAREER_NAME);

@@ -162,7 +162,9 @@ glsl_shader::glsl_shader(
             throw invalid_argument("invalid shader type");
     }
     if (id == 0)
+    {
         THROW(error, "can't create glsl shader");
+    }
     try
     {
         // read shader source
@@ -171,7 +173,9 @@ glsl_shader::glsl_shader(
         {
             ifprg = std::make_unique<ifstream>(filename.c_str(), ios::in);
             if (ifprg->fail())
+            {
                 THROW(file_read_error, filename);
+            }
         }
 
         // the program as string
@@ -199,7 +203,9 @@ glsl_shader::glsl_shader(
 
         // add global hqsfx flag, but define first, so user can override it
         if (enable_hqsfx)
+        {
             prg += "#define HQSFX\n";
+        }
 
         // add defines to top of list for preprocessor
         for (const auto& it : dl)
@@ -264,7 +270,9 @@ glsl_program::glsl_program()
 {
     id = glCreateProgram();
     if (id == 0)
+    {
         THROW(error, "can't create glsl program");
+    }
 }
 
 glsl_program::~glsl_program()
@@ -278,7 +286,9 @@ glsl_program::~glsl_program()
     }
     // if shaders are still attached, it is rather a bug...
     for (auto& attached_shader : attached_shaders)
+    {
         glDetachShader(id, attached_shader->id);
+    }
     glDeleteProgram(id);
 }
 
@@ -293,6 +303,7 @@ void glsl_program::detach(glsl_shader& s)
 {
     glDetachShader(id, s.id);
     for (auto it = attached_shaders.begin(); it != attached_shaders.end();)
+    {
         if (*it == &s)
         {
             glDetachShader(id, (*it)->id);
@@ -302,6 +313,7 @@ void glsl_program::detach(glsl_shader& s)
         {
             ++it;
         }
+    }
     linked = false;
 }
 
@@ -329,17 +341,24 @@ void glsl_program::link()
 void glsl_program::use() const
 {
     if (used_program == this)
+    {
         return;
+    }
     if (!linked)
+    {
         THROW(error, "glsl_program::use() : program not linked");
+    }
     glUseProgram(id);
     used_program = this;
 }
 
-unsigned glsl_program::get_uniform_location(const std::string& name) const
+auto glsl_program::get_uniform_location(const std::string& name) const
+    -> unsigned
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::get_uniform_location, program not bound!");
+    }
     return unsigned(glGetUniformLocation(id, name.c_str()));
 }
 
@@ -349,7 +368,9 @@ void glsl_program::set_gl_texture(
     unsigned texunit) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_gl_texture, program not bound!");
+    }
     glActiveTexture(GL_TEXTURE0 + texunit);
     tex.set_gl_texture();
     glUniform1i(loc, texunit);
@@ -358,14 +379,18 @@ void glsl_program::set_gl_texture(
 void glsl_program::set_uniform(unsigned loc, const vector3f& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform3f(loc, value.x, value.y, value.z);
 }
 
 void glsl_program::set_uniform(unsigned loc, const vector2f& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform2f(loc, value.x, value.y);
 }
 
@@ -374,7 +399,9 @@ void glsl_program::set_uniform(
     const std::vector<vector2f>& values) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
 
     glUniform2fv(loc, values.size() * 2, &values[0].x);
 }
@@ -382,39 +409,51 @@ void glsl_program::set_uniform(
 void glsl_program::set_uniform(unsigned loc, float value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform1f(loc, value);
 }
 
 void glsl_program::set_uniform(unsigned loc, int value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform1i(loc, value);
 }
 
 void glsl_program::set_uniform(unsigned loc, const vector3& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform3f(loc, value.x, value.y, value.z);
 }
 
 void glsl_program::set_uniform(unsigned loc, const matrix4& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     float tmp[16];
     const double* ea = value.elemarray();
     for (int i = 0; i < 16; ++i)
+    {
         tmp[i] = float(ea[i]);
+    }
     glUniformMatrix4fv(loc, 1, GL_TRUE, tmp);
 }
 
 void glsl_program::set_uniform(unsigned loc, const vector4f& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform4f(loc, value.x, value.y, value.z, value.w);
 }
 
@@ -423,7 +462,9 @@ void glsl_program::set_uniform(
     const std::vector<vector4f>& values) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
 
     glUniform4fv(loc, values.size() * 4, &values[0].x);
 }
@@ -431,15 +472,20 @@ void glsl_program::set_uniform(
 void glsl_program::set_uniform(unsigned loc, const colorf& value) const
 {
     if (used_program != this)
+    {
         THROW(error, "glsl_program::set_uniform, program not bound!");
+    }
     glUniform4f(loc, value.r, value.g, value.b, value.a);
 }
 
-unsigned glsl_program::get_vertex_attrib_index(const std::string& name) const
+auto glsl_program::get_vertex_attrib_index(const std::string& name) const
+    -> unsigned
 {
     if (used_program != this)
+    {
         THROW(
             error, "glsl_program::get_vertex_attrib_index, program not bound!");
+    }
     return glGetAttribLocation(id, name.c_str());
 }
 
@@ -449,7 +495,7 @@ void glsl_program::use_fixed()
     used_program = nullptr;
 }
 
-bool glsl_program::is_fixed_in_use()
+auto glsl_program::is_fixed_in_use() -> bool
 {
     return used_program == nullptr;
 }

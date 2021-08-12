@@ -109,21 +109,25 @@ class plane_t
     }
 
     /// determine if point is left of plane (on side that normal points to).
-    bool is_left(const vector3t<D>& a) const { return (N * a >= -d); }
+    [[nodiscard]] bool is_left(const vector3t<D>& a) const
+    {
+        return (N * a >= -d);
+    }
 
     /// determine if point is left of/right of/in plane (>0,<0,==0)
-    int test_side(const vector3t<D>& a) const
+    [[nodiscard]] int test_side(const vector3t<D>& a) const
     {
         D r = N * a + d;
         return (r > epsilon<D>()) ? 1 : ((r < -epsilon<D>()) ? -1 : 0);
     }
 
     /// determine distance of point to plane
-    D distance(const vector3t<D>& a) const { return N * a + d; }
+    [[nodiscard]] D distance(const vector3t<D>& a) const { return N * a + d; }
 
     /// compute intersection point of line a->b, assumes that a->b intersects
     /// the plane
-    vector3t<D> intersection(const vector3t<D>& a, const vector3t<D>& b) const
+    [[nodiscard]] vector3t<D>
+    intersection(const vector3t<D>& a, const vector3t<D>& b) const
     {
         D divi = N * (b - a);
         // if abs(divi) is near zero then a,b are both on the plane
@@ -165,7 +169,7 @@ class plane_t
     void translate(const vector3t<D>& delta) { d -= delta * N; }
 
     /// compute pivot point
-    vector3t<D> get_pivot() const { return N * -d; }
+    [[nodiscard]] vector3t<D> get_pivot() const { return N * -d; }
 
     /// compute intersection point with two other planes
     bool compute_intersection(

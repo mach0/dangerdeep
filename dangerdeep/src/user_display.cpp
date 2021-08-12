@@ -267,8 +267,8 @@ void user_display::elem2D::draw() const
     }
 }
 
-bool user_display::elem2D::is_mouse_over(const vector2i& pos, int tolerance)
-    const
+auto user_display::elem2D::is_mouse_over(const vector2i& pos, int tolerance)
+    const -> bool
 {
     if (click_radius > 0)
     {
@@ -340,7 +340,8 @@ void user_display::elem2D::set_angle(angle a) const
         start_value, end_value, (a - start_angle).value() / get_angle_range()));
 }
 
-std::optional<double> user_display::elem2D::set_value(const vector2i& pos) const
+auto user_display::elem2D::set_value(const vector2i& pos) const
+    -> std::optional<double>
 {
     // need to negate y, because onscreen y is down
     const auto a =
@@ -354,8 +355,8 @@ std::optional<double> user_display::elem2D::set_value(const vector2i& pos) const
     return value;
 }
 
-std::optional<unsigned>
-user_display::elem2D::set_value_uint(const vector2i& pos) const
+auto user_display::elem2D::set_value_uint(const vector2i& pos) const
+    -> std::optional<unsigned>
 {
     const auto v = set_value(pos);
     if (!v.has_value() || v.value() < 0.0 || v.value() >= end_value)
@@ -377,7 +378,7 @@ void user_display::elem2D::set_filename(
     }
 }
 
-double user_display::elem2D::get_angle_range() const
+auto user_display::elem2D::get_angle_range() const -> double
 {
     auto range = end_angle - start_angle;
     // if start and end angle match use full range
@@ -388,7 +389,8 @@ double user_display::elem2D::get_angle_range() const
     return range.value();
 }
 
-const user_display::elem2D& user_display::element_for_id(unsigned id) const
+auto user_display::element_for_id(unsigned id) const
+    -> const user_display::elem2D&
 {
     auto it = id_to_element.find(id);
     if (it == id_to_element.end())
@@ -398,7 +400,7 @@ const user_display::elem2D& user_display::element_for_id(unsigned id) const
     return elements[it->second];
 }
 
-user_display::elem2D& user_display::element_for_id(unsigned id)
+auto user_display::element_for_id(unsigned id) -> user_display::elem2D&
 {
     auto it = id_to_element.find(id);
     if (it == id_to_element.end())

@@ -41,8 +41,8 @@ void sub_bridge_display::pre_display() const
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-freeview_display::projection_data
-sub_bridge_display::get_projection_data(game& gm) const
+auto sub_bridge_display::get_projection_data(game& gm) const
+    -> freeview_display::projection_data
 {
     projection_data pd = freeview_display::get_projection_data(gm);
     if (element_for_id(et_glasses).is_visible())
@@ -72,7 +72,7 @@ sub_bridge_display::sub_bridge_display(user_interface& ui_) :
     drawbridge            = true;
 }
 
-bool sub_bridge_display::handle_key_event(const key_data& k)
+auto sub_bridge_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -92,7 +92,8 @@ bool sub_bridge_display::handle_key_event(const key_data& k)
     return freeview_display::handle_key_event(k);
 }
 
-bool sub_bridge_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto sub_bridge_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+    -> bool
 {
     if (m.up())
     {

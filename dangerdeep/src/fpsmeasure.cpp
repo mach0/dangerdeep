@@ -29,7 +29,7 @@ fpsmeasure::fpsmeasure(float mi) : measure_interval(unsigned(1000 * mi + 0.5f))
 {
 }
 
-float fpsmeasure::account_frame()
+auto fpsmeasure::account_frame() -> float
 {
     unsigned tm = SYS().millisec();
     if (nr_frames == 0)
@@ -55,7 +55,7 @@ float fpsmeasure::account_frame()
     return curfps;
 }
 
-float fpsmeasure::get_total_fps() const
+auto fpsmeasure::get_total_fps() const -> float
 {
     unsigned tm = SYS().millisec();
     return (nr_frames - 1) * 1000.0f / (tm - tm0);

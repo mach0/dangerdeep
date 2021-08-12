@@ -66,7 +66,7 @@ void do_action(submarine_interface& s, element_type t)
     }
 }
 
-int get_description(element_type t)
+auto get_description(element_type t) -> int
 {
     switch (t)
     {
@@ -85,7 +85,7 @@ int get_description(element_type t)
     }
 }
 
-color get_color(element_type t)
+auto get_color(element_type t) -> color
 {
     switch (t)
     {
@@ -131,8 +131,8 @@ void sub_captainscabin_display::display() const
     SYS().unprepare_2d_drawing();
 }
 
-bool sub_captainscabin_display::handle_mouse_button_event(
-    const mouse_click_data& m)
+auto sub_captainscabin_display::handle_mouse_button_event(
+    const mouse_click_data& m) -> bool
 {
     if (m.down())
     {
@@ -158,8 +158,8 @@ bool sub_captainscabin_display::handle_mouse_button_event(
     return false;
 }
 
-bool sub_captainscabin_display::handle_mouse_motion_event(
-    const mouse_motion_data& m)
+auto sub_captainscabin_display::handle_mouse_motion_event(
+    const mouse_motion_data& m) -> bool
 {
     mouse_position = m.position_2d;
     return false;

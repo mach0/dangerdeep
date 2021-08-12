@@ -42,7 +42,9 @@ inline void obitstream::to_buffer(uint8_t bits, uint8_t len)
         bit_pos -= 8;
         byte_pos++;
         if (byte_pos >= buffer.size() - 1)
+        {
             flush();
+        }
     }
 #ifdef DEBUG_TO_BUFFER
     std::cout << "new byte_pos: " << byte_pos << std::endl;
@@ -54,19 +56,23 @@ void obitstream::last_write()
 {
     flush();
     if (bit_pos > 0)
-        outstream->write((char*) &buffer[0], 1);
+    {
+        outstream->write(reinterpret_cast<char*>(&buffer[0]), 1);
+    }
 }
 
 void obitstream::flush()
 {
-    outstream->write((char*) &buffer[0], byte_pos);
+    outstream->write(reinterpret_cast<char*>(&buffer[0]), byte_pos);
     buffer[0] = buffer[byte_pos];
     for (uint8_t i = 1; i < buffer.size(); i++)
+    {
         buffer[i] = 0;
+    }
     byte_pos = 0;
 }
 
-bool obitstream::write(uint8_t bits, uint8_t len)
+auto obitstream::write(uint8_t bits, uint8_t len) -> bool
 {
 #ifdef DEBUG_WRITE
     std::cout << "Write" << std::endl;
@@ -75,7 +81,9 @@ bool obitstream::write(uint8_t bits, uint8_t len)
     std::cout << "bit_pos: " << bit_pos << std::endl;
 #endif
     if (len < 1 || len > 8)
+    {
         return false;
+    }
 
     bits &= bitmask[len - 1];
 #ifdef DEBUG_WRITE
@@ -86,8 +94,10 @@ bool obitstream::write(uint8_t bits, uint8_t len)
 #ifdef DEBUG_WRITE
         std::cout << "split" << std::endl;
 #endif
-        if ((uint16_t)(byte_pos + 1) >= buffer.size())
+        if (static_cast<uint16_t>(byte_pos + 1) >= buffer.size())
+        {
             flush();
+        }
 
         uint8_t high_bits_len = 8 - bit_pos;
         uint8_t low_bits_len  = len - high_bits_len;
@@ -117,21 +127,23 @@ bool obitstream::write(uint8_t bits, uint8_t len)
     return true;
 }
 
-bool obitstream::write(uint16_t bits, uint8_t len)
+auto obitstream::write(uint16_t bits, uint8_t len) -> bool
 {
     if (len < 1 || len > 16)
+    {
         return false;
+    }
 
     uint8_t *high_byte, *low_byte;
 
     if (IS_BENDIAN)
     {
-        high_byte = (uint8_t*) &bits;
+        high_byte = reinterpret_cast<uint8_t*>(&bits);
         low_byte  = high_byte + 1;
     }
     else
     {
-        low_byte  = (uint8_t*) &bits;
+        low_byte  = reinterpret_cast<uint8_t*>(&bits);
         high_byte = low_byte + 1;
     }
 
@@ -142,7 +154,9 @@ bool obitstream::write(uint16_t bits, uint8_t len)
         ret_val &= write(*low_byte, len - (len - 8));
     }
     else
+    {
         ret_val = write(*low_byte, len);
+    }
 
     return ret_val;
 }
@@ -151,9 +165,11 @@ ibitstream::ibitstream(std::istream* is, long bufsize) :
     byte_pos(0), bit_pos(0), end_pos(0), buffer(bufsize, 0), instream(is)
 {
     if (buffer.size() < 4)
+    {
         buffer.resize(4, 0);
+    }
 
-    instream->read((char*) &buffer[0], buffer.size());
+    instream->read(reinterpret_cast<char*>(&buffer[0]), buffer.size());
     end_pos += instream->gcount() - 1;
 }
 
@@ -167,7 +183,9 @@ inline void ibitstream::update_position(const uint8_t& len)
     }
     // std::cout << "new bit pos: " << (uint16_t)bit_pos << std::endl;
     if ((byte_pos == end_pos) && (instream->tellg() >= 0))
+    {
         fill_buffer();
+    }
 }
 
 inline void ibitstream::fill_buffer()
@@ -176,19 +194,21 @@ inline void ibitstream::fill_buffer()
 
     byte_pos = 0;
 
-    instream->read((char*) &buffer[1], buffer.size() - 1);
+    instream->read(reinterpret_cast<char*>(&buffer[1]), buffer.size() - 1);
     end_pos = instream->gcount();
     // std::cout << "filled: " << end_pos << std::endl;
 }
 
-uint8_t ibitstream::read_byte(uint8_t len)
+auto ibitstream::read_byte(uint8_t len) -> uint8_t
 {
     uint8_t ret_val = 0;
 #ifdef DEBUG_READ_BYTE
     std::cout << "Read Byte" << std::endl;
 #endif
     if (len < 1 || len > 8)
+    {
         return ret_val;
+    }
 
 #ifdef DEBUG_READ_BYTE
     std::cout << "len: " << (uint16_t) len << std::endl;
@@ -210,9 +230,11 @@ uint8_t ibitstream::read_byte(uint8_t len)
         ret_val = high_bits | low_bits;
     }
     else
+    {
         ret_val =
             (buffer[byte_pos] & (bitmask[len - 1] << ((8 - len) - bit_pos)))
             >> ((8 - len) - bit_pos);
+    }
 
     update_position(len);
 #ifdef DEBUG_READ_BYTE
@@ -221,7 +243,7 @@ uint8_t ibitstream::read_byte(uint8_t len)
     return ret_val;
 }
 
-uint16_t ibitstream::read(uint8_t len)
+auto ibitstream::read(uint8_t len) -> uint16_t
 {
     uint8_t high_byte = 0, low_byte = 0;
 #ifdef DEBUG_READ
@@ -265,5 +287,7 @@ uint16_t ibitstream::read(uint8_t len)
         return ret_val;
     }
     else
-        return (uint16_t) read_byte(len);
+    {
+        return static_cast<uint16_t>(read_byte(len));
+    }
 }

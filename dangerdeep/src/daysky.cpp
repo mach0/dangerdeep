@@ -23,6 +23,8 @@
 #include "helper.h"
 #include "vector3.h"
 
+#include <cmath>
+
 // Distribution coefficients for the luminance(Y) distribution function
 static float YDC[5][2] = {
     {0.1787f, -1.4630f},
@@ -59,25 +61,26 @@ static float yZC[3][4] = {
     {0.15346f, -0.26756f, 0.06670f, 0.26688f}};
 
 // Angle between (thetav, theta) and  (phiv,phi)
-inline float angle_between(float thetav, float phiv, float theta, float phi)
+inline auto angle_between(float thetav, float phiv, float theta, float phi)
+    -> float
 {
-    double cospsi =
-        sin(thetav) * sin(theta) * cos(phi - phiv) + cos(thetav) * cos(theta);
+    double cospsi = std::sin(thetav) * std::sin(theta) * std::cos(phi - phiv)
+                    + std::cos(thetav) * std::cos(theta);
     return float(acos(helper::clamp(cospsi, -1.0, 1.0)));
 }
 
-inline float perez_function(
+inline auto perez_function(
     float A,
     float B,
     float C,
     float D,
     float E,
     float Theta,
-    float Gamma)
+    float Gamma) -> float
 {
-    float cosGamma = cos(Gamma);
-    float d        = (1 + A * exp(B / cos(Theta)))
-              * (1 + C * exp(D * Gamma) + E * cosGamma * cosGamma);
+    float cosGamma = std::cos(Gamma);
+    float d        = (1 + A * std::exp(B / std::cos(Theta)))
+              * (1 + C * std::exp(D * Gamma) + E * cosGamma * cosGamma);
     return d;
 }
 
@@ -117,7 +120,7 @@ void daysky::set_sun_position(float azimuth, float elevation)
 }
 
 // Calculate color
-colorf daysky::get_color(float theta, float phi) const
+auto daysky::get_color(float theta, float phi) const -> colorf
 {
     phi = float(constant::PI_2 - phi);
 
@@ -131,7 +134,9 @@ colorf daysky::get_color(float theta, float phi) const
     auto chi      = (4.0 / 9.0 - m_T / 120.0) * (constant::PI - 2 * m_sun_phi);
     auto zenith_Y = (4.0453 * m_T - 4.9710) * tan(chi) - 0.2155 * m_T + 2.4192;
     if (zenith_Y < 0.0)
+    {
         zenith_Y = -zenith_Y;
+    }
 
     //  A = YDC[0][0]*m_T + YDC[0][1];
     //  B = YDC[1][0]*m_T + YDC[1][1];
@@ -179,7 +184,7 @@ colorf daysky::get_color(float theta, float phi) const
     // intensity rescaling for turbidity 2.0
 
     float scalefac;
-    float elevation = float(constant::PI_2 - m_sun_phi);
+    auto elevation = float(constant::PI_2 - m_sun_phi);
     if (elevation >= 0)
     {
         if (elevation >= constant::PI * 0.5 - 0.35)
@@ -209,8 +214,8 @@ colorf daysky::get_color(float theta, float phi) const
         std::min(1.f, colors[2] * scalefac)};
 }
 
-float daysky::distribution(const alphabet& ABCDE, float Theta, float Gamma)
-    const
+auto daysky::distribution(const alphabet& ABCDE, float Theta, float Gamma) const
+    -> float
 {
     //                       Perez_f0(Theta,Gamma)
     //    calculates:   d = -----------------------
@@ -222,8 +227,8 @@ float daysky::distribution(const alphabet& ABCDE, float Theta, float Gamma)
     return (f0 / f1);
 }
 
-float daysky::chromaticity(const float ZC[3][4], float sun_phi2, float sun_phi3)
-    const
+auto daysky::chromaticity(const float ZC[3][4], float sun_phi2, float sun_phi3)
+    const -> float
 {
     float c = (ZC[0][0] * sun_phi3 + ZC[0][1] * sun_phi2 + ZC[0][2] * m_sun_phi
                + ZC[0][3])

@@ -34,7 +34,7 @@ constexpr auto max_acoustic_contacts = 5;       // max. nr of simultaneous
 } // namespace acoustics
 
 // TODO: move to terrain
-#define TERRAIN_NR_LEVELS 10
+#define TERRAIN_NR_LEVELS    10
 #define TERRAIN_RESOLUTION_N 7
 
 #include "random_generator.h"

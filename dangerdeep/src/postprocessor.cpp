@@ -138,7 +138,9 @@ void postprocessor::render2texture()
 {
     // only run if enabled otherwise take a 20% performance hit
     if (!(bloom_enabled || hdr_enabled))
+    {
         return;
+    }
 
     scene_fbo->bind();
 }
@@ -222,7 +224,7 @@ void postprocessor::bloom()
 
         for (unsigned ix = 0; ix < PP_FILTERS; ix++)
         {
-            float offset = 1.2f / (float) h_textures[ix]->get_width();
+            float offset = 1.2f / static_cast<float>(h_textures[ix]->get_width());
             filter.set_uniform(loc_off, offset);
 
             v_pass[ix]->bind();
@@ -241,7 +243,7 @@ void postprocessor::bloom()
 
         for (unsigned ix = 0; ix < PP_FILTERS; ix++)
         {
-            float offset = 1.2f / (float) h_textures[ix]->get_height();
+            float offset = 1.2f / static_cast<float>(h_textures[ix]->get_height());
             filter.set_uniform(loc_off, offset);
 
             h_pass[ix]->bind();
@@ -333,7 +335,7 @@ void postprocessor::hdr()
 
         for (unsigned ix = 0; ix < PP_FILTERS; ix++)
         {
-            float offset = 1.2f / (float) h_textures[ix]->get_width();
+            float offset = 1.2f / static_cast<float>(h_textures[ix]->get_width());
             filter.set_uniform(loc_off, offset);
 
             v_pass[ix]->bind();
@@ -352,7 +354,7 @@ void postprocessor::hdr()
 
         for (unsigned ix = 0; ix < PP_FILTERS; ix++)
         {
-            float offset = 1.2f / (float) h_textures[ix]->get_height();
+            float offset = 1.2f / static_cast<float>(h_textures[ix]->get_height());
             filter.set_uniform(loc_off, offset);
 
             h_pass[ix]->bind();
@@ -404,14 +406,20 @@ void postprocessor::process()
 {
 
     if (!(bloom_enabled || hdr_enabled))
+    {
         return;
+    }
 
     // stop rendering into the scene buffer
     scene_fbo->unbind();
 
     // TODO: use a scalar instead of booleans ?
     if (bloom_enabled)
+    {
         bloom();
+    }
     else
+    {
         hdr();
+    }
 }

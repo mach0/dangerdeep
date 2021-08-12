@@ -42,17 +42,27 @@ torpedo::fuse::fuse(const xml_elem& parent, date equipdate)
     doc.load();
     xml_elem fs = doc.child("dftd-torpedo-fuses");
     if (!fs.has_child(modelstr))
+    {
         THROW(xml_error, "unknown fuse type!", parent.doc_name());
+    }
     xml_elem f = fs.child(modelstr);
     string ts  = f.attr("type");
     if (ts == "impact")
+    {
         type = IMPACT;
+    }
     else if (ts == "inertial")
+    {
         type = INERTIAL;
+    }
     else if (ts == "influence")
+    {
         type = INFLUENCE;
+    }
     else
+    {
         THROW(xml_error, "illegal fuse tyoe!", f.doc_name());
+    }
     failure_probability = f.attrf("failure_probability");
 }
 
@@ -111,10 +121,12 @@ torpedo::torpedo(
     xml_elem eavailability = parent.child("availability");
     date availdt           = date(eavailability.attr("date"));
     if (dt < availdt)
+    {
         THROW(
             xml_error,
             "torpedo type not available at this date!",
             parent.doc_name());
+    }
 
     set_skin_layout(model::default_layout);
 
@@ -178,13 +190,17 @@ torpedo::torpedo(
     if (arming_distance < 0)
     {
         if (dt >= latest)
+        {
             arming_distance = latest_arming_distance;
+        }
         else
+        {
             THROW(
                 xml_error,
                 "no period subtags of arming that match current equipment "
                 "date!",
                 parent.doc_name());
+        }
     }
     // ---------- fuse(s)
     xml_elem efuse = parent.child("fuse");
@@ -203,23 +219,33 @@ torpedo::torpedo(
         {
             fuse f(eperiod, dt);
             if (f.type == fuse::IMPACT || f.type == fuse::INERTIAL)
+            {
                 contact_fuse = f;
+            }
             else
+            {
                 magnetic_fuse = f;
+            }
         }
     }
     if (contact_fuse.type == fuse::NONE && magnetic_fuse.type == fuse::NONE)
     {
         if (latest_fuse.type == fuse::IMPACT
             || latest_fuse.type == fuse::INERTIAL)
+        {
             contact_fuse = latest_fuse;
+        }
         else if (latest_fuse.type == fuse::INFLUENCE)
+        {
             magnetic_fuse = latest_fuse;
+        }
         else
+        {
             THROW(
                 xml_error,
                 "no period subtags of fuse that match current equipment date!",
                 parent.doc_name());
+        }
     }
     // ----------- motion / steering device
     xml_elem emotion = parent.child("motion");
@@ -228,10 +254,12 @@ torpedo::torpedo(
     if (hasfat > 0)
     {
         if (haslut > 0)
+        {
             THROW(
                 xml_error,
                 "steering device must be EITHER LuT OR FaT!",
                 parent.doc_name());
+        }
         steering_device = (hasfat == 1) ? FATI : FATII;
     }
     else if (haslut > 0)
@@ -251,13 +279,17 @@ torpedo::torpedo(
     {
         propulsion_type = STEAM;
         if (hasfat || haslut)
+        {
             setup.torpspeed = NORMAL; // 30kts / slow G7a
+        }
     }
     else if (powertype == "electric")
     {
         propulsion_type = ELECTRIC;
         if (setup.torpspeed != NORMAL && setup.torpspeed != PREHEATED)
+        {
             setup.torpspeed = NORMAL;
+        }
     }
     else if (powertype == "ingolin")
     {
@@ -525,7 +557,9 @@ void torpedo::simulate(double delta_time, game& gm)
     { // avoid collision with parent after initial creation
         bool runlengthfailure = (run_length < arming_distance);
         if (gm.check_torpedo_hit(this, runlengthfailure))
+        {
             kill();
+        }
     }
 }
 
@@ -571,12 +605,12 @@ void torpedo::depth_steering_logic()
     dive_planes.to_angle = dive_planes.max_angle * rd / 5.0;
 }
 
-double torpedo::get_throttle_speed() const
+auto torpedo::get_throttle_speed() const -> double
 {
     return run_length > get_range() ? 0.0 : get_max_speed();
 }
 
-double torpedo::get_secondary_run_lenth() const
+auto torpedo::get_secondary_run_lenth() const -> double
 {
     if (setup.short_secondary_run)
     {
@@ -609,7 +643,7 @@ double torpedo::get_secondary_run_lenth() const
     }
 }
 
-double torpedo::get_turn_drag_area() const
+auto torpedo::get_turn_drag_area() const -> double
 {
     // torpedo is fully under water, so use full cross section
     return mymodel->get_cross_section(90.0);
@@ -650,12 +684,13 @@ void torpedo::create_sensor_array ( types t )
 }
 #endif
 
-unsigned torpedo::get_hit_points() const // awful, useless, replace, fixme
+auto torpedo::get_hit_points() const
+    -> unsigned // awful, useless, replace, fixme
 {
     return 100; // G7A_HITPOINTS;//fixme
 }
 
-double torpedo::get_range() const
+auto torpedo::get_range() const -> double
 {
     switch (propulsion_type)
     {
@@ -673,7 +708,7 @@ double torpedo::get_range() const
     }
 }
 
-double torpedo::get_torp_speed() const
+auto torpedo::get_torp_speed() const -> double
 {
     switch (propulsion_type)
     {
@@ -691,14 +726,14 @@ double torpedo::get_torp_speed() const
     }
 }
 
-bool torpedo::test_contact_fuse(game& gm) const
+auto torpedo::test_contact_fuse(game& gm) const -> bool
 {
     // compute if contact fuse fails (if fuse type is NONE, probability is 1.0,
     // so it fails always)
     return gm.randomf() > contact_fuse.failure_probability;
 }
 
-bool torpedo::test_magnetic_fuse(game& gm) const
+auto torpedo::test_magnetic_fuse(game& gm) const -> bool
 {
     // compute if magnetic fuse fails (if fuse type is NONE, probability is 1.0,
     // so it fails always)

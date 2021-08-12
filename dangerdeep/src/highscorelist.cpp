@@ -48,7 +48,7 @@ void highscorelist::entry::save(ostream& out) const
     write_string(out, name);
 }
 
-bool highscorelist::entry::is_worse_than(unsigned pts) const
+auto highscorelist::entry::is_worse_than(unsigned pts) const -> bool
 {
     return points < pts;
 }
@@ -65,7 +65,9 @@ highscorelist::highscorelist(const string& filename)
     entries.resize(maxentries);
 
     for (unsigned i = 0; i < maxentries; ++i)
+    {
         entries[i] = entry(in);
+    }
 }
 
 void highscorelist::save(const string& filename) const
@@ -75,21 +77,27 @@ void highscorelist::save(const string& filename) const
     write_u8(out, n);
 
     for (unsigned i = 0; i < n; ++i)
+    {
         entries[i].save(out);
+    }
 }
 
-unsigned highscorelist::get_listpos_for(unsigned points) const
+auto highscorelist::get_listpos_for(unsigned points) const -> unsigned
 {
     unsigned i = 0;
 
     for (; i < entries.size(); ++i)
+    {
         if (entries[i].is_worse_than(points))
+        {
             break;
+        }
+    }
 
     return i;
 }
 
-bool highscorelist::is_good_enough(unsigned points) const
+auto highscorelist::is_good_enough(unsigned points) const -> bool
 {
     return get_listpos_for(points) < entries.size();
 }
@@ -101,7 +109,9 @@ void highscorelist::record(unsigned points, const string& name)
     {
         // move rest down one step
         for (auto j = unsigned(entries.size()); j > pos + 1; --j)
+        {
             entries[j - 1] = entries[j - 2];
+        }
         entries[pos] = entry(points, name);
     }
 }

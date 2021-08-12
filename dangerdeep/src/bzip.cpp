@@ -44,7 +44,9 @@ bzip_streambuf::bzip_streambuf(
     state = BZ2_bzCompressInit(&bzstream, blocksize, 0, workfactor);
 
     if (state < 0)
+    {
         throw bzip_failure(state);
+    }
 }
 
 bzip_streambuf::bzip_streambuf(
@@ -67,13 +69,15 @@ bzip_streambuf::bzip_streambuf(
 
     state = BZ2_bzDecompressInit(&bzstream, 0, small);
     if (state < 0)
+    {
         throw bzip_failure(state);
+    }
 
     char* end = &out_buffer[0] + buffer_size + put_back;
     setg(end, end, end);
 }
 
-std::streambuf::int_type bzip_streambuf::overflow(int_type ch)
+auto bzip_streambuf::overflow(int_type ch) -> std::streambuf::int_type
 {
     if (ch != traits_type::eof())
     {
@@ -89,7 +93,9 @@ std::streambuf::int_type bzip_streambuf::overflow(int_type ch)
             bzstream.next_out  = &out_buffer[0];
             state              = BZ2_bzCompress(&bzstream, BZ_RUN);
             if (state < 0)
+            {
                 throw bzip_failure(state);
+            }
             outstream->write(
                 &(out_buffer[0]), out_buffer.size() - bzstream.avail_out);
         } while (state == BZ_RUN_OK && bzstream.avail_in != 0);
@@ -100,10 +106,12 @@ std::streambuf::int_type bzip_streambuf::overflow(int_type ch)
     return traits_type::eof();
 }
 
-std::streambuf::int_type bzip_streambuf::underflow()
+auto bzip_streambuf::underflow() -> std::streambuf::int_type
 {
-    if (gptr() < egptr()) // buffer not exhausted
+    if (gptr() < egptr())
+    { // buffer not exhausted
         return traits_type::to_int_type(*gptr());
+    }
 
     char* base  = &out_buffer[0];
     char* start = base;
@@ -118,7 +126,9 @@ std::streambuf::int_type bzip_streambuf::underflow()
     int num = bzip2stream(start, buffer_size + put_back - (start - base));
 
     if (num <= 0)
+    {
         return traits_type::eof();
+    }
 
     // Set buffer pointers
     setg(base, start, start + num);
@@ -126,7 +136,7 @@ std::streambuf::int_type bzip_streambuf::underflow()
     return traits_type::to_int_type(*gptr());
 }
 
-int bzip_streambuf::bzip2stream(char* start, int avail)
+auto bzip_streambuf::bzip2stream(char* start, int avail) -> int
 {
     bzstream.next_out  = start;
     bzstream.avail_out = avail;
@@ -135,21 +145,27 @@ int bzip_streambuf::bzip2stream(char* start, int avail)
     {
 
         if (bzstream.avail_in == 0)
+        {
             fill_buffer();
+        }
         state = BZ2_bzDecompress(&bzstream);
         if (state < 0)
+        {
             throw bzip_failure(state);
+        }
 
     } while (state == BZ_OK && bzstream.avail_out != 0);
 
     return avail - bzstream.avail_out;
 }
 
-int bzip_streambuf::fill_buffer()
+auto bzip_streambuf::fill_buffer() -> int
 {
     instream->read(&in_buffer[0], buffer_size);
     if (instream->fail() && !instream->eof())
+    {
         throw std::ios_base::failure("read error");
+    }
 
     bzstream.next_in  = &in_buffer[0];
     bzstream.avail_in = instream->gcount();
@@ -157,14 +173,16 @@ int bzip_streambuf::fill_buffer()
     return instream->gcount();
 }
 
-int bzip_streambuf::sync()
+auto bzip_streambuf::sync() -> int
 {
     if (pptr() && pptr() > pbase())
     {
         int_type c = overflow(traits_type::eof());
 
         if (c == traits_type::eof())
+        {
             return -1;
+        }
     }
     return 0;
 }
@@ -180,7 +198,9 @@ void bzip_streambuf::flush()
         bzstream.next_out  = &out_buffer[0];
         state              = BZ2_bzCompress(&bzstream, BZ_FINISH);
         if (state < 0)
+        {
             throw bzip_failure(state);
+        }
 
         outstream->write(
             &(out_buffer[0]), out_buffer.size() - bzstream.avail_out);

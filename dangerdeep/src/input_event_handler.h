@@ -175,12 +175,18 @@ struct mouse_button_state
 {
     std::array<bool, unsigned(mouse_button::number)>
         pressed{}; ///< for each button if pressed
-    bool is_pressed(mouse_button mb) const { return pressed[unsigned(mb)]; }
-    bool left() const { return is_pressed(mouse_button::left); }
-    bool middle() const { return is_pressed(mouse_button::middle); }
-    bool right() const { return is_pressed(mouse_button::right); }
+    [[nodiscard]] bool is_pressed(mouse_button mb) const
+    {
+        return pressed[unsigned(mb)];
+    }
+    [[nodiscard]] bool left() const { return is_pressed(mouse_button::left); }
+    [[nodiscard]] bool middle() const
+    {
+        return is_pressed(mouse_button::middle);
+    }
+    [[nodiscard]] bool right() const { return is_pressed(mouse_button::right); }
 
-    bool any() const
+    [[nodiscard]] bool any() const
     {
         return std::any_of(
             pressed.begin(), pressed.end(), [](bool b) { return b; });
@@ -215,9 +221,9 @@ class input_event_handler
         input_action action{
             input_action::none}; ///< whether key was pressed or released
 
-        bool up() const { return action == input_action::up; }
-        bool down() const { return action == input_action::down; }
-        bool is_keypad_number() const
+        [[nodiscard]] bool up() const { return action == input_action::up; }
+        [[nodiscard]] bool down() const { return action == input_action::down; }
+        [[nodiscard]] bool is_keypad_number() const
         {
             return key_code::KP_1 <= keycode && keycode <= key_code::KP_9;
         }
@@ -235,13 +241,22 @@ class input_event_handler
         vector2i relative_motion_2d; ///< Relative motion in 2D pseudo
                                      ///< coordinates (1024x768)
         mouse_button_state buttons_pressed; ///< for each button if pressed
-        bool is_pressed(mouse_button mb) const
+        [[nodiscard]] bool is_pressed(mouse_button mb) const
         {
             return buttons_pressed.is_pressed(mb);
         }
-        bool left() const { return is_pressed(mouse_button::left); }
-        bool middle() const { return is_pressed(mouse_button::middle); }
-        bool right() const { return is_pressed(mouse_button::right); }
+        [[nodiscard]] bool left() const
+        {
+            return is_pressed(mouse_button::left);
+        }
+        [[nodiscard]] bool middle() const
+        {
+            return is_pressed(mouse_button::middle);
+        }
+        [[nodiscard]] bool right() const
+        {
+            return is_pressed(mouse_button::right);
+        }
     };
 
     /// Mouse click event data
@@ -259,11 +274,17 @@ class input_event_handler
 
         mouse_button_state buttons_pressed; ///< for each button if pressed
 
-        bool up() const { return action == input_action::up; }
-        bool down() const { return action == input_action::down; }
-        bool left() const { return button == mouse_button::left; }
-        bool middle() const { return button == mouse_button::middle; }
-        bool right() const { return button == mouse_button::right; }
+        [[nodiscard]] bool up() const { return action == input_action::up; }
+        [[nodiscard]] bool down() const { return action == input_action::down; }
+        [[nodiscard]] bool left() const { return button == mouse_button::left; }
+        [[nodiscard]] bool middle() const
+        {
+            return button == mouse_button::middle;
+        }
+        [[nodiscard]] bool right() const
+        {
+            return button == mouse_button::right;
+        }
     };
 
     /// Mouse wheel event data
@@ -283,8 +304,8 @@ class input_event_handler
 
         input_action action{
             input_action::none}; ///< whether wheel turned up or down
-        bool up() const { return action == input_action::up; }
-        bool down() const { return action == input_action::down; }
+        [[nodiscard]] bool up() const { return action == input_action::up; }
+        [[nodiscard]] bool down() const { return action == input_action::down; }
     };
 
     /// Handle key event, returns if handled

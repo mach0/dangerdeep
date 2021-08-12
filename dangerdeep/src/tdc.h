@@ -94,22 +94,23 @@ class tdc
     void set_additional_parallaxangle(angle ala);
     void set_auto_mode(bool enabled) { auto_mode = enabled; }
 
-    bool solution_valid() const { return valid_solution; }
-    angle get_lead_angle() const { return lead_angle; }
-    angle get_bearing() const { return bearing_dial; }
-    angle get_angle_on_the_bow() const { return angleonthebow; }
-    angle get_target_course() const; // computed from current Angle on the Bow
-    double get_target_distance() const { return target_distance; }
-    double get_target_speed() const { return target_speed; }
-    double get_torpedo_speed() const { return torpedo_speed; }
-    double get_torpedo_runtime() const { return torpedo_runtime; }
-    angle get_additional_parallaxangle() const
+    [[nodiscard]] bool solution_valid() const { return valid_solution; }
+    [[nodiscard]] angle get_lead_angle() const { return lead_angle; }
+    [[nodiscard]] angle get_bearing() const { return bearing_dial; }
+    [[nodiscard]] angle get_angle_on_the_bow() const { return angleonthebow; }
+    [[nodiscard]] angle
+    get_target_course() const; // computed from current Angle on the Bow
+    [[nodiscard]] double get_target_distance() const { return target_distance; }
+    [[nodiscard]] double get_target_speed() const { return target_speed; }
+    [[nodiscard]] double get_torpedo_speed() const { return torpedo_speed; }
+    [[nodiscard]] double get_torpedo_runtime() const { return torpedo_runtime; }
+    [[nodiscard]] angle get_additional_parallaxangle() const
     {
         return additional_parallaxangle;
     }
-    angle get_parallax_angle() const
+    [[nodiscard]] angle get_parallax_angle() const
     {
         return parallaxangle + additional_parallaxangle;
     }
-    bool auto_mode_enabled() const { return auto_mode; }
+    [[nodiscard]] bool auto_mode_enabled() const { return auto_mode; }
 };

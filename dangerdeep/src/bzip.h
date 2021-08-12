@@ -34,7 +34,7 @@ class bzip_failure : public std::ios_base::failure
 
   public:
     bzip_failure(int _error_code) : failure(""), error_code(_error_code){};
-    const char* what() const noexcept override
+    [[nodiscard]] const char* what() const noexcept override
     {
         switch (error_code)
         {

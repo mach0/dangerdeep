@@ -130,8 +130,8 @@ class ai
     double rem_manouver_time; // remaining time that ai should wait for during
                               // an evasive manouver
 
-    sea_object_id followme;   // could be a sea_object instead of ship?
-    sea_object_id myconvoy;   // convoy to which parent belongs (if any)
+    sea_object_id followme; // could be a sea_object instead of ship?
+    sea_object_id myconvoy; // convoy to which parent belongs (if any)
     bool has_contact;
 
     vector3 contact;       // position of target to attack

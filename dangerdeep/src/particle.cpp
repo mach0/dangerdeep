@@ -68,31 +68,41 @@ texture* particle::tex_marker          = nullptr;
 
 vector<float> particle::interpolate_func;
 
-vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
+auto particle::make_2d_smoothed_noise_map(unsigned wh) -> vector<uint8_t>
 {
     vector<uint8_t> tmp(wh * wh);
     for (unsigned i = 0; i < wh * wh; ++i)
-        tmp[i] = (uint8_t)(rand() % 256);
+    {
+        tmp[i] = static_cast<uint8_t>(rand() % 256);
+    }
 
     for (unsigned i = 0; i < wh; ++i)
     {
         tmp[i] = 0;
         if (rand() % 2 == 0)
+        {
             tmp[wh + i] = 0;
+        }
 
         tmp[wh * i] = 0;
         if (rand() % 2 == 0)
+        {
             tmp[wh * i + 1] = 0;
+        }
 
         tmp[wh * i + wh - 1] = 0;
 
         if (rand() % 2 == 0)
+        {
             tmp[wh * i + wh - 2] = 0;
+        }
 
         tmp[(wh - 1) * wh + i] = 0;
 
         if (rand() % 2 == 0)
+        {
             tmp[(wh - 2) * wh + i] = 0;
+        }
     }
     vector<uint8_t> tmp2(wh * wh);
     unsigned rmin = 255, rmax = 0;
@@ -116,15 +126,19 @@ vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
                       / 8
                 + unsigned(tmp[y * wh + x]) / 4;
 
-            auto r2 = (uint8_t)(r);
+            auto r2 = static_cast<uint8_t>(r);
 
             tmp2[y * wh + x] = r2;
 
             if (r2 > rmax)
+            {
                 rmax = r2;
+            }
 
             if (r2 < rmin)
+            {
                 rmin = r2;
+            }
         }
     }
     for (unsigned y = 0; y < wh; ++y)
@@ -132,18 +146,18 @@ vector<uint8_t> particle::make_2d_smoothed_noise_map(unsigned wh)
         for (unsigned x = 0; x < wh; ++x)
         {
             unsigned r      = tmp2[y * wh + x];
-            tmp[y * wh + x] = (uint8_t)((r - rmin) * 256 / (rmax - rmin + 1));
+            tmp[y * wh + x] = static_cast<uint8_t>((r - rmin) * 256 / (rmax - rmin + 1));
         }
     }
     return tmp;
 }
 
-unsigned particle::interpolate_2d_map(
+auto particle::interpolate_2d_map(
     const vector<uint8_t>& mp,
     unsigned res,
     unsigned x,
     unsigned y,
-    unsigned res2)
+    unsigned res2) -> unsigned
 {
     unsigned fac = res2 / res;
     unsigned xi  = x / fac;
@@ -166,12 +180,14 @@ unsigned particle::interpolate_2d_map(
 }
 
 // fixme: replace by perlinnoise generator class!
-vector<uint8_t>
-particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
+auto particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
+    -> vector<uint8_t>
 {
     unsigned whlevel = 0;
     while (wh > unsigned(1 << whlevel))
+    {
         ++whlevel;
+    }
 
     // prepare lookup maps
     unsigned levels = whlevel - highestlevel + 1;
@@ -199,15 +215,17 @@ particle::make_2d_perlin_noise(unsigned wh, unsigned highestlevel)
             }
             r /= 65536;
             if (r > 255)
+            {
                 r = 510 - r;
-            result[y * wh + x] = (uint8_t)(r);
+            }
+            result[y * wh + x] = static_cast<uint8_t>(r);
         }
     }
     return result;
 }
 
-vector<uint8_t>
-particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
+auto particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
+    -> vector<uint8_t>
 {
     vector<uint8_t> result = oldframe;
     for (unsigned y = 0; y < wh - 2; ++y)
@@ -226,7 +244,9 @@ particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
             sum        = (r > sum) ? 0 : sum - r;
             sum        = (sum * 28) / 256;
             if (sum > 255)
+            {
                 sum = 511 - sum;
+            }
             result[y * wh + x] = uint8_t(sum);
         }
     }
@@ -239,9 +259,13 @@ particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
                                            : (rand() % (wh - 2)) + 1;
             uint8_t c;
             if (rand() % 4 == 0)
+            {
                 c = 0;
+            }
             else
+            {
                 c = rand() % 55 + 200;
+            }
             result[(wh - 1 - k) * wh + x] = c;
         }
     }
@@ -251,11 +275,15 @@ particle::compute_fire_frame(unsigned wh, const vector<uint8_t>& oldframe)
 void particle::init()
 {
     if (++init_count != 1)
+    {
         return;
+    }
 
     interpolate_func.resize(256);
     for (unsigned i = 0; i < 256; ++i)
+    {
         interpolate_func[i] = 0.5f - 0.5f * cos(i * M_PI / 256);
+    }
 
     // compute random smoke textures here.
     // just random noise with smoke color gradients and irregular outline
@@ -280,7 +308,7 @@ void particle::init()
             for (unsigned x = 0; x < 64; ++x)
             {
                 unsigned r                     = noise[y * 64 + x];
-                smoketmp[2 * (y * 64 + x) + 0] = (uint8_t) r;
+                smoketmp[2 * (y * 64 + x) + 0] = static_cast<uint8_t>(r);
                 smoketmp[2 * (y * 64 + x) + 1] = (r < 64) ? 0 : r - 64;
             }
         }
@@ -430,24 +458,36 @@ void particle::init()
 void particle::deinit()
 {
     if (--init_count != 0)
+    {
         return;
+    }
 
     for (auto& i : tex_smoke)
+    {
         delete i;
+    }
 
     delete tex_spray;
 
     for (auto& i : tex_fire)
+    {
         delete i;
+    }
 
     for (auto& i : explosionbig)
+    {
         delete i;
+    }
 
     for (auto& i : explosionsml)
+    {
         delete i;
+    }
 
     for (auto& watersplashe : watersplashes)
+    {
         delete watersplashe;
+    }
 
     delete tex_fireworks;
     delete tex_fireworks_flare;
@@ -462,7 +502,9 @@ void particle::simulate(game& gm, double delta_t)
     life -= delta_t / get_life_time();
 
     if (life < 0.0)
+    {
         life = 0.0;
+    }
 }
 
 void particle::display_all(
@@ -517,8 +559,10 @@ void particle::display_all(
         vector3 x = y.cross(z).normal();
 
         // check if we have true billboarding vs. z-aligned billboarding.
-        if (!part.is_z_up()) // fixme
+        if (!part.is_z_up())
+        { // fixme
             y = z.cross(x).normal();
+        }
 
         // some particle types are complex systems.
         if (part.has_custom_rendering())
@@ -577,40 +621,42 @@ smoke_particle::smoke_particle(const vector3& pos) :
     velocity.z = 4.0; // m/s
 }
 
-vector3 smoke_particle::get_acceleration() const
+auto smoke_particle::get_acceleration() const -> vector3
 {
     return {0, 0, -3.0 / get_life_time()};
 }
 
-double smoke_particle::get_width() const
+auto smoke_particle::get_width() const -> double
 {
     // min/max size in meters
     return 2.0 * life + 50.0 * (1.0 - life);
 }
 
-double smoke_particle::get_height() const
+auto smoke_particle::get_height() const -> double
 {
     double h = get_width();
     if (life > 0.9)
+    {
         h *= (life - 0.8) * 10;
+    }
     return h;
 }
 
-const texture& smoke_particle::get_tex_and_col(
+auto smoke_particle::get_tex_and_col(
     game& gm,
     const colorf& light_color,
-    colorf& col) const
+    colorf& col) const -> const texture&
 {
     col = colorf(0.5f, 0.5f, 0.5f, life) * light_color;
     return *tex_smoke[texnr];
 }
 
-double smoke_particle::get_life_time() const
+auto smoke_particle::get_life_time() const -> double
 {
     return 30.0; // seconds
 }
 
-double smoke_particle::get_produce_time()
+auto smoke_particle::get_produce_time() -> double
 {
     return 0.6; // seconds
 }
@@ -620,17 +666,17 @@ smoke_particle_escort::smoke_particle_escort(const vector3& pos) :
 {
 }
 
-double smoke_particle_escort::get_width() const
+auto smoke_particle_escort::get_width() const -> double
 {
     return 2.0 * life + 25.0 * (1.0 - life);
 }
 
-double smoke_particle_escort::get_life_time() const
+auto smoke_particle_escort::get_life_time() const -> double
 {
     return 15.0; // seconds
 }
 
-double smoke_particle_escort::get_produce_time()
+auto smoke_particle_escort::get_produce_time() -> double
 {
     return 0.3; // seconds
 }
@@ -642,32 +688,34 @@ explosion_particle::explosion_particle(const vector3& pos) : particle(pos)
     extype = 0; // rnd(1); //fixme
 }
 
-double explosion_particle::get_width() const
+auto explosion_particle::get_width() const -> double
 {
     return 20.0; // fixme: depends on type
 }
 
-double explosion_particle::get_height() const
+auto explosion_particle::get_height() const -> double
 {
     return 20.0; // fixme: depends on type
 }
 
-const texture& explosion_particle::get_tex_and_col(
+auto explosion_particle::get_tex_and_col(
     game& gm,
     const colorf& /*light_color*/,
-    colorf& col) const
+    colorf& col) const -> const texture&
 {
     col    = colorf(1, 1, 1, 1);
     auto f = unsigned(EXPL_FRAMES * (1.0 - life));
 
     if (f < 0 || f >= EXPL_FRAMES)
+    {
         f = EXPL_FRAMES - 1;
+    }
 
     // switch on type, fixme
     return *explosionbig[f];
 }
 
-double explosion_particle::get_life_time() const
+auto explosion_particle::get_life_time() const -> double
 {
     return 2.0; // seconds
 }
@@ -692,27 +740,27 @@ void fire_particle::simulate(game& gm, double delta_t)
     }
 }
 
-double fire_particle::get_width() const
+auto fire_particle::get_width() const -> double
 {
     return 20.0; // fixme: depends on type
 }
 
-double fire_particle::get_height() const
+auto fire_particle::get_height() const -> double
 {
     return 20.0; // fixme: depends on type
 }
 
-const texture& fire_particle::get_tex_and_col(
+auto fire_particle::get_tex_and_col(
     game& gm,
     const colorf& /*light_color*/,
-    colorf& col) const
+    colorf& col) const -> const texture&
 {
     col    = colorf(1, 1, 1, 1);
     auto i = unsigned(tex_fire.size() * (1.0 - life));
     return *tex_fire[i];
 }
 
-double fire_particle::get_life_time() const
+auto fire_particle::get_life_time() const -> double
 {
     return 4.0; // seconds
 }
@@ -724,26 +772,26 @@ spray_particle::spray_particle(const vector3& pos, const vector3& velo) :
 {
 }
 
-double spray_particle::get_width() const
+auto spray_particle::get_width() const -> double
 {
     return (1.0 - life) * 6.0 + 2.0;
 }
 
-double spray_particle::get_height() const
+auto spray_particle::get_height() const -> double
 {
     return get_width();
 }
 
-const texture& spray_particle::get_tex_and_col(
+auto spray_particle::get_tex_and_col(
     game& gm,
     const colorf& light_color,
-    colorf& col) const
+    colorf& col) const -> const texture&
 {
     col = colorf(1.0f, 1.0f, 1.0f, life) * light_color;
     return *tex_spray;
 }
 
-double spray_particle::get_life_time() const
+auto spray_particle::get_life_time() const -> double
 {
     return 4.0; // seconds
 }
@@ -763,7 +811,7 @@ fireworks_particle::fireworks_particle(const vector3& pos) :
     }
 }
 
-double fireworks_particle::get_z(double life_fac) const
+auto fireworks_particle::get_z(double life_fac) const -> double
 {
     double z = 30 * (1.0 - life_fac) * get_life_time();
     if (life_fac <= 2.0 / 3)
@@ -799,7 +847,7 @@ void fireworks_particle::custom_display(
         vector3 p          = position - viewpos;
 
         lines.vertices[0].assign(p);
-        double lifefac     = 1.0 - (1.0 - life) * 0.5;
+        double lifefac = 1.0 - (1.0 - life) * 0.5;
 
         p.z                = get_z(lifefac) - viewpos.z;
         lines.texcoords[1] = vector2f(0.0, 0.75f);
@@ -816,7 +864,9 @@ void fireworks_particle::custom_display(
         lifefac2        = 1.0 - lifefac2 * lifefac2;
 
         if (life <= 1.0 / 3)
+        {
             lifefac2 = 1.0;
+        }
 
         double lifefac = 1.0 - (life * 3.0 - 1.0);
 
@@ -897,15 +947,15 @@ void fireworks_particle::custom_display(
     }
 }
 
-const texture& fireworks_particle::get_tex_and_col(
+auto fireworks_particle::get_tex_and_col(
     game& /*gm*/,
     const colorf& /*light_color*/,
-    colorf& /*col*/) const
+    colorf& /*col*/) const -> const texture&
 {
     THROW(error, "invalid call");
 }
 
-double fireworks_particle::get_life_time() const
+auto fireworks_particle::get_life_time() const -> double
 {
     return 6.0; // seconds
 }
@@ -914,27 +964,27 @@ double fireworks_particle::get_life_time() const
 
 marker_particle::marker_particle(const vector3& pos) : particle(pos) { }
 
-double marker_particle::get_width() const
+auto marker_particle::get_width() const -> double
 {
     // oscillate between 1m and 20m every seconds
     return myfrac(life * 1000) * 19 + 1;
 }
 
-double marker_particle::get_height() const
+auto marker_particle::get_height() const -> double
 {
     return get_width();
 }
 
-const texture& marker_particle::get_tex_and_col(
+auto marker_particle::get_tex_and_col(
     game& gm,
     const colorf& /*light_color*/,
-    colorf& col) const
+    colorf& col) const -> const texture&
 {
     col = colorf(1, 1, 1, 1);
     return *tex_marker;
 }
 
-double marker_particle::get_life_time() const
+auto marker_particle::get_life_time() const -> double
 {
     return 1000.0; // stays for 1000 seconds
 }

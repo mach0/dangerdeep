@@ -37,44 +37,58 @@ parser::parser(string filename_, char separator_) :
     file(filename.c_str(), std::ios::in), line(0), currcol(string::npos)
 {
     if (file.fail())
+    {
         THROW(file_read_error, filename);
+    }
 
     if (!next_line())
+    {
         THROW(error, string("Can't read in file ") + filename);
+    }
 
     if ((separator <= ' ' && separator != '\t') || separator == '"')
+    {
         THROW(error, "invalid separator!");
+    }
 }
 
-bool parser::next_line()
+auto parser::next_line() -> bool
 {
     while (!file.eof())
     {
         getline(file, currline);
         ++line;
         if (currline.empty())
+        {
             continue;
+        }
 
         currcol = 0;
 
         // terminate line if it ends with separator
         if (currline[currline.size() - 1] == separator)
+        {
             currline += "\"\"";
+        }
 
         bool ok = next_column();
 
         if (ok)
+        {
             return true;
+        }
 
         // else: empty line, try next
     }
     return false;
 }
 
-bool parser::next_column()
+auto parser::next_column() -> bool
 {
     if (currcol >= currline.size())
+    {
         return false;
+    }
 
     // try to generate next cell
     cell.clear();
@@ -129,7 +143,9 @@ bool parser::next_column()
             }
 
             if (c == ' ' || c == '\t')
+            {
                 continue;
+            }
 
             if (is_string > 0)
             {
@@ -142,8 +158,10 @@ bool parser::next_column()
             if (c == '"')
             {
                 if (is_string < 0)
+                {
                     report_error(
                         "error in read, character before begin of string");
+                }
                 in_string = true;
                 is_string = 1;
                 continue;
@@ -156,12 +174,14 @@ bool parser::next_column()
     }
 
     if (in_string)
+    {
         report_error("unterminated string");
+    }
 
     return true;
 }
 
-bool parser::get_cell_number(unsigned& n) const
+auto parser::get_cell_number(unsigned& n) const -> bool
 {
     std::istringstream iss(cell);
     iss >> n;

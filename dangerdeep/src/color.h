@@ -79,11 +79,11 @@ struct color
 
     // transform color to grey value (model of human vision, 29.9% to 58.7%
     // to 11.4% RGB)
-    float brightness() const
+    [[nodiscard]] float brightness() const
     {
         return (r * 0.299 + g * 0.587 + b * 0.114) / 255;
     }
-    color grey_value() const
+    [[nodiscard]] color grey_value() const
     {
         auto c = (uint8_t)(r * 0.299 + g * 0.587 + b * 0.114);
         return {c, c, c, a};
@@ -93,7 +93,7 @@ struct color
     // = read_u8(in); } void save(ostream& out) const { write_u8(out, r);
     // write_u8(out, g); write_u8(out, b); write_u8(out, a); }
 
-    color more_contrast(unsigned fac) const
+    [[nodiscard]] color more_contrast(unsigned fac) const
     {
         int rr = (int(r) - 128) * fac + 128;
         int gg = (int(g) - 128) * fac + 128;
@@ -113,7 +113,7 @@ struct color
                          : bb)};
     }
 
-    vector4f vec4() const
+    [[nodiscard]] vector4f vec4() const
     {
         // *1/255
         return {
@@ -123,7 +123,7 @@ struct color
             a * 0.003921569f};
     }
 
-    vector3f vec3() const
+    [[nodiscard]] vector3f vec3() const
     {
         // *1/255
         return {r * 0.003921569f, g * 0.003921569f, b * 0.003921569f};
@@ -177,7 +177,7 @@ struct colorf
     colorf operator*(float f) const { return {r * f, g * f, b * f, a * f}; }
 
     /// component wise linear interpolation
-    colorf lerp(const colorf& c1, const colorf& c2) const
+    [[nodiscard]] colorf lerp(const colorf& c1, const colorf& c2) const
     {
         return {
             c1.r * (1 - r) + c2.r * r,
@@ -186,9 +186,9 @@ struct colorf
             c1.a * (1 - a) + c2.a * a};
     }
 
-    vector3f vec3() const { return {r, g, b}; }
+    [[nodiscard]] vector3f vec3() const { return {r, g, b}; }
 
-    vector4f vec4() const { return {r, g, b, a}; }
+    [[nodiscard]] vector4f vec4() const { return {r, g, b, a}; }
 
     void store_rgb(uint8_t* ptr) const
     {
@@ -219,8 +219,11 @@ struct colorf
 
     // transform color to grey value (model of human vision, 29.9% to 58.7%
     // to 11.4% RGB)
-    float brightness() const { return (r * 0.299 + g * 0.587 + b * 0.114); }
-    colorf grey_value() const
+    [[nodiscard]] float brightness() const
+    {
+        return (r * 0.299 + g * 0.587 + b * 0.114);
+    }
+    [[nodiscard]] colorf grey_value() const
     {
         float c = (r * 0.299 + g * 0.587 + b * 0.114);
         return {c, c, c, a};

@@ -120,14 +120,22 @@ void font::print_text(int x, int y, const string& text, bool ignore_colors)
             for (int i = 0; i < 6; ++i, ++ti)
             {
                 if (ti >= text.length())
+                {
                     break;
+                }
                 char c2 = text[ti];
                 if (c2 >= '0' && c2 <= '9')
+                {
                     nr[i] = c2 - '0';
+                }
                 else if (c2 >= 'a' && c2 <= 'f')
+                {
                     nr[i] = 10 + c2 - 'a';
+                }
                 else
+                {
                     nr[i] = 0;
+                }
             }
             --ti; // compensate for(...++ti)
             if (!ignore_colors)
@@ -193,9 +201,11 @@ font::font(const string& basefilename, unsigned char_spacing)
     for (unsigned i = first_char; i <= last_char; ++i)
     {
         if (!metricfile.good())
+        {
             THROW(
                 error,
                 string("error reading font metricfile for ") + basefilename);
+        }
         character& c = characters[i - first_char];
         unsigned x, y;
         metricfile >> x;
@@ -287,7 +297,7 @@ void font::print_c(
     print(x - wh.x / 2, y - wh.y / 2, text, col, with_shadow);
 }
 
-unsigned font::print_wrapped(
+auto font::print_wrapped(
     int x,
     int y,
     unsigned w,
@@ -295,7 +305,7 @@ unsigned font::print_wrapped(
     const string& text,
     color col,
     bool with_shadow,
-    unsigned maxheight) const
+    unsigned maxheight) const -> unsigned
 {
     shader->use();
     shader->set_gl_texture(*character_texture, loc_tex, 0);
@@ -395,13 +405,15 @@ unsigned font::print_wrapped(
             currwidth += tw + blank_width;
         }
         if (textptr == textlen)
+        {
             break;
+        }
     }
     print_cache();
     return textlen;
 }
 
-vector2i font::get_size(const string& text) const
+auto font::get_size(const string& text) const -> vector2i
 {
     unsigned x = 0, y = height;
     unsigned xmax = 0;
@@ -435,14 +447,22 @@ vector2i font::get_size(const string& text) const
             for (int i = 0; i < 6; ++i, ++ti)
             {
                 if (ti >= text.length())
+                {
                     break;
+                }
                 char c2 = text[ti];
                 if (c2 >= '0' && c2 <= '9')
+                {
                     nr[i] = c2 - '0';
+                }
                 else if (c2 >= 'a' && c2 <= 'f')
+                {
                     nr[i] = 10 + c2 - 'a';
+                }
                 else
+                {
                     nr[i] = 0;
+                }
             }
             --ti; // compensate for(...++ti)
         }
@@ -452,17 +472,21 @@ vector2i font::get_size(const string& text) const
             x += characters[t].width + spacing;
         } // else: ignore (unknown) character
         if (x > xmax)
+        {
             xmax = x;
+        }
     }
     if (x == 0)
+    {
         y -= height;
+    }
     return {static_cast<int>(xmax), static_cast<int>(y)};
 }
 
-std::pair<unsigned, unsigned> font::get_nr_of_lines_wrapped(
+auto font::get_nr_of_lines_wrapped(
     unsigned w,
     const string& text,
-    unsigned maxlines) const
+    unsigned maxlines) const -> std::pair<unsigned, unsigned>
 {
     // loop over spaces
     unsigned currwidth = 0;
@@ -481,7 +505,9 @@ std::pair<unsigned, unsigned> font::get_nr_of_lines_wrapped(
                 currwidth = 0;
                 ++textptr;
                 if (maxlines && nrlines > maxlines)
+                {
                     return std::make_pair(nrlines, textptr);
+                }
             }
             else if (c == ' ')
             {
@@ -545,12 +571,14 @@ std::pair<unsigned, unsigned> font::get_nr_of_lines_wrapped(
             currwidth += tw + blank_width;
         }
         if (textptr == textlen)
+        {
             break;
+        }
     }
     return std::make_pair(nrlines, textptr);
 }
 
-unsigned font::get_char_width(unsigned c) const
+auto font::get_char_width(unsigned c) const -> unsigned
 {
     if (c == ' ')
     {
@@ -566,7 +594,7 @@ unsigned font::get_char_width(unsigned c) const
     }
 }
 
-unsigned font::character_left(const std::string& text, unsigned cp)
+auto font::character_left(const std::string& text, unsigned cp) -> unsigned
 {
     if (cp > 0)
     {
@@ -589,7 +617,7 @@ unsigned font::character_left(const std::string& text, unsigned cp)
     return cp;
 }
 
-unsigned font::character_right(const std::string& text, unsigned cp)
+auto font::character_right(const std::string& text, unsigned cp) -> unsigned
 {
     const unsigned l = text.size();
     if (cp < l)
@@ -600,16 +628,24 @@ unsigned font::character_right(const std::string& text, unsigned cp)
             if (is_first_byte_of_twobyte_char(text[cp]))
             {
                 if (cp + 1 < l)
+                {
                     cp += 2;
+                }
                 else
+                {
                     cp = l;
+                }
             }
             else if (is_first_byte_of_threebyte_char(text[cp]))
             {
                 if (cp + 2 < l)
+                {
                     cp += 3;
+                }
                 else
+                {
                     cp = l;
+                }
             }
             else
             {
@@ -625,7 +661,7 @@ unsigned font::character_right(const std::string& text, unsigned cp)
     return cp;
 }
 
-unsigned font::read_character(const std::string& text, unsigned cp)
+auto font::read_character(const std::string& text, unsigned cp) -> unsigned
 {
     // Unicode (UTF-8) decoder:
     // In UTF-8 all characters from 0x00-0x7F are encoded as one byte.
@@ -670,7 +706,7 @@ unsigned font::read_character(const std::string& text, unsigned cp)
     return c;
 }
 
-std::string font::to_utf8(uint16_t unicode)
+auto font::to_utf8(uint16_t unicode) -> std::string
 {
     // input can have at max. 16bits, so range 0x0000-0xffff
     // that matches utf-8 1-byte characters until utf-8 3-byte characters.

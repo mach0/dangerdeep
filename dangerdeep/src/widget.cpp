@@ -69,9 +69,13 @@ widget::widget(xml_elem& elem, widget* _parent) :
     pos  = vector2i(elem.attri("pos_x"), elem.attri("pos_y"));
     size = vector2i(elem.attri("width"), elem.attri("height"));
     if (elem.has_attr("text") && elem.attri("text") > 0)
+    {
         text = texts::get(elem.attri("text"));
+    }
     if (elem.has_attr("bg_image"))
+    {
         background_image_name = elem.attr("bg_image");
+    }
     background = imagecache().ref(background_image_name);
     if (elem.has_attr("bg_texture"))
     {
@@ -80,9 +84,13 @@ widget::widget(xml_elem& elem, widget* _parent) :
                            .get());
     }
     if (elem.has_attr("enabled"))
+    {
         enabled = elem.attrb("enabled");
+    }
     else
+    {
         enabled = true;
+    }
 
     for (auto e : elem.iterate("widget"))
     {
@@ -137,38 +145,56 @@ widget_text::widget_text(xml_elem& elem, widget* _parent) :
     widget(elem, _parent)
 {
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_checkbox::widget_checkbox(xml_elem& elem, widget* _parent) :
     widget(elem, _parent)
 {
     if (elem.has_attr("checked"))
+    {
         checked = elem.attrb("checked");
+    }
     else
+    {
         checked = false;
+    }
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_button::widget_button(xml_elem& elem, widget* _parent) :
     widget(elem, _parent), pressed(false)
 {
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_menu::widget_menu(xml_elem& elem, widget* _parent) :
     widget(elem, _parent)
 {
     if (elem.has_attr("horizontal"))
+    {
         horizontal = elem.attrb("horizontal");
+    }
     else
+    {
         horizontal = false;
+    }
     if (elem.has_attr("entryspacing"))
+    {
         entryspacing = elem.attru("entryspacing");
+    }
     else
+    {
         entryspacing = 16;
+    }
     entryw = size.x;
     entryh = size.y;
     if (text.length() > 0)
@@ -180,7 +206,9 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) :
     for (auto e : elem.iterate("widget"))
     {
         if (e.attr("type") != "button")
+        {
             THROW(error, "widget_menu only accepts widget_button as entry");
+        }
         else
         {
             add_entry(
@@ -189,7 +217,9 @@ widget_menu::widget_menu(xml_elem& elem, widget* _parent) :
         }
     }
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_scrollbar::widget_scrollbar(xml_elem& elem, widget* _parent) :
@@ -198,11 +228,17 @@ widget_scrollbar::widget_scrollbar(xml_elem& elem, widget* _parent) :
     scrollbarpos = 0;
 
     if (elem.has_attr("positions"))
+    {
         set_nr_of_positions(elem.attru("positions"));
+    }
     else
+    {
         scrollbarmaxpos = 0;
+    }
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_list::widget_list(xml_elem& elem, widget* _parent) :
@@ -228,16 +264,22 @@ widget_list::widget_list(xml_elem& elem, widget* _parent) :
         size.y - 2 * fw,
         this));
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
     if (elem.has_attr("column_width"))
+    {
         set_column_width(elem.attri("column_width"));
+    }
 }
 
 widget_edit::widget_edit(xml_elem& elem, widget* _parent) :
     widget(elem, _parent), cursorpos(text.length())
 {
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_fileselector::widget_fileselector(xml_elem& elem, widget* _parent) :
@@ -264,7 +306,9 @@ widget_fileselector::widget_fileselector(xml_elem& elem, widget* _parent) :
 
     read_current_dir();
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_3dview::widget_3dview(xml_elem& elem, widget* _parent) :
@@ -282,7 +326,9 @@ widget_3dview::widget_3dview(xml_elem& elem, widget* _parent) :
     }
     translation.z = 100;
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
 widget_slider::widget_slider(xml_elem& elem, widget* _parent) :
@@ -293,22 +339,28 @@ widget_slider::widget_slider(xml_elem& elem, widget* _parent) :
     currvalue = elem.attri("currvalue");
     descrstep = elem.attri("descrstep");
     if (elem.has_attr("align_x") && elem.has_attr("align_y"))
+    {
         align(elem.attri("align_x"), elem.attri("align_y"));
+    }
 }
 
-widget* widget::get_child(const std::string& child, bool recursive)
+auto widget::get_child(const std::string& child, bool recursive) -> widget*
 {
     widget* retval = nullptr;
 
     for (auto& curchild : children)
     {
         if (curchild->name == child)
+        {
             return curchild.get();
+        }
         else if (recursive)
         {
             retval = curchild->get_child(child);
             if (retval != nullptr)
+            {
                 return retval;
+            }
         }
     }
 
@@ -347,28 +399,34 @@ objcachet<image>* widget::myimagecache = nullptr;
    video ram!
 */
 
-objcachet<class image>& widget::imagecache()
+auto widget::imagecache() -> objcachet<class image>&
 {
     if (myimagecache)
+    {
         return *myimagecache;
+    }
     THROW(error, "image cache not set for widgets!");
 }
 
 void widget::set_image_cache(objcachet<class image>* imagecache)
 {
     if (imagecache == nullptr)
+    {
         THROW(error, "trying to set empty image cache!");
+    }
     if (myimagecache != nullptr)
+    {
         THROW(error, "image cache already set!");
+    }
     myimagecache = imagecache;
 }
 
-int widget::theme::frame_size() const
+auto widget::theme::frame_size() const -> int
 {
     return frame[0]->get_height();
 }
 
-int widget::theme::icon_size() const
+auto widget::theme::icon_size() const -> int
 {
     return icons[0]->get_height();
 }
@@ -389,10 +447,14 @@ widget::theme::theme(
         backg   = std::make_unique<texture>(tmp, 0, 0, fw, fw);
         skbackg = std::make_unique<texture>(tmp, fw, 0, fw, fw);
         for (int i = 0; i < 8; ++i)
+        {
             frame[i] = std::make_unique<texture>(tmp, (i + 2) * fw, 0, fw, fw);
+        }
         for (int i = 0; i < 8; ++i)
+        {
             frameinv[i] =
                 std::make_unique<texture>(tmp, (i + 10) * fw, 0, fw, fw);
+        }
         sbarbackg = std::make_unique<texture>(tmp, (2 + 2 * 8) * fw, 0, fw, fw);
         sbarsurf =
             std::make_unique<texture>(tmp, (2 + 2 * 8 + 1) * fw, 0, fw, fw);
@@ -401,12 +463,14 @@ widget::theme::theme(
         sdl_image tmp(get_texture_dir() + icons_filename);
         int fw = tmp->h;
         for (int i = 0; i < 4; ++i)
+        {
             icons[i] = std::make_unique<texture>(tmp, i * fw, 0, fw, fw);
+        }
     }
 }
 
-std::unique_ptr<widget::theme>
-widget::replace_theme(std::unique_ptr<widget::theme> t)
+auto widget::replace_theme(std::unique_ptr<widget::theme> t)
+    -> std::unique_ptr<widget::theme>
 {
     std::unique_ptr<theme> r = std::move(globaltheme);
     globaltheme              = std::move(t);
@@ -434,12 +498,18 @@ widget::widget(
 widget::~widget()
 {
     if (background)
+    {
         imagecache().unref(background);
+    }
     children.clear();
     if (this == focussed)
+    {
         focussed = parent;
+    }
     if (this == mouseover)
+    {
         mouseover = nullptr;
+    }
 }
 
 void widget::add_child_near_last_child_generic(
@@ -448,7 +518,9 @@ void widget::add_child_near_last_child_generic(
     unsigned direction)
 {
     if (distance < 0)
+    {
         distance = globaltheme->frame_size() * -distance;
+    }
     if (children.empty())
     {
         // place near top of window, handle title bar
@@ -490,7 +562,9 @@ void widget::clip_to_children_area()
 {
     // no children? nothing to clip.
     if (children.empty())
+    {
         return;
+    }
     auto it       = children.begin();
     vector2i pmin = (*it)->get_pos();
     vector2i pmax = (*it)->get_pos() + (*it)->get_size();
@@ -586,22 +660,28 @@ void widget::draw() const
     // i.e. do not use stacking then...
     // maybe make chooseable via argument of run()
     for (auto& child : children)
+    {
         child->draw();
+    }
 }
 
-bool widget::compute_focus(int mx, int my)
+auto widget::compute_focus(int mx, int my) -> bool
 {
     focussed = nullptr;
     // if the widget is disabled, it can't get the focus and neither one of its
     // children.
     if (!is_enabled())
+    {
         return false;
+    }
     if (is_mouse_over(mx, my))
     {
         for (auto& child : children)
         {
             if (child->compute_focus(mx, my))
+            {
                 return true;
+            }
         }
         focussed = this;
         return true;
@@ -609,7 +689,7 @@ bool widget::compute_focus(int mx, int my)
     return false;
 }
 
-bool widget::compute_mouseover(int mx, int my)
+auto widget::compute_mouseover(int mx, int my) -> bool
 {
     mouseover = nullptr;
     if (is_mouse_over(mx, my))
@@ -617,7 +697,9 @@ bool widget::compute_mouseover(int mx, int my)
         for (auto& child : children)
         {
             if (child->compute_mouseover(mx, my))
+            {
                 return true;
+            }
         }
         mouseover = this;
         return true;
@@ -625,11 +707,13 @@ bool widget::compute_mouseover(int mx, int my)
     return false;
 }
 
-bool widget::is_enabled() const
+auto widget::is_enabled() const -> bool
 {
     bool e = enabled;
     if (parent)
+    {
         e = e && parent->is_enabled();
+    }
     return e;
 }
 
@@ -647,28 +731,36 @@ void widget::redraw()
 {
     redrawme = true;
     if (parent)
+    {
         parent->redraw();
+    }
 }
 
 void widget::on_key(key_code kc, key_mod km)
 {
     // we can't handle it, so pass it to the parent
     if (parent)
+    {
         parent->on_key(kc, km);
+    }
 }
 
 void widget::on_text(const std::string& t)
 {
     // we can't handle it, so pass it to the parent
     if (parent)
+    {
         parent->on_text(t);
+    }
 }
 
 void widget::on_wheel(input_action wd)
 {
     // we can't handle it, so pass it to the parent
     if (parent)
+    {
         parent->on_wheel(wd);
+    }
 }
 
 void widget::draw_frame(int x, int y, int w, int h, bool out)
@@ -689,9 +781,13 @@ void widget::draw_frame(int x, int y, int w, int h, bool out)
 void widget::draw_rect(int x, int y, int w, int h, bool out)
 {
     if (out)
+    {
         globaltheme->backg->draw(x, y, w, h);
+    }
     else
+    {
         globaltheme->skbackg->draw(x, y, w, h);
+    }
 }
 
 void widget::draw_line(int x1, int y1, int x2, int y2)
@@ -722,27 +818,31 @@ void widget::draw_area_col(int x, int y, int w, int h, bool out, color c) const
     draw_frame(x, y, w, h, out);
 }
 
-bool widget::is_mouse_over(int mx, int my) const
+auto widget::is_mouse_over(int mx, int my) const -> bool
 {
     vector2i p = get_pos();
     return (mx >= p.x && my >= p.y && mx < p.x + size.x && my < p.y + size.y);
 }
 
-std::unique_ptr<widget> widget::create_dialogue_ok(
+auto widget::create_dialogue_ok(
     widget* parent_,
     const string& title,
     const string& text,
     int w,
-    int h)
+    int h) -> std::unique_ptr<widget>
 {
     unsigned res_x = SYS().get_res_x_2d();
     unsigned res_y = SYS().get_res_y_2d();
     int x          = w ? (res_x - w) / 2 : res_x / 4;
     int y          = h ? (res_y - h) / 2 : res_y / 4;
     if (!w)
+    {
         w = res_x / 2;
+    }
     if (!h)
+    {
         h = res_y / 2;
+    }
     std::unique_ptr<widget> wi(
         std::make_unique<widget>(x, y, w, h, title, parent_));
     wi->add_child(std::make_unique<widget_text>(32, 64, w - 64, h - 128, text));
@@ -761,21 +861,25 @@ std::unique_ptr<widget> widget::create_dialogue_ok(
     return wi;
 }
 
-std::unique_ptr<widget> widget::create_dialogue_ok_cancel(
+auto widget::create_dialogue_ok_cancel(
     widget* parent_,
     const string& title,
     const string& text,
     int w,
-    int h)
+    int h) -> std::unique_ptr<widget>
 {
     unsigned res_x = SYS().get_res_x_2d();
     unsigned res_y = SYS().get_res_y_2d();
     int x          = w ? (res_x - w) / 2 : res_x / 4;
     int y          = h ? (res_y - h) / 2 : res_y / 4;
     if (!w)
+    {
         w = res_x / 2;
+    }
     if (!h)
+    {
         h = res_y / 2;
+    }
     std::unique_ptr<widget> wi(
         std::make_unique<widget>(x, y, w, h, title, parent_));
     wi->add_child(std::make_unique<widget_text>(32, 64, w - 64, h - 128, text));
@@ -803,21 +907,25 @@ std::unique_ptr<widget> widget::create_dialogue_ok_cancel(
     return wi;
 }
 
-int widget::run(
+auto widget::run(
     widget& w,
     unsigned timeout,
     bool do_stacking,
-    widget* focussed_at_begin)
+    widget* focussed_at_begin) -> int
 {
     glClearColor(0, 0, 0, 0);
     widget* myparent =
         w.get_parent(); // store parent info and unlink chain to parent
     w.set_parent(nullptr);
     if (myparent)
+    {
         myparent->disable();
+    }
     w.closeme = false;
     if (!do_stacking)
+    {
         unref_all_backgrounds();
+    }
     // we should encapsulate the code from here in a try call, to make changes
     // reversible on error. but in case of errors, we can't handle them well
     // here, so no matter.
@@ -849,7 +957,9 @@ int widget::run(
     {
         unsigned time = SYS().millisec();
         if (timeout != 0 && time > endtime)
+        {
             break;
+        }
 
         if (w.redrawme)
         {
@@ -858,7 +968,9 @@ int widget::run(
             if (do_stacking)
             {
                 for (auto& it : widgets)
+                {
                     it->draw();
+                }
             }
             else
             {
@@ -870,14 +982,19 @@ int widget::run(
     }
     widgets.pop_back();
     if (!do_stacking)
+    {
         ref_all_backgrounds();
+    }
     if (myparent)
+    {
         myparent->enable();
+    }
     w.set_parent(myparent);
     return w.retval;
 }
 
-bool widget::handle_key_event(widget& w, const input_event_handler::key_data& k)
+auto widget::handle_key_event(widget& w, const input_event_handler::key_data& k)
+    -> bool
 {
     // any key press or release could potentially change the scene, so redraw
     w.redraw();
@@ -889,9 +1006,9 @@ bool widget::handle_key_event(widget& w, const input_event_handler::key_data& k)
     return false;
 }
 
-bool widget::handle_mouse_button_event(
+auto widget::handle_mouse_button_event(
     widget& w,
-    const input_event_handler::mouse_click_data& m)
+    const input_event_handler::mouse_click_data& m) -> bool
 {
     // any click or release could potentially change the scene, so redraw
     w.redraw();
@@ -915,9 +1032,9 @@ bool widget::handle_mouse_button_event(
     return false;
 }
 
-bool widget::handle_mouse_motion_event(
+auto widget::handle_mouse_motion_event(
     widget& w,
-    const input_event_handler::mouse_motion_data& m)
+    const input_event_handler::mouse_motion_data& m) -> bool
 {
     // any mouse motion with pressed keys could potentially change the scene, so
     // redraw, without keys pressed a redraw is needed when mouseover changes
@@ -940,9 +1057,9 @@ bool widget::handle_mouse_motion_event(
     return false;
 }
 
-bool widget::handle_mouse_wheel_event(
+auto widget::handle_mouse_wheel_event(
     widget& w,
-    const input_event_handler::mouse_wheel_data& m)
+    const input_event_handler::mouse_wheel_data& m) -> bool
 {
     // any mouse wheel event could potentially change the scene, so redraw
     w.redraw();
@@ -954,7 +1071,7 @@ bool widget::handle_mouse_wheel_event(
     return false;
 }
 
-bool widget::handle_text_input_event(widget& w, const std::string& t)
+auto widget::handle_text_input_event(widget& w, const std::string& t) -> bool
 {
     // any text input could potentially change the scene, so redraw
     w.redraw();
@@ -996,13 +1113,15 @@ widget_menu::widget_menu(
     }
 }
 
-widget_button*
-widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
+auto widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
+    -> widget_button*
 {
     int x, y, w, h;
     unsigned mult = children.size();
     if (text.length() > 0)
+    {
         ++mult;
+    }
     if (horizontal)
     {
         x = mult * (entryw + entryspacing);
@@ -1012,7 +1131,9 @@ widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
         size.x += entryw;
         size.y = entryh;
         if (mult > 0)
+        {
             size.x += entryspacing;
+        }
     }
     else
     {
@@ -1023,7 +1144,9 @@ widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
         size.x = entryw;
         size.y += entryh;
         if (mult > 0)
+        {
             size.y += entryspacing;
+        }
     }
     if (wb.get())
     {
@@ -1039,7 +1162,7 @@ widget_menu::add_entry(const string& s, std::unique_ptr<widget_button> wb)
     return &add_child(std::move(wb));
 }
 
-int widget_menu::get_selected() const
+auto widget_menu::get_selected() const -> int
 {
     int sel = 0;
     for (auto& child : children)
@@ -1089,7 +1212,9 @@ void widget_menu::adjust_buttons(unsigned totalsize)
             int w = int(globaltheme->myfont->get_size(child->get_text()).x);
             textw += w;
             if (w > longest)
+            {
                 longest = w;
+            }
         }
         int framew    = 2 * fw * nrbut;
         int spaceleft = int(totalsize)
@@ -1233,13 +1358,17 @@ void widget_scrollbar::set_nr_of_positions(unsigned s)
 {
     scrollbarmaxpos = s;
     if (scrollbarmaxpos == 0)
+    {
         scrollbarpos = 0;
+    }
     else if (scrollbarpos >= scrollbarmaxpos)
+    {
         scrollbarpos = scrollbarmaxpos - 1;
+    }
     compute_scrollbarpixelpos();
 }
 
-unsigned widget_scrollbar::get_current_position() const
+auto widget_scrollbar::get_current_position() const -> unsigned
 {
     return scrollbarpos;
 }
@@ -1253,38 +1382,50 @@ void widget_scrollbar::set_current_position(unsigned p)
     }
 }
 
-unsigned widget_scrollbar::get_max_scrollbarsize() const
+auto widget_scrollbar::get_max_scrollbarsize() const -> unsigned
 {
     return size.y - globaltheme->icons[0]->get_height()
            - globaltheme->icons[1]->get_height()
            - 4 * globaltheme->frame_size();
 }
 
-unsigned widget_scrollbar::get_scrollbarsize() const
+auto widget_scrollbar::get_scrollbarsize() const -> unsigned
 {
     unsigned msbs = get_max_scrollbarsize();
     if (scrollbarmaxpos == 0)
+    {
         return msbs;
+    }
     else
+    {
         return msbs / 2 + msbs / (1 + scrollbarmaxpos);
+    }
 }
 
 void widget_scrollbar::compute_scrollbarpixelpos()
 {
     if (scrollbarmaxpos <= 1)
+    {
         scrollbarpixelpos = 0;
+    }
     else
+    {
         scrollbarpixelpos = (get_max_scrollbarsize() - get_scrollbarsize())
                             * scrollbarpos / (scrollbarmaxpos - 1);
+    }
 }
 
 void widget_scrollbar::draw_area(int x, int y, int w, int h, bool out) const
 {
     /* this is:  draw_rect_scrollbar(x+fw, y+fw, w-2*fw, h-2*fw, out); */
     if (out)
+    {
         globaltheme->sbarsurf->draw(x, y, w, h);
+    }
     else
+    {
         globaltheme->sbarbackg->draw(x, y, w, h);
+    }
 
     /* scrollbar has no background ...
     if (background) {
@@ -1355,7 +1496,9 @@ void widget_scrollbar::on_click(vector2i position, mouse_button btn)
         }
     }
     if (oldpos != scrollbarpos)
+    {
         on_scroll();
+    }
 }
 
 void widget_scrollbar::on_drag(
@@ -1377,15 +1520,21 @@ void widget_scrollbar::on_drag(
                 int sbpp = scrollbarpixelpos;
                 sbpp += motion.y;
                 if (sbpp < 0)
+                {
                     sbpp = 0;
+                }
                 else if (sbpp > msbp)
+                {
                     sbpp = msbp;
+                }
                 scrollbarpixelpos = sbpp;
                 scrollbarpos = scrollbarpixelpos * (scrollbarmaxpos - 1) / msbp;
             }
         }
         if (oldpos != scrollbarpos)
+        {
             on_scroll();
+        }
     }
 }
 
@@ -1409,7 +1558,9 @@ void widget_scrollbar::on_wheel(input_action wd)
         }
     }
     if (oldpos != scrollbarpos)
+    {
         on_scroll();
+    }
 }
 
 widget_list::widget_list(int x, int y, int w, int h, widget* parent_) :
@@ -1445,14 +1596,22 @@ void widget_list::delete_entry(unsigned n)
     }
     unsigned es = entries.size();
     if (es == 0)
+    {
         selected = -1; // remove selection
+    }
     else if (es == 1)
+    {
         set_selected(0); // set to first entry
+    }
     else
+    {
         on_sel_change();
+    }
     unsigned ve = get_nr_of_visible_entries();
     if (es > ve)
+    {
         myscrollbar->set_nr_of_positions(es - ve + 1);
+    }
 }
 
 void widget_list::insert_entry(unsigned n, const string& s)
@@ -1468,12 +1627,18 @@ void widget_list::insert_entry(unsigned n, const string& s)
     }
     unsigned es = entries.size();
     if (es == 1)
+    {
         set_selected(0); // set to first entry
+    }
     else
+    {
         on_sel_change();
+    }
     unsigned ve = get_nr_of_visible_entries();
     if (es > ve)
+    {
         myscrollbar->set_nr_of_positions(es - ve + 1);
+    }
 }
 
 void widget_list::append_entry(const string& s)
@@ -1481,12 +1646,18 @@ void widget_list::append_entry(const string& s)
     entries.push_back(s);
     unsigned es = entries.size();
     if (es == 1)
+    {
         set_selected(0); // set to first entry
+    }
     else
+    {
         on_sel_change();
+    }
     unsigned ve = get_nr_of_visible_entries();
     if (es > ve)
+    {
         myscrollbar->set_nr_of_positions(es - ve + 1);
+    }
 }
 
 void widget_list::set_entry(unsigned n, const string& s)
@@ -1508,15 +1679,21 @@ void widget_list::make_entries_unique()
     entries.erase(std::unique(entries.begin(), entries.end()), entries.end());
     unsigned es = entries.size();
     if (es == 1)
+    {
         set_selected(0); // set to first entry
+    }
     else
+    {
         on_sel_change();
+    }
     unsigned ve = get_nr_of_visible_entries();
     if (es > ve)
+    {
         myscrollbar->set_nr_of_positions(es - ve + 1);
+    }
 }
 
-string widget_list::get_entry(unsigned n) const
+auto widget_list::get_entry(unsigned n) const -> string
 {
     if (n < entries.size())
     {
@@ -1525,12 +1702,12 @@ string widget_list::get_entry(unsigned n) const
     return "";
 }
 
-unsigned widget_list::get_listsize() const
+auto widget_list::get_listsize() const -> unsigned
 {
     return entries.size();
 }
 
-int widget_list::get_selected() const
+auto widget_list::get_selected() const -> int
 {
     return selected;
 }
@@ -1550,14 +1727,16 @@ void widget_list::set_selected(unsigned n)
     }
 }
 
-string widget_list::get_selected_entry() const
+auto widget_list::get_selected_entry() const -> string
 {
     if (selected >= 0)
+    {
         return get_entry(selected);
+    }
     return "";
 }
 
-unsigned widget_list::get_nr_of_visible_entries() const
+auto widget_list::get_nr_of_visible_entries() const -> unsigned
 {
     return std::min(
         unsigned(entries.size()),
@@ -1590,7 +1769,9 @@ void widget_list::draw() const
         {
             int width = size.x - 2 * fw;
             if (scrollbarvisible)
+            {
                 width -= 3 * fw + globaltheme->icons[0]->get_width();
+            }
             globaltheme->backg.get()->draw(
                 p.x + fw,
                 p.y + fw + lp * globaltheme->myfont->get_height(),
@@ -1613,7 +1794,7 @@ void widget_list::draw() const
             unsigned col = 0;
             while (true)
             {
-                string::size_type tp = tmp.find("\t");
+                string::size_type tp = tmp.find('\t');
                 string ct            = tmp.substr(0, tp);
                 globaltheme->myfont->print(
                     p.x + fw + col * unsigned(columnwidth),
@@ -1622,14 +1803,18 @@ void widget_list::draw() const
                     tcol,
                     true);
                 if (tp == string::npos)
+                {
                     break;
+                }
                 tmp = tmp.substr(tp + 1);
                 ++col;
             }
         }
     }
     if (entries.size() > maxp)
+    {
         myscrollbar->draw();
+    }
 }
 
 void widget_list::on_click(vector2i position, mouse_button btn)
@@ -1715,12 +1900,12 @@ void widget_edit::draw() const
     }
 }
 
-unsigned widget_edit::cursor_left() const
+auto widget_edit::cursor_left() const -> unsigned
 {
     return font::character_left(text, cursorpos);
 }
 
-unsigned widget_edit::cursor_right() const
+auto widget_edit::cursor_right() const -> unsigned
 {
     return font::character_right(text, cursorpos);
 }
@@ -1831,9 +2016,13 @@ void widget_fileselector::read_current_dir()
     {
         string e = dir.read();
         if (e.empty())
+        {
             break;
+        }
         if (e[0] == '.')
+        {
             continue; // avoid . .. and hidden files
+        }
         if (is_directory(current_path->get_text() + e))
         {
             dirs.insert(e);
@@ -1847,16 +2036,22 @@ void widget_fileselector::read_current_dir()
     nr_files = files.size();
     current_dir->append_entry("[..]");
     for (const auto& dir : dirs)
+    {
         current_dir->append_entry(string("[") + dir + string("]"));
+    }
     for (const auto& file : files)
+    {
         current_dir->append_entry(file);
+    }
 }
 
 void widget_fileselector::listclick()
 {
     int n = current_dir->get_selected();
     if (n < 0 || unsigned(n) > nr_dirs + nr_files)
+    {
         return;
+    }
     string p       = current_path->get_text();
     string filesep = p.substr(p.length() - 1, 1);
     if (n == 0)
@@ -1947,7 +2142,9 @@ void widget_3dview::on_drag(
 void widget_3dview::draw() const
 {
     if (!mdl.get())
+    {
         return;
+    }
 
     vector3f bb = mdl->get_boundbox_size();
     float bbl   = bb.length();

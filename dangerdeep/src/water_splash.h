@@ -47,7 +47,7 @@ class water_splash : public sea_object
         double u_scal    = 2.0,
         unsigned nr_segs = 16);
 
-    double compute_height(double t) const;
+    [[nodiscard]] double compute_height(double t) const;
 
   public:
     water_splash() = default;

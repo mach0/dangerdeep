@@ -85,12 +85,12 @@ void ship::generic_rudder::save(xml_elem& parent) const
     parent.set_attr(to_angle, "to_angle");
 }
 
-double ship::generic_rudder::compute_force_and_torque(
+auto ship::generic_rudder::compute_force_and_torque(
     vector3& F,
     vector3& T,
     const vector3& parent_local_velocity,
     const double& water_density,
-    const double& flow_force) const
+    const double& flow_force) const -> double
 {
     double s = parent_local_velocity.y;
     double force =
@@ -110,12 +110,12 @@ double ship::generic_rudder::compute_force_and_torque(
     return flow_force * bypass_factor();
 }
 
-double ship::generic_rudder::deflect_factor() const
+auto ship::generic_rudder::deflect_factor() const -> double
 {
     return -sin(angle * M_PI / 180);
 }
 
-double ship::generic_rudder::bypass_factor() const
+auto ship::generic_rudder::bypass_factor() const -> double
 {
     return cos(angle * M_PI / 180);
 }
@@ -140,7 +140,9 @@ void ship::fill_dist_angle_relation_map(const double initial_velocity)
                 z += vz * dt;
                 vz += 0 - constant::GRAVITY * dt;
                 if (z <= 0)
+                {
                     break;
+                }
             }
 
             dist_angle_relation[initial_velocity][dist] = a;
@@ -160,7 +162,9 @@ void ship::fill_dist_angle_relation_map(const double initial_velocity)
                 z += vz * dt;
                 vz += 0 - constant::GRAVITY * dt;
                 if (z <= 0)
+                {
                     break;
+                }
             }
 
             dist_angle_relation[initial_velocity][dist] = a;
@@ -186,17 +190,29 @@ ship::ship(game& gm_, const xml_elem& parent) :
     string typestr           = eclassification.attr("type");
 
     if (typestr == "warship")
+    {
         myclass = WARSHIP;
+    }
     else if (typestr == "escort")
+    {
         myclass = ESCORT;
+    }
     else if (typestr == "merchant")
+    {
         myclass = MERCHANT;
+    }
     else if (typestr == "submarine")
+    {
         myclass = SUBMARINE;
+    }
     else if (typestr == "torpedo")
+    {
         myclass = TORPEDO;
+    }
     else
+    {
         THROW(error, string("illegal ship type in ") + specfilename);
+    }
 
     if (myclass == TORPEDO)
     {
@@ -244,13 +260,21 @@ ship::ship(game& gm_, const xml_elem& parent) :
         xml_elem eai  = parent.child("ai");
         string aitype = eai.attr("type");
         if (aitype == "dumb")
+        {
             myai = std::make_unique<ai>(ai::dumb, gm_);
+        }
         else if (aitype == "escort")
+        {
             myai = std::make_unique<ai>(ai::escort, gm_);
+        }
         else if (aitype == "none")
+        {
             myai.reset();
+        }
         else
+        {
             THROW(error, string("illegal AI type in ") + specfilename);
+        }
     }
 
     if (parent.has_child("fuel"))
@@ -272,12 +296,12 @@ ship::ship(game& gm_, const xml_elem& parent) :
             new_turret.shell_capacity       = eturret.attru("shell_capacity");
             new_turret.num_shells_remaining = new_turret.shell_capacity;
 
-            new_turret.initial_velocity     = eturret.attrf("initial_velocity");
-            new_turret.max_declination      = eturret.attri("max_declination");
-            new_turret.max_inclination      = eturret.attri("max_inclination");
-            new_turret.time_to_man          = eturret.attrf("time_to_man");
-            new_turret.time_to_unman        = eturret.attrf("time_to_unman");
-            new_turret.shell_damage         = eturret.attrf("shell_damage");
+            new_turret.initial_velocity = eturret.attrf("initial_velocity");
+            new_turret.max_declination  = eturret.attri("max_declination");
+            new_turret.max_inclination  = eturret.attri("max_inclination");
+            new_turret.time_to_man      = eturret.attrf("time_to_man");
+            new_turret.time_to_unman    = eturret.attrf("time_to_unman");
+            new_turret.shell_damage     = eturret.attrf("shell_damage");
 
             new_turret.start_of_exclusion_radius =
                 eturret.attri("exclusion_radius_start");
@@ -375,11 +399,13 @@ void ship::remember_position(double t)
         previous_positions.push_front(
             prev_pos(p, get_heading().direction(), t, get_speed()));
         if (previous_positions.size() > TRAIL_LENGTH)
+        {
             previous_positions.pop_back();
+        }
     }
 }
 
-double ship::get_throttle_speed() const
+auto ship::get_throttle_speed() const -> double
 {
     double ms = get_max_speed();
     if (throttle <= 0)
@@ -412,13 +438,15 @@ double ship::get_throttle_speed() const
     {
         double sp = kts2ms(throttle);
         if (sp > ms)
+        {
             sp = ms;
+        }
         return sp;
     }
     return 0;
 }
 
-double ship::get_throttle_accel() const
+auto ship::get_throttle_accel() const -> double
 {
     // Beware: a throttle of 1/3 doesn't mean 1/3 of engine acceleration
     // This is because drag raises quadratically.
@@ -437,20 +465,20 @@ double ship::get_throttle_accel() const
     return max_accel_forward * (speed_fac * speed_fac) * signal;
 }
 
-bool ship::screw_cavitation() const
+auto ship::screw_cavitation() const -> bool
 {
     return get_throttle_speed() >= 0.75 * get_max_speed();
 }
 
-pair<angle, double> ship::bearing_and_range_to(const sea_object* other) const
+auto ship::bearing_and_range_to(const sea_object* other) const
+    -> pair<angle, double>
 {
     vector2 diff = other->get_pos().xy() - position.xy();
     return make_pair(angle(diff), diff.length());
 }
 
-angle ship::estimate_angle_on_the_bow(
-    angle target_bearing,
-    angle target_heading) const
+auto ship::estimate_angle_on_the_bow(angle target_bearing, angle target_heading)
+    const -> angle
 {
     return (angle(180) + target_bearing - target_heading).value_pm180();
 }
@@ -474,14 +502,16 @@ void ship::load(const xml_elem& parent)
     istringstream fiss(esink.child_text());
 
     for (float& flooded_mas : flooded_mass)
+    {
         fiss >> flooded_mas;
+    }
 
-        // fixme load that
-        // list<prev_pos> previous_positions;
-        // class particle* myfire;
+    // fixme load that
+    // list<prev_pos> previous_positions;
+    // class particle* myfire;
 
-        // fixme: load per gun data
-        // bool gun_manning_is_changing;
+    // fixme: load per gun data
+    // bool gun_manning_is_changing;
 
 #if 0
 	// gun turrets
@@ -548,7 +578,9 @@ void ship::save(xml_elem& parent) const
     esink.set_attr(flooding_speed, "flooding_speed");
     ostringstream foss;
     for (float flooded_mas : flooded_mass)
+    {
         foss << flooded_mas << " ";
+    }
     esink.add_child_text(foss.str());
 
     // fixme save that
@@ -612,17 +644,25 @@ void ship::simulate(double delta_time, game& gm)
             myfrac(gm.get_time() * get_throttle_speed() * 0.5) * 360.0;
         mymodel->set_object_angle(propeller_1_id, screw_ang);
         if (propeller_2_id >= 0)
+        {
             mymodel->set_object_angle(propeller_2_id, screw_ang);
+        }
     }
 
     // rudder animation
     if (rudder_1_id >= 0)
+    {
         mymodel->set_object_angle(rudder_1_id, rudder.angle);
+    }
     if (rudder_2_id >= 0)
+    {
         mymodel->set_object_angle(rudder_2_id, rudder.angle);
+    }
 
     if (myai.get())
+    {
         myai->act(*this, gm, delta_time);
+    }
 
     // calculate sinking, fixme replace by buoyancy...
     if (is_inactive())
@@ -681,8 +721,10 @@ void ship::simulate(double delta_time, game& gm)
                                * flooding_volume_rcp;
             totally_flooded += flooded_mass[i];
         }
-        if (position.z < -200) // used for ships.
+        if (position.z < -200)
+        { // used for ships.
             kill();
+        }
         throttle = stop;
         return;
     }
@@ -780,7 +822,9 @@ void ship::simulate(double delta_time, game& gm)
             while (gun_barrel != gun_turret->gun_barrels.end())
             {
                 if (gun_barrel->load_time_remaining > 0.0)
+                {
                     gun_barrel->load_time_remaining -= delta_time;
+                }
                 gun_barrel++;
             }
         }
@@ -794,7 +838,9 @@ void ship::steering_logic()
 {
     // if head_to_fixed is 0, we are not steering to a course
     if (head_to_fixed == HEAD_TO_UNDEFINED)
+    {
         return;
+    }
 
     // if angle to target course is > 180 with set steering direction, just set
     // rudder to full angle and turn. But only if demanded by special
@@ -889,10 +935,12 @@ void ship::head_to_course(const angle& a, int direction, bool hard_rudder)
     // cout << "rudder_to=" << rudder_to << "\n";
 }
 
-bool ship::damage(const vector3& fromwhere, unsigned strength, game& gm)
+auto ship::damage(const vector3& fromwhere, unsigned strength, game& gm) -> bool
 {
     if (invulnerable)
+    {
         return false;
+    }
 
     // fromwhere is real-world position of damage source.
 
@@ -913,9 +961,13 @@ bool ship::damage(const vector3& fromwhere, unsigned strength, game& gm)
     damage_status& where = midship_damage; // fixme
     int dmg              = int(where) + strength;
     if (dmg > wrecked)
+    {
         where = wrecked;
+    }
     else
+    {
         where = damage_status(dmg);
+    }
     // fixme:
     if (gm.random() % 2 == 0)
     {
@@ -930,17 +982,19 @@ bool ship::damage(const vector3& fromwhere, unsigned strength, game& gm)
     }
 }
 
-unsigned ship::calc_damage() const
+auto ship::calc_damage() const -> unsigned
 {
     if (bow_damage == wrecked || midship_damage == wrecked
         || stern_damage == wrecked)
+    {
         return 100;
+    }
     auto dmg =
         unsigned(round(15 * (bow_damage + midship_damage + stern_damage)));
     return dmg > 100 ? 100 : dmg;
 }
 
-double ship::get_noise_factor() const
+auto ship::get_noise_factor() const -> double
 {
     return get_throttle_speed() / max_speed_forward;
 }
@@ -1090,7 +1144,9 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
 
     // fixme: add linear drag caused by hull skin friction here!
     if (fabs(local_velocity.y) < 1.0)
+    {
         local_velocity2.y = local_velocity.y * max_speed_forward;
+    }
 
     vector3 Fr, Tr;
     double flowforce           = get_throttle_accel() * mass;
@@ -1176,11 +1232,17 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
         tvr2.coeff_mul(area).coeff_mul(L.coeff_mul(L).coeff_mul(L))
         * (drag_coefficient * water_density * 0.125);
     if (w.x > 0.0)
+    {
         local_torque.x = -local_torque.x;
+    }
     if (w.y > 0.0)
+    {
         local_torque.y = -local_torque.y;
+    }
     if (w.z > 0.0)
+    {
         local_torque.z = -local_torque.z;
+    }
 
     // positive torque turns counter clockwise! torque is in world space!
     T = orientation.rotate(local_torque + Tr) + dr_torque;
@@ -1191,7 +1253,7 @@ void ship::compute_force_and_torque(vector3& F, vector3& T, game& gm) const
     // wrong values with new physics!
 }
 
-double ship::get_turn_drag_area() const
+auto ship::get_turn_drag_area() const -> double
 {
     // only take cross section that is below water! (roughly 1/2), rather a hack
     return mymodel->get_cross_section(90.0) * 0.5;
@@ -1202,10 +1264,12 @@ void ship::calculate_fuel_factor(double delta_time)
     fuel_level -= delta_time * get_fuel_consumption_rate();
 }
 
-ship::gun_status ship::fire_shell_at(const vector2& pos, game& gm)
+auto ship::fire_shell_at(const vector2& pos, game& gm) -> ship::gun_status
 {
     if (!has_guns())
+    {
         return NO_GUNS;
+    }
 
     gun_status res  = GUN_FIRED;
     auto gun_turret = gun_turrets.begin();
@@ -1234,7 +1298,9 @@ ship::gun_status ship::fire_shell_at(const vector2& pos, game& gm)
                                  .rbegin())
                                 ->first;
                         if (distance > max_shooting_distance)
+                        {
                             res = TARGET_OUT_OF_RANGE; // can't do anything
+                        }
 
                         if (GUN_FIRED == res)
                         {
@@ -1323,7 +1389,7 @@ ship::gun_status ship::fire_shell_at(const vector2& pos, game& gm)
     return res;
 }
 
-bool ship::man_guns()
+auto ship::man_guns() -> bool
 {
     log_debug("man guns, is gun manned? " << has_guns() && is_gun_manned());
     if (has_guns() && !is_gun_manned())
@@ -1340,7 +1406,7 @@ bool ship::man_guns()
     return false;
 }
 
-bool ship::unman_guns()
+auto ship::unman_guns() -> bool
 {
     log_debug("UNman guns, is gun manned? " << has_guns() && is_gun_manned());
     if (has_guns() && is_gun_manned())
@@ -1361,9 +1427,9 @@ bool ship::unman_guns()
 // radius for the turret. The exclusion radius defines one constant arc where
 // the gun cannot aim (i.e. on a sub this would usually be the area directly
 // behind the gun where the conning tower is, you can't shoot through that).
-bool ship::is_target_in_blindspot(
+auto ship::is_target_in_blindspot(
     const struct gun_turret* gun,
-    angle bearingToTarget)
+    angle bearingToTarget) -> bool
 {
     bool isInBlindSpot = false;
 
@@ -1373,20 +1439,24 @@ bool ship::is_target_in_blindspot(
         {
             if (bearingToTarget.value() >= gun->start_of_exclusion_radius
                 && bearingToTarget.value() <= gun->end_of_exclusion_radius)
+            {
                 isInBlindSpot = true;
+            }
         }
         else
         {
             if (bearingToTarget.value() >= gun->start_of_exclusion_radius
                 || bearingToTarget.value() <= gun->end_of_exclusion_radius)
+            {
                 isInBlindSpot = true;
+            }
         }
     }
 
     return isInBlindSpot;
 }
 
-long ship::num_shells_remaining()
+auto ship::num_shells_remaining() -> long
 {
     long numShells = 0;
     auto gunTurret = gun_turrets.begin();
@@ -1400,15 +1470,15 @@ long ship::num_shells_remaining()
     return numShells;
 }
 
-bool ship::is_gun_manned()
+auto ship::is_gun_manned() -> bool
 {
     return gun_turrets.begin()->is_gun_manned;
 }
 
-bool ship::calculate_gun_angle(
+auto ship::calculate_gun_angle(
     const double distance,
     angle& elevation,
-    const double initial_velocity)
+    const double initial_velocity) -> bool
 {
     bool withinRange = false;
 
@@ -1437,7 +1507,7 @@ void ship::manipulate_heading(angle hdg)
     head_to_fixed = HEAD_TO_UNDEFINED;
 }
 
-bv_tree::param ship::compute_bv_tree_params() const
+auto ship::compute_bv_tree_params() const -> bv_tree::param
 {
     const model::mesh& basemesh = get_model().get_base_mesh();
     const bv_tree& bv_tree      = basemesh.get_bv_tree();

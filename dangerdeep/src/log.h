@@ -90,7 +90,7 @@ class log : public singleton<class log>
 
     /// get the last N lines in one string with return characters after each
     /// line, threadsafe
-    std::string get_last_n_lines(unsigned n) const;
+    [[nodiscard]] std::string get_last_n_lines(unsigned n) const;
 
     /// report a new thread - call from its context, use 8 characters for name
     /// always for nice logs
@@ -102,7 +102,7 @@ class log : public singleton<class log>
   protected:
     log();
     class log_internal* mylogint{nullptr};
-    const char* get_thread_name() const;
-    const char* get_thread_name(std::thread::id) const;
+    [[nodiscard]] const char* get_thread_name() const;
+    [[nodiscard]] const char* get_thread_name(std::thread::id) const;
     friend struct log_msg;
 };

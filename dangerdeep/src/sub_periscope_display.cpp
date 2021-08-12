@@ -47,8 +47,8 @@ void sub_periscope_display::pre_display() const
     glClear(GL_DEPTH_BUFFER_BIT);
 }
 
-freeview_display::projection_data
-sub_periscope_display::get_projection_data(class game& gm) const
+auto sub_periscope_display::get_projection_data(class game& gm) const
+    -> freeview_display::projection_data
 {
     projection_data pd;
     pd.x = 453 * SYS().get_res_x() / 1024;
@@ -63,7 +63,7 @@ sub_periscope_display::get_projection_data(class game& gm) const
     return pd;
 }
 
-vector3 sub_periscope_display::get_viewpos(class game& gm) const
+auto sub_periscope_display::get_viewpos(class game& gm) const -> vector3
 {
     const auto* sub = dynamic_cast<const submarine*>(gm.get_player());
     return sub->get_pos() + add_pos
@@ -186,7 +186,7 @@ sub_periscope_display::sub_periscope_display(user_interface& ui_) :
         get_texture_dir() + "blurtest.png", texture::LINEAR, texture::REPEAT);
 }
 
-bool sub_periscope_display::handle_key_event(const key_data& k)
+auto sub_periscope_display::handle_key_event(const key_data& k) -> bool
 {
     if (k.down())
     {
@@ -205,8 +205,8 @@ bool sub_periscope_display::handle_key_event(const key_data& k)
     return freeview_display::handle_key_event(k);
 }
 
-bool sub_periscope_display::handle_mouse_motion_event(
-    const mouse_motion_data& m)
+auto sub_periscope_display::handle_mouse_motion_event(
+    const mouse_motion_data& m) -> bool
 {
     if (m.left() && m.relative_motion_2d.y != 0)
     {
@@ -223,7 +223,8 @@ bool sub_periscope_display::handle_mouse_motion_event(
     return freeview_display::handle_mouse_motion_event(m);
 }
 
-bool sub_periscope_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+auto sub_periscope_display::handle_mouse_wheel_event(const mouse_wheel_data& m)
+    -> bool
 {
     if (m.up())
     {
@@ -247,7 +248,7 @@ void sub_periscope_display::display() const
     freeview_display::display();
 }
 
-unsigned sub_periscope_display::get_popup_allow_mask() const
+auto sub_periscope_display::get_popup_allow_mask() const -> unsigned
 {
     return (1 << submarine_interface::popup_mode_control)
            | (1 << submarine_interface::popup_mode_tdc)

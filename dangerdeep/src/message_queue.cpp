@@ -41,7 +41,7 @@ void message::evaluate() const
     }
 }
 
-message_queue::message_queue() { }
+message_queue::message_queue() = default;
 
 message_queue::~message_queue()
 {
@@ -70,7 +70,7 @@ message_queue::~message_queue()
     }
 }
 
-bool message_queue::send(message::ptr msg, bool waitforanswer)
+auto message_queue::send(message::ptr msg, bool waitforanswer) -> bool
 {
     msg->needsanswer  = waitforanswer;
     msg->result       = false;
@@ -117,7 +117,7 @@ void message_queue::wakeup_receiver()
     emptycondvar.notify_all();
 }
 
-std::vector<message::ptr> message_queue::receive(bool wait)
+auto message_queue::receive(bool wait) -> std::vector<message::ptr>
 {
     std::vector<message::ptr> result;
     std::unique_lock<std::mutex> oml(mymutex);
@@ -152,7 +152,9 @@ std::vector<message::ptr> message_queue::receive(bool wait)
 void message_queue::acknowledge(message::ptr msg)
 {
     if (msg.get() == nullptr)
+    {
         THROW(error, "acknowledge without message called");
+    }
     bool needsanswer = msg->needsanswer;
     if (needsanswer)
     {
