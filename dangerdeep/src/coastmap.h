@@ -39,21 +39,29 @@ class coastsegment
   public:
     using segpos = vector2t<unsigned short>;
 
-    struct segcl
+    class segcl
     {
+      public:
         int global_clnr; // created from which global cl? internal use.
+
         std::vector<segpos>
             points; // coordinates of the segcl. relative to segment.
+
         mutable std::vector<vector2>
             points2; // cached, real world per segment coordinates.
+
         mutable std::vector<vector2> normals; // cached, coastline normals.
+
         int beginpos{-1}; // positions are on border in 0-64k scale: s=65535.
                           // (-1 = not on border)
+
         int endpos{-1};   // then bottom,right,top,left border of segment are
                           // 0s+x, 1s+x, 2s+x, 3s+x
+
         int next{-1};     // successor of this cl. is itself for cyclic segcl's.
         bool cyclic{false}; // is segcl cyclic inside this segment (island)?
         void print() const; // for debugging
+
         segcl(int glcn = -1) : global_clnr(glcn) { }
         void push_back_point(const segpos& sp); // avoids double points
     };
@@ -74,12 +82,16 @@ class coastsegment
         std::vector<unsigned> indices;
         void push_back_point(const vector2& p); // avoids double points.
     };
+
     mutable int pointcachedetail{0};
     mutable std::vector<cacheentry> pointcache;
+
     // check if cache needs to be (re)generated, and do that
-    void
-    generate_point_cache(const class coastmap& cm, int x, int y, int detail)
-        const;
+    void generate_point_cache(
+            const class coastmap& cm,
+            int x,
+            int y,
+            int detail) const;
 
     void compute_successor_for_cl(unsigned cln);
 
@@ -87,8 +99,11 @@ class coastsegment
 
     coastsegment(/*unsigned topon, const std::vector<float>& topod*/) = default;
 
-    void
-    draw_as_map(const class coastmap& cm, int x, int y, int detail = 0) const;
+    void draw_as_map(
+            const class coastmap& cm,
+            int x,
+            int y,
+            int detail = 0) const;
 };
 
 ///\brief Handles a 2D map of coastlines or terrain with 3D rendering.
@@ -98,23 +113,27 @@ class coastmap
     friend class coastsegment::segcl; // just request some values
 
     // some attributes used for map reading/processing
-    std::vector<uint8_t>
-        themap; // pixel data of map file, y points up, like in OpenGL
+    std::vector<uint8_t> themap; // map file pixel data, y points up as OpenGL
+
     static const int dmx[4]; // some helper constants.
     static const int dmy[4];
     static const int dx[4];
     static const int dy[4];
+
     static const int runlandleft[16];
     static const int runlandright[16];
+
     static bool patternprocessok[16];
 
     unsigned pixels_per_seg;      // "n"
     unsigned mapw, maph;          // map width/height in pixels.
     unsigned segsx, segsy;        // nr of segs in x/y dimensions
     double realwidth, realheight; // width/height of map in reality (meters)
+
     double pixelw_real; // width/height of one pixel in reality, in meters
     double segw_real;   // width/height of one segment in reality, in meters
     vector2 realoffset; // offset in meters for map (position of pixel pos 0,0)
+
     std::vector<coastsegment> coastsegments;
 
     int global_clnr; // working counter.
@@ -128,6 +147,7 @@ class coastmap
         std::string modelname;
         vector2 pos;
         double dir;
+
         prop(std::string s, const vector2& p, double d) :
             modelname(std::move(s)), pos(p), dir(d)
         {
@@ -152,11 +172,18 @@ class coastmap
 
     // returns false for normal cl, true for islands/lakes.
     bool find_begin_of_coastline(int& x, int& y);
-    bool
-    find_coastline(int x, int y, std::vector<vector2i>& points, bool& cyclic);
+    bool find_coastline(
+            int x,
+            int y,
+            std::vector<vector2i>& points,
+            bool& cyclic);
+
     vector2i compute_segment(const vector2i& p0, const vector2i& p1) const;
-    void
-    divide_and_distribute_cl(const std::vector<vector2i>& cl, bool clcyclic);
+
+    void divide_and_distribute_cl(
+            const std::vector<vector2i>& cl,
+            bool clcyclic);
+
     void process_coastline(int x, int y);
     void process_segment(int x, int y);
 
@@ -199,8 +226,11 @@ class coastmap
 
     // fixme: maybe it's better to give top,left and bottom,right corner of sub
     // area to draw
-    void
-    draw_as_map(const vector2& droff, double mapzoom, int detail = 0) const;
+    void draw_as_map(
+            const vector2& droff,
+            double mapzoom,
+            int detail = 0) const;
+
     // p is real word position of viewer, vr is range of view in meters.
     void render(
         const vector2& p,

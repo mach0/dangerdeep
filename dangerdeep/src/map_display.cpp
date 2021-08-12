@@ -891,16 +891,16 @@ void map_display::display() const
             {
                 float& height = heights.at(x, y);
 
-                float weight =
-                    std::max(0.0, (6000.0 - abs(height - 9000.0)) / 6000.0);
+                float weight = std::max(
+                    0.0, (6000.0 - std::abs(height - 9000.0)) / 6000.0);
                 colors[(y * size.x * 3) + (x * 3) + 0] = weight * 255;
 
-                weight =
-                    std::max(0.0, ((3000.0) - abs(height - 3000.0)) / 3000.0);
+                weight = std::max(
+                    0.0, ((3000.0) - std::abs(height - 3000.0)) / 3000.0);
                 colors[(y * size.x * 3) + (x * 3) + 1] = weight * 255;
 
                 weight = std::max(
-                    0.0, ((-11000.0) - abs(height - 0.0)) / (-11000.0));
+                    0.0, ((-11000.0) - std::abs(height - 0.0)) / (-11000.0));
                 colors[(y * size.x * 3) + (x * 3) + 2] = weight * 255;
             }
         }
@@ -1033,7 +1033,7 @@ void map_display::display() const
 //		printf("test[%i]=%f\n",
 //		       i,
 //		       compute_signal_strength_GHG(angle(45.0), 6000,
-//angle(double(i))));
+// angle(double(i))));
 //	}
 #endif
 
@@ -1373,7 +1373,7 @@ bool map_display::handle_mouse_button_event(const mouse_click_data& m)
             {
                 auto id = gm.get_id(*obj); // fixme later using sensor contacts
                                            // here to select contact!
-                target       = id; // fixme: message?
+                target       = id;         // fixme: message?
                 mapclickdist = clickd;
             }
         }

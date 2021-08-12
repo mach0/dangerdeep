@@ -419,6 +419,7 @@ void check_for_highscore(const game& gm)
 {
     unsigned totaltons                          = 0;
     const list<game::sink_record>& sunken_ships = gm.get_sunken_ships();
+
     for (const auto& sunken_ship : sunken_ships)
     {
         totaltons += sunken_ship.tons;
@@ -1213,7 +1214,7 @@ bool choose_player_info(
             availableflotillas[std::max(0, wflotilla_.get_selected())].nr;
         pi.submarineid = wsubnumber_.get_selected_entry();
 
-        pi.photo       = atoi(wplayerphoto.get_current_imagename()
+        pi.photo = atoi(wplayerphoto.get_current_imagename()
                             .substr(std::string("player_photo").length())
                             .c_str()); // fixme unstable
         // log_debug(player_name<<","<<player_flotilla<<","<<player_subnumber<<","<<player_photo);
@@ -1452,7 +1453,7 @@ void choose_historical_mission()
         }
         ~msnlist() override = default;
     };
-    auto* wdescr   = &w.add_child(std::make_unique<widget_text>(
+    auto* wdescr = &w.add_child(std::make_unique<widget_text>(
         40, 380, 1024 - 80, 300, "", nullptr, true));
 
     auto* wmission = &w.add_child(
@@ -1694,15 +1695,10 @@ void menu_select_language()
 
 void apply_mode(widget_list* wlg)
 {
-    unsigned width, height;
-
     string wks = wlg->get_selected_entry();
 
-    height = static_cast<unsigned int>(
-                atoi(wks.substr(wks.rfind("x") + 1).c_str()));
-
-    width  = static_cast<unsigned int>(
-                atoi(wks.substr(0, wks.rfind("x")).c_str()));
+    auto height = atoi(wks.substr(wks.rfind("x") + 1).c_str());
+    auto width  = atoi(wks.substr(0, wks.rfind("x")).c_str());
 
     // try to set video mode BEFORE writing to config file, so that if video
     // mode is broken, user is not forced to same mode again on restart
@@ -1711,8 +1707,9 @@ void apply_mode(widget_list* wlg)
         auto params       = SYS().get_parameters();
         params.resolution = {width, height};
         SYS().set_parameters(params);
-        cfg::instance().set("screen_res_y", int(height));
-        cfg::instance().set("screen_res_x", int(width));
+
+        cfg::instance().set("screen_res_y", static_cast<int>(height));
+        cfg::instance().set("screen_res_x", static_cast<int>(width));
         glClearColor(0, 0, 0, 0);
     }
     catch (exception& e)
@@ -1795,7 +1792,7 @@ void configure_key(widget_list* wkeys)
             keynr(key_command(
                 sel)) // fixme later use key_command in widget directly!
         {
-            auto k  = cfg::instance().getkey(keynr);
+            auto k = cfg::instance().getkey(keynr);
 
             keyname = &add_child(std::make_unique<widget_text>(
                 40, 80, 432, 40, SYS().get_key_name(k.keycode, k.keymod)));
@@ -2153,7 +2150,7 @@ class vessel_view
         shipnames.splice(shipnames.end(), tmp);
         current = shipnames.begin();
 
-        w3d     = &parent.add_child(std::make_unique<widget_3dview>(
+        w3d = &parent.add_child(std::make_unique<widget_3dview>(
             20, 0, 1024 - 2 * 20, 700 - 32 - 16, load_model(), bgcol));
 
         vector3f lightdir =
@@ -2288,9 +2285,11 @@ int mymain(std::vector<string>& args)
     unsigned res_x = 0, res_y = 0;
     bool fullscreen = true;
     string cmdmissionfilename;
+
     bool runeditor     = false;
     bool override_lang = false;
     bool use_sound     = true;
+
     date editor_start_date(1939, 9, 1);
 
     // parse commandline
@@ -2922,12 +2921,12 @@ int mymain(std::vector<string>& args)
     // with black borders at top/bottom (height 2*32pixels)
     // weather conditions and earth curvature allow 30km sight at maximum.
     system_interface::parameters params;
-    params.near_z                      = 1.0;
-    params.far_z                       = 30000.0 + 500.0;
-    params.resolution                  = {res_x, res_y};
-    params.resolution2d                = {1024, 768};
-    params.window_caption              = texts::get(7);
-    params.fullscreen                  = fullscreen;
+    params.near_z         = 1.0;
+    params.far_z          = 30000.0 + 500.0;
+    params.resolution     = {static_cast<int>(res_x), static_cast<int>(res_y)};
+    params.resolution2d   = {1024, 768};
+    params.window_caption = texts::get(7);
+    params.fullscreen     = fullscreen;
 
     params.vertical_sync               = mycfg.getb("vsync");
     texture::use_compressed_textures   = mycfg.getb("use_compressed_textures");
@@ -2984,7 +2983,7 @@ int mymain(std::vector<string>& args)
             str_problems << "\nPress any key to quit.";
             str_problems << "\n\n" << warnings;
 
-            glClearColor(0, 0, 1, 0);           
+            glClearColor(0, 0, 1, 0);
             glClear(GL_COLOR_BUFFER_BIT);
 
             SYS().prepare_2d_drawing();

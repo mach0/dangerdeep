@@ -121,7 +121,7 @@ void rigid_body::set_mass_and_inertia_tensor(
     const matrix3& inertia_tensor_)
 {
     mass               = mass_;
-    inertia_tensor     = inertia_tensor;
+    inertia_tensor     = inertia_tensor_;
     inertia_tensor_inv = inertia_tensor.inverse();
 }
 

@@ -41,12 +41,43 @@ constexpr double SECOND_IN_METERS = 30.887479622;
 // earth perimeter in meters
 constexpr double EARTH_PERIMETER = 40030173.59;
 
+// sqrt cannot be used in constexpr but see this
+// https://baptiste-wicht.com/posts/2014/07/compile-integer-square-roots-at-compile-time-in-cpp.html
+
+static constexpr std::size_t
+ct_sqrt(std::size_t res, std::size_t l, std::size_t r)
+{
+    if (l == r)
+    {
+        return r;
+    }
+    else
+    {
+        const auto mid = (r + l) / 2;
+
+        if (mid * mid >= res)
+        {
+            return ct_sqrt(res, l, mid);
+        }
+        else
+        {
+            return ct_sqrt(res, mid + 1, r);
+        }
+    }
+}
+
+static constexpr std::size_t ct_sqrt(std::size_t res)
+{
+    return ct_sqrt(res, 1, res);
+}
+
 // Brutto register ton in cubic meters (100 cubic feet, 1 feet = 30.48cm)
 constexpr double BRT_VOLUME = 2.8316846592;
 
 constexpr double WGS84_A = 6378137.0;
 constexpr double WGS84_B = 6356752.314;
-constexpr double WGS84_K = ::sqrt(WGS84_A * WGS84_A - WGS84_B * WGS84_B) / WGS84_A;
+constexpr double WGS84_K =
+    ct_sqrt(WGS84_A * WGS84_A - WGS84_B * WGS84_B) / WGS84_A;
 
 // earth radius in meters (radius of a globe with same volume as the GRS 80
 // ellipsoide)
@@ -66,13 +97,14 @@ constexpr double MOON_ORBIT_TIME_SYNODIC =
 // more precise values:
 // 29.53058867
 // new moon was on 18/11/1998 9:36:00 pm
-constexpr double MOON_ORBIT_AXIS_ANGLE = 5.15;     // degrees
-constexpr double EARTH_ROTATION_TIME   = 86164.09; // 23h56m4.09s, one sidereal day!
+constexpr double MOON_ORBIT_AXIS_ANGLE = 5.15; // degrees
+constexpr double EARTH_ROTATION_TIME =
+    86164.09; // 23h56m4.09s, one sidereal day!
 
 constexpr double EARTH_ORBIT_TIME =
     31556926.5; // in seconds. 365 days, 5 hours, 48 minutes, 46.5 seconds
 
-constexpr double MOON_POS_ADJUST = 300.0; // in degrees. Moon pos in its orbit
-                                      // on 1.1.1939 fixme: research the value
+constexpr double MOON_POS_ADJUST =
+    300.0; // in degrees. Moon pos in its orbit
+           // on 1.1.1939 fixme: research the value
 } // namespace constant
-
