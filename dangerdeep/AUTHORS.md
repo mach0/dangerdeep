@@ -1,7 +1,11 @@
-Project created and initial code by Thorsten Jordan
-2D and 3D artwork, 3d models, graphics, build system, Luis Barrancos
+# Danger from the Deep
 
-Further contributions in order of appearance:
+
+Project created and initial code by Thorsten Jordan.
+2D and 3D artwork, 3d models, graphics, build system, Luis Barrancos.
+
+
+## Further contributions in order of appearance:
 
  * Christian Kolaß - Bogue carrier, deprecated 3d models
  * Markus Petermann - development
@@ -13,7 +17,7 @@ Further contributions in order of appearance:
  * Matt Lawrence - development, bug fixes
  * Marco Saloro - sound effects
 
-##### Note
+### Note
 
 The in-game credits is more up to date, it can be found in ```src/credits.h```
 
