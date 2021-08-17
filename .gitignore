@@ -6,3 +6,5 @@ build/
 dangerdeep/build
 CMakeLists.txt.user
 build*
+version.h
+
